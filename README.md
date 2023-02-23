@@ -1,7 +1,7 @@
 # QDReadHook
 
 [![](https://data.jsdelivr.com/v1/package/gh/xihan123/QDReadHook/badge?style=rounded)](https://www.jsdelivr.com/package/gh/xihan123/QDReadHook)
-![above](https://img.shields.io/badge/Android-7.0%20or%20above-brightgreen.svg)
+![above](https://img.shields.io/badge/Android-8.0%20or%20above-brightgreen.svg)
 [![Latest Release](https://img.shields.io/github/release/xihan123/QDReadHook.svg)](https://github.com/xihan123/QDReadHook/releases)
 ![downloads](https://img.shields.io/github/downloads/xihan123/QDReadHook/total)
 [![Blank](https://img.shields.io/github/downloads/Xposed-Modules-Repo/cn.xihan.qdds/total?label=LSPosed%20Repo&logo=Android&style=flat&labelColor=F48FB1&logoColor=ffffff)](https://github.com/Xposed-Modules-Repo/cn.xihan.qdds/releases)
