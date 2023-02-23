@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/xihan123/QDReadHook/compare/v2.0.4...v3.0.0) (2023-02-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* 最低支持版本改为Android 8
+
+### Features
+
+* 最低支持版本改为Android 8 ([e42cf27](https://github.com/xihan123/QDReadHook/commit/e42cf272855fada740a2ed6f2dbe0e5a4348c198))
+
 ## [2.0.4](https://github.com/xihan123/QDReadHook/compare/v2.0.4...v2.0.4) (2023-02-23)
 
 
