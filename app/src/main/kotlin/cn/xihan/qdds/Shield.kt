@@ -1,5 +1,8 @@
 package cn.xihan.qdds
 
+import android.app.Activity
+import android.content.Context
+import android.widget.TextView
 import cn.xihan.qdds.HookEntry.Companion.isNeedShield
 import cn.xihan.qdds.HookEntry.Companion.parseNeedShieldList
 import com.alibaba.fastjson2.parseObject
@@ -11,6 +14,7 @@ import com.highcapable.yukihookapi.hook.type.java.BooleanType
 import com.highcapable.yukihookapi.hook.type.java.IntType
 import com.highcapable.yukihookapi.hook.type.java.ListClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
+import de.robv.android.xposed.XposedHelpers
 
 /**
  * @项目名 : QDReadHook
@@ -60,12 +64,12 @@ fun PackageParam.shieldDailyReading(
         in 788..800 -> "com.qidian.QDReader.component.api.b1"
         in 804..812 -> "com.qidian.QDReader.component.api.f1"
         in 827..860 -> "com.qidian.QDReader.component.api.h1"
-        in 860..872 -> "com.qidian.QDReader.component.api.k1"
+        in 860..878 -> "com.qidian.QDReader.component.api.k1"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 788..812 -> "j"
-        in 827..872 -> "k"
+        in 827..878 -> "k"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -95,7 +99,7 @@ fun PackageParam.shieldDailyReading(
  */
 fun PackageParam.shieldChoice(versionCode: Int) {
     when (versionCode) {
-        in 788..880 -> {
+        in 788..900 -> {
             /**
              * 精选主页面
              */
@@ -198,12 +202,12 @@ fun PackageParam.shieldCategory(versionCode: Int) {
             }
         }
 
-        in 827..872 -> {
+        in 827..878 -> {
             val needHookClass = when (versionCode) {
                 827 -> "com.qidian.QDReader.ui.adapter.x6"
                 834 -> "com.qidian.QDReader.ui.adapter.y6"
                 in 842..860 -> "com.qidian.QDReader.ui.adapter.z6"
-                in 868..872 -> "com.qidian.QDReader.ui.adapter.a7"
+                in 868..878 -> "com.qidian.QDReader.ui.adapter.a7"
                 else -> null
             }
             needHookClass?.hook {
@@ -277,6 +281,7 @@ fun PackageParam.shieldFreeRecommend(versionCode: Int) {
         in 834..860 -> "ka.a"
         868 -> "ma.a"
         872 -> "ka.a"
+        878 -> "ja.a"
         else -> null
     }
     freeRecommendHookClass?.hook {
@@ -418,7 +423,7 @@ fun PackageParam.shieldNewBook(versionCode: Int) {
             }
         }
 
-        in 850..880 -> {
+        in 850..900 -> {
             findClass("com.qidian.QDReader.ui.adapter.newbook.BookTagViewHolder").hook {
                 injectMember {
                     method {
@@ -538,7 +543,7 @@ fun PackageParam.shieldNewBook(versionCode: Int) {
  */
 fun PackageParam.shieldFreeNewBook(versionCode: Int) {
     when (versionCode) {
-        in 788..880 -> {
+        in 788..900 -> {
             findClass("com.qidian.QDReader.ui.fragment.QDNewBookInStoreFragment").hook {
                 injectMember {
                     method {
@@ -609,7 +614,7 @@ fun PackageParam.shieldHotAndRecommend(versionCode: Int) {
     val needHookClass = when (versionCode) {
         in 788..834 -> "com.qidian.QDReader.ui.adapter.s"
         in 842..860 -> "com.qidian.QDReader.ui.adapter.t"
-        in 868..872 -> "com.qidian.QDReader.ui.adapter.u"
+        in 868..878 -> "com.qidian.QDReader.ui.adapter.u"
         else -> null
     }
     needHookClass?.hook {
@@ -729,13 +734,13 @@ fun PackageParam.shieldNewBookAndRecommend(versionCode: Int) {
             }
         }
 
-        in 804..872 -> {
+        in 804..878 -> {
             val needHookClass = when (versionCode) {
                 in 804..812 -> "com.qidian.QDReader.ui.adapter.lb"
                 827 -> "com.qidian.QDReader.ui.adapter.nb"
                 834 -> "com.qidian.QDReader.ui.adapter.ob"
                 in 842..860 -> "com.qidian.QDReader.ui.adapter.pb"
-                in 868..872 -> "com.qidian.QDReader.ui.adapter.rb"
+                in 868..878 -> "com.qidian.QDReader.ui.adapter.rb"
                 else -> null
             }
             /**
@@ -795,7 +800,7 @@ fun PackageParam.shieldNewBookAndRecommend(versionCode: Int) {
  */
 fun PackageParam.shieldBookRank(versionCode: Int) {
     when (versionCode) {
-        in 808..872 -> {
+        in 808..878 -> {
             findClass("com.qidian.QDReader.ui.fragment.RankingFragment").hook {
                 injectMember {
                     method {
@@ -855,7 +860,7 @@ fun PackageParam.shieldCategoryAllBook(versionCode: Int) {
             }
         }
 
-        in 827..880 -> {
+        in 827..900 -> {
             /**
              * 上级调用:com.qidian.QDReader.ui.fragment.LibraryFragment.loadData(boolean) : void
              */
@@ -887,7 +892,7 @@ fun PackageParam.shieldCategoryAllBook(versionCode: Int) {
  */
 fun PackageParam.shieldSearchFind(versionCode: Int) {
     when (versionCode) {
-        in 788..880 -> {
+        in 788..900 -> {
             /**
              * 搜索发现(热词)
              */
@@ -934,7 +939,7 @@ fun PackageParam.shieldSearch(
             in 834..854 -> "l9.d"
             in 858..860 -> "m9.d"
             868 -> "n9.d"
-            872 -> "l9.d"
+            in 872..878 -> "l9.d"
             else -> null
         }
         /**
@@ -957,7 +962,7 @@ fun PackageParam.shieldSearch(
         } ?: "屏蔽热门作品榜更多".printlnNotSupportVersion(versionCode)
     }
     when (versionCode) {
-        in 788..880 -> {
+        in 788..900 -> {
             findClass("com.qidian.QDReader.ui.view.search.SearchHomePageRankView").hook {
                 if (isNeedShieldBookRank) {
                     /**
@@ -1014,7 +1019,7 @@ fun PackageParam.shieldSearch(
  */
 fun PackageParam.shieldSearchRecommend(versionCode: Int) {
     when (versionCode) {
-        in 788..880 -> {
+        in 788..900 -> {
             /**
              * 搜索-为你推荐
              */
@@ -1040,8 +1045,7 @@ fun PackageParam.shieldSearchRecommend(versionCode: Int) {
  */
 fun PackageParam.shieldComic(versionCode: Int) {
     when (versionCode) {
-        in 812..880 -> {
-
+        in 812..900 -> {
             findClass("com.qidian.QDReader.repository.entity.ComicSquareItem").hook {
                 injectMember {
                     method {
@@ -1072,7 +1076,7 @@ fun PackageParam.shieldComicOther(versionCode: Int) {
     val needHookClass = when (versionCode) {
         in 812..834 -> "com.qidian.QDReader.ui.adapter.c2"
         in 842..860 -> "com.qidian.QDReader.ui.adapter.d2"
-        in 868..872 -> "com.qidian.QDReader.ui.adapter.e2"
+        in 868..878 -> "com.qidian.QDReader.ui.adapter.e2"
         else -> null
     }
     needHookClass?.hook {
@@ -1090,6 +1094,113 @@ fun PackageParam.shieldComicOther(versionCode: Int) {
             }
         }
     } ?: "屏蔽-漫画-其他".printlnNotSupportVersion(versionCode)
+}
+
+/**
+ * 书籍详情-快速屏蔽
+ */
+fun PackageParam.quickShield(versionCode: Int){
+    val tvBookNameId = when(versionCode){
+        872 -> 2131302368
+        878 -> 2131302454
+        else -> null
+    }
+
+    val tvAuthorNameId = when(versionCode){
+        872 -> 2131302306
+        878 -> 2131302390
+        else -> null
+    }
+    if (tvBookNameId == null || tvAuthorNameId == null){
+        "书籍详情-快速屏蔽".printlnNotSupportVersion(versionCode)
+        return
+    }
+
+    findClass("com.qidian.QDReader.ui.activity.QDBookDetailActivity").hook {
+        injectMember {
+            method {
+                name = "notifyData"
+                paramCount(1)
+                returnType = UnitType
+            }
+            afterHook {
+                val tvBookName = XposedHelpers.callMethod(
+                    instance,
+                    "findViewById",
+                    tvBookNameId
+                ) as? TextView
+                val tvAuthorName = XposedHelpers.callMethod(
+                    instance,
+                    "findViewById",
+                    tvAuthorNameId
+                ) as? TextView
+//                        "tvBookName: ${tvBookName?.text}\ntvAuthorName: ${tvAuthorName?.text}".loge()
+                tvBookName?.setOnLongClickListener {
+                    instance<Activity>().apply {
+                        showQuickShieldDialog(
+                            name = tvBookName.text.toString()
+                        )
+                    }
+                    true
+                }
+                tvAuthorName?.setOnLongClickListener {
+                    instance<Activity>().apply {
+                        showQuickShieldDialog(
+                            author = tvAuthorName.text.toString()
+                        )
+                    }
+                    true
+                }
+            }
+        }
+    }
+}
+
+/**
+ * 书籍详情-快速屏蔽弹框
+ * @param name 书名
+ * @param author 作者
+ */
+fun Context.showQuickShieldDialog(
+    name: String = "",
+    author: String = ""
+) {
+    if (name.isNotBlank()) {
+        val editText = CustomEditText(
+            context = this,
+            mHint = "输入书名关键词",
+            value = name
+        )
+        alertDialog {
+            title = "编辑需要屏蔽的书名关键词?"
+            customView = editText
+            okButton {
+                HookEntry.addShieldBook(bookName = editText.editText.text.toString())
+            }
+            cancelButton {
+                it.dismiss()
+            }
+            build()
+            show()
+        }
+
+    }
+
+    if (author.isNotBlank()) {
+        alertDialog {
+            title = "确认屏蔽该作者?"
+            message = "作者: $author"
+            okButton {
+                HookEntry.addShieldBook(authorName = author)
+            }
+            cancelButton {
+                it.dismiss()
+            }
+            build()
+            show()
+        }
+    }
+
 }
 
 /**
