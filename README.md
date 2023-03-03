@@ -2,6 +2,7 @@
 
 [![](https://data.jsdelivr.com/v1/package/gh/xihan123/QDReadHook/badge?style=rounded)](https://www.jsdelivr.com/package/gh/xihan123/QDReadHook)
 ![above](https://img.shields.io/badge/Android-8.0%20or%20above-brightgreen.svg)
+[![Android CI](https://github.com/xihan123/QDReadHook/actions/workflows/build.yml/badge.svg)](https://github.com/xihan123/QDReadHook/actions/workflows/build.yml)
 [![Latest Release](https://img.shields.io/github/release/xihan123/QDReadHook.svg)](https://github.com/xihan123/QDReadHook/releases)
 ![downloads](https://img.shields.io/github/downloads/xihan123/QDReadHook/total)
 [![Blank](https://img.shields.io/github/downloads/Xposed-Modules-Repo/cn.xihan.qdds/total?label=LSPosed%20Repo&logo=Android&style=flat&labelColor=F48FB1&logoColor=ffffff)](https://github.com/Xposed-Modules-Repo/cn.xihan.qdds/releases)
@@ -16,7 +17,7 @@
 
 * 设置页面在:起点->我的->左上角设置->阅读设置/模块设置(长按)(1.1.2+)
 
-* 目前支持 758~768、772、776、780、784、788、792、796、800、804、808、812、827、834、842、843、850、854、858、860、868、872版本
+* 目前支持 758~768、772、776、780、784、788、792、796、800、804、808、812、827、834、842、843、850、854、858、860、868、872、878版本
 
 * 暂时提高版本号范围以支持一些不容易改变的类
 
@@ -51,8 +52,8 @@
 
         ps:根据版本不同，显示的路径可能也不同，可能是"/storage/emulated/0/QDReader/option.json".
         如果使用系统自带文件管理器，直接在"根目录(内部存储)"创建文件夹"QDReader"即可
-
-        如果上述都不行，那就试着清除起点数据或者重装模块，也可能需要重启一下手机。
+        
+        如果上述都不行，那就试着清除起点数据或者重装模块(同时删除上述路径所在的配置文件)，也可能需要重启一下手机。
 
         还不行就附上日志提issues或酷安留言私信我即可(语气不要太冲，说的好像我欠你啥的，上来就质疑我的也不一定会回复。以为自己是谁啊，你用不了我就一定要让你也能用上，我还能远程施法单单让你用不了不成?)
 
@@ -82,6 +83,15 @@
 
 * 部分功能之前好好的，突然失效，**1.2.9+ 配置文件模型改变，部分设定需要重新设置!!!** 开关以及配置都正常却失效日志也没有。可以理解为被热修复了，一般来说更新最新版即可或者提Issues
 
+* 激活模块或使用Lspatch版起点闪退,可按如下流程排查
+            
+      1.关闭免广告领取奖励
+      2.关闭快速屏蔽弹框
+      3.是否使用了lspatch修补的起点并且同时启用了模块
+      4.关闭模块
+  
+  如果上述流程走完还是无法解决闪退，可以把配置文件删除并重启起点
+
 ---
 
 ## Lspatch使用说明
@@ -91,6 +101,8 @@
 * 已支持动态配置(1.1.2+)
 
 * 因为修改了签名,所以快速登录无法使用,只能用手机号登录!!!所以如果可以还是使用 Xp 模式
+
+* 请勿使用模块的同时使用此版本!!!
 
 ---
 
@@ -105,6 +117,7 @@
 ![image7](https://cdn.jsdelivr.net/gh/xihan123/QDReadHook@master/Screenshots/7.png)
 ![image8](https://cdn.jsdelivr.net/gh/xihan123/QDReadHook@master/Screenshots/8.png)
 ![image9](https://cdn.jsdelivr.net/gh/xihan123/QDReadHook@master/Screenshots/9.png)
+![image10](https://cdn.jsdelivr.net/gh/xihan123/QDReadHook@master/Screenshots/10.png)
 
 ---
 
@@ -116,7 +129,6 @@
 <tr>
 <td align=center>支付宝</td>
 <td align=center>微信</td>
-<td align=center>qq</td>
 </tr>
 
 <tr>
@@ -125,9 +137,6 @@
 </td>
 <td>
 <img src="https://cdn.jsdelivr.net/gh/xihan123/QDReadHook@master/Screenshots/wx.png" width=270 >
-</td>
-<td>
-<img src="https://cdn.jsdelivr.net/gh/xihan123/QDReadHook@master/Screenshots/qq.png" width=270 >
 </td>
 </tr>
 
