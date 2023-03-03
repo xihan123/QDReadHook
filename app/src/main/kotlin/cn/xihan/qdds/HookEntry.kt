@@ -1,7 +1,6 @@
 package cn.xihan.qdds
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.view.View
 import android.widget.ImageView
@@ -30,6 +29,7 @@ import com.highcapable.yukihookapi.hook.type.java.UnitType
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import de.robv.android.xposed.XposedHelpers
 import org.json.JSONObject
+
 /**
  * @项目名 : BaseHook
  * @作者 : MissYang
@@ -187,6 +187,14 @@ class HookEntry : IYukiHookXposedInit {
 
             if (optionEntity.shieldOption.shieldOptionValueSet.isNotEmpty()) {
                 shieldOption(versionCode, optionEntity.shieldOption.shieldOptionValueSet)
+            }
+
+            if (optionEntity.shieldOption.enableQuickShieldDialog) {
+                quickShield(versionCode)
+            }
+
+            if (optionEntity.bookFansValueOption.enableCustomBookFansValue) {
+                customBookFansValue(versionCode)
             }
 
             /**
@@ -538,10 +546,6 @@ class HookEntry : IYukiHookXposedInit {
             optionEntity.shieldOption.bookTypeList
         }
 
-        private val enableBookTypeEnhancedBlocking by lazy {
-            optionEntity.shieldOption.enableBookTypeEnhancedBlocking
-        }
-
         /**
          * 判断是否启用了屏蔽配置的选项
          * @param optionValue 选项的值
@@ -562,12 +566,14 @@ class HookEntry : IYukiHookXposedInit {
          * @param bookType 书类型-可空
          */
         fun isNeedShield(
-            bookName: String? = null, authorName: String? = null, bookType: Set<String>? = null,
-        ): Boolean {/*
+            bookName: String? = null,
+            authorName: String? = null,
+            bookType: Set<String>? = null,
+        ): Boolean {
+            /*
             if (BuildConfig.DEBUG) {
                 loggerE(msg = "bookName: $bookName\nauthorName:$authorName\nbookType:$bookType")
             }
-
              */
             if (bookNameList.isNotEmpty()) {
                 if (!bookName.isNullOrBlank() && bookNameList.any { it in bookName }) {
@@ -580,7 +586,7 @@ class HookEntry : IYukiHookXposedInit {
                 }
             }
             if (bookTypeList.isNotEmpty() && !bookType.isNullOrEmpty()) {
-                if (enableBookTypeEnhancedBlocking) {
+                if (optionEntity.shieldOption.enableBookTypeEnhancedBlocking) {
                     if (bookType.isNotEmpty() && bookType.any { bookTypeList.any { it1 -> it1 in it } }) {
                         return true
                     }
@@ -597,8 +603,9 @@ class HookEntry : IYukiHookXposedInit {
          * 解析关键词组
          * @param it 关键词组
          */
-        fun parseKeyWordOption(it: String = ""): Set<String> =
-            it.split(";").filter { it.isNotBlank() }.map { it.replace(Regex("\\s+"), "") }.toSet()
+        fun parseKeyWordOption(it: String = ""): MutableSet<String> =
+            it.split(";").filter { it.isNotBlank() }.map { it.replace(Regex(pattern = "\\s+"), "") }
+                .toMutableSet()
 
         /**
          * 解析需要屏蔽的书籍列表
@@ -716,6 +723,27 @@ class HookEntry : IYukiHookXposedInit {
                     it.selected && it.title in type.values
                 }
             return needShieldTitleList.map { type.filterValues { it1 -> it1 == it.title }.keys.first() }
+        }
+
+        /**
+         * 添加屏蔽的书名和作者 然后更新
+         * @param bookName 书名
+         * @param authorName 作者
+         */
+        fun addShieldBook(
+            bookName: String = "",
+            authorName: String = ""
+        ) {
+            when {
+                bookName.isNotBlank() -> {
+                    optionEntity.shieldOption.bookNameList += bookName
+                }
+
+                authorName.isNotBlank() -> {
+                    optionEntity.shieldOption.authorList += authorName
+                }
+            }
+            updateOptionEntity()
         }
 
         val optionEntity = readOptionEntity()
@@ -842,7 +870,7 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
             }
         }
 
-        in 842..872 -> {
+        in 842..878 -> {
             findClass("com.qidian.QDReader.ui.view.bookshelfview.CheckInReadingTimeViewNew").hook {
                 injectMember {
                     method {
@@ -913,7 +941,7 @@ fun PackageParam.newOldLayout(
 ) {
     val needHookClass = when (versionCode) {
         868 -> "r4.a\$a"
-        872 -> "p4.a\$a"
+        in 872..878 -> "p4.a\$a"
         else -> null
     }
 
@@ -923,6 +951,7 @@ fun PackageParam.newOldLayout(
     val needHookNewUserAccountMethod = when (versionCode) {
         868 -> "n"
         872 -> "m"
+        878 -> "o"
         else -> null
     }
 
@@ -931,6 +960,7 @@ fun PackageParam.newOldLayout(
      */
     val needHookBookStoreV2Method = when (versionCode) {
         872 -> "d"
+        878 -> "e"
         else -> null
     }
 
@@ -980,7 +1010,7 @@ fun PackageParam.newOldLayout(
  */
 fun PackageParam.enableLocalCard(versionCode: Int) {
     when (versionCode) {
-        in 758..880 -> {
+        in 758..900 -> {
 
             findClass("com.qidian.QDReader.repository.entity.UserAccountDataBean\$MemberBean").hook {
                 injectMember {
@@ -1059,7 +1089,7 @@ fun PackageParam.enableLocalCard(versionCode: Int) {
  */
 fun PackageParam.unlockMemberBackground(versionCode: Int) {
     when (versionCode) {
-        in 827..880 -> {
+        in 827..900 -> {
             findClass("com.qidian.QDReader.ui.activity.QDReaderThemeDetailActivity").hook {
                 injectMember {
                     method {
@@ -1094,7 +1124,7 @@ fun PackageParam.unlockMemberBackground(versionCode: Int) {
  */
 fun PackageParam.freeAdReward(versionCode: Int) {
     when (versionCode) {
-        in 854..872 -> {
+        in 854..878 -> {
             findClass("com.qq.e.comm.managers.plugin.PM").hook {
                 injectMember {
                     method {
@@ -1220,6 +1250,7 @@ fun PackageParam.freeAdReward(versionCode: Int) {
                                 }
                             }
 
+                            /*
                             findClass("com.qq.e.comm.plugin.i.e", it).hook {
                                 injectMember {
                                     method {
@@ -1233,6 +1264,8 @@ fun PackageParam.freeAdReward(versionCode: Int) {
                                 }
 
                             }
+
+                             */
 
                             findClass(
                                 "com.qq.e.comm.plugin.tangramrewardvideo.g", it
@@ -1277,7 +1310,7 @@ fun PackageParam.freeAdReward(versionCode: Int) {
  */
 fun PackageParam.ignoreFansValueJumpLimit(versionCode: Int) {
     when (versionCode) {
-        in 854..872 -> {
+        in 854..878 -> {
             findClass("com.qidian.QDReader.util.ValidateActionLimitUtil\$a").hook {
                 injectMember {
                     method {
@@ -1309,7 +1342,7 @@ fun PackageParam.ignoreFansValueJumpLimit(versionCode: Int) {
  */
 fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
     when (versionCode) {
-        in 854..872 -> {
+        in 854..878 -> {
             findClass("com.qidian.QDReader.component.bll.manager.e1").hook {
                 injectMember {
                     method {

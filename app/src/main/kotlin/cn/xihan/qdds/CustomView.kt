@@ -134,7 +134,7 @@ open class CustomEditText(
     isAvailable: Boolean = true,
     isAutoWidth: Boolean = false,
     isAutoHeight: Boolean = true,
-    block: (String) -> Unit,
+    block: (String) -> Unit = {},
 ) : CustomLinearLayout(context, isAutoWidth, isAutoHeight) {
 
     var editText: EditText

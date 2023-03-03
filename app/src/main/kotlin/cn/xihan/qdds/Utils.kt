@@ -567,6 +567,30 @@ fun Context.multiChoiceSelector(
     }
 }
 
+/**
+ * 传入leagueTypeMap的key，返回下一级的key
+ */
+fun parseLeagueTypeMap(key: String): String {
+    val leagueTypeMap = HookEntry.optionEntity.bookFansValueOption.leagueTypeMap
+    return leagueTypeMap.keys.elementAt(leagueTypeMap.keys.indexOf(key) + 1)
+}
+
+/**
+ * 传入leagueTypeMap的key，返回的value
+ */
+fun parseLeagueTypeMapValue(
+    key: String,
+    amount: Int
+): Int {
+    val leagueTypeMap = HookEntry.optionEntity.bookFansValueOption.leagueTypeMap
+    val nextValue = leagueTypeMap[parseLeagueTypeMap(key)] ?: return 0
+    return if (nextValue > amount) {
+        nextValue.minus(amount)
+    } else {
+        leagueTypeMap[key] ?: 0
+    }
+}
+
 typealias M = Modifier
 
 @Composable

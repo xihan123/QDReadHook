@@ -822,6 +822,17 @@ fun MainScreen(
 
             Column(modifier = M.padding(4.dp)) {
 
+                /*
+                EditTextSetting(
+                    title = "包名设置",
+                    text = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.packageName),
+                    showInsert = true,
+                    onTextChange = {
+                        HookEntry.optionEntity.mainOption.packageName = it
+                    }
+                )
+                 */
+
                 SwitchSetting(title = "自动签到",
                     checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableAutoSign),
                     onCheckedChange = {
@@ -1389,6 +1400,12 @@ fun PurifyScreen(
                     }
                 })
 
+                SwitchSetting(title = "启用快速屏蔽弹窗",
+                    subTitle = "书籍详情页长按书名或作者名弹出对话框\nps:书名和作者挨在一起的那两个",
+                    checked = rememberMutableStateOf(value = HookEntry.optionEntity.shieldOption.enableQuickShieldDialog),
+                    onCheckedChange = {
+                        HookEntry.optionEntity.shieldOption.enableQuickShieldDialog = it
+                    })
 
                 EditTextSetting(
                     title = "填入需要屏蔽的完整作者名称",
@@ -1666,6 +1683,122 @@ fun PurifyScreen(
                         })
                 }
 
+                val enableCustomBookFansValue =
+                    rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.enableCustomBookFansValue)
+
+                SwitchSetting(
+                    title = "启用自定义书粉丝值",
+                    subTitle = "不会用可进群问\n使用此功能造成的一切后果均个人行为,与作者无关",
+                    checked = enableCustomBookFansValue,
+                    onCheckedChange = {
+                        HookEntry.optionEntity.bookFansValueOption.enableCustomBookFansValue = it
+                    })
+
+                if (enableCustomBookFansValue.value) {
+                    EditTextSetting(
+                        title = "昵称",
+                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.nickName),
+                        onTextChange = {
+                            HookEntry.optionEntity.bookFansValueOption.nickName = it
+                        }
+                    )
+
+                    EditTextSetting(
+                        title = "相差的粉丝值",
+                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.dValue.toString()),
+                        onTextChange = {
+                            HookEntry.optionEntity.bookFansValueOption.dValue = it.toLong()
+                        }
+                    )
+
+                    EditTextSetting(
+                        title = "打赏描述",
+                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.daShangDesc),
+                        onTextChange = {
+                            HookEntry.optionEntity.bookFansValueOption.daShangDesc = it
+                        }
+                    )
+
+                    EditTextSetting(
+                        title = "头像地址",
+                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.headImageUrl),
+                        onTextChange = {
+                            HookEntry.optionEntity.bookFansValueOption.headImageUrl = it
+                        }
+                    )
+
+                    EditTextSetting(
+                        title = "联盟排名",
+                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.leagueRank.toString()),
+                        onTextChange = {
+                            HookEntry.optionEntity.bookFansValueOption.leagueRank = it.toInt()
+                        }
+                    )
+
+                    EditTextSetting(
+                        title = "联盟类型",
+                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.leagueType.toString()),
+                        onTextChange = {
+                            HookEntry.optionEntity.bookFansValueOption.leagueType = it.toInt()
+                        }
+                    )
+
+                    EditTextSetting(
+                        title = "排名",
+                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.rank.toString()),
+                        onTextChange = {
+                            HookEntry.optionEntity.bookFansValueOption.rank = it.toInt()
+                        }
+                    )
+
+                    EditTextSetting(
+                        title = "排名名称",
+                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.rankName),
+                        onTextChange = {
+                            HookEntry.optionEntity.bookFansValueOption.rankName = it
+                        }
+                    )
+
+                    EditTextSetting(
+                        title = "排名升级描述",
+                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.rankUpgradeDesc),
+                        onTextChange = {
+                            HookEntry.optionEntity.bookFansValueOption.rankUpgradeDesc = it
+                        }
+                    )
+
+                    EditTextSetting(
+                        title = "排序id",
+                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.orderId.toString()),
+                        onTextChange = {
+                            HookEntry.optionEntity.bookFansValueOption.orderId = it.toInt()
+                        }
+                    )
+
+                    EditTextSetting(
+                        title = "粉丝值/书友值",
+                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.amount.toString()),
+                        onTextChange = {
+                            HookEntry.optionEntity.bookFansValueOption.amount = it.toInt()
+                        }
+                    )
+
+                    EditTextSetting(
+                        title = "粉丝排名",
+                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.fansRank.toString()),
+                        onTextChange = {
+                            HookEntry.optionEntity.bookFansValueOption.fansRank = it.toInt()
+                        }
+                    )
+
+                    EditTextSetting(
+                        title = "标题图片地址",
+                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.mTitleImage),
+                        onTextChange = {
+                            HookEntry.optionEntity.bookFansValueOption.mTitleImage = it
+                        }
+                    )
+                }
 
             }
         }
@@ -1707,8 +1840,7 @@ fun AboutScreen(
         TextSetting(title = "重置模块配置文件", subTitle = "", onClick = {
             writeOptionFile(OptionEntity())
             context.toast("重置成功,即将重启应用")
-            val activity = context as? Activity
-            activity?.restartApplication()
+            (context as? Activity)?.restartApplication()
         })
 
         TextSetting(title = "打赏", subTitle = "", onClick = {

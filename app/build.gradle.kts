@@ -40,7 +40,6 @@ android {
     }
 
     defaultConfig {
-        applicationId = "cn.xihan.qdds"
         minSdk = rootProject.extra["minSdkVersion"] as Int
         targetSdk = rootProject.extra["targetSdkVersion"] as Int
         versionCode = rootProject.extra["appVersionCode"] as Int
@@ -75,8 +74,7 @@ android {
 
     buildFeatures.compose = true
 
-    composeOptions.kotlinCompilerExtensionVersion =
-        rootProject.extra["kotlinCompilerExtensionVersion"] as String
+    composeOptions.kotlinCompilerExtensionVersion = rootProject.extra["kotlinCompilerExtensionVersion"] as String
 
     packagingOptions.apply {
         resources.excludes += mutableSetOf(
@@ -105,7 +103,7 @@ dependencies {
 
 //    implementation("com.github.liangjingkanji:spannable:latest.release")
 //    implementation(platform("androidx.compose:compose-bom:2023.01.00"))
-    implementation("dev.chrisbanes.compose:compose-bom:2023.02.00-beta01")
+    implementation("dev.chrisbanes.compose:compose-bom:2023.02.00-beta03")
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.runtime:runtime")
@@ -125,11 +123,11 @@ dependencies {
     }
     implementation("io.coil-kt:coil-compose:${rootProject.extra["coilVersion"]}")
     // 基础依赖
-    implementation("com.highcapable.yukihookapi:api:${rootProject.extra["YuKiHookVersion"]}")
+    implementation("com.highcapable.yukihookapi:api:${rootProject.extra["yuKiHookVersion"]}")
     // ❗作为 Xposed 模块使用务必添加，其它情况可选
     compileOnly("de.robv.android.xposed:api:82")
     // ❗作为 Xposed 模块使用务必添加，其它情况可选
-    ksp("com.highcapable.yukihookapi:ksp-xposed:${rootProject.extra["YuKiHookVersion"]}")
+    ksp("com.highcapable.yukihookapi:ksp-xposed:${rootProject.extra["yuKiHookVersion"]}")
 //    // Kotlin 反射库
 //    implementation("org.jetbrains.kotlin:kotlin-reflect:${rootProject.extra["kotlin.version"]}")
 

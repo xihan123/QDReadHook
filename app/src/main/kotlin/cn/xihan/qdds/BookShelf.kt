@@ -14,7 +14,7 @@ import com.highcapable.yukihookapi.hook.type.java.BooleanType
  */
 fun PackageParam.customBookShelfTopImage(versionCode: Int) {
     when (versionCode) {
-        in 860..880 -> {
+        in 860..900 -> {
             findClass("com.qidian.QDReader.repository.entity.config.BookshelfConfig").hook {
                 injectMember {
                     method {
@@ -75,6 +75,7 @@ fun PackageParam.enableOldLayout(versionCode: Int) {
  * 新版书架布局
  * 上级调用: com.qidian.QDReader.ui.activity.MainGroupActivity.onCreate
  * mFragmentPagerAdapter
+ * BOOK_SHELF_REBORN
  */
 fun PackageParam.newBookShelfLayout(
     versionCode: Int,
@@ -84,27 +85,33 @@ fun PackageParam.newBookShelfLayout(
         827 -> "s4.a\$a"
         in 834..843 -> "q4.a\$a"
         in 850..868 -> "r4.a\$a"
-        872 -> "p4.a\$a"
+        in 872..878 -> "p4.a\$a"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 827..850 -> "b"
         in 868..872 -> "c"
+        878 -> "d"
         else -> null
     }
     needHookClass?.hook {
-        injectMember {
-            method {
-                name = needHookMethod ?: "b"
-                emptyParam()
-                returnType = BooleanType
-            }
-            if (enableNewBookShelfLayout) {
-                replaceToTrue()
-            } else {
-                replaceToFalse()
-            }
+        if (needHookMethod == null) {
+            "新版书架布局".printlnNotSupportVersion(versionCode)
+            return
+        } else {
+            injectMember {
+                method {
+                    name = needHookMethod
+                    emptyParam()
+                    returnType = BooleanType
+                }
+                if (enableNewBookShelfLayout) {
+                    replaceToTrue()
+                } else {
+                    replaceToFalse()
+                }
 
+            }
         }
     } ?: "新版书架布局".printlnNotSupportVersion(versionCode)
 }

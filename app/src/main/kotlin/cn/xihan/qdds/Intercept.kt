@@ -49,7 +49,7 @@ fun PackageParam.interceptGeetest(version: Int) {
  */
 fun PackageParam.interceptPrivacyPolicy(version: Int) {
     when (version) {
-        in 868..880 -> {
+        in 868..900 -> {
             findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
                 injectMember {
                     method {
@@ -71,21 +71,28 @@ fun PackageParam.interceptPrivacyPolicy(version: Int) {
  * btnAgree
  */
 fun PackageParam.interceptAgreePrivacyPolicy(version: Int) {
-    when (version) {
-        in 868..872 -> {
-            findClass("com.qidian.QDReader.util.w4").hook {
-                injectMember {
-                    method {
-                        name = "k0"
-                        paramCount(4)
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
+    val needHookClass = when (version) {
+        in 868..878 -> "com.qidian.QDReader.util.w4"
+        else -> null
+    }
+    val needHookMethod = when (version) {
+        in 868..872 -> "k0"
+        878 -> "l0"
+        else -> null
+    }
+    if (needHookClass == null || needHookMethod == null) {
+        "拦截同意隐私政策弹框".printlnNotSupportVersion(version)
+        return
+    }
+    needHookClass.hook {
+        injectMember {
+            method {
+                name = needHookMethod
+                paramCount(4)
+                returnType = UnitType
             }
+            intercept()
         }
-
-        else -> "拦截同意隐私政策弹框".printlnNotSupportVersion(version)
     }
 }
 
@@ -95,7 +102,7 @@ fun PackageParam.interceptAgreePrivacyPolicy(version: Int) {
  */
 fun PackageParam.interceptWebSocket(version: Int) {
     when (version) {
-        in 868..872 -> {
+        in 868..878 -> {
             findClass("com.qidian.QDReader.component.msg.c").hook {
                 injectMember {
                     method {
@@ -117,7 +124,7 @@ fun PackageParam.interceptWebSocket(version: Int) {
  */
 fun PackageParam.interceptQSNModeRequest(version: Int) {
     when (version) {
-        in 868..880 -> {
+        in 868..900 -> {
             findClass("com.qidian.QDReader.bll.manager.QDTeenagerManager").hook {
                 injectMember {
                     method {
@@ -139,7 +146,7 @@ fun PackageParam.interceptQSNModeRequest(version: Int) {
  */
 fun PackageParam.interceptSplashAdActivity(version: Int) {
     when (version) {
-        in 868..880 -> {
+        in 868..900 -> {
             findClass("com.qidian.QDReader.ui.activity.SplashADActivity").hook {
                 injectMember {
                     method {
@@ -170,15 +177,14 @@ fun PackageParam.interceptSplashAdActivity(version: Int) {
 /**
  * 拦截异步初始化任务
  * @param version 版本号
- * @param title 标题
- * @param className 类名
+ * @param substring 0:标题 1:拦截的类名
  */
 fun PackageParam.interceptAsyncInitTask(
     version: Int,
     substring: List<String>
 ) {
     when (version) {
-        872 -> {
+        in 872..878 -> {
             findClass(substring[1]).hook {
                 injectMember {
                     method {
