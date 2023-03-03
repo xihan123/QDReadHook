@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.5](https://github.com/xihan123/QDReadHook/compare/v2.0.5...v2.0.5) (2023-03-03)
+
+
+### CI
+
+* release.yml ([fc50d23](https://github.com/xihan123/QDReadHook/commit/fc50d23882d494f1b97ef7e26e62d1fc509c705e))
+
 ## [2.0.4](https://github.com/xihan123/QDReadHook/compare/v2.0.4...v2.0.4) (2023-02-23)
 
 
