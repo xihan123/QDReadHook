@@ -1,5 +1,32 @@
 # Changelog
 
+## [2.0.5](https://github.com/xihan123/QDReadHook/compare/v2.0.4...v2.0.5) (2023-03-03)
+
+
+### Features
+
+* `872`+ 版本书籍详情-快速屏蔽弹框 ([9ada69e](https://github.com/xihan123/QDReadHook/commit/9ada69e7a3a19f9a66a20f45832d32946ef4a60a))
+* `872`+ 版本自定义粉丝值 ([958ca79](https://github.com/xihan123/QDReadHook/commit/958ca793bb69ea95b91326883f7d803b641038d2))
+* `878` 版本隐藏主页面-顶部战力提示 ([aba0c76](https://github.com/xihan123/QDReadHook/commit/aba0c76850657f8792e3332712b437148a409cc8))
+* 适配 `878` 版本 ([40efb28](https://github.com/xihan123/QDReadHook/commit/40efb282b4dfbf5d80cbaa08524f5bea1b7d3dc5))
+
+
+### Miscellaneous
+
+* **master:** release 2.0.4 ([b5d5c41](https://github.com/xihan123/QDReadHook/commit/b5d5c41a74e6c9f2f181220f06d9ee3668e7fafa))
+* **master:** release 2.0.4 ([81327f9](https://github.com/xihan123/QDReadHook/commit/81327f91ae079a75a63ecfa4f5f5baafce1aea05))
+* 更新依赖库 ([0d86cd2](https://github.com/xihan123/QDReadHook/commit/0d86cd2fdf2c4b1f59ef32c3313d004fe95292cd))
+* 更新预览图 ([7733c5c](https://github.com/xihan123/QDReadHook/commit/7733c5cffc684e2beae591a20613845e4c6dfa96))
+* 移除无用图片 ([2b57494](https://github.com/xihan123/QDReadHook/commit/2b5749411dcbc14f3a26fdcbdf30721a92ef85eb))
+
+
+### CI
+
+* automerge-action.yml ([3b87691](https://github.com/xihan123/QDReadHook/commit/3b876913da521b336258ee533c57ff7eb51b357b))
+* build.yml ([9b7ca28](https://github.com/xihan123/QDReadHook/commit/9b7ca283466645f82c444caed73ae55c8593c29a))
+* release.yml ([fc50d23](https://github.com/xihan123/QDReadHook/commit/fc50d23882d494f1b97ef7e26e62d1fc509c705e))
+* release.yml ([14833f2](https://github.com/xihan123/QDReadHook/commit/14833f29e1171eb67ce67467e2ae67aeb3173d4c))
+
 ## [2.0.4](https://github.com/xihan123/QDReadHook/compare/v2.0.4...v2.0.4) (2023-02-23)
 
 
