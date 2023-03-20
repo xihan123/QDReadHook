@@ -1,6 +1,7 @@
 package cn.xihan.qdds
 
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.highcapable.yukihookapi.hook.type.java.BooleanType
 import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
 
@@ -33,7 +34,7 @@ fun PackageParam.interceptOption(
 }
 
 /**
- * 干掉 Geetest 初始化
+ * 拦截 Geetest 初始化
  */
 fun PackageParam.interceptGeetest(version: Int) {
     when (version) {
@@ -73,11 +74,13 @@ fun PackageParam.interceptPrivacyPolicy(version: Int) {
 fun PackageParam.interceptAgreePrivacyPolicy(version: Int) {
     val needHookClass = when (version) {
         in 868..878 -> "com.qidian.QDReader.util.w4"
+        884 -> "com.qidian.QDReader.util.u4"
         else -> null
     }
     val needHookMethod = when (version) {
         in 868..872 -> "k0"
         878 -> "l0"
+        884 -> "i0"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -101,21 +104,29 @@ fun PackageParam.interceptAgreePrivacyPolicy(version: Int) {
  * "handleOpen WebSocket isOpen"
  */
 fun PackageParam.interceptWebSocket(version: Int) {
-    when (version) {
-        in 868..878 -> {
-            findClass("com.qidian.QDReader.component.msg.c").hook {
-                injectMember {
-                    method {
-                        name = "r"
-                        emptyParam()
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
+    val needHookClass = when (version) {
+        in 868..878 -> "com.qidian.QDReader.component.msg.c"
+        884 -> "com.qidian.QDReader.component.msg.cihai"
+        else -> null
+    }
+    val needHookMethod = when (version) {
+        in 868..878 -> "r"
+        884 -> "o"
+        else -> null
+    }
+    if (needHookClass == null || needHookMethod == null) {
+        "拦截WebSocket".printlnNotSupportVersion(version)
+        return
+    }
+    needHookClass.hook {
+        injectMember {
+            method {
+                name = needHookMethod
+                emptyParam()
+                returnType = UnitType
             }
+            intercept()
         }
-
-        else -> "拦截WebSocket".printlnNotSupportVersion(version)
     }
 }
 
@@ -143,33 +154,21 @@ fun PackageParam.interceptQSNModeRequest(version: Int) {
 
 /**
  * 拦截闪屏广告页面
+ * SplashManager
  */
 fun PackageParam.interceptSplashAdActivity(version: Int) {
     when (version) {
-        in 868..900 -> {
-            findClass("com.qidian.QDReader.ui.activity.SplashADActivity").hook {
+        884 -> {
+            findClass("g6.search").hook {
                 injectMember {
                     method {
-                        name = "onCreate"
-                        paramCount(1)
-                        returnType = UnitType
+                        name = "b"
+                        returnType = BooleanType
                     }
-                    afterHook {
-                        instance.printCallStack()
-                        val b = instance.getParam<Any>("b")
-                        b?.apply {
-                            setParam("a", false)
-                            method {
-                                name = "a"
-                                emptyParam()
-                            }.get(b).call()
-                        }
-
-                    }
+                    replaceToFalse()
                 }
             }
         }
-
         else -> "拦截闪屏广告页面".printlnNotSupportVersion(version)
     }
 }
@@ -184,7 +183,7 @@ fun PackageParam.interceptAsyncInitTask(
     substring: List<String>
 ) {
     when (version) {
-        in 872..878 -> {
+        in 872..884 -> {
             findClass(substring[1]).hook {
                 injectMember {
                     method {
