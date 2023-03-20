@@ -1,7 +1,9 @@
 package cn.xihan.qdds
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.os.Environment
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -15,10 +17,12 @@ import com.google.android.material.appbar.AppBarLayout
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.factory.current
+import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
 import com.highcapable.yukihookapi.hook.log.YukiHookLogger
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.android.BundleClass
+import com.highcapable.yukihookapi.hook.type.android.ViewClass
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
 import com.highcapable.yukihookapi.hook.type.java.IntType
 import com.highcapable.yukihookapi.hook.type.java.JSONObjectClass
@@ -29,6 +33,7 @@ import com.highcapable.yukihookapi.hook.type.java.UnitType
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import de.robv.android.xposed.XposedHelpers
 import org.json.JSONObject
+import java.io.File
 
 /**
  * @项目名 : BaseHook
@@ -74,6 +79,14 @@ class HookEntry : IYukiHookXposedInit {
                 ignoreFreeSubscribeLimit(versionCode)
             }
 
+            if (optionEntity.mainOption.enableExportEmoji) {
+                exportEmoji(versionCode)
+            }
+
+            if (optionEntity.mainOption.enableImportAudio) {
+                importAudio(versionCode)
+            }
+
             if (optionEntity.bookshelfOption.enableOldLayout && versionCode < NOT_SUPPORT_OLD_LAYOUT_VERSION_CODE) {
                 enableOldLayout(versionCode)
             }
@@ -83,7 +96,9 @@ class HookEntry : IYukiHookXposedInit {
             readerPageChapterReviewPictures(
                 versionCode = versionCode,
                 enableShowReaderPageChapterSaveRawPictures = optionEntity.readPageOption.enableShowReaderPageChapterSaveRawPicture,
-                enableShowReaderPageChapterSavePictureDialog = optionEntity.readPageOption.enableShowReaderPageChapterSavePictureDialog
+                enableShowReaderPageChapterSavePictureDialog = optionEntity.readPageOption.enableShowReaderPageChapterSavePictureDialog,
+                enableShowReaderPageChapterSaveAudioDialog = optionEntity.readPageOption.enableShowReaderPageChapterSaveAudioDialog,
+                enableCopyReaderPageChapterComment = optionEntity.readPageOption.enableCopyReaderPageChapterComment,
             )
 
             if (optionEntity.readPageOption.enableReadTimeDouble) {
@@ -506,6 +521,73 @@ class HookEntry : IYukiHookXposedInit {
             }
 
              */
+
+            /*
+            findClass("com.qidian.QDReader.ui.activity.BookLookForDetailActivity").hook {
+                injectMember {
+                    method {
+                        name = "setupWidget\$lambda-19\$lambda-18"
+                        paramCount(5)
+                        returnType = UnitType
+                    }
+                    afterHook {
+                        val view = args[2] as? View
+
+                        val midPageAudioPlayerView = XposedHelpers.callMethod(
+                            view,
+                            "findViewById",
+                            0x7F090442
+                        ) as? FrameLayout
+                        midPageAudioPlayerView?.current {
+                            val g = field {
+                                name = "g"
+                                type = StringClass
+                            }
+                            "g: $g".loge()
+                        }
+
+
+                    }
+                }
+            }
+
+            findClass("com.qidian.QDReader.repository.entity.chaptercomment.NewParagraphCommentListBean\$DataListBean").hook {
+                injectMember {
+                    method {
+                        name = "getAudioUrl"
+                        returnType = StringClass
+                    }
+                    afterHook {
+                        val audioUrl = result as? String
+                        "audioUrl: $audioUrl".loge()
+                        instance.printCallStack()
+                    }
+                }
+            }
+
+            findClass("com.qidian.QDReader.ui.viewholder.chaptercomment.list.y").hook {
+                injectMember {
+                    method {
+                        name = "x"
+                        paramCount(2)
+                        returnType = UnitType
+                    }
+                    afterHook {
+                        val k = instance.getView<FrameLayout>("k")
+                        val g = k?.getView<RelativeLayout>("g")
+                        g?.setOnLongClickListener {
+                            "长按事件".loge()
+                            val l = k?.getParam<String>("l")
+                            "l: $l".loge()
+                            true
+                        }
+                    }
+
+                }
+            }
+
+             */
+
         }
     }
 
@@ -870,26 +952,33 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
             }
         }
 
-        in 842..878 -> {
-            findClass("com.qidian.QDReader.ui.view.bookshelfview.CheckInReadingTimeViewNew").hook {
-                injectMember {
-                    method {
-                        name = "E"
-                    }
-                    afterHook {
-                        val v = instance.getView<LinearLayout>(
-                            "v"
-                        )
-                        val qd = instance.getParam<Any>(
-                            "v"
-                        )
-                        qd?.let { qdv ->
-                            val e = qdv.getView<TextView>(
-                                "e"
+        in 842..884 -> {
+            val needHookMethod = when (versionCode) {
+                in 842..878 -> "E"
+                884 -> "B"
+                else -> null
+            }
+            if (needHookMethod != null) {
+                findClass("com.qidian.QDReader.ui.view.bookshelfview.CheckInReadingTimeViewNew").hook {
+                    injectMember {
+                        method {
+                            name = needHookMethod
+                        }
+                        afterHook {
+                            val v = instance.getView<LinearLayout>(
+                                "v"
                             )
-                            e?.let { etv ->
-                                if (etv.text == "签到") {
-                                    v?.performClick()
+                            val qd = instance.getParam<Any>(
+                                "v"
+                            )
+                            qd?.let { qdv ->
+                                val e = qdv.getView<TextView>(
+                                    "e"
+                                )
+                                e?.let { etv ->
+                                    if (etv.text == "签到") {
+                                        v?.performClick()
+                                    }
                                 }
                             }
                         }
@@ -906,7 +995,8 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
                     }
                     afterHook {
                         val binding = instance.getParam<Any>("binding")
-                        val d = binding?.getParam<LinearLayout>("d")
+                        val d =
+                            binding?.getParam<LinearLayout>(if (versionCode == 884) "a" else "d")
                         val e1 = d?.getParam<TextView>("e")
                         e1?.let { tv ->
                             if (tv.text == "签到") {
@@ -942,6 +1032,7 @@ fun PackageParam.newOldLayout(
     val needHookClass = when (versionCode) {
         868 -> "r4.a\$a"
         in 872..878 -> "p4.a\$a"
+        884 -> "l4.search\$search"
         else -> null
     }
 
@@ -952,6 +1043,7 @@ fun PackageParam.newOldLayout(
         868 -> "n"
         872 -> "m"
         878 -> "o"
+        884 -> "m"
         else -> null
     }
 
@@ -961,6 +1053,7 @@ fun PackageParam.newOldLayout(
     val needHookBookStoreV2Method = when (versionCode) {
         872 -> "d"
         878 -> "e"
+        884 -> "b"
         else -> null
     }
 
@@ -1124,7 +1217,7 @@ fun PackageParam.unlockMemberBackground(versionCode: Int) {
  */
 fun PackageParam.freeAdReward(versionCode: Int) {
     when (versionCode) {
-        in 854..878 -> {
+        in 854..884 -> {
             findClass("com.qq.e.comm.managers.plugin.PM").hook {
                 injectMember {
                     method {
@@ -1309,30 +1402,38 @@ fun PackageParam.freeAdReward(versionCode: Int) {
  * ValidateActionLimitUtil Limits
  */
 fun PackageParam.ignoreFansValueJumpLimit(versionCode: Int) {
-    when (versionCode) {
-        in 854..878 -> {
-            findClass("com.qidian.QDReader.util.ValidateActionLimitUtil\$a").hook {
-                injectMember {
-                    method {
-                        name = "e"
-                        param(JSONObjectClass, StringClass, IntType)
-                        returnType = UnitType
+    val needHookClass = when (versionCode) {
+        in 854..878 -> "com.qidian.QDReader.util.ValidateActionLimitUtil\$a"
+        884 -> "com.qidian.QDReader.util.ValidateActionLimitUtil\$search"
+        else -> null
+    }
+    val needHookMethod = when (versionCode) {
+        in 854..878 -> "e"
+        884 -> "b"
+        else -> null
+    }
+    if (needHookClass == null || needHookMethod == null) {
+        "忽略粉丝值加群限制".printlnNotSupportVersion(versionCode)
+        return
+    }
+    needHookClass.hook {
+        injectMember {
+            method {
+                name = needHookMethod
+                param(JSONObjectClass, StringClass, IntType)
+                returnType = UnitType
+            }
+            beforeHook {
+                val jb = args[0] as? JSONObject
+                jb?.let {
+                    safeRun {
+                        it.put("Passed", 1)
+                        it.optJSONArray("Limits")?.optJSONObject(0)?.put("Passed", 1)
                     }
-                    beforeHook {
-                        val jb = args[0] as? JSONObject
-                        jb?.let {
-                            safeRun {
-                                it.put("Passed", 1)
-                                it.optJSONArray("Limits")?.optJSONObject(0)?.put("Passed", 1)
-                            }
-                            args(0).set(it)
-                        }
-                    }
+                    args(0).set(it)
                 }
             }
         }
-
-        else -> "忽略粉丝值加群限制".printlnNotSupportVersion(versionCode)
     }
 }
 
@@ -1341,31 +1442,39 @@ fun PackageParam.ignoreFansValueJumpLimit(versionCode: Int) {
  * IsFreeLimit
  */
 fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
-    when (versionCode) {
-        in 854..878 -> {
-            findClass("com.qidian.QDReader.component.bll.manager.e1").hook {
-                injectMember {
-                    method {
-                        name = "n0"
-                        param(
-                            "com.qidian.QDReader.framework.network.qd.QDHttpResp".toClass(),
-                            JSONObjectClass,
-                            LongType
-                        )
-                        returnType = IntType
-                    }
-                    beforeHook {
-                        val jb = args[1] as? JSONObject
-                        safeRun {
-                            jb?.optJSONObject("Data")?.put("IsFreeLimit", -1)
-                            args(1).set(jb)
-                        }
-                    }
+    val needHookClass = when (versionCode) {
+        in 854..878 -> "com.qidian.QDReader.component.bll.manager.e1"
+        884 -> "com.qidian.QDReader.component.bll.manager.b1"
+        else -> null
+    }
+    val needHookMethod = when (versionCode) {
+        in 854..878 -> "n0"
+        884 -> "k0"
+        else -> null
+    }
+    if (needHookClass == null || needHookMethod == null) {
+        "忽略限时免费批量订阅限制".printlnNotSupportVersion(versionCode)
+        return
+    }
+    needHookClass.hook {
+        injectMember {
+            method {
+                name = needHookMethod
+                param(
+                    "com.qidian.QDReader.framework.network.qd.QDHttpResp".toClass(),
+                    JSONObjectClass,
+                    LongType
+                )
+                returnType = IntType
+            }
+            beforeHook {
+                val jb = args[1] as? JSONObject
+                safeRun {
+                    jb?.optJSONObject("Data")?.put("IsFreeLimit", -1)
+                    args(1).set(jb)
                 }
             }
         }
-
-        else -> "忽略限时免费批量订阅限制".printlnNotSupportVersion(versionCode)
     }
 }
 
@@ -1507,3 +1616,225 @@ fun Context.showMainOptionDialog() {
 }
 
  */
+
+/**
+ * 一键导出表情包
+ */
+fun PackageParam.exportEmoji(versionCode: Int) {
+    when (versionCode) {
+        884 -> {
+            findClass("com.qidian.QDReader.ui.activity.QDStickersDetailActivity").hook {
+                injectMember {
+                    method {
+                        name = "loadData\$lambda-5"
+                        paramCount(2)
+                        returnType = UnitType
+                    }
+                    afterHook {
+                        val stickersBean = args[1] ?: return@afterHook
+                        val faceList = stickersBean.getParam<MutableList<*>>("mFaceList")
+                        val yWImageLoader =
+                            "com.yuewen.component.imageloader.YWImageLoader".toClassOrNull()
+                        val context = args[0] ?: return@afterHook
+                        if (faceList.isNullOrEmpty() || yWImageLoader == null) {
+                            return@afterHook
+                        }
+                        val imageList = mutableListOf<String>()
+                        val iterator = faceList.iterator()
+                        while (iterator.hasNext()) {
+                            val image = iterator.next()?.getParam<String>("mImage")
+                            if (!image.isNullOrBlank()) {
+                                imageList += image
+                            }
+                        }
+                        val topBarViewId = when (versionCode) {
+                            884 -> 0x7F09176F
+                            else -> null
+                        }
+                        if (topBarViewId != null) {
+                            val topBar = XposedHelpers.callMethod(
+                                context,
+                                "findViewById",
+                                topBarViewId
+                            ) as? RelativeLayout
+                            if (topBar != null) {
+                                val layoutParams = RelativeLayout.LayoutParams(
+                                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                                    RelativeLayout.LayoutParams.WRAP_CONTENT
+                                ).apply {
+                                    addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+                                    addRule(RelativeLayout.CENTER_VERTICAL)
+                                    // padding right
+                                    setMargins(0, 0, 20, 0)
+                                }
+                                val textView = TextView(topBar.context).apply {
+                                    text = "导出"
+                                    setOnClickListener {
+                                        topBar.context.exportEmojiDialog(
+                                            context = context,
+                                            imageList = imageList,
+                                            yWImageLoader = yWImageLoader
+                                        )
+                                    }
+                                }
+                                textView.layoutParams = layoutParams
+                                topBar.addView(textView)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        else -> "一键导出表情包".printlnNotSupportVersion(versionCode)
+    }
+}
+
+/**
+ * 导出表情包对话框
+ */
+fun Context.exportEmojiDialog(
+    context: Any,
+    yWImageLoader: Class<*>,
+    imageList: List<String>
+) {
+    alertDialog {
+        title = "一键导出表情包"
+        message = "导出表情包 ${imageList.size} 张"
+        okButton {
+            imageList.forEach { imageUrl ->
+                yWImageLoader.method {
+                    name = "saveBitmap"
+                    paramCount(6)
+                    returnType = UnitType
+                }.get(yWImageLoader).call(
+                    context,
+                    imageUrl,
+                    "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/QDReader/Pictures",
+                    "",
+                    true,
+                    null
+                )
+            }
+            toast("导出成功")
+            it.dismiss()
+        }
+        negativeButton("取消") {
+            it.dismiss()
+        }
+        build()
+        show()
+    }
+}
+
+/**
+ * 导入音频文件
+ */
+fun PackageParam.importAudio(versionCode: Int) {
+    when (versionCode) {
+        884 -> {
+            findClass("com.qidian.QDReader.ui.fragment.reader.ParagraphDubbingFragment").hook {
+                injectMember {
+                    method {
+                        name = "onViewInject"
+                        param(ViewClass)
+                        returnType = UnitType
+                    }
+                    afterHook {
+                        val view = instanceClass.method {
+                            name = "getView"
+                            emptyParam()
+                            returnType = ViewClass
+                            superClass()
+                        }.get(instance).call()
+                        val buttonViewId = when (versionCode) {
+                            884 -> 0x7F090FFC
+                            else -> null
+                        } ?: return@afterHook
+                        val button = XposedHelpers.callMethod(
+                            view,
+                            "findViewById",
+                            buttonViewId
+                        ) as? LinearLayout
+                        val e = button?.getView<TextView>("e")
+                        if (e?.text == "点击配音") {
+                            e.text = "点击配音/长按导入"
+                            e.setOnLongClickListener {
+                                e.context.importAudioFile() { path ->
+                                    if (path.isBlank()) {
+                                        e.context.toast("路径不能为空")
+                                    } else {
+                                        instance.setParams(
+                                            "mAudioFile" to File(path),
+                                            "mAudioDuration" to 1
+                                        )
+                                        instanceClass.method {
+                                            name = "setViewInRecorded"
+                                            emptyParam()
+                                            returnType = UnitType
+                                        }.get(instance).call()
+                                    }
+                                }
+
+                                true
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
+    }
+}
+
+/**
+ * 导入音频文件
+ */
+fun Context.importAudioFile(action: (String) -> Unit) {
+    val path = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/QDReader/Audio"
+    val file = File(path).apply {
+        if (!exists()) {
+            mkdirs()
+        }
+    }
+    val files = file.listFiles()
+    val linearLayout = CustomLinearLayout(this, isAutoWidth = false)
+
+    val editText = CustomEditText(
+        context = this,
+        mHint = "音频文件所在绝对路径",
+        value = "",
+        isAutoWidth = false
+    )
+    linearLayout.addView(editText)
+    if (!files.isNullOrEmpty()) {
+        val replaceListView = CustomListView(
+            context = this,
+            onItemClickListener = { adapter, position ->
+                editText.editText.setText(files[position].absolutePath)
+                "onItemClick: ${files[position].name}-${files[position].absolutePath}".loge()
+            },
+            onItemLongClickListener = { adapter, position ->
+
+            },
+            listData = files.map { it.name },
+        )
+        linearLayout.addView(replaceListView)
+    }
+
+    alertDialog {
+        title = "导入音频文件"
+        message = "固定路径为: $path"
+        customView = linearLayout
+        okButton {
+            action("${editText.editText.text}")
+        }
+        negativeButton("返回") {
+            it.dismiss()
+        }
+        build()
+        show()
+    }
+
+}
