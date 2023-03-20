@@ -1,6 +1,5 @@
 # QDReadHook
 
-[![](https://data.jsdelivr.com/v1/package/gh/xihan123/QDReadHook/badge?style=rounded)](https://www.jsdelivr.com/package/gh/xihan123/QDReadHook)
 ![above](https://img.shields.io/badge/Android-8.0%20or%20above-brightgreen.svg)
 [![Android CI](https://github.com/xihan123/QDReadHook/actions/workflows/build.yml/badge.svg)](https://github.com/xihan123/QDReadHook/actions/workflows/build.yml)
 [![Latest Release](https://img.shields.io/github/release/xihan123/QDReadHook.svg)](https://github.com/xihan123/QDReadHook/releases)
@@ -110,16 +109,16 @@
 
 ## 截图
 
-![image1](https://cdn.jsdelivr.net/gh/xihan123/QDReadHook@master/Screenshots/1.png)
-![image2](https://cdn.jsdelivr.net/gh/xihan123/QDReadHook@master/Screenshots/2.png)
-![image3](https://cdn.jsdelivr.net/gh/xihan123/QDReadHook@master/Screenshots/3.png)
-![image4](https://cdn.jsdelivr.net/gh/xihan123/QDReadHook@master/Screenshots/4.png)
-![image5](https://cdn.jsdelivr.net/gh/xihan123/QDReadHook@master/Screenshots/5.png)
-![image6](https://cdn.jsdelivr.net/gh/xihan123/QDReadHook@master/Screenshots/6.png)
-![image7](https://cdn.jsdelivr.net/gh/xihan123/QDReadHook@master/Screenshots/7.png)
-![image8](https://cdn.jsdelivr.net/gh/xihan123/QDReadHook@master/Screenshots/8.png)
-![image9](https://cdn.jsdelivr.net/gh/xihan123/QDReadHook@master/Screenshots/9.png)
-![image10](https://cdn.jsdelivr.net/gh/xihan123/QDReadHook@master/Screenshots/10.png)
+![image1](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/1.png)
+![image2](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/2.png)
+![image3](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/3.png)
+![image4](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/4.png)
+![image5](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/5.png)
+![image6](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/6.png)
+![image7](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/7.png)
+![image8](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/8.png)
+![image9](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/9.png)
+![image10](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/10.png)
 
 ---
 
@@ -135,10 +134,10 @@
 
 <tr>
 <td>
-<img src="https://cdn.jsdelivr.net/gh/xihan123/QDReadHook@master/Screenshots/zfb.jpg" width=270 >
+<img src="https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/zfb.jpg" width=270 >
 </td>
 <td>
-<img src="https://cdn.jsdelivr.net/gh/xihan123/QDReadHook@master/Screenshots/wx.png" width=270 >
+<img src="https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/wx.png" width=270 >
 </td>
 </tr>
 
