@@ -901,6 +901,19 @@ fun MainScreen(
                         })
                 }
 
+                if (versionCode >= 884) {
+                    SwitchSetting(title = "一键导出表情包",
+                        checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableExportEmoji),
+                        onCheckedChange = {
+                            HookEntry.optionEntity.mainOption.enableExportEmoji = it
+                        })
+
+                    SwitchSetting(title = "配音导入音频",
+                        checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableImportAudio),
+                        onCheckedChange = {
+                            HookEntry.optionEntity.mainOption.enableImportAudio = it
+                        })
+                }
 
             }
 
@@ -1000,6 +1013,15 @@ fun MainScreen(
                         })
 
                     SwitchSetting(
+                        title = "阅读页章评评论长按复制",
+                        subTitle = "会覆盖官方默认弹框",
+                        checked = rememberMutableStateOf(value = HookEntry.optionEntity.readPageOption.enableCopyReaderPageChapterComment),
+                        onCheckedChange = {
+                            HookEntry.optionEntity.readPageOption.enableCopyReaderPageChapterComment =
+                                it
+                        })
+
+                    SwitchSetting(
                         title = "阅读页章评图片保存原图对话框",
                         subTitle = "直接长按图片显示直链地址",
                         checked = rememberMutableStateOf(value = HookEntry.optionEntity.readPageOption.enableShowReaderPageChapterSavePictureDialog),
@@ -1007,6 +1029,17 @@ fun MainScreen(
                             HookEntry.optionEntity.readPageOption.enableShowReaderPageChapterSavePictureDialog =
                                 it
                         })
+
+                    if (versionCode >= 884) {
+                        SwitchSetting(
+                            title = "阅读页章评音频导出对话框",
+                            subTitle = "点击一下播放成功后即可长按弹出对话框",
+                            checked = rememberMutableStateOf(value = HookEntry.optionEntity.readPageOption.enableShowReaderPageChapterSaveAudioDialog),
+                            onCheckedChange = {
+                                HookEntry.optionEntity.readPageOption.enableShowReaderPageChapterSaveAudioDialog =
+                                    it
+                            })
+                    }
 
                     val enableReadTimeDouble =
                         rememberMutableStateOf(value = HookEntry.optionEntity.readPageOption.enableReadTimeDouble)

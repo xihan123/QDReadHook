@@ -4,7 +4,6 @@ import android.content.Context
 import android.widget.TextView
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.type.java.IntType
 import com.highcapable.yukihookapi.hook.type.java.LongType
 import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
@@ -180,7 +179,7 @@ fun Context.showAddOrEditReplaceRuleDialog(
  */
 fun PackageParam.customBookFansValue(versionCode: Int) {
     when (versionCode) {
-        in 872..878 -> {
+        in 872..884 -> {
             findClass("com.qidian.QDReader.ui.modules.bookshelf.dialog.BookShelfMiniCardDialog").hook {
                 injectMember {
                     method {
@@ -248,7 +247,7 @@ fun PackageParam.customBookFansValue(versionCode: Int) {
             findClass("com.qidian.QDReader.ui.view.BookFansBottomView").hook {
                 injectMember {
                     method {
-                        name = "h"
+                        name = if (versionCode == 884) "e" else "h"
                         param(
                             "com.qidian.QDReader.repository.entity.QDFansUserValue".toClass(),
                             LongType,
@@ -280,23 +279,20 @@ fun PackageParam.customBookFansValue(versionCode: Int) {
             /**
              * tvName
              */
-            val textViewId = when(versionCode){
+            val textViewId = when (versionCode) {
                 872 -> 0x7F0919AB
                 878 -> 0x7F091A0B
+                884 -> 0x7F091A33
                 else -> null
             }
-            if (textViewId == null){
+            if (textViewId == null) {
                 "自定义书友值-长按保存".printlnNotSupportVersion(versionCode)
-            }else{
+            } else {
                 findClass("com.qidian.QDReader.ui.adapter.FansRankingAdapter").hook {
                     injectMember {
                         method {
                             name = "convert"
-                            param(
-                                "com.qd.ui.component.widget.recycler.base.c".toClass(),
-                                IntType,
-                                "com.qidian.QDReader.repository.entity.BookFansItem".toClass()
-                            )
+                            paramCount(3)
                             returnType = UnitType
                         }
                         afterHook {
@@ -320,7 +316,8 @@ fun PackageParam.customBookFansValue(versionCode: Int) {
                                             ?.getParam<String>("mTitleImage")
 
                                     val nextRankName = parseLeagueTypeMap(rankName!!)
-                                    val dValue = parseLeagueTypeMapValue(rankName, amount!!).toLong()
+                                    val dValue =
+                                        parseLeagueTypeMapValue(rankName, amount!!).toLong()
 
                                     HookEntry.optionEntity.bookFansValueOption.apply {
                                         this.amount = amount

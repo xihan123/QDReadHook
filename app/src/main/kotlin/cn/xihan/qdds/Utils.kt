@@ -1,5 +1,6 @@
 package cn.xihan.qdds
 
+
 import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -14,11 +15,16 @@ import android.os.Environment
 import android.os.Looper
 import android.view.View
 import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.core.app.ActivityCompat.startActivityForResult
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import com.highcapable.yukihookapi.hook.log.loggerE
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
@@ -572,7 +578,7 @@ fun Context.multiChoiceSelector(
  */
 fun parseLeagueTypeMap(key: String): String {
     val leagueTypeMap = HookEntry.optionEntity.bookFansValueOption.leagueTypeMap
-    return leagueTypeMap.keys.elementAt(leagueTypeMap.keys.indexOf(key) + 1)
+    return leagueTypeMap.keys.elementAtOrElse(leagueTypeMap.keys.indexOf(key) + 1) { "" }
 }
 
 /**
@@ -596,5 +602,20 @@ typealias M = Modifier
 @Composable
 fun <T> rememberMutableStateOf(value: T): MutableState<T> = remember { mutableStateOf(value) }
 
+/**
+ * 调用系统选择获取音频文件
+ */
+fun Fragment.registerForAudioResult(): File {
+    var absolutePath = ""
+    val getContent =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            uri?.let {
+                absolutePath =
+                    "${Environment.getExternalStorageDirectory().path}/$${it.path?.removePrefix("/document/primary:")}"
+            }
+        }
+    getContent.launch("audio/*")
+    return File(absolutePath)
+}
 
 

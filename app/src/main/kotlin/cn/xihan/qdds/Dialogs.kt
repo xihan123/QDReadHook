@@ -6,11 +6,18 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.os.Bundle
+import android.os.Environment
 import android.view.KeyEvent
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import com.hjq.permissions.XXPermissions
 import kotlin.DeprecationLevel.ERROR
 
 internal const val NO_GETTER: String = "Property does not have a getter"
@@ -28,52 +35,45 @@ fun Fragment.alert(
     message: CharSequence,
     title: CharSequence? = null,
     block: (AlertBuilder<*>.() -> Unit)? = null,
-) =
-    alert(AppCompat, message, title, block)
+) = alert(AppCompat, message, title, block)
 
 fun Context.alert(
     message: CharSequence,
     title: CharSequence? = null,
     block: (AlertBuilder<*>.() -> Unit)? = null,
-) =
-    alert(AppCompat, message, title, block)
+) = alert(AppCompat, message, title, block)
 
 inline fun <D : DialogInterface> Fragment.alert(
     factory: AlertBuilderFactory<D>,
     message: CharSequence,
     title: CharSequence? = null,
     noinline block: (AlertBuilder<D>.() -> Unit)? = null,
-) =
-    requireContext().alert(factory, message, title, block)
+) = requireContext().alert(factory, message, title, block)
 
 inline fun <D : DialogInterface> Context.alert(
     factory: AlertBuilderFactory<D>,
     message: CharSequence,
     title: CharSequence? = null,
     noinline block: (AlertBuilder<D>.() -> Unit)? = null,
-) =
-    alertDialog(factory) {
-        title?.let { this.title = it }
-        this.message = message
-        block?.invoke(this)
-    }.show()
+) = alertDialog(factory) {
+    title?.let { this.title = it }
+    this.message = message
+    block?.invoke(this)
+}.show()
 
-fun Context.alertDialog(block: AlertBuilder<*>.() -> Unit) =
-    alertDialog(AppCompat, block)
+fun Context.alertDialog(block: AlertBuilder<*>.() -> Unit) = alertDialog(AppCompat, block)
 
 inline fun <D : DialogInterface> Context.alertDialog(
     factory: AlertBuilderFactory<D>,
     block: AlertBuilder<D>.() -> Unit,
-) =
-    factory(this).apply(block)
+) = factory(this).apply(block)
 
 fun Context.multiChoiceSelector(
     items: List<CharSequence>,
     checkItems: BooleanArray,
     title: CharSequence? = null,
     onItemSelected: (DialogInterface, Int, Boolean) -> Unit,
-) =
-    multiChoiceSelector(AppCompat, items, checkItems, title, onItemSelected)
+) = multiChoiceSelector(AppCompat, items, checkItems, title, onItemSelected)
 
 inline fun <D : DialogInterface> Context.multiChoiceSelector(
     factory: AlertBuilderFactory<D>,
@@ -81,11 +81,10 @@ inline fun <D : DialogInterface> Context.multiChoiceSelector(
     checkItems: BooleanArray,
     title: CharSequence? = null,
     noinline onItemSelected: (DialogInterface, Int, Boolean) -> Unit,
-) =
-    alertDialog(factory) {
-        title?.let { this.title = it }
-        multiChoiceItems(items, checkItems, onItemSelected)
-    }.show()
+) = alertDialog(factory) {
+    title?.let { this.title = it }
+    multiChoiceItems(items, checkItems, onItemSelected)
+}.show()
 
 fun AlertBuilder<*>.okButton(onClicked: (dialog: DialogInterface) -> Unit) =
     positiveButton(android.R.string.ok, onClicked)
@@ -97,10 +96,9 @@ inline fun <T> AlertBuilder<*>.multiChoiceItems(
     items: List<T>,
     checkItems: BooleanArray,
     crossinline onItemSelected: (DialogInterface, T, Int, Boolean) -> Unit,
-) =
-    multiChoiceItems(items.map { it.toString() }, checkItems) { dialog, which, isChecked ->
-        onItemSelected(dialog, items[which], which, isChecked)
-    }
+) = multiChoiceItems(items.map { it.toString() }, checkItems) { dialog, which, isChecked ->
+    onItemSelected(dialog, items[which], which, isChecked)
+}
 
 fun Dialog.doOnCancel(block: (DialogInterface) -> Unit) = apply {
     setOnCancelListener(block)
@@ -198,64 +196,55 @@ abstract class AlertDialogBuilder : AlertBuilder<AlertDialog> {
     override val context: Context get() = builder.context
 
     override var title: CharSequence
-        @Deprecated(NO_GETTER, level = ERROR)
-        get() = noGetter()
+        @Deprecated(NO_GETTER, level = ERROR) get() = noGetter()
         set(value) {
             builder.setTitle(value)
         }
 
     override var titleResource: Int
-        @Deprecated(NO_GETTER, level = ERROR)
-        get() = noGetter()
+        @Deprecated(NO_GETTER, level = ERROR) get() = noGetter()
         set(value) {
             builder.setTitle(value)
         }
 
     override var message: CharSequence
-        @Deprecated(NO_GETTER, level = ERROR)
-        get() = noGetter()
+        @Deprecated(NO_GETTER, level = ERROR) get() = noGetter()
         set(value) {
             builder.setMessage(value)
         }
 
     override var messageResource: Int
-        @Deprecated(NO_GETTER, level = ERROR)
-        get() = noGetter()
+        @Deprecated(NO_GETTER, level = ERROR) get() = noGetter()
         set(value) {
             builder.setMessage(value)
         }
 
     override var icon: Drawable
-        @Deprecated(NO_GETTER, level = ERROR)
-        get() = noGetter()
+        @Deprecated(NO_GETTER, level = ERROR) get() = noGetter()
         set(value) {
             builder.setIcon(value)
         }
 
     override var iconResource: Int
-        @Deprecated(NO_GETTER, level = ERROR)
-        get() = noGetter()
+        @Deprecated(NO_GETTER, level = ERROR) get() = noGetter()
         set(value) {
             builder.setIcon(value)
         }
 
     override var customTitle: View
-        @Deprecated(NO_GETTER, level = ERROR)
-        get() = noGetter()
+        @Deprecated(NO_GETTER, level = ERROR) get() = noGetter()
         set(value) {
             builder.setCustomTitle(value)
         }
 
     override var customView: View
-        @Deprecated(NO_GETTER, level = ERROR)
-        get() = noGetter()
+        @Deprecated(NO_GETTER, level = ERROR) get() = noGetter()
         set(value) {
             builder.setView(value)
         }
 
     override var isCancelable: Boolean
-        @Deprecated(NO_GETTER, level = ERROR)
-        get() = noGetter()
+        @Deprecated(NO_GETTER, level = ERROR) get() = noGetter()
         set(value) {
             builder.setCancelable(value)
         }

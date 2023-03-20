@@ -65,11 +65,13 @@ fun PackageParam.shieldDailyReading(
         in 804..812 -> "com.qidian.QDReader.component.api.f1"
         in 827..860 -> "com.qidian.QDReader.component.api.h1"
         in 860..878 -> "com.qidian.QDReader.component.api.k1"
+        884 -> "com.qidian.QDReader.component.api.h1"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 788..812 -> "j"
         in 827..878 -> "k"
+        884 -> "h"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -202,33 +204,43 @@ fun PackageParam.shieldCategory(versionCode: Int) {
             }
         }
 
-        in 827..878 -> {
+        in 827..884 -> {
             val needHookClass = when (versionCode) {
                 827 -> "com.qidian.QDReader.ui.adapter.x6"
                 834 -> "com.qidian.QDReader.ui.adapter.y6"
                 in 842..860 -> "com.qidian.QDReader.ui.adapter.z6"
                 in 868..878 -> "com.qidian.QDReader.ui.adapter.a7"
+                884 -> "com.qidian.QDReader.ui.adapter.z6"
                 else -> null
             }
-            needHookClass?.hook {
-                injectMember {
-                    method {
-                        name = "r"
-                        param(IntType, ListClass)
-                        returnType = UnitType
-                    }
-                    afterHook {
-                        val b = instance.getParam<List<*>>("b")
-                        b?.let {
-                            safeRun {
-                                val bIterator = b.iterator()
-                                while (bIterator.hasNext()) {
-                                    val next = bIterator.next()
-                                    next?.let {
-                                        val categoryItems =
-                                            it.getParam<MutableList<*>>("categoryItems")
-                                        categoryItems?.let {
-                                            args(1).set(parseNeedShieldList(categoryItems))
+            val needHookMethod = when (versionCode) {
+                in 827..878 -> "r"
+                884 -> "o"
+                else -> null
+            }
+            if (needHookClass == null || needHookMethod == null) {
+                "屏蔽精选-分类".printlnNotSupportVersion(versionCode)
+            } else {
+                needHookClass.hook {
+                    injectMember {
+                        method {
+                            name = needHookMethod
+                            param(IntType, ListClass)
+                            returnType = UnitType
+                        }
+                        afterHook {
+                            val b = instance.getParam<List<*>>("b")
+                            b?.let {
+                                safeRun {
+                                    val bIterator = b.iterator()
+                                    while (bIterator.hasNext()) {
+                                        val next = bIterator.next()
+                                        next?.let {
+                                            val categoryItems =
+                                                it.getParam<MutableList<*>>("categoryItems")
+                                            categoryItems?.let {
+                                                args(1).set(parseNeedShieldList(categoryItems))
+                                            }
                                         }
                                     }
                                 }
@@ -282,12 +294,22 @@ fun PackageParam.shieldFreeRecommend(versionCode: Int) {
         868 -> "ma.a"
         872 -> "ka.a"
         878 -> "ja.a"
+        884 -> "ca.search"
         else -> null
     }
-    freeRecommendHookClass?.hook {
+    val freeRecommendHookMethod = when (versionCode) {
+        in 788..878 -> "n"
+        884 -> "k"
+        else -> null
+    }
+    if (freeRecommendHookClass == null || freeRecommendHookMethod == null) {
+        "屏蔽免费-免费推荐".printlnNotSupportVersion(versionCode)
+        return
+    }
+    freeRecommendHookClass.hook {
         injectMember {
             method {
-                name = "n"
+                name = freeRecommendHookMethod
                 param(
                     "com.qidian.QDReader.repository.entity.BookStoreDynamicItem".toClass(),
                     IntType,
@@ -304,7 +326,7 @@ fun PackageParam.shieldFreeRecommend(versionCode: Int) {
 
             }
         }
-    } ?: "屏蔽免费-免费推荐".printlnNotSupportVersion(versionCode)
+    }
 }
 
 /**
@@ -615,6 +637,7 @@ fun PackageParam.shieldHotAndRecommend(versionCode: Int) {
         in 788..834 -> "com.qidian.QDReader.ui.adapter.s"
         in 842..860 -> "com.qidian.QDReader.ui.adapter.t"
         in 868..878 -> "com.qidian.QDReader.ui.adapter.u"
+        884 -> "com.qidian.QDReader.ui.adapter.r"
         else -> null
     }
     needHookClass?.hook {
@@ -734,56 +757,66 @@ fun PackageParam.shieldNewBookAndRecommend(versionCode: Int) {
             }
         }
 
-        in 804..878 -> {
+        in 804..884 -> {
+            /**
+             *上级调用:com.qidian.QDReader.ui.fragment.SanJiangPagerFragment mAdapter
+             */
             val needHookClass = when (versionCode) {
                 in 804..812 -> "com.qidian.QDReader.ui.adapter.lb"
                 827 -> "com.qidian.QDReader.ui.adapter.nb"
                 834 -> "com.qidian.QDReader.ui.adapter.ob"
                 in 842..860 -> "com.qidian.QDReader.ui.adapter.pb"
                 in 868..878 -> "com.qidian.QDReader.ui.adapter.rb"
+                884 -> "com.qidian.QDReader.ui.adapter.qb"
                 else -> null
             }
-            /**
-             *上级调用:com.qidian.QDReader.ui.fragment.SanJiangPagerFragment mAdapter
-             */
-            needHookClass?.hook {
-                injectMember {
-                    method {
-                        name = "q"
-                        param(ListClass)
-                        returnType = UnitType
-                    }
-                    beforeHook {
-                        val list = args[0] as? MutableList<*>
-                        list?.let {
-                            safeRun {
-                                val iterator = it.iterator()
-                                while (iterator.hasNext()) {
-                                    val item = iterator.next().toJSONString()
-                                    val json = item.parseObject()
-                                    val jb = json.getJSONObject("BookStoreItem")
-                                    if (jb != null) {
-                                        val authorName = jb.getString("AuthorName")
-                                        val bookName = jb.getString("BookName")
-                                        val categoryName = jb.getString("CategoryName")
-                                        val array = jb.getJSONArray("tagList")
-                                        val bookTypeArray = mutableSetOf(categoryName)
-                                        if (!array.isNullOrEmpty()) {
-                                            for (i in array.indices) {
-                                                array += array.getString(i)
+            val needHookMethod = when (versionCode) {
+                in 804..878 -> "q"
+                884 -> "n"
+                else -> null
+            }
+            if (needHookClass == null || needHookMethod == null) {
+                "屏蔽新书强推、三江推荐".printlnNotSupportVersion(versionCode)
+            } else {
+                needHookClass.hook {
+                    injectMember {
+                        method {
+                            name = needHookMethod
+                            param(ListClass)
+                            returnType = UnitType
+                        }
+                        beforeHook {
+                            val list = args[0] as? MutableList<*>
+                            list?.let {
+                                safeRun {
+                                    val iterator = it.iterator()
+                                    while (iterator.hasNext()) {
+                                        val item = iterator.next().toJSONString()
+                                        val json = item.parseObject()
+                                        val jb = json.getJSONObject("BookStoreItem")
+                                        if (jb != null) {
+                                            val authorName = jb.getString("AuthorName")
+                                            val bookName = jb.getString("BookName")
+                                            val categoryName = jb.getString("CategoryName")
+                                            val array = jb.getJSONArray("tagList")
+                                            val bookTypeArray = mutableSetOf(categoryName)
+                                            if (!array.isNullOrEmpty()) {
+                                                for (i in array.indices) {
+                                                    array += array.getString(i)
+                                                }
+                                            }
+                                            val isNeedShield = isNeedShield(
+                                                bookName = bookName,
+                                                authorName = authorName,
+                                                bookType = bookTypeArray
+                                            )
+                                            if (isNeedShield) {
+                                                iterator.remove()
                                             }
                                         }
-                                        val isNeedShield = isNeedShield(
-                                            bookName = bookName,
-                                            authorName = authorName,
-                                            bookType = bookTypeArray
-                                        )
-                                        if (isNeedShield) {
-                                            iterator.remove()
-                                        }
                                     }
+                                    args(0).set(it)
                                 }
-                                args(0).set(it)
                             }
                         }
                     }
@@ -800,7 +833,7 @@ fun PackageParam.shieldNewBookAndRecommend(versionCode: Int) {
  */
 fun PackageParam.shieldBookRank(versionCode: Int) {
     when (versionCode) {
-        in 808..878 -> {
+        in 808..884 -> {
             findClass("com.qidian.QDReader.ui.fragment.RankingFragment").hook {
                 injectMember {
                     method {
@@ -860,7 +893,7 @@ fun PackageParam.shieldCategoryAllBook(versionCode: Int) {
             }
         }
 
-        in 827..900 -> {
+        in 827..878 -> {
             /**
              * 上级调用:com.qidian.QDReader.ui.fragment.LibraryFragment.loadData(boolean) : void
              */
@@ -868,6 +901,26 @@ fun PackageParam.shieldCategoryAllBook(versionCode: Int) {
                 injectMember {
                     method {
                         name = "a"
+                        param(IntType, ArrayListClass)
+                        returnType = UnitType
+                    }
+                    beforeHook {
+                        val b = args[1] as? MutableList<*>
+                        b?.let {
+                            safeRun {
+                                args(1).set(parseNeedShieldList(it))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        884 -> {
+            findClass("com.qidian.QDReader.ui.fragment.LibraryFragment\$search").hook {
+                injectMember {
+                    method {
+                        name = "search"
                         param(IntType, ArrayListClass)
                         returnType = UnitType
                     }
@@ -929,6 +982,7 @@ fun PackageParam.shieldSearch(
 ) {
     if (isNeedShieldBookRank) {
         /**
+         * 屏蔽热门作品榜更多
          * 上级调用: com.qidian.QDReader.ui.activity.QDSearchListActivity.bindView() mAdapter
          */
         val needHookClass: String? = when (versionCode) {
@@ -940,26 +994,34 @@ fun PackageParam.shieldSearch(
             in 858..860 -> "m9.d"
             868 -> "n9.d"
             in 872..878 -> "l9.d"
+            884 -> "f9.a"
             else -> null
         }
-        /**
-         * 屏蔽热门作品榜更多
-         */
-        needHookClass?.hook {
-            injectMember {
-                method {
-                    name = "o"
-                }
-                beforeHook {
-                    val list = args[0] as? MutableList<*>
-                    list?.let {
-                        safeRun {
-                            args(0).set(parseNeedShieldList(it))
+        val needHookMethod = when (versionCode) {
+            in 788..878 -> "o"
+            884 -> "l"
+            else -> null
+        }
+        if (needHookClass == null || needHookMethod == null) {
+            "屏蔽热门作品榜更多".printlnNotSupportVersion(versionCode)
+        } else {
+            needHookClass?.hook {
+                injectMember {
+                    method {
+                        name = needHookMethod
+                    }
+                    beforeHook {
+                        val list = args[0] as? MutableList<*>
+                        list?.let {
+                            safeRun {
+                                args(0).set(parseNeedShieldList(it))
+                            }
                         }
                     }
                 }
             }
-        } ?: "屏蔽热门作品榜更多".printlnNotSupportVersion(versionCode)
+        }
+
     }
     when (versionCode) {
         in 788..900 -> {
@@ -1077,12 +1139,22 @@ fun PackageParam.shieldComicOther(versionCode: Int) {
         in 812..834 -> "com.qidian.QDReader.ui.adapter.c2"
         in 842..860 -> "com.qidian.QDReader.ui.adapter.d2"
         in 868..878 -> "com.qidian.QDReader.ui.adapter.e2"
+        884 -> "com.qidian.QDReader.ui.adapter.b2"
         else -> null
     }
-    needHookClass?.hook {
+    val needHookMethod = when (versionCode) {
+        in 812..878 -> "q"
+        884 -> "n"
+        else -> null
+    }
+    if (needHookClass == null || needHookMethod == null) {
+        "屏蔽-漫画-其他".printlnNotSupportVersion(versionCode)
+        return
+    }
+    needHookClass.hook {
         injectMember {
             method {
-                name = "q"
+                name = needHookMethod
                 param(ArrayListClass)
                 returnType = UnitType
             }
@@ -1093,25 +1165,27 @@ fun PackageParam.shieldComicOther(versionCode: Int) {
                 }
             }
         }
-    } ?: "屏蔽-漫画-其他".printlnNotSupportVersion(versionCode)
+    }
 }
 
 /**
  * 书籍详情-快速屏蔽
  */
-fun PackageParam.quickShield(versionCode: Int){
-    val tvBookNameId = when(versionCode){
+fun PackageParam.quickShield(versionCode: Int) {
+    val tvBookNameId = when (versionCode) {
         872 -> 2131302368
         878 -> 2131302454
+        884 -> 0x7F09185A
         else -> null
     }
 
-    val tvAuthorNameId = when(versionCode){
+    val tvAuthorNameId = when (versionCode) {
         872 -> 2131302306
         878 -> 2131302390
+        884 -> 0x7F091818
         else -> null
     }
-    if (tvBookNameId == null || tvAuthorNameId == null){
+    if (tvBookNameId == null || tvAuthorNameId == null) {
         "书籍详情-快速屏蔽".printlnNotSupportVersion(versionCode)
         return
     }

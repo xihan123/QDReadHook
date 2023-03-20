@@ -1,19 +1,19 @@
 buildscript {
-    val appVersionName by extra("2.0.5")
-    val appVersionCode by extra(205)
+    val appVersionName by extra("2.0.6")
+    val appVersionCode by extra(206)
     val minSdkVersion by extra(26)
     val targetSdkVersion by extra(33)
     val coreVersion by extra("1.9.0")
     val appcompatVersion by extra("1.7.0-alpha02")
     val materialVersion by extra("1.9.0-alpha02")
     val yuKiHookVersion by extra("1.1.8")
-    val accompanistVersion by extra("0.29.1-alpha")
+    val accompanistVersion by extra("0.29.2-rc")
     val activityVersion by extra("1.8.0-alpha01")
     val navComposeVersion by extra("2.6.0-alpha05")
-    val fastJson2Version by extra("2.0.24") //2.0.21.android
+    val fastJson2Version by extra("2.0.25") //2.0.21.android
     val kotlinxJsonVersion by extra("1.5.0")
     val coilVersion by extra("2.2.2")
-    val landscapistVersion by extra("2.1.4")
+    val landscapistVersion by extra("2.1.8")
     val kotlinCompilerExtensionVersion by extra("1.4.2")
 }
 plugins {

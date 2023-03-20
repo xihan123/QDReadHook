@@ -103,7 +103,7 @@ dependencies {
 
 //    implementation("com.github.liangjingkanji:spannable:latest.release")
 //    implementation(platform("androidx.compose:compose-bom:2023.01.00"))
-    implementation("dev.chrisbanes.compose:compose-bom:2023.02.00-beta03")
+    implementation("dev.chrisbanes.compose:compose-bom:2023.02.00-rc02")
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.runtime:runtime")

@@ -291,6 +291,7 @@ fun PackageParam.disableReadPageFloatAd(versionCode: Int) {
         in 850..868 -> "I"
         872 -> "G"
         878 -> "j1"
+        884 -> "g1"
         else -> null
     }
     hookMethodName?.let {
@@ -518,14 +519,14 @@ fun PackageParam.disableUpdate(versionCode: Int) {
     /**
      * 也可全局搜索 "UpgradeCommon"、"checkUpdate:"
      */
-    val neddHookClass = when (versionCode) {
+    val needHookClass = when (versionCode) {
         in 758..788 -> "com.qidian.QDReader.util.z4"
         in 792..796 -> "com.qidian.QDReader.util.i5"
         in 800..834 -> "com.qidian.QDReader.util.l5"
         in 842..878 -> "com.qidian.QDReader.util.m5"
         else -> null
     }
-    neddHookClass?.hook {
+    needHookClass?.hook {
         injectMember {
             method {
                 name = "b"
@@ -542,6 +543,23 @@ fun PackageParam.disableUpdate(versionCode: Int) {
             intercept()
         }
     }
+
+    val needHookClass2 = when (versionCode) {
+        884 -> "com.qidian.QDReader.util.k5"
+        else -> null
+    }
+
+    needHookClass2?.hook {
+        injectMember {
+            method {
+                name = "judian"
+                paramCount(1)
+                returnType = UnitType
+            }
+            intercept()
+        }
+    }
+
 
     /*
     /**

@@ -46,7 +46,7 @@ fun PackageParam.homeOption(versionCode: Int, optionValueSet: List<OptionEntity.
  */
 fun PackageParam.selectedOption(versionCode: Int) {
     when (versionCode) {
-        in 868..878 -> {
+        in 868..884 -> {
             /*
             findClass("com.qidian.morphing.card.BaseMorphingCard").hook {
                 injectMember {
@@ -237,7 +237,7 @@ fun PackageParam.selectedOption(versionCode: Int) {
  */
 fun PackageParam.selectedTitleOption(versionCode: Int) {
     when (versionCode) {
-        in 872..878 -> {
+        in 872..884 -> {
             findClass("com.qidian.QDReader.ui.fragment.QDStorePagerFragment").hook {
                 injectMember {
                     method {
@@ -367,8 +367,8 @@ fun PackageParam.hideMainTopBox(versionCode: Int) {
 /**
  * 隐藏主页面-顶部战力提示
  */
-fun PackageParam.hideMainTopPower(versionCode: Int){
-    when(versionCode){
+fun PackageParam.hideMainTopPower(versionCode: Int) {
+    when (versionCode) {
         in 878..900 -> {
             findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
                 injectMember {
@@ -391,118 +391,95 @@ fun PackageParam.hideMainTopPower(versionCode: Int){
  * bindListAdapter()
  */
 fun PackageParam.hideBookshelfDailyReading(versionCode: Int) {
-    when (versionCode) {
-        in 804..812 -> {
-            findClass("com.qidian.QDReader.ui.adapter.j0").hook {
-                injectMember {
-                    method {
-                        name = "getHeaderItemCount"
-                        emptyParam()
-                        returnType = IntType
-                    }
-                    replaceTo(0)
-                }
-            }
-
-            findClass("com.qidian.QDReader.ui.adapter.h0").hook {
-                injectMember {
-                    method {
-                        name = "getHeaderItemCount"
-                        emptyParam()
-                        returnType = IntType
-                    }
-                    replaceTo(0)
-                }
-            }
-
-        }
-
-        in 827..878 -> {
-            val gridAdapterClass = when (versionCode) {
-                in 827..860 -> "com.qidian.QDReader.ui.adapter.i0"
-                in 868..878 -> "com.qidian.QDReader.ui.adapter.j0"
-                else -> null
-            }
-            val listAdapterClass = when (versionCode) {
-                in 827..860 -> "com.qidian.QDReader.ui.adapter.k0"
-                in 868..878 -> "com.qidian.QDReader.ui.adapter.l0"
-                else -> null
-            }
-            gridAdapterClass?.hook {
-                injectMember {
-                    method {
-                        name = "getHeaderItemCount"
-                        emptyParam()
-                        returnType = IntType
-                    }
-                    replaceTo(0)
-                }
-            }
-
-            listAdapterClass?.hook {
-                injectMember {
-                    method {
-                        name = "getHeaderItemCount"
-                        emptyParam()
-                        returnType = IntType
-                    }
-                    replaceTo(0)
-                }
-            }
-
-            findClass("com.qidian.QDReader.ui.modules.bookshelf.view.BookShelfCheckInView").hook {
-                injectMember {
-                    method {
-                        name = "setupDailyReading"
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
-
-        }
-
-        else -> "隐藏书架-每日导读".printlnNotSupportVersion(versionCode)
+    val gridAdapterClass = when (versionCode) {
+        in 804..812 -> "com.qidian.QDReader.ui.adapter.j0"
+        in 827..860 -> "com.qidian.QDReader.ui.adapter.i0"
+        in 868..878 -> "com.qidian.QDReader.ui.adapter.j0"
+        884 -> "com.qidian.QDReader.ui.adapter.g0"
+        else -> null
     }
+    val listAdapterClass = when (versionCode) {
+        in 804..812 -> "com.qidian.QDReader.ui.adapter.h0"
+        in 827..860 -> "com.qidian.QDReader.ui.adapter.k0"
+        in 868..878 -> "com.qidian.QDReader.ui.adapter.l0"
+        884 -> "com.qidian.QDReader.ui.adapter.i0"
+        else -> null
+    }
+    if (gridAdapterClass == null || listAdapterClass == null) {
+        "隐藏书架-每日导读".printlnNotSupportVersion(versionCode)
+    } else {
+        gridAdapterClass.hook {
+            injectMember {
+                method {
+                    name = "getHeaderItemCount"
+                    emptyParam()
+                    returnType = IntType
+                }
+                replaceTo(0)
+            }
+        }
+
+        listAdapterClass.hook {
+            injectMember {
+                method {
+                    name = "getHeaderItemCount"
+                    emptyParam()
+                    returnType = IntType
+                }
+                replaceTo(0)
+            }
+        }
+    }
+
+    if (versionCode > 827) {
+        findClass("com.qidian.QDReader.ui.modules.bookshelf.view.BookShelfCheckInView").hook {
+            injectMember {
+                method {
+                    name = "setupDailyReading"
+                    returnType = UnitType
+                }
+                intercept()
+            }
+        }
+    }
+
 }
 
 /**
  * 隐藏书架-去找书
  */
 fun PackageParam.hideBookshelfFindBook(versionCode: Int) {
-    when (versionCode) {
-        in 868..878 -> {
-
-            /**
-             * QDBookShelfBrowserRecordHolder
-             */
-            findClass("com.qidian.QDReader.ui.viewholder.bookshelf.r").hook {
-                injectMember {
-                    constructor {
-                        paramCount(2)
-                    }
-                    afterHook {
-                        args[0]?.let {
-                            val view = it as? View
-                            view?.visibility = View.GONE
-                        }
+    if (versionCode in 868..884) {
+        val needHookClass = when (versionCode) {
+            in 868..878 -> "com.qidian.QDReader.ui.viewholder.bookshelf.r"
+            884 -> "com.qidian.QDReader.ui.viewholder.bookshelf.o"
+            else -> null
+        }
+        needHookClass?.hook {
+            injectMember {
+                constructor {
+                    paramCount(2)
+                }
+                afterHook {
+                    args[0]?.let {
+                        val view = it as? View
+                        view?.visibility = View.GONE
                     }
                 }
             }
-
-            findClass("com.qidian.QDReader.ui.modules.bookshelf.adapter.BaseBooksAdapter").hook {
-                injectMember {
-                    method {
-                        name = "getFooterItemCount"
-                        emptyParam()
-                        returnType = IntType
-                    }
-                    replaceTo(0)
+        } ?: "隐藏书架-去找书".printlnNotSupportVersion(versionCode)
+        findClass("com.qidian.QDReader.ui.modules.bookshelf.adapter.BaseBooksAdapter").hook {
+            injectMember {
+                method {
+                    name = "getFooterItemCount"
+                    emptyParam()
+                    returnType = IntType
                 }
+                replaceTo(0)
             }
         }
-
-        else -> "隐藏书架-去找书".printlnNotSupportVersion(versionCode)
+    } else {
+        "隐藏书架-去找书".printlnNotSupportVersion(versionCode)
     }
 }
 
@@ -538,17 +515,27 @@ fun PackageParam.hideBottomRedDot(versionCode: Int) {
     val needHookClass = when (versionCode) {
         in 758..768 -> "com.qidian.QDReader.ui.widget.maintab.a"
         in 772..878 -> "com.qidian.QDReader.ui.widget.maintab.e"
+        884 -> "com.qidian.QDReader.ui.widget.maintab.b"
         else -> null
     }
-    needHookClass?.hook {
+    val needHookMethod = when (versionCode) {
+        in 758..878 -> "h"
+        884 -> "e"
+        else -> null
+    }
+    if (needHookClass == null || needHookMethod == null) {
+        "隐藏底部导航栏红点".printlnNotSupportVersion(versionCode)
+        return
+    }
+    needHookClass.hook {
         injectMember {
             method {
-                name = "h"
+                name = needHookMethod
                 returnType = IntType
             }
             replaceTo(1)
         }
-    } ?: "隐藏底部导航栏红点".printlnNotSupportVersion(versionCode)
+    }
 }
 
 /**
@@ -556,11 +543,11 @@ fun PackageParam.hideBottomRedDot(versionCode: Int) {
  */
 fun PackageParam.hideBottomNavigation(versionCode: Int) {
     when (versionCode) {
-        in 872..878 -> {
+        in 872..884 -> {
             findClass("com.qidian.QDReader.ui.widget.maintab.PagerSlidingTabStrip").hook {
                 injectMember {
                     method {
-                        name = "s"
+                        name = if (versionCode == 884) "p" else "s"
                         emptyParam()
                         returnType = UnitType
                     }
@@ -984,6 +971,7 @@ fun PackageParam.removeQSNYDialog(versionCode: Int) {
         in 758..854 -> "com.qidian.QDReader.bll.helper.g1"
         in 858..868 -> "com.qidian.QDReader.bll.helper.m1"
         in 872..878 -> "com.qidian.QDReader.bll.helper.k1"
+        884 -> "com.qidian.QDReader.bll.helper.h1"
         else -> null
     }
     needHookClass?.hook {
@@ -1318,24 +1306,34 @@ fun PackageParam.bookDetailHide(
                 /**
                  * 隐藏书友榜
                  */
-                findClass("com.qidian.QDReader.ui.view.BookFansModuleView").hook {
-                    injectMember {
-                        method {
-                            name = "d"
-                            param(
-                                LongType,
-                                StringClass,
-                                "com.qidian.QDReader.repository.entity.FansInfo".toClass(),
-                                ListClass
-                            )
-                            returnType = UnitType
-                        }
-                        afterHook {
-                            val bookFansModuleView = instance as? LinearLayout
-                            bookFansModuleView?.visibility = View.GONE
+                val bookFansModuleNeedHookMethod = when(versionCode){
+                    in 827..878 -> "d"
+                    884 -> "a"
+                    else -> null
+                }
+                if (bookFansModuleNeedHookMethod == null){
+                    "隐藏书友榜".printlnNotSupportVersion(versionCode)
+                }else{
+                    findClass("com.qidian.QDReader.ui.view.BookFansModuleView").hook {
+                        injectMember {
+                            method {
+                                name = bookFansModuleNeedHookMethod
+                                param(
+                                    LongType,
+                                    StringClass,
+                                    "com.qidian.QDReader.repository.entity.FansInfo".toClass(),
+                                    ListClass
+                                )
+                                returnType = UnitType
+                            }
+                            afterHook {
+                                val bookFansModuleView = instance as? LinearLayout
+                                bookFansModuleView?.visibility = View.GONE
+                            }
                         }
                     }
                 }
+
             }
 
             if (isNeedHideSyq) {
@@ -1399,6 +1397,7 @@ fun PackageParam.comicHideBannerAd(versionCode: Int) {
         868 -> "pa.g"
         872 -> "na.g"
         878 -> "ma.g"
+        884 -> "fa.d"
         else -> null
     }
     needHookClass?.hook {

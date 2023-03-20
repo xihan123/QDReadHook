@@ -21,7 +21,6 @@ import java.io.File
 
 /**
  * 配置模型
- * @param optionVersion 配置版本
  * @param mainOption 主配置
  * @param advOption 广告配置
  * @param shieldOption 屏蔽配置
@@ -37,7 +36,6 @@ import java.io.File
 @Keep
 @Serializable
 data class OptionEntity(
-    @SerialName("optionVersion") var optionVersion: Int = 1,
     @SerialName("advOption") var advOption: AdvOption = AdvOption(),
     @SerialName("mainOption") var mainOption: MainOption = MainOption(),
     @SerialName("shieldOption") var shieldOption: ShieldOption = ShieldOption(),
@@ -91,6 +89,8 @@ data class OptionEntity(
      * @param enableUnlockMemberBackground 启用解锁会员背景
      * @param enableHideAppIcon 启用隐藏应用图标
      * @param enableNewStore 启用新版精选
+     * @param enableExportEmoji 启用导出表情包
+     * @param enableImportAudio 启用导入音频
      */
     @Keep
     @Serializable
@@ -105,6 +105,8 @@ data class OptionEntity(
         @SerialName("enableUnlockMemberBackground") var enableUnlockMemberBackground: Boolean = false,
         @SerialName("enableHideAppIcon") var enableHideAppIcon: Boolean = false,
         @SerialName("enableNewStore") var enableNewStore: Boolean = false,
+        @SerialName("enableExportEmoji") var enableExportEmoji: Boolean = false,
+        @SerialName("enableImportAudio") var enableImportAudio: Boolean = false,
     )
 
     /**
@@ -233,6 +235,8 @@ data class OptionEntity(
      * @param enableCustomReaderThemePath 启用自定义阅读页主题路径
      * @param enableShowReaderPageChapterSaveRawPicture 启用显示阅读页章节保存原图
      * @param enableShowReaderPageChapterSavePictureDialog 启用显示阅读页章节保存图片对话框
+     * @param enableShowReaderPageChapterSaveAudioDialog 启用显示阅读页章节保存音频对话框
+     * @param enableCopyReaderPageChapterComment 启用复制阅读页章节评论
      * @param enableReadTimeDouble 启用阅读时间翻倍
      * @param enableVIPChapterTime 启用VIP章节时间
      * @param doubleSpeed 阅读时间倍速
@@ -243,6 +247,8 @@ data class OptionEntity(
         @SerialName("enableCustomReaderThemePath") var enableCustomReaderThemePath: Boolean = false,
         @SerialName("enableShowReaderPageChapterSaveRawPicture") var enableShowReaderPageChapterSaveRawPicture: Boolean = false,
         @SerialName("enableShowReaderPageChapterSavePictureDialog") var enableShowReaderPageChapterSavePictureDialog: Boolean = false,
+        @SerialName("enaableShowReaderPageChapterSaveAudioDialog") var enableShowReaderPageChapterSaveAudioDialog: Boolean = false,
+        @SerialName("enableCopyReaderPageChapterComment") var enableCopyReaderPageChapterComment: Boolean = false,
         @SerialName("enableReadTimeDouble") var enableReadTimeDouble: Boolean = false,
         @SerialName("enableVIPChapterTime") var enableVIPChapterTime: Boolean = false,
         @SerialName("doubleSpeed") var doubleSpeed: Int = 5

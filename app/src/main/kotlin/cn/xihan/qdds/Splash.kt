@@ -43,17 +43,25 @@ fun PackageParam.splashPage(
  */
 fun PackageParam.disableSplash(versionCode: Int) {
     when (versionCode) {
-        in 758..900 -> {
-            findClass("com.qidian.QDReader.bll.splash.SplashManager").hook {
-                injectMember {
-                    method {
-                        name = "k"
-                        paramCount(1)
-                        returnType = UnitType
+        in 758..884 -> {
+            val splashManagerNeedHookMethod = when (versionCode) {
+                in 758..878 -> "k"
+                884 -> "h"
+                else -> null
+            }
+            if (splashManagerNeedHookMethod != null) {
+                findClass("com.qidian.QDReader.bll.splash.SplashManager").hook {
+                    injectMember {
+                        method {
+                            name = splashManagerNeedHookMethod
+                            paramCount(1)
+                            returnType = UnitType
+                        }
+                        intercept()
                     }
-                    intercept()
                 }
             }
+
 
             findClass("com.qidian.QDReader.ui.activity.SplashImageActivity").hook {
                 injectMember {
@@ -80,18 +88,29 @@ fun PackageParam.disableSplash(versionCode: Int) {
             val needHookClass = when (versionCode) {
                 868 -> "n6.a"
                 in 872..878 -> "l6.a"
+                884 -> "g6.search"
                 else -> null
             }
-            needHookClass?.hook {
-                injectMember {
-                    method {
-                        name = "e"
-                        emptyParam()
-                        returnType = BooleanType
+            val needHookMethod = when (versionCode) {
+                in 868..878 -> "e"
+                884 -> "search"
+                else -> null
+            }
+            if (needHookClass == null || needHookMethod == null) {
+                "闪屏页".printlnNotSupportVersion(versionCode)
+            } else {
+                needHookClass.hook {
+                    injectMember {
+                        method {
+                            name = needHookMethod
+                            emptyParam()
+                            returnType = BooleanType
+                        }
+                        replaceToFalse()
                     }
-                    replaceToFalse()
                 }
             }
+
         }
 
         else -> "闪屏页".printlnNotSupportVersion(versionCode)
