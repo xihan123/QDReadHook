@@ -1,5 +1,30 @@
 # Changelog
 
+## [2.0.6](https://github.com/xihan123/QDReadHook/compare/v2.0.5...v2.0.6) (2023-03-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* 仅支持 `884`+ 版本拦截启动图页面的广告
+
+### Features
+
+* `884` 版本新增章评相关 ([a64057f](https://github.com/xihan123/QDReadHook/commit/a64057f55c76379435724ccb403eaf776a912008))
+* `884` 版本章评导入导出配音以及一键导出表情包 ([ab70a69](https://github.com/xihan123/QDReadHook/commit/ab70a69410790291c1874a3d75bcf422c2b5df06))
+* 仅支持 `884`+ 版本拦截启动图页面的广告 ([41de6e2](https://github.com/xihan123/QDReadHook/commit/41de6e21d123fa9b6e2a266450f4feaf18a5fecf))
+* 适配 `884` 版本 ([4742bd6](https://github.com/xihan123/QDReadHook/commit/4742bd66bf6c249fe5848ce44fe4479d87e049b7))
+
+
+### CI
+
+* release.yml ([012ad09](https://github.com/xihan123/QDReadHook/commit/012ad09d9fb1e797e276ad597491caa785593690))
+
+
+### Miscellaneous
+
+* **master:** release 2.0.5 ([c7ae607](https://github.com/xihan123/QDReadHook/commit/c7ae6070df5619204387f087b8741b5dded8214d))
+* 更新预览图 ([e9e4b8f](https://github.com/xihan123/QDReadHook/commit/e9e4b8fac213e289c39b2c0327f3168f9668fec2))
+
 ## [2.0.5](https://github.com/xihan123/QDReadHook/compare/v2.0.5...v2.0.5) (2023-03-03)
 
 
