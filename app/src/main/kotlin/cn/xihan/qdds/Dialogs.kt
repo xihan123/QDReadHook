@@ -6,18 +6,11 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
-import android.net.Uri
-import android.os.Bundle
-import android.os.Environment
 import android.view.KeyEvent
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import com.hjq.permissions.XXPermissions
 import kotlin.DeprecationLevel.ERROR
 
 internal const val NO_GETTER: String = "Property does not have a getter"
@@ -75,6 +68,14 @@ fun Context.multiChoiceSelector(
     onItemSelected: (DialogInterface, Int, Boolean) -> Unit,
 ) = multiChoiceSelector(AppCompat, items, checkItems, title, onItemSelected)
 
+fun <T> Context.singleChoiceSelector(
+    items: List<T>,
+    checkIndex: Int,
+    title: CharSequence? = null,
+    onItemSelected: (DialogInterface, T, Int) -> Unit
+) =
+    singleChoiceSelector(AppCompat, items, checkIndex, title, onItemSelected)
+
 inline fun <D : DialogInterface> Context.multiChoiceSelector(
     factory: AlertBuilderFactory<D>,
     items: List<CharSequence>,
@@ -86,11 +87,50 @@ inline fun <D : DialogInterface> Context.multiChoiceSelector(
     multiChoiceItems(items, checkItems, onItemSelected)
 }.show()
 
+inline fun <D : DialogInterface, T> Context.singleChoiceSelector(
+    factory: AlertBuilderFactory<D>,
+    items: List<T>,
+    checkIndex: Int,
+    title: CharSequence? = null,
+    noinline onItemSelected: (DialogInterface, T, Int) -> Unit
+) =
+    alertDialog(factory) {
+        title?.let { this.title = it }
+        singleChoiceItems(items, checkIndex, onItemSelected)
+    }.show()
+
 fun AlertBuilder<*>.okButton(onClicked: (dialog: DialogInterface) -> Unit) =
     positiveButton(android.R.string.ok, onClicked)
 
 fun AlertBuilder<*>.cancelButton(onClicked: (dialog: DialogInterface) -> Unit = { it.dismiss() }) =
     negativeButton(android.R.string.cancel, onClicked)
+
+inline fun <T> AlertBuilder<*>.singleChoiceItems(
+    items: List<T>,
+    checkIndex: Int,
+    crossinline onItemSelected: (DialogInterface, T, Int) -> Unit
+) =
+    singleChoiceItems(items.map { it.toString() }, checkIndex) { dialog, which ->
+        onItemSelected(dialog, items[which], which)
+    }
+
+inline fun AlertBuilder<*>.singleChoiceItems(
+    items: List<CharSequence>,
+    checkItem: CharSequence,
+    crossinline onItemSelected: (DialogInterface, Int) -> Unit
+) =
+    singleChoiceItems(items.map { it.toString() }, items.indexOfFirst { it == checkItem }) { dialog, which ->
+        onItemSelected(dialog, which)
+    }
+
+inline fun <T> AlertBuilder<*>.singleChoiceItems(
+    items: List<T>,
+    checkItem: T,
+    crossinline onItemSelected: (DialogInterface, T, Int) -> Unit
+) =
+    singleChoiceItems(items.map { it.toString() }, items.indexOfFirst { it == checkItem }) { dialog, which ->
+        onItemSelected(dialog, items[which], which)
+    }
 
 inline fun <T> AlertBuilder<*>.multiChoiceItems(
     items: List<T>,
@@ -177,6 +217,14 @@ interface AlertBuilder<out D : DialogInterface> {
     fun neutralPressed(
         @StringRes buttonTextResource: Int,
         onClicked: (dialog: DialogInterface) -> Unit,
+    )
+
+    fun items(items: List<CharSequence>, onItemSelected: (dialog: DialogInterface, index: Int) -> Unit)
+
+    fun singleChoiceItems(
+        items: List<CharSequence>,
+        checkedIndex: Int,
+        onItemSelected: (dialog: DialogInterface, index: Int) -> Unit
     )
 
     fun multiChoiceItems(
@@ -279,6 +327,18 @@ abstract class AlertDialogBuilder : AlertBuilder<AlertDialog> {
 
     override fun neutralPressed(buttonTextResource: Int, onClicked: (DialogInterface) -> Unit) {
         builder.setNeutralButton(buttonTextResource) { dialog, _ -> onClicked(dialog) }
+    }
+
+    override fun items(items: List<CharSequence>, onItemSelected: (DialogInterface, Int) -> Unit) {
+        builder.setItems(items.toTypedArray()) { dialog, which ->
+            onItemSelected(dialog, which)
+        }
+    }
+
+    override fun singleChoiceItems(items: List<CharSequence>, checkedIndex: Int, onItemSelected: (DialogInterface, Int) -> Unit) {
+        builder.setSingleChoiceItems(items.toTypedArray(), checkedIndex) { dialog, which ->
+            onItemSelected(dialog, which)
+        }
     }
 
     override fun multiChoiceItems(

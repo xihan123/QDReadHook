@@ -280,7 +280,7 @@ class CustomButton(
     isBold: Boolean = false,
     isAutoWidth: Boolean = false,
     isAutoHeight: Boolean = true,
-    onClickAction: () -> Unit,
+    onClickAction: () -> Unit = {},
 ) : CustomLinearLayout(context, isAutoWidth, isAutoHeight) {
 
     init {

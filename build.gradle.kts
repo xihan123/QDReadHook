@@ -9,8 +9,8 @@ buildscript {
     val yuKiHookVersion by extra("1.1.8")
     val accompanistVersion by extra("0.29.2-rc")
     val activityVersion by extra("1.8.0-alpha01")
-    val navComposeVersion by extra("2.6.0-alpha05")
-    val fastJson2Version by extra("2.0.25") //2.0.21.android
+    val navComposeVersion by extra("2.6.0-alpha07")
+    val fastJson2Version by extra("2.0.26") //2.0.21.android
     val kotlinxJsonVersion by extra("1.5.0")
     val coilVersion by extra("2.2.2")
     val landscapistVersion by extra("2.1.8")
