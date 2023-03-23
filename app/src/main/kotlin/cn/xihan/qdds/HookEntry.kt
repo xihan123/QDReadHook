@@ -1792,49 +1792,27 @@ fun PackageParam.importAudio(versionCode: Int) {
  * 导入音频文件
  */
 fun Context.importAudioFile(action: (String) -> Unit) {
-    val path = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/QDReader/Audio"
+    val path =
+        "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/QDReader/Audio"
     val file = File(path).apply {
         if (!exists()) {
             mkdirs()
         }
     }
     val files = file.listFiles()
-    val linearLayout = CustomLinearLayout(this, isAutoWidth = false)
 
-    val editText = CustomEditText(
-        context = this,
-        mHint = "音频文件所在绝对路径",
-        value = "",
-        isAutoWidth = false
-    )
-    linearLayout.addView(editText)
     if (!files.isNullOrEmpty()) {
-        val replaceListView = CustomListView(
-            context = this,
-            onItemClickListener = { adapter, position ->
-                editText.editText.setText(files[position].absolutePath)
-                "onItemClick: ${files[position].name}-${files[position].absolutePath}".loge()
-            },
-            onItemLongClickListener = { adapter, position ->
-
-            },
-            listData = files.map { it.name },
+        singleChoiceSelector(
+            items = files.map { it.name },
+            checkIndex = 0,
+            title = "导入配音固定路径为: $path",
+            onItemSelected = { _, _, index ->
+//            "onItemSelected: $it, $text, $index".loge()
+                action(files[index].absolutePath)
+            }
         )
-        linearLayout.addView(replaceListView)
-    }
-
-    alertDialog {
-        title = "导入音频文件"
-        message = "固定路径为: $path"
-        customView = linearLayout
-        okButton {
-            action("${editText.editText.text}")
-        }
-        negativeButton("返回") {
-            it.dismiss()
-        }
-        build()
-        show()
+    } else {
+        toast("固定路径为: $path, 但是没有文件")
     }
 
 }
