@@ -28,12 +28,12 @@ fun PackageParam.customReadBackgroundPath(versionCode: Int) {
         827 -> "d6.f"
         in 834..868 -> "b6.f"
         in 872..878 -> "z5.f"
-        884 -> "u5.c"
+        in 884..890 -> "u5.c"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 827..878 -> "G"
-        884 -> "C"
+        in 884..890 -> "C"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -66,7 +66,7 @@ fun PackageParam.readerPageChapterReviewPictures(
     enableShowReaderPageChapterSaveAudioDialog: Boolean = false,
     enableCopyReaderPageChapterComment: Boolean = false,
 ) {
-    if (enableShowReaderPageChapterSaveRawPictures && versionCode in 868..884) {
+    if (enableShowReaderPageChapterSaveRawPictures && versionCode in 868..890) {
         findClass("com.qd.ui.component.modules.imagepreivew.QDUIGalleryActivity").hook {
             injectMember {
                 method {
@@ -85,11 +85,13 @@ fun PackageParam.readerPageChapterReviewPictures(
         val needHookClass = when (versionCode) {
             in 868..878 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.b0"
             884 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.y"
+            890 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.e0"
             else -> null
         }
         val needHookMethod = when (versionCode) {
             in 868..878 -> "A"
             884 -> "x"
+            890 -> "z"
             else -> null
         }
         if (needHookClass == null || needHookMethod == null) {
@@ -147,28 +149,60 @@ fun PackageParam.readerPageChapterReviewPictures(
         }
     }
 
-    if (enableShowReaderPageChapterSaveAudioDialog && versionCode == 884) {
-        findClass("com.qidian.QDReader.ui.view.chapter_review.VoicePlayerView").hook {
-            injectMember {
-                method {
-                    name = "o"
-                    emptyParam()
-                    returnType = UnitType
-                }
-                afterHook {
-                    val g = instance.getView<RelativeLayout>("g")
-                    val l = instance.getParam<String>("l")
-                    val b = instance.getParam<Context>("b")
-                    if (l.isNullOrBlank() || b == null) {
-                        "音频文件不存在".loge()
-                        return@afterHook
-                    }
-                    g?.setOnLongClickListener {
-                        g.context.audioExportDialog(l)
-                        true
+    if (enableShowReaderPageChapterSaveAudioDialog && versionCode in 884..890) {
+
+        when (versionCode) {
+            884 -> {
+                findClass("com.qidian.QDReader.ui.view.chapter_review.VoicePlayerView").hook {
+                    injectMember {
+                        method {
+                            name = "o"
+                            emptyParam()
+                            returnType = UnitType
+                        }
+                        afterHook {
+                            val g = instance.getView<RelativeLayout>("g")
+                            val l = instance.getParam<String>("l")
+                            val b = instance.getParam<Context>("b")
+                            if (l.isNullOrBlank() || b == null) {
+                                "音频文件不存在".loge()
+                                return@afterHook
+                            }
+                            g?.setOnLongClickListener {
+                                g.context.audioExportDialog(l)
+                                true
+                            }
+                        }
                     }
                 }
             }
+
+            890 -> {
+                findClass("com.qidian.QDReader.ui.view.chapter_review.VoicePlayerView").hook {
+                    injectMember {
+                        method {
+                            name = "p"
+                            emptyParam()
+                            returnType = UnitType
+                        }
+                        afterHook {
+                            val g = instance.getParentView<RelativeLayout>("g")
+                            val p = instance.getParam<String>("p")
+                            val b = instance.getParentParam<Context>("b")
+                            if (p.isNullOrBlank() || b == null) {
+                                "音频文件不存在".loge()
+                                return@afterHook
+                            }
+                            g?.setOnLongClickListener {
+                                g.context.audioExportDialog(p)
+                                true
+                            }
+                        }
+                    }
+                }
+            }
+
+            else -> "音频导入".printlnNotSupportVersion(versionCode)
         }
     }
 }
@@ -186,12 +220,12 @@ fun PackageParam.readTimeDouble(
         868 -> "sf.a"
         in 872..872 -> "qf.a"
         878 -> "pf.a"
-        884 -> "jf.search"
+        in 884..890 -> "jf.search"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 868..878 -> "d"
-        884 -> "a"
+        in 884..890 -> "a"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {

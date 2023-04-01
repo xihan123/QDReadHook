@@ -15,16 +15,13 @@ import android.os.Environment
 import android.os.Looper
 import android.view.View
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import com.highcapable.yukihookapi.hook.log.loggerE
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
@@ -45,11 +42,17 @@ import kotlin.system.exitProcess
  * @介绍 :
  */
 /**
- * 通过反射获取控件
+ * 反射获取控件
  * @param name 字段名
  */
 @Throws(NoSuchFieldException::class, IllegalAccessException::class)
 inline fun <reified T : View> Any.getView(name: String): T? = getParam<T>(name)
+
+/**
+ * 反射获取父类控件
+ */
+@Throws(NoSuchFieldException::class, IllegalAccessException::class)
+inline fun <reified T : View> Any.getParentView(name: String): T? = getParentParam<T>(name)
 
 /**
  * 反射获取任何类型
@@ -58,6 +61,15 @@ inline fun <reified T : View> Any.getView(name: String): T? = getParam<T>(name)
 inline fun <reified T> Any.getParam(name: String): T? = javaClass.getDeclaredField(name).apply {
     isAccessible = true
 }[this] as? T
+
+/**
+ * 反射获取父类任何类型
+ */
+@Throws(NoSuchFieldException::class, IllegalAccessException::class)
+inline fun <reified T> Any.getParentParam(name: String): T? =
+    javaClass.superclass.getDeclaredField(name).apply {
+        isAccessible = true
+    }[this] as? T
 
 /**
  * Xposed 设置字段值

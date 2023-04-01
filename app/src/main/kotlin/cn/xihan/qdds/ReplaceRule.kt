@@ -179,7 +179,7 @@ fun Context.showAddOrEditReplaceRuleDialog(
  */
 fun PackageParam.customBookFansValue(versionCode: Int) {
     when (versionCode) {
-        in 872..884 -> {
+        in 872..890 -> {
             findClass("com.qidian.QDReader.ui.modules.bookshelf.dialog.BookShelfMiniCardDialog").hook {
                 injectMember {
                     method {
@@ -244,37 +244,45 @@ fun PackageParam.customBookFansValue(versionCode: Int) {
                 }
             }
 
-            findClass("com.qidian.QDReader.ui.view.BookFansBottomView").hook {
-                injectMember {
-                    method {
-                        name = if (versionCode == 884) "e" else "h"
-                        param(
-                            "com.qidian.QDReader.repository.entity.QDFansUserValue".toClass(),
-                            LongType,
-                            StringClass
-                        )
-                        returnType = UnitType
-                    }
-                    beforeHook {
-//                        val userFansInfo = .getParam<Any>("mUserInfo")
-                        HookEntry.optionEntity.bookFansValueOption.apply {
-                            args[0]?.setParams(
-                                "Amount" to amount,
-                                "DValue" to dValue,
-                                "DaShangDesc" to daShangDesc,
-                                "FansRank" to fansRank,
-                                "HeadImageUrl" to headImageUrl,
-                                "LeagueRank" to leagueRank,
-                                "LeagueType" to leagueType,
-                                "MonthUpgradeDesc" to rankUpgradeDesc,
-                                "NickName" to nickName,
-                                "RankName" to rankName,
-                                "RankUpgradeDesc" to rankUpgradeDesc
+            val needHookMethod = when(versionCode){
+                872 -> "h"
+                in 884..890 -> "e"
+                else -> null
+            }
+            needHookMethod?.let {
+                findClass("com.qidian.QDReader.ui.view.BookFansBottomView").hook {
+                    injectMember {
+                        method {
+                            name = needHookMethod
+                            param(
+                                "com.qidian.QDReader.repository.entity.QDFansUserValue".toClass(),
+                                LongType,
+                                StringClass
                             )
+                            returnType = UnitType
+                        }
+                        beforeHook {
+//                        val userFansInfo = .getParam<Any>("mUserInfo")
+                            HookEntry.optionEntity.bookFansValueOption.apply {
+                                args[0]?.setParams(
+                                    "Amount" to amount,
+                                    "DValue" to dValue,
+                                    "DaShangDesc" to daShangDesc,
+                                    "FansRank" to fansRank,
+                                    "HeadImageUrl" to headImageUrl,
+                                    "LeagueRank" to leagueRank,
+                                    "LeagueType" to leagueType,
+                                    "MonthUpgradeDesc" to rankUpgradeDesc,
+                                    "NickName" to nickName,
+                                    "RankName" to rankName,
+                                    "RankUpgradeDesc" to rankUpgradeDesc
+                                )
+                            }
                         }
                     }
                 }
-            }
+            } ?: "书友值".printlnNotSupportVersion(versionCode)
+
 
             /**
              * tvName
@@ -283,6 +291,7 @@ fun PackageParam.customBookFansValue(versionCode: Int) {
                 872 -> 0x7F0919AB
                 878 -> 0x7F091A0B
                 884 -> 0x7F091A33
+                890 -> 0x7F091A4B
                 else -> null
             }
             if (textViewId == null) {

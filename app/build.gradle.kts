@@ -6,20 +6,23 @@ apply {
 }
 
 plugins {
-    id("com.android.application")
-    kotlin("android")
-    kotlin("plugin.serialization")
-    //id("org.jetbrains.dokka")
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.com.android.application)
+    alias(libs.plugins.org.jetbrains.kotlin.android)
+    alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
+    alias(libs.plugins.com.google.devtools.ksp)
 }
 
 val keystorePropertiesFile = rootProject.file("keystore.properties")
 val keystoreProperties = Properties()
 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
+val androidTargetSdkVersion by extra(33)
+val androidMinSdkVersion by extra(26)
+
+
 android {
     namespace = "cn.xihan.qdds"
-    compileSdk = rootProject.extra["targetSdkVersion"] as Int
+    compileSdk = androidTargetSdkVersion
     compileSdkPreview = "UpsideDownCake"
 
     androidResources.additionalParameters += arrayOf(
@@ -40,8 +43,8 @@ android {
     }
 
     defaultConfig {
-        minSdk = rootProject.extra["minSdkVersion"] as Int
-        targetSdk = rootProject.extra["targetSdkVersion"] as Int
+        minSdk = androidMinSdkVersion
+        targetSdk = androidTargetSdkVersion
         versionCode = rootProject.extra["appVersionCode"] as Int
         versionName = rootProject.extra["appVersionName"] as String
 
@@ -74,7 +77,7 @@ android {
 
     buildFeatures.compose = true
 
-    composeOptions.kotlinCompilerExtensionVersion = rootProject.extra["kotlinCompilerExtensionVersion"] as String
+    composeOptions.kotlinCompilerExtensionVersion = "1.4.3"
 
     packagingOptions.apply {
         resources.excludes += mutableSetOf(
@@ -94,98 +97,37 @@ android {
 
 dependencies {
 
-    implementation("androidx.core:core-ktx:${rootProject.extra["coreVersion"]}")
-    implementation("androidx.appcompat:appcompat:${rootProject.extra["appcompatVersion"]}")
-    implementation("androidx.activity:activity-ktx:${rootProject.extra["activityVersion"]}")
-    implementation("com.google.android.material:material:${rootProject.extra["materialVersion"]}")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${rootProject.extra["kotlinxJsonVersion"]}")
-    implementation("com.alibaba.fastjson2:fastjson2-kotlin:${rootProject.extra["fastJson2Version"]}")
-
-//    implementation("com.github.liangjingkanji:spannable:latest.release")
-//    implementation(platform("androidx.compose:compose-bom:2023.01.00"))
-    implementation("dev.chrisbanes.compose:compose-bom:2023.02.00-rc02")
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.runtime:runtime")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.foundation:foundation")
-    implementation("androidx.activity:activity-compose:${rootProject.extra["activityVersion"]}")
-    implementation("androidx.navigation:navigation-compose:${rootProject.extra["navComposeVersion"]}")
-    implementation("com.google.accompanist:accompanist-systemuicontroller:${rootProject.extra["accompanistVersion"]}")
-    implementation("com.google.accompanist:accompanist-themeadapter-material3:${rootProject.extra["accompanistVersion"]}")
-    // https://github.com/getActivity/XXPermissions
-    implementation("com.github.getActivity:XXPermissions:latest.release") {
-        exclude(group = "com.android.support")
-    }
-    // https://github.com/skydoves/landscapist#coil
-    implementation("com.github.skydoves:landscapist-coil:${rootProject.extra["landscapistVersion"]}") {
+    implementation(libs.core.ktx)
+    implementation(libs.appcompat)
+    implementation(libs.kotlin.json)
+    implementation(libs.fast.json)
+    implementation(libs.landscapist.coil) {
         exclude(group = "io.coil-kt")
     }
-    implementation("io.coil-kt:coil-compose:${rootProject.extra["coilVersion"]}")
-    // 基础依赖
-    implementation("com.highcapable.yukihookapi:api:${rootProject.extra["yuKiHookVersion"]}")
-    // ❗作为 Xposed 模块使用务必添加，其它情况可选
-    compileOnly("de.robv.android.xposed:api:82")
-    // ❗作为 Xposed 模块使用务必添加，其它情况可选
-    ksp("com.highcapable.yukihookapi:ksp-xposed:${rootProject.extra["yuKiHookVersion"]}")
-//    // Kotlin 反射库
-//    implementation("org.jetbrains.kotlin:kotlin-reflect:${rootProject.extra["kotlin.version"]}")
-
-    //dokkaGfmPlugin("org.jetbrains.dokka:gfm-plugin:${rootProject.extra["kotlin.version"]}")
-}
-
-// 卸载模块APK任务
-/*
-tasks.register<Exec>("uninstallApk") {
-    if (project.hasProperty("debug")) {
-        val packageName = android.defaultConfig.applicationId
-        /*
-        val out = org.apache.commons.io.output.ByteArrayOutputStream()
-        exec {
-            // cmd 运行 adb 判断指定包名是否存在
-            commandLine("cmd", "/c", "adb -s a8bf5717 shell pm list packages $packageName")
-            // 重定向输出
-            standardOutput = out
-        }
-        if (out.toString().contains("cn.xihan.qdds")) {
-            println("目标 Apk 存在  开始卸载...")
-            // 存在则卸载
-            commandLine("cmd", "/c", "adb -s a8bf5717 uninstall $packageName")
-        }
-
-         */
+    implementation(libs.xxpermissions) {
+        exclude(group = "com.android.support")
     }
+    implementation(libs.io.coil.compose)
+
+    implementation(platform(libs.compose.bom))
+    implementation(libs.ui)
+    implementation(libs.ui.graphics)
+    implementation(libs.foundation)
+    implementation(libs.runtime)
+    implementation(libs.animation)
+    implementation(libs.material3)
+    implementation(libs.navigation.compose)
+    implementation(libs.activity.compose)
+    implementation(libs.com.google.accompanist.systemuicontroller)
+    implementation(libs.com.google.accompanist.themeadapter.material3)
+    implementation(libs.com.google.android.material)
+
+    implementation(libs.yukihook.api)
+    ksp(libs.yukihook.ksp)
+
+    compileOnly(libs.xposed.api)
+
 }
-
- */
-
-// 关闭起点Apk任务
-/*
-tasks.register<Exec>("killApk") {
-    if (project.hasProperty("debug")) {
-        val packageName = "com.qidian.QDReader"
-        val cmd = "adb -s a8bf5717 shell am force-stop $packageName"
-        commandLine("cmd", "/c", cmd)
-    }
-}
-
- */
-
-/*
-tasks.dokkaGfm {
-    outputDirectory.set(file("${rootProject.projectDir}/dokkaGfm"))
-
-
-
-    dokkaSourceSets {
-        named("main") {
-            jdkVersion.set(11)
-            sourceRoots.from(files("src/main/kotlin"))
-        }
-    }
-}
-
- */
 
 /*
 kotlin{

@@ -291,7 +291,7 @@ fun PackageParam.disableReadPageFloatAd(versionCode: Int) {
         in 850..868 -> "I"
         872 -> "G"
         878 -> "j1"
-        884 -> "g1"
+        in 884..890 -> "g1"
         else -> null
     }
     hookMethodName?.let {
@@ -524,42 +524,41 @@ fun PackageParam.disableUpdate(versionCode: Int) {
         in 792..796 -> "com.qidian.QDReader.util.i5"
         in 800..834 -> "com.qidian.QDReader.util.l5"
         in 842..878 -> "com.qidian.QDReader.util.m5"
+        884 ->  "com.qidian.QDReader.util.k5"
+        890 -> "com.qidian.QDReader.util.l5"
+        else -> null
+    }
+    val needHookMethod = when (versionCode) {
+        in 758..878 -> "b"
+        in 884..890 -> "judian"
+        else -> null
+    }
+    val needHookMethod2 = when (versionCode) {
+        in 758..878 -> "a"
+        in 884..890 -> "search"
         else -> null
     }
     needHookClass?.hook {
-        injectMember {
-            method {
-                name = "b"
-                returnType = UnitType
+        needHookMethod?.let {
+            injectMember {
+                method {
+                    name = it
+                    returnType = UnitType
+                }
+                intercept()
             }
-            intercept()
         }
 
-        injectMember {
-            method {
-                name = "a"
-                returnType = UnitType
+        needHookMethod2?.let {
+            injectMember {
+                method {
+                    name = it
+                    returnType = UnitType
+                }
+                intercept()
             }
-            intercept()
         }
     }
-
-    val needHookClass2 = when (versionCode) {
-        884 -> "com.qidian.QDReader.util.k5"
-        else -> null
-    }
-
-    needHookClass2?.hook {
-        injectMember {
-            method {
-                name = "judian"
-                paramCount(1)
-                returnType = UnitType
-            }
-            intercept()
-        }
-    }
-
 
     /*
     /**
@@ -585,7 +584,6 @@ fun PackageParam.disableUpdate(versionCode: Int) {
     }
 
      */
-
     when (versionCode) {
         in 758..900 -> {
 

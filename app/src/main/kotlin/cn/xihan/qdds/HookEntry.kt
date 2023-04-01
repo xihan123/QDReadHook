@@ -91,8 +91,6 @@ class HookEntry : IYukiHookXposedInit {
                 enableOldLayout(versionCode)
             }
 
-            newBookShelfLayout(versionCode, optionEntity.bookshelfOption.enableNewBookShelfLayout)
-
             readerPageChapterReviewPictures(
                 versionCode = versionCode,
                 enableShowReaderPageChapterSaveRawPictures = optionEntity.readPageOption.enableShowReaderPageChapterSaveRawPicture,
@@ -170,7 +168,8 @@ class HookEntry : IYukiHookXposedInit {
                 newOldLayout(
                     versionCode = versionCode,
                     enableNewUserAccount = optionEntity.viewHideOption.accountOption.enableNewAccountLayout,
-                    enableNewStore = optionEntity.mainOption.enableNewStore
+                    enableNewStore = optionEntity.mainOption.enableNewStore,
+                    enableNewBookShelfLayout = optionEntity.bookshelfOption.enableNewBookShelfLayout
                 )
             }
 
@@ -952,10 +951,10 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
             }
         }
 
-        in 842..884 -> {
+        in 842..890 -> {
             val needHookMethod = when (versionCode) {
                 in 842..878 -> "E"
-                884 -> "B"
+                in 884..890 -> "B"
                 else -> null
             }
             if (needHookMethod != null) {
@@ -996,7 +995,7 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
                     afterHook {
                         val binding = instance.getParam<Any>("binding")
                         val d =
-                            binding?.getParam<LinearLayout>(if (versionCode == 884) "a" else "d")
+                            binding?.getParam<LinearLayout>(if (versionCode >= 884) "a" else "d")
                         val e1 = d?.getParam<TextView>("e")
                         e1?.let { tv ->
                             if (tv.text == "签到") {
@@ -1027,12 +1026,13 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
 fun PackageParam.newOldLayout(
     versionCode: Int,
     enableNewUserAccount: Boolean = false,
-    enableNewStore: Boolean = false
+    enableNewStore: Boolean = false,
+    enableNewBookShelfLayout: Boolean = false
 ) {
     val needHookClass = when (versionCode) {
         868 -> "r4.a\$a"
         in 872..878 -> "p4.a\$a"
-        884 -> "l4.search\$search"
+        in 884..890 -> "l4.search\$search"
         else -> null
     }
 
@@ -1044,6 +1044,7 @@ fun PackageParam.newOldLayout(
         872 -> "m"
         878 -> "o"
         884 -> "m"
+        890 -> "n"
         else -> null
     }
 
@@ -1054,11 +1055,28 @@ fun PackageParam.newOldLayout(
         872 -> "d"
         878 -> "e"
         884 -> "b"
+        890 -> "c"
+        else -> null
+    }
+
+
+    /**
+     * 新版书架布局
+     * 上级调用: com.qidian.QDReader.ui.activity.MainGroupActivity.onCreate
+     * mFragmentPagerAdapter
+     * BOOK_SHELF_REBORN
+     */
+    val needHookMethod = when (versionCode) {
+        in 827..850 -> "b"
+        in 868..872 -> "c"
+        878 -> "d"
+        884 -> "a"
+        890 -> "b"
         else -> null
     }
 
     if (needHookClass == null) {
-        "新旧我的布局".printlnNotSupportVersion(versionCode)
+        "新旧布局".printlnNotSupportVersion(versionCode)
         return
     }
     needHookClass.hook {
@@ -1093,6 +1111,25 @@ fun PackageParam.newOldLayout(
                 } else {
                     replaceToFalse()
                 }
+            }
+        }
+
+        if (needHookMethod == null) {
+            "新版书架布局".printlnNotSupportVersion(versionCode)
+            return
+        } else {
+            injectMember {
+                method {
+                    name = needHookMethod
+                    emptyParam()
+                    returnType = BooleanType
+                }
+                if (enableNewBookShelfLayout) {
+                    replaceToTrue()
+                } else {
+                    replaceToFalse()
+                }
+
             }
         }
     }
@@ -1217,7 +1254,7 @@ fun PackageParam.unlockMemberBackground(versionCode: Int) {
  */
 fun PackageParam.freeAdReward(versionCode: Int) {
     when (versionCode) {
-        in 854..884 -> {
+        in 854..890 -> {
             findClass("com.qq.e.comm.managers.plugin.PM").hook {
                 injectMember {
                     method {
@@ -1404,12 +1441,12 @@ fun PackageParam.freeAdReward(versionCode: Int) {
 fun PackageParam.ignoreFansValueJumpLimit(versionCode: Int) {
     val needHookClass = when (versionCode) {
         in 854..878 -> "com.qidian.QDReader.util.ValidateActionLimitUtil\$a"
-        884 -> "com.qidian.QDReader.util.ValidateActionLimitUtil\$search"
+        in 884..890 -> "com.qidian.QDReader.util.ValidateActionLimitUtil\$search"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 854..878 -> "e"
-        884 -> "b"
+        in 884..890 -> "b"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -1444,12 +1481,12 @@ fun PackageParam.ignoreFansValueJumpLimit(versionCode: Int) {
 fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
     val needHookClass = when (versionCode) {
         in 854..878 -> "com.qidian.QDReader.component.bll.manager.e1"
-        884 -> "com.qidian.QDReader.component.bll.manager.b1"
+        in 884..890 -> "com.qidian.QDReader.component.bll.manager.b1"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 854..878 -> "n0"
-        884 -> "k0"
+        in 884..890 -> "k0"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -1622,7 +1659,7 @@ fun Context.showMainOptionDialog() {
  */
 fun PackageParam.exportEmoji(versionCode: Int) {
     when (versionCode) {
-        884 -> {
+        in 884..890 -> {
             findClass("com.qidian.QDReader.ui.activity.QDStickersDetailActivity").hook {
                 injectMember {
                     method {
@@ -1649,6 +1686,7 @@ fun PackageParam.exportEmoji(versionCode: Int) {
                         }
                         val topBarViewId = when (versionCode) {
                             884 -> 0x7F09176F
+                            890 -> 0x7F091784
                             else -> null
                         }
                         if (topBarViewId != null) {
@@ -1732,7 +1770,7 @@ fun Context.exportEmojiDialog(
  */
 fun PackageParam.importAudio(versionCode: Int) {
     when (versionCode) {
-        884 -> {
+        in 884..890 -> {
             findClass("com.qidian.QDReader.ui.fragment.reader.ParagraphDubbingFragment").hook {
                 injectMember {
                     method {
@@ -1747,20 +1785,21 @@ fun PackageParam.importAudio(versionCode: Int) {
                             returnType = ViewClass
                             superClass()
                         }.get(instance).call()
-                        val buttonViewId = when (versionCode) {
+                        val mBtnStartViewId = when (versionCode) {
                             884 -> 0x7F090FFC
+                            890 -> 0x7F091008
                             else -> null
                         } ?: return@afterHook
                         val button = XposedHelpers.callMethod(
                             view,
                             "findViewById",
-                            buttonViewId
+                            mBtnStartViewId
                         ) as? LinearLayout
                         val e = button?.getView<TextView>("e")
                         if (e?.text == "点击配音") {
                             e.text = "点击配音/长按导入"
                             e.setOnLongClickListener {
-                                e.context.importAudioFile() { path ->
+                                e.context.importAudioFile { path ->
                                     if (path.isBlank()) {
                                         e.context.toast("路径不能为空")
                                     } else {

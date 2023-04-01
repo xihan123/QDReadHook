@@ -46,7 +46,7 @@ fun PackageParam.homeOption(versionCode: Int, optionValueSet: List<OptionEntity.
  */
 fun PackageParam.selectedOption(versionCode: Int) {
     when (versionCode) {
-        in 868..884 -> {
+        in 868..890 -> {
             /*
             findClass("com.qidian.morphing.card.BaseMorphingCard").hook {
                 injectMember {
@@ -237,7 +237,7 @@ fun PackageParam.selectedOption(versionCode: Int) {
  */
 fun PackageParam.selectedTitleOption(versionCode: Int) {
     when (versionCode) {
-        in 872..884 -> {
+        in 872..890 -> {
             findClass("com.qidian.QDReader.ui.fragment.QDStorePagerFragment").hook {
                 injectMember {
                     method {
@@ -395,14 +395,14 @@ fun PackageParam.hideBookshelfDailyReading(versionCode: Int) {
         in 804..812 -> "com.qidian.QDReader.ui.adapter.j0"
         in 827..860 -> "com.qidian.QDReader.ui.adapter.i0"
         in 868..878 -> "com.qidian.QDReader.ui.adapter.j0"
-        884 -> "com.qidian.QDReader.ui.adapter.g0"
+        in 884..890 -> "com.qidian.QDReader.ui.adapter.g0"
         else -> null
     }
     val listAdapterClass = when (versionCode) {
         in 804..812 -> "com.qidian.QDReader.ui.adapter.h0"
         in 827..860 -> "com.qidian.QDReader.ui.adapter.k0"
         in 868..878 -> "com.qidian.QDReader.ui.adapter.l0"
-        884 -> "com.qidian.QDReader.ui.adapter.i0"
+        in 884..890 -> "com.qidian.QDReader.ui.adapter.i0"
         else -> null
     }
     if (gridAdapterClass == null || listAdapterClass == null) {
@@ -449,10 +449,10 @@ fun PackageParam.hideBookshelfDailyReading(versionCode: Int) {
  * 隐藏书架-去找书
  */
 fun PackageParam.hideBookshelfFindBook(versionCode: Int) {
-    if (versionCode in 868..884) {
+    if (versionCode in 868..890) {
         val needHookClass = when (versionCode) {
             in 868..878 -> "com.qidian.QDReader.ui.viewholder.bookshelf.r"
-            884 -> "com.qidian.QDReader.ui.viewholder.bookshelf.o"
+            in 884..890 -> "com.qidian.QDReader.ui.viewholder.bookshelf.o"
             else -> null
         }
         needHookClass?.hook {
@@ -515,12 +515,13 @@ fun PackageParam.hideBottomRedDot(versionCode: Int) {
     val needHookClass = when (versionCode) {
         in 758..768 -> "com.qidian.QDReader.ui.widget.maintab.a"
         in 772..878 -> "com.qidian.QDReader.ui.widget.maintab.e"
-        884 -> "com.qidian.QDReader.ui.widget.maintab.b"
+        in 884..890 -> "com.qidian.QDReader.ui.widget.maintab.b"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 758..878 -> "h"
         884 -> "e"
+        890 -> "h"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -542,46 +543,49 @@ fun PackageParam.hideBottomRedDot(versionCode: Int) {
  * 隐藏底部导航栏
  */
 fun PackageParam.hideBottomNavigation(versionCode: Int) {
-    when (versionCode) {
-        in 872..884 -> {
-            findClass("com.qidian.QDReader.ui.widget.maintab.PagerSlidingTabStrip").hook {
-                injectMember {
-                    method {
-                        name = if (versionCode == 884) "p" else "s"
-                        emptyParam()
-                        returnType = UnitType
-                    }
-                    afterHook {
-                        val i = instance.getView<LinearLayout>("i")
-                        i?.let {
-                            val childCount = it.childCount
-                            for (index in 0 until childCount) {
-                                val childView = it.getChildAt(index) as? RelativeLayout
-                                childView?.let {
-                                    val childViewChildCount = childView.childCount
-                                    for (childViewIndex in 0 until childViewChildCount) {
-                                        if (childView.getChildAt(childViewIndex) is TextView) {
-                                            val textView =
-                                                childView.getChildAt(childViewIndex) as TextView
-                                            val text = textView.text
-                                            HookEntry.optionEntity.viewHideOption.homeOption.configurations.findOrPlus(
-                                                title = "主页底部导航栏$text"
-                                            ) {
-                                                val view = textView.parent as? View
-                                                view?.visibility = View.GONE
-                                            }
-                                        }
+
+    val needHookMethod = when (versionCode) {
+        in 872..878 -> "s"
+        in 884..890 -> "p"
+        else -> null
+    }
+    if (needHookMethod == null) {
+        "隐藏底部导航栏".printlnNotSupportVersion(versionCode)
+        return
+    }
+    findClass("com.qidian.QDReader.ui.widget.maintab.PagerSlidingTabStrip").hook {
+        injectMember {
+            method {
+                name = needHookMethod
+                emptyParam()
+                returnType = UnitType
+            }
+            afterHook {
+                val i = instance.getView<LinearLayout>("i")
+                i?.let {
+                    val childCount = it.childCount
+                    for (index in 0 until childCount) {
+                        val childView = it.getChildAt(index) as? RelativeLayout
+                        childView?.let {
+                            val childViewChildCount = childView.childCount
+                            for (childViewIndex in 0 until childViewChildCount) {
+                                if (childView.getChildAt(childViewIndex) is TextView) {
+                                    val textView =
+                                        childView.getChildAt(childViewIndex) as TextView
+                                    val text = textView.text
+                                    HookEntry.optionEntity.viewHideOption.homeOption.configurations.findOrPlus(
+                                        title = "主页底部导航栏$text"
+                                    ) {
+                                        val view = textView.parent as? View
+                                        view?.visibility = View.GONE
                                     }
                                 }
                             }
                         }
-
                     }
                 }
             }
         }
-
-        else -> "隐藏底部导航栏".printlnNotSupportVersion(versionCode)
     }
 }
 
@@ -638,20 +642,13 @@ fun PackageParam.findViewHide(
                                 val iterator = it.iterator()
                                 while (iterator.hasNext()) {
                                     val next = iterator.next().toJSONString().parseObject()
-                                    val showName = next?.getString("showName")
+                                    val showName =
+                                        next?.getString("showName") ?: next?.getString("ShowName")
                                     if (!showName.isNullOrBlank()) {
-                                        HookEntry.optionEntity.viewHideOption.findOption.advItem.apply {
-                                            find { it1 -> it1.title == showName }?.let { advItem ->
-                                                if (advItem.selected) {
-                                                    iterator.remove()
-                                                }
-                                            } ?: plusAssign(
-                                                OptionEntity.SelectedModel(
-                                                    showName
-                                                )
-                                            )
-
-                                        }
+                                        HookEntry.optionEntity.viewHideOption.findOption.advItem.findOrPlus(
+                                            showName,
+                                            iterator
+                                        )
                                         updateOptionEntity()
                                     }
                                 }
@@ -670,20 +667,12 @@ fun PackageParam.findViewHide(
                                 val iterator = it.iterator()
                                 while (iterator.hasNext()) {
                                     val next = iterator.next().toJSONString().parseObject()
-                                    val name = next?.getString("desc")
+                                    val name = next?.getString("desc") ?: next?.getString("Desc")
                                     if (!name.isNullOrBlank()) {
-                                        HookEntry.optionEntity.viewHideOption.findOption.filterConfItem.apply {
-                                            find { it1 -> it1.title == name }?.let { filterConf ->
-                                                if (filterConf.selected) {
-                                                    iterator.remove()
-                                                }
-                                            } ?: plusAssign(
-                                                OptionEntity.SelectedModel(
-                                                    name
-                                                )
-                                            )
-
-                                        }
+                                        HookEntry.optionEntity.viewHideOption.findOption.filterConfItem.findOrPlus(
+                                            name,
+                                            iterator
+                                        )
                                         updateOptionEntity()
                                     }
                                 }
@@ -694,19 +683,13 @@ fun PackageParam.findViewHide(
                                 val iterator = it.iterator()
                                 while (iterator.hasNext()) {
                                     val next = iterator.next().toJSONString().parseObject()
-                                    val name = next?.getString("showName")
+                                    val name =
+                                        next?.getString("showName") ?: next?.getString("ShowName")
                                     if (!name.isNullOrBlank()) {
-                                        HookEntry.optionEntity.viewHideOption.findOption.headItem.apply {
-                                            find { it1 -> it1.title == name }?.let { headItem ->
-                                                if (headItem.selected) {
-                                                    iterator.remove()
-                                                }
-                                            } ?: plusAssign(
-                                                OptionEntity.SelectedModel(
-                                                    name
-                                                )
-                                            )
-                                        }
+                                        HookEntry.optionEntity.viewHideOption.findOption.headItem.findOrPlus(
+                                            name,
+                                            iterator
+                                        )
                                         updateOptionEntity()
                                     }
                                 }
@@ -971,7 +954,7 @@ fun PackageParam.removeQSNYDialog(versionCode: Int) {
         in 758..854 -> "com.qidian.QDReader.bll.helper.g1"
         in 858..868 -> "com.qidian.QDReader.bll.helper.m1"
         in 872..878 -> "com.qidian.QDReader.bll.helper.k1"
-        884 -> "com.qidian.QDReader.bll.helper.h1"
+        in 884..890 -> "com.qidian.QDReader.bll.helper.h1"
         else -> null
     }
     needHookClass?.hook {
@@ -1306,14 +1289,14 @@ fun PackageParam.bookDetailHide(
                 /**
                  * 隐藏书友榜
                  */
-                val bookFansModuleNeedHookMethod = when(versionCode){
+                val bookFansModuleNeedHookMethod = when (versionCode) {
                     in 827..878 -> "d"
-                    884 -> "a"
+                    in 884..890 -> "a"
                     else -> null
                 }
-                if (bookFansModuleNeedHookMethod == null){
+                if (bookFansModuleNeedHookMethod == null) {
                     "隐藏书友榜".printlnNotSupportVersion(versionCode)
-                }else{
+                } else {
                     findClass("com.qidian.QDReader.ui.view.BookFansModuleView").hook {
                         injectMember {
                             method {
@@ -1397,7 +1380,7 @@ fun PackageParam.comicHideBannerAd(versionCode: Int) {
         868 -> "pa.g"
         872 -> "na.g"
         878 -> "ma.g"
-        884 -> "fa.d"
+        in 884..890 -> "fa.d"
         else -> null
     }
     needHookClass?.hook {

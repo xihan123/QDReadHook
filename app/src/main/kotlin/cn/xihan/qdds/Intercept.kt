@@ -75,12 +75,13 @@ fun PackageParam.interceptAgreePrivacyPolicy(version: Int) {
     val needHookClass = when (version) {
         in 868..878 -> "com.qidian.QDReader.util.w4"
         884 -> "com.qidian.QDReader.util.u4"
+        890 -> "com.qidian.QDReader.util.v4"
         else -> null
     }
     val needHookMethod = when (version) {
         in 868..872 -> "k0"
         878 -> "l0"
-        884 -> "i0"
+        in 884..890 -> "i0"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -106,12 +107,12 @@ fun PackageParam.interceptAgreePrivacyPolicy(version: Int) {
 fun PackageParam.interceptWebSocket(version: Int) {
     val needHookClass = when (version) {
         in 868..878 -> "com.qidian.QDReader.component.msg.c"
-        884 -> "com.qidian.QDReader.component.msg.cihai"
+        in 884..890 -> "com.qidian.QDReader.component.msg.cihai"
         else -> null
     }
     val needHookMethod = when (version) {
         in 868..878 -> "r"
-        884 -> "o"
+        in 884..890 -> "o"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -155,10 +156,11 @@ fun PackageParam.interceptQSNModeRequest(version: Int) {
 /**
  * 拦截闪屏广告页面
  * SplashManager
+ * SettingSplashEnableGDT
  */
 fun PackageParam.interceptSplashAdActivity(version: Int) {
     when (version) {
-        884 -> {
+        in 884..890 -> {
             findClass("g6.search").hook {
                 injectMember {
                     method {
@@ -183,7 +185,7 @@ fun PackageParam.interceptAsyncInitTask(
     substring: List<String>
 ) {
     when (version) {
-        in 872..884 -> {
+        in 872..890 -> {
             findClass(substring[1]).hook {
                 injectMember {
                     method {

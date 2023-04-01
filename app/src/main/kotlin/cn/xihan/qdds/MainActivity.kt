@@ -132,62 +132,66 @@ class MainActivity : ModuleAppCompatActivity() {
             MainScreen.MainSetting, MainScreen.PurifySetting, MainScreen.About
         )
         val navController = rememberNavController()
-        Scaffold(modifier = M.fillMaxSize(), topBar = {
-            CenterAlignedTopAppBar(title = {
-                Text(text = "QDReadHook")
-            }, modifier = M.fillMaxWidth(), actions = {
-                Row {
-                    IconButton(onClick = {
-                        restartApplication()
-                    }) {
-                        Icon(Icons.Filled.Refresh, null)
+        Scaffold(
+            modifier = M.fillMaxSize(),
+            topBar = {
+                CenterAlignedTopAppBar(title = {
+                    Text(text = "QDReadHook")
+                }, modifier = M.fillMaxWidth(), actions = {
+                    Row {
+                        IconButton(onClick = {
+                            restartApplication()
+                        }) {
+                            Icon(Icons.Filled.Refresh, null)
+                        }
+                        IconButton(onClick = {
+                            finish()
+                        }) {
+                            Icon(Icons.Filled.ExitToApp, null)
+                        }
                     }
-                    IconButton(onClick = {
-                        finish()
-                    }) {
-                        Icon(Icons.Filled.ExitToApp, null)
-                    }
-                }
-            }, navigationIcon = {}, scrollBehavior = null
-            )
-        }, bottomBar = {
-            if (permission.value) {
-                NiaNavigationBar(
-                    modifier = M
-                        .fillMaxWidth()
-                        .navigationBarsPadding()
-                        .height(56.dp),
-                ) {
-                    val navBackStackEntry by navController.currentBackStackEntryAsState()
-                    val currentDestination = navBackStackEntry?.destination
-                    items.forEachIndexed { index, screen ->
-                        NiaNavigationRailItem(icon = {
-                            when (index) {
-                                0 -> Icon(Icons.Filled.Home, null)
-                                1 -> Icon(Icons.Filled.Delete, null)
-                                2 -> Icon(Icons.Filled.Info, null)
-                            }
-                        },
-                            label = { Text(screen.title) },
-                            selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-                            onClick = {
-                                if (navBackStackEntry != null) {
-                                    navController.navigate(screen.route) {
-                                        popUpTo(navController.graph.findStartDestination().id) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                        restoreState = true
+                }, navigationIcon = {}, scrollBehavior = null
+                )
+            },
+            bottomBar = {
+                if (permission.value) {
+                    NiaNavigationBar(
+                        modifier = M
+                            .fillMaxWidth()
+                            .navigationBarsPadding()
+//                            .height(56.dp),
+                    ) {
+                        val navBackStackEntry by navController.currentBackStackEntryAsState()
+                        val currentDestination = navBackStackEntry?.destination
+                        items.forEachIndexed { index, screen ->
+                            NiaNavigationBarItem(
+                                icon = {
+                                    when (index) {
+                                        0 -> Icon(Icons.Filled.Home, null)
+                                        1 -> Icon(Icons.Filled.Delete, null)
+                                        2 -> Icon(Icons.Filled.Info, null)
                                     }
-                                }
-                            },
-                            modifier = M.weight(1f)
-                        )
+                                },
+                                label = { Text(screen.title) },
+                                selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                                onClick = {
+                                    if (navBackStackEntry != null) {
+                                        navController.navigate(screen.route) {
+                                            popUpTo(navController.graph.findStartDestination().id) {
+                                                saveState = true
+                                            }
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        }
+                                    }
+                                },
+                                modifier = M.weight(1f)
+                            )
 
+                        }
                     }
                 }
-            }
-        }) { paddingValues ->
+            }) { paddingValues ->
 
             if (permission.value) {
                 NavHost(

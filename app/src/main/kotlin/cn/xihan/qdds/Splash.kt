@@ -8,7 +8,6 @@ import android.widget.RelativeLayout
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.android.BundleClass
-import com.highcapable.yukihookapi.hook.type.java.BooleanType
 import com.highcapable.yukihookapi.hook.type.java.IntType
 import com.highcapable.yukihookapi.hook.type.java.LongType
 import com.highcapable.yukihookapi.hook.type.java.StringClass
@@ -43,10 +42,10 @@ fun PackageParam.splashPage(
  */
 fun PackageParam.disableSplash(versionCode: Int) {
     when (versionCode) {
-        in 758..884 -> {
+        in 758..890 -> {
             val splashManagerNeedHookMethod = when (versionCode) {
                 in 758..878 -> "k"
-                884 -> "h"
+                in 884..890 -> "h"
                 else -> null
             }
             if (splashManagerNeedHookMethod != null) {
@@ -78,35 +77,6 @@ fun PackageParam.disableSplash(versionCode: Int) {
                             }.call()
 
                         }
-                    }
-                }
-            }
-
-            /**
-             * SettingSplashEnableGDT
-             */
-            val needHookClass = when (versionCode) {
-                868 -> "n6.a"
-                in 872..878 -> "l6.a"
-                884 -> "g6.search"
-                else -> null
-            }
-            val needHookMethod = when (versionCode) {
-                in 868..878 -> "e"
-                884 -> "search"
-                else -> null
-            }
-            if (needHookClass == null || needHookMethod == null) {
-                "闪屏页".printlnNotSupportVersion(versionCode)
-            } else {
-                needHookClass.hook {
-                    injectMember {
-                        method {
-                            name = needHookMethod
-                            emptyParam()
-                            returnType = BooleanType
-                        }
-                        replaceToFalse()
                     }
                 }
             }
