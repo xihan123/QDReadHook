@@ -1,5 +1,29 @@
 # Changelog
 
+## [2.0.7](https://github.com/xihan123/QDReadHook/compare/v2.0.6...v2.0.7) (2023-04-01)
+
+
+### Features
+
+* 适配 `890` 版本 ([d5620a8](https://github.com/xihan123/QDReadHook/commit/d5620a818e4696323cfdb7051ed681a3dfe32032))
+
+
+### Bug Fixes
+
+* 配音导入对话框 ([e5a1140](https://github.com/xihan123/QDReadHook/commit/e5a11401bd32ba9886338f373518bf85f75b8889))
+
+
+### Miscellaneous
+
+* **master:** release 2.0.6 ([a0cb22d](https://github.com/xihan123/QDReadHook/commit/a0cb22d3c7a6e10292dac21bd667e800fcc57523))
+* **master:** release 2.0.6 ([cfa49e2](https://github.com/xihan123/QDReadHook/commit/cfa49e263651a4610d954a016cd643adbaeb6d11))
+* 更新依赖库 ([55ab25f](https://github.com/xihan123/QDReadHook/commit/55ab25f78da20f493f7ff26ac22c5aa544d8f73e))
+
+
+### CI
+
+* release.yml ([bced994](https://github.com/xihan123/QDReadHook/commit/bced9941c10b94e6235c1c9a0009a6160ce8de9f))
+
 ## [2.0.6](https://github.com/xihan123/QDReadHook/compare/v2.0.6...v2.0.6) (2023-03-20)
 
 
