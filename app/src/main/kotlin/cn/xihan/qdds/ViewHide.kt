@@ -8,6 +8,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import com.alibaba.fastjson2.parseObject
 import com.alibaba.fastjson2.toJSONString
+import com.highcapable.yukihookapi.YukiHookAPI.Status.Executor.name
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.android.ViewClass
@@ -808,7 +809,7 @@ fun PackageParam.accountViewHide(
                                 val iterator = benefitButtonList.iterator()
                                 while (iterator.hasNext()) {
                                     val next = iterator.next().toJSONString().parseObject()
-                                    val name = next?.getString("name")
+                                    val name = next?.getString("name") ?: next?.getString("Name")
                                     if (!name.isNullOrBlank()) {
                                         HookEntry.optionEntity.viewHideOption.accountOption.newConfiguration.findOrPlus(
                                             title = name,
@@ -826,7 +827,7 @@ fun PackageParam.accountViewHide(
                                 val iterator = functionButtonList.iterator()
                                 while (iterator.hasNext()) {
                                     val next = iterator.next().toJSONString().parseObject()
-                                    val name = next?.getString("name")
+                                    val name = next?.getString("name") ?: next?.getString("Name")
                                     if (!name.isNullOrBlank()) {
                                         HookEntry.optionEntity.viewHideOption.accountOption.newConfiguration.findOrPlus(
                                             title = name,
@@ -844,7 +845,7 @@ fun PackageParam.accountViewHide(
                                 val iterator = bottomButtonList.iterator()
                                 while (iterator.hasNext()) {
                                     val next = iterator.next().toJSONString().parseObject()
-                                    val name = next?.getString("name")
+                                    val name = next?.getString("name") ?: next?.getString("Name")
                                     if (!name.isNullOrBlank()) {
                                         HookEntry.optionEntity.viewHideOption.accountOption.newConfiguration.findOrPlus(
                                             title = name,
@@ -902,7 +903,7 @@ fun PackageParam.accountRightTopRedDot(versionCode: Int) {
                             returnType = UnitType
                         }
                         afterHook {
-                            val msgDotView = getParam<View>("msgDotView")
+                            val msgDotView = instance.getView<View>("msgDotView")
                             msgDotView?.visibility = View.VISIBLE
                         }
                     }
