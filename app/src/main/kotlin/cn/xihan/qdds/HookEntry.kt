@@ -697,12 +697,12 @@ class HookEntry : IYukiHookXposedInit {
                 val item = iterator.next().toJSONString()
                 val jb = item.parseObject()
                 val bookName =
-                    jb.getString("BookName") ?: jb.getString("bookName") ?: jb.getString("itemName")
+                    jb.getString("BookName") ?: jb.getString("bookName") ?: jb.getString("itemName") ?: jb.getString("ItemName")
                 val authorName = jb.getString("AuthorName") ?: jb.getString("authorName")
                 val categoryName = jb.getString("CategoryName") ?: jb.getString("categoryName")
                 val subCategoryName =
                     jb.getString("SubCategoryName") ?: jb.getString("subCategoryName")
-                    ?: jb.getString("itemSubName")
+                    ?: jb.getString("itemSubName") ?: jb.getString("ItemSubName")
                 val tagName = jb.getString("TagName") ?: jb.getString("tagName")
                 val array = jb.getJSONArray("AuthorTags") ?: jb.getJSONArray("tags")
                 ?: jb.getJSONArray("Tags") ?: jb.getJSONArray("tagList")
@@ -728,8 +728,13 @@ class HookEntry : IYukiHookXposedInit {
                             tags?.getString("tagName")?.let {
                                 bookTypeArray += it
                             }
+                            tags?.getString("TagName")?.let {
+                                bookTypeArray += it
+                            }
                         } else {
-                            array += array.getString(i)
+                            array.getString(i)?.let {
+                                bookTypeArray += it
+                            }
                         }
                     }
                 }
@@ -773,7 +778,9 @@ class HookEntry : IYukiHookXposedInit {
                 }
                 if (!array.isNullOrEmpty()) {
                     for (i in array.indices) {
-                        array += array.getString(i)
+                        array.getString(i)?.let {
+                            bookTypeArray += it
+                        }
                     }
                 }
                 if (isNeedShield(comicName, authorName, bookTypeArray)) {
