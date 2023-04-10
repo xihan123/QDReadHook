@@ -1,0 +1,100 @@
+# This file is a template, and might need editing before it works on your project.
+# To contribute improvements to CI/CD templates, please follow the Development guide at:
+# https://docs.gitlab.com/ee/development/cicd/templates.html
+# This specific template is located at:
+# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Android.gitlab-ci.yml
+
+# Read more about this script on this blog post https://about.gitlab.com/2018/10/24/setting-up-gitlab-ci-for-android-projects/, by Jason Lenny
+# If you are interested in using Android with FastLane for publishing take a look at the Android-Fastlane template.
+workflow:
+    rules:
+      - if: '$CI_PIPELINE_SOURCE == "push"'
+      - if: $CI_COMMIT_TAG
+
+image: openjdk:17-jdk
+
+variables:
+
+  # ANDROID_COMPILE_SDK is the version of Android you're compiling with.
+  # It should match compileSdkVersion.
+  ANDROID_COMPILE_SDK: "33"
+
+  # ANDROID_BUILD_TOOLS is the version of the Android build tools you are using.
+  # It should match buildToolsVersion.
+  ANDROID_BUILD_TOOLS: "33.0.2"
+
+  # It's what version of the command line tools we're going to download from the official site.
+  # Official Site-> https://developer.android.com/studio/index.html
+  # There, look down below at the cli tools only, sdk tools package is of format:
+  #        commandlinetools-os_type-ANDROID_SDK_TOOLS_latest.zip
+  # when the script was last modified for latest compileSdkVersion, it was which is written down below
+  ANDROID_SDK_TOOLS: "9477386"
+
+  SECURE_FILES_DOWNLOAD_PATH: './where/files/should/go/'
+
+
+# Packages installation before running script
+before_script:
+  - apt-get --quiet update --yes
+  - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
+  - apt-get install -y ccache
+  - ccache -o max_size=1G
+  - ccache -o hash_dir=false
+  - ccache -o compiler_check='%compiler% -dumpmachine; %compiler% -dumpversion'
+  - ccache -zp
+  - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash
+  - export KEY_FILE="${SECURE_FILES_DOWNLOAD_PATH}/xihantest"
+  - touch keystore.properties
+  - echo storePassword='$KEY_STORE_PASSWORD' >> keystore.properties
+  - echo keyAlias='$ALIAS' >> keystore.properties
+  - echo keyPassword='$KEY_PASSWORD' >> keystore.properties
+  - echo storeFile='$KEY_FILE' >> keystore.properties
+  # Setup path as android_home for moving/exporting the downloaded sdk into it
+  - export ANDROID_HOME="${PWD}/android-home"
+  # Create a new directory at specified location
+  - install -d $ANDROID_HOME
+  # Here we are installing androidSDK tools from official source,
+  # (the key thing here is the url from where you are downloading these sdk tool for command line, so please do note this url pattern there and here as well)
+  # after that unzipping those tools and
+  # then running a series of SDK manager commands to install necessary android SDK packages that'll allow the app to build
+  - wget --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS}_latest.zip
+  # move to the archive at ANDROID_HOME
+  - pushd $ANDROID_HOME
+  - unzip -d cmdline-tools cmdline-tools.zip
+  - popd
+  - export PATH=$PATH:${ANDROID_HOME}/cmdline-tools/tools/bin/
+
+  # Nothing fancy here, just checking sdkManager version
+  - sdkmanager --version
+
+  # use yes to accept all licenses
+  - yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses || true
+  - sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${ANDROID_COMPILE_SDK}"
+  - sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools"
+  - sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${ANDROID_BUILD_TOOLS}"
+
+  - find ~/.gradle/caches -exec touch -d "2 days ago" {} + || true
+  - echo 'org.gradle.caching=true' >> gradle.properties
+  - echo 'org.gradle.parallel=true' >> gradle.properties
+  - echo 'org.gradle.vfs.watch=true' >> gradle.properties
+  - echo 'org.gradle.jvmargs=-Xmx2048m' >> gradle.properties
+  - echo 'android.native.buildOutput=verbose' >> gradle.properties
+
+  # Not necessary, but just for surity
+  - chmod +x ./gradlew
+
+
+# Make Project
+assembleRelease:
+  interruptible: true
+  stage: build
+  script:
+    - ./gradlew assembleRelease
+    - ccache -s
+  artifacts:
+    paths:
+      - app/build/outputs/
+  release:
+    name: '$CI_COMMIT_TAG'
+    tag_name: '$CI_COMMIT_TAG'
+    description: 'Android release $CI_COMMIT_TAG'
