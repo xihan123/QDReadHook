@@ -6,11 +6,6 @@
 
 # Read more about this script on this blog post https://about.gitlab.com/2018/10/24/setting-up-gitlab-ci-for-android-projects/, by Jason Lenny
 # If you are interested in using Android with FastLane for publishing take a look at the Android-Fastlane template.
-workflow:
-    rules:
-      - if: '$CI_PIPELINE_SOURCE == "push"'
-      - if: $CI_COMMIT_TAG
-
 image: openjdk:17-jdk
 
 variables:
