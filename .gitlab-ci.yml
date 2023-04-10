@@ -46,10 +46,10 @@ before_script:
   - sdkmanager --version
 
   # use yes to accept all licenses
-  - yes | sdkmanager --licenses || true
-  - sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}"
-  - sdkmanager "platform-tools"
-  - sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}"
+  # - yes | sdkmanager --licenses || true
+  # - sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}"
+  # - sdkmanager "platform-tools"
+  # - sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}"
 
   - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash
   - export KEY_FILE="${SECURE_FILES_DOWNLOAD_PATH}/xihantest"
