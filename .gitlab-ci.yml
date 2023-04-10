@@ -30,13 +30,13 @@ variables:
 
 # Packages installation before running script
 before_script:
-  - apt-get --quiet update --yes
-  - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
-  - apt-get install -y ccache
-  - ccache -o max_size=1G
-  - ccache -o hash_dir=false
-  - ccache -o compiler_check='%compiler% -dumpmachine; %compiler% -dumpversion'
-  - ccache -zp
+  # - apt-get --quiet update --yes
+  # - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
+  # - apt-get install -y ccache
+  # - ccache -o max_size=1G
+  # - ccache -o hash_dir=false
+  # - ccache -o compiler_check='%compiler% -dumpmachine; %compiler% -dumpversion'
+  # - ccache -zp
   - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash
   - export KEY_FILE="${SECURE_FILES_DOWNLOAD_PATH}/xihantest"
   - touch keystore.properties
@@ -85,7 +85,7 @@ assembleRelease:
   stage: build
   script:
     - ./gradlew assembleRelease
-    - ccache -s
+    # - ccache -s
   artifacts:
     paths:
       - app/build/outputs/
