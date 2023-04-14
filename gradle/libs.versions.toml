@@ -3,17 +3,17 @@ com-android-application = "8.1.0-alpha11"
 org-jetbrains-kotlin = "1.8.10"
 ksp-version = "1.8.10-1.0.9"
 activity = "1.8.0-alpha01"
-accompanist = "0.30.1"
+accompanist = "0.31.0-alpha"
 yuki = "1.1.8"
 
 [libraries]
-core-ktx = { module = "androidx.core:core-ktx", version = "1.11.0-alpha01" }
+core-ktx = { module = "androidx.core:core-ktx", version = "1.11.0-alpha02" }
 appcompat = { module = "androidx.appcompat:appcompat", version = "1.7.0-alpha02" }
 kotlin-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.5.0" }
-fast-json = { module = "com.alibaba.fastjson2:fastjson2-kotlin", version = "2.0.26" }
+fast-json = { module = "com.alibaba.fastjson2:fastjson2-kotlin", version = "2.0.27" }
 io-coil-compose = { module = "io.coil-kt:coil-compose", version = "2.3.0" }
 #https://github.com/skydoves/landscapist#coil
-landscapist-coil = { module = "com.github.skydoves:landscapist-coil", version = "2.1.9" }
+landscapist-coil = { module = "com.github.skydoves:landscapist-coil", version = "2.1.10" }
 #https://github.com/getActivity/XXPermissions
 xxpermissions = { module = "com.github.getActivity:XXPermissions", version = "16.8" }
 #
@@ -21,7 +21,7 @@ yukihook-api = { module = "com.highcapable.yukihookapi:api", version.ref = "yuki
 yukihook-ksp = { module = "com.highcapable.yukihookapi:ksp-xposed", version.ref = "yuki" }
 xposed-api = { module = "de.robv.android.xposed:api", version = "82" }
 
-compose-bom = { module = "dev.chrisbanes.compose:compose-bom", version = "2023.04.00-alpha01" }
+compose-bom = { module = "dev.chrisbanes.compose:compose-bom", version = "2023.04.00-alpha02" }
 ui = { group = "androidx.compose.ui", name = "ui" }
 ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 foundation = { group = "androidx.compose.foundation", name = "foundation" }
