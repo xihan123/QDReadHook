@@ -15,13 +15,11 @@ import android.os.Environment
 import android.os.Looper
 import android.view.View
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.fragment.app.Fragment
 import com.highcapable.yukihookapi.hook.log.loggerE
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
@@ -211,7 +209,8 @@ fun String.writeTextFile(fileName: String = "test") {
         if (!exists()) {
             createNewFile()
         }
-        writeText(this@writeTextFile)
+    }.also {
+        it.writeText(this)
     }
 }
 
@@ -615,19 +614,13 @@ typealias M = Modifier
 fun <T> rememberMutableStateOf(value: T): MutableState<T> = remember { mutableStateOf(value) }
 
 /**
- * 调用系统选择获取音频文件
+ * QDUIButton TextView VariableName
  */
-fun Fragment.registerForAudioResult(): File {
-    var absolutePath = ""
-    val getContent =
-        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-            uri?.let {
-                absolutePath =
-                    "${Environment.getExternalStorageDirectory().path}/$${it.path?.removePrefix("/document/primary:")}"
-            }
-        }
-    getContent.launch("audio/*")
-    return File(absolutePath)
-}
+val Int.QDUIButtonTextViewVariableName
+    get() = when (this) {
+        in 884..890 -> "e"
+        in 896..900 -> "k"
+        else -> null
+    }
 
 

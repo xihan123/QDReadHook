@@ -616,7 +616,7 @@ fun defaultOptionEntity(): OptionEntity = OptionEntity(
         enableLocalCard = true
     ),
     advOption = OptionEntity.AdvOption(
-        advOptionSelectedList = mutableSetOf(0, 1, 2, 3, 4, 5, 6, 7),
+        advOptionSelectedList = mutableSetOf(1, 2, 3, 4, 5, 6, 7),
     ),
     viewHideOption = OptionEntity.ViewHideOption(
         enableDisableQSNModeDialog = true,

@@ -179,7 +179,7 @@ fun Context.showAddOrEditReplaceRuleDialog(
  */
 fun PackageParam.customBookFansValue(versionCode: Int) {
     when (versionCode) {
-        in 872..890 -> {
+        in 872..900 -> {
             findClass("com.qidian.QDReader.ui.modules.bookshelf.dialog.BookShelfMiniCardDialog").hook {
                 injectMember {
                     method {
@@ -244,9 +244,9 @@ fun PackageParam.customBookFansValue(versionCode: Int) {
                 }
             }
 
-            val needHookMethod = when(versionCode){
+            val needHookMethod = when (versionCode) {
                 872 -> "h"
-                in 884..890 -> "e"
+                in 884..900 -> "e"
                 else -> null
             }
             needHookMethod?.let {
@@ -292,6 +292,7 @@ fun PackageParam.customBookFansValue(versionCode: Int) {
                 878 -> 0x7F091A0B
                 884 -> 0x7F091A33
                 890 -> 0x7F091A4B
+                in 896..900 -> 0x7F091A51
                 else -> null
             }
             if (textViewId == null) {

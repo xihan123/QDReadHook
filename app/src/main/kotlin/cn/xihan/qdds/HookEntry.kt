@@ -20,6 +20,7 @@ import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
 import com.highcapable.yukihookapi.hook.log.YukiHookLogger
+import com.highcapable.yukihookapi.hook.log.loggerE
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.android.BundleClass
 import com.highcapable.yukihookapi.hook.type.android.ViewClass
@@ -697,7 +698,8 @@ class HookEntry : IYukiHookXposedInit {
                 val item = iterator.next().toJSONString()
                 val jb = item.parseObject()
                 val bookName =
-                    jb.getString("BookName") ?: jb.getString("bookName") ?: jb.getString("itemName") ?: jb.getString("ItemName")
+                    jb.getString("BookName") ?: jb.getString("bookName") ?: jb.getString("itemName")
+                    ?: jb.getString("ItemName")
                 val authorName = jb.getString("AuthorName") ?: jb.getString("authorName")
                 val categoryName = jb.getString("CategoryName") ?: jb.getString("categoryName")
                 val subCategoryName =
@@ -958,13 +960,17 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
             }
         }
 
-        in 842..890 -> {
+        in 842..900 -> {
             val needHookMethod = when (versionCode) {
                 in 842..878 -> "E"
-                in 884..890 -> "B"
+                in 884..900 -> "B"
                 else -> null
             }
-            if (needHookMethod != null) {
+            val needHookVariableName1 = versionCode.QDUIButtonTextViewVariableName
+            if (needHookMethod != null && needHookVariableName1 != null) {
+                /**
+                 * BookShelfCheckIn
+                 */
                 findClass("com.qidian.QDReader.ui.view.bookshelfview.CheckInReadingTimeViewNew").hook {
                     injectMember {
                         method {
@@ -974,16 +980,11 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
                             val v = instance.getView<LinearLayout>(
                                 "v"
                             )
-                            val qd = instance.getParam<Any>(
-                                "v"
-                            )
-                            qd?.let { qdv ->
-                                val e = qdv.getView<TextView>(
-                                    "e"
-                                )
+                            v?.let { qdv ->
+                                val e = qdv.getView<TextView>(needHookVariableName1)
                                 e?.let { etv ->
                                     if (etv.text == "签到") {
-                                        v?.performClick()
+                                        v.performClick()
                                     }
                                 }
                             }
@@ -992,31 +993,42 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
                 }
             }
 
-            findClass("com.qidian.QDReader.ui.modules.bookshelf.view.BookShelfCheckInView").hook {
-                injectMember {
-                    method {
-                        name = "updateCheckIn"
-                        paramCount(2)
-                        returnType = UnitType
-                    }
-                    afterHook {
-                        val binding = instance.getParam<Any>("binding")
-                        val d =
-                            binding?.getParam<LinearLayout>(if (versionCode >= 884) "a" else "d")
-                        val e1 = d?.getParam<TextView>("e")
-                        e1?.let { tv ->
-                            if (tv.text == "签到") {
-                                d.performClick()
+            // 需要Hook的变量名
+            val needHookVariableName = when (versionCode) {
+                in 884..890 -> "a"
+                in 896..900 -> "b"
+                else -> null
+            }
+            if (needHookVariableName != null && needHookVariableName1 != null) {
+                findClass("com.qidian.QDReader.ui.modules.bookshelf.view.BookShelfCheckInView").hook {
+                    injectMember {
+                        method {
+                            name = "updateCheckIn"
+                            paramCount(2)
+                            returnType = UnitType
+                        }
+                        afterHook {
+                            val binding = instance.getParam<Any>("binding")
+                            val d =
+                                binding?.getParam<LinearLayout>(needHookVariableName)
+                            val e1 = d?.getParam<TextView>(needHookVariableName1)
+                            e1?.let { tv ->
+                                if (tv.text == "签到") {
+                                    d.performClick()
+                                }
                             }
-                        }/*
-                                // 隐藏每日导读方案2
-                                val h = binding?.getParam<TextView>("h")
-                                val parent = h?.parent as? ViewGroup
-                                parent?.visibility = View.GONE
+                            /*
+                                            // 隐藏每日导读方案2
+                                            val h = binding?.getParam<TextView>("h")
+                                            val parent = h?.parent as? ViewGroup
+                                            parent?.visibility = View.GONE
 
-                                 */
+                                             */
+                        }
                     }
                 }
+            } else {
+                "新版书架自动签到".printlnNotSupportVersion(versionCode)
             }
         }
 
@@ -1039,7 +1051,7 @@ fun PackageParam.newOldLayout(
     val needHookClass = when (versionCode) {
         868 -> "r4.a\$a"
         in 872..878 -> "p4.a\$a"
-        in 884..890 -> "l4.search\$search"
+        in 884..900 -> "l4.search\$search"
         else -> null
     }
 
@@ -1062,10 +1074,9 @@ fun PackageParam.newOldLayout(
         872 -> "d"
         878 -> "e"
         884 -> "b"
-        890 -> "c"
+        in 890..900 -> "c"
         else -> null
     }
-
 
     /**
      * 新版书架布局
@@ -1078,7 +1089,7 @@ fun PackageParam.newOldLayout(
         in 868..872 -> "c"
         878 -> "d"
         884 -> "a"
-        890 -> "b"
+        in 890..900 -> "b"
         else -> null
     }
 
@@ -1203,17 +1214,15 @@ fun PackageParam.enableLocalCard(versionCode: Int) {
                         replaceTo(1)
                     }
 
-                    injectMember {
-                        method {
-                            name = "isAuto"
-                            emptyParam()
-                            returnType = IntType
-                        }
-                        replaceTo(1)
-                    }
+//                    injectMember {
+//                        method {
+//                            name = "isAuto"
+//                            emptyParam()
+//                            returnType = IntType
+//                        }
+//                        replaceTo(1)
+//                    }
                 }
-
-
             }
         }
 
@@ -1261,7 +1270,7 @@ fun PackageParam.unlockMemberBackground(versionCode: Int) {
  */
 fun PackageParam.freeAdReward(versionCode: Int) {
     when (versionCode) {
-        in 854..890 -> {
+        in 854..900 -> {
             findClass("com.qq.e.comm.managers.plugin.PM").hook {
                 injectMember {
                     method {
@@ -1448,12 +1457,12 @@ fun PackageParam.freeAdReward(versionCode: Int) {
 fun PackageParam.ignoreFansValueJumpLimit(versionCode: Int) {
     val needHookClass = when (versionCode) {
         in 854..878 -> "com.qidian.QDReader.util.ValidateActionLimitUtil\$a"
-        in 884..890 -> "com.qidian.QDReader.util.ValidateActionLimitUtil\$search"
+        in 884..900 -> "com.qidian.QDReader.util.ValidateActionLimitUtil\$search"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 854..878 -> "e"
-        in 884..890 -> "b"
+        in 884..900 -> "b"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -1488,12 +1497,13 @@ fun PackageParam.ignoreFansValueJumpLimit(versionCode: Int) {
 fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
     val needHookClass = when (versionCode) {
         in 854..878 -> "com.qidian.QDReader.component.bll.manager.e1"
-        in 884..890 -> "com.qidian.QDReader.component.bll.manager.b1"
+        in 884..900 -> "com.qidian.QDReader.component.bll.manager.b1"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 854..878 -> "n0"
         in 884..890 -> "k0"
+        in 896..900 -> "l0"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -1666,7 +1676,7 @@ fun Context.showMainOptionDialog() {
  */
 fun PackageParam.exportEmoji(versionCode: Int) {
     when (versionCode) {
-        in 884..890 -> {
+        in 884..900 -> {
             findClass("com.qidian.QDReader.ui.activity.QDStickersDetailActivity").hook {
                 injectMember {
                     method {
@@ -1694,6 +1704,7 @@ fun PackageParam.exportEmoji(versionCode: Int) {
                         val topBarViewId = when (versionCode) {
                             884 -> 0x7F09176F
                             890 -> 0x7F091784
+                            in 896..900 -> 0x7F091789
                             else -> null
                         }
                         if (topBarViewId != null) {
@@ -1725,6 +1736,8 @@ fun PackageParam.exportEmoji(versionCode: Int) {
                                 textView.layoutParams = layoutParams
                                 topBar.addView(textView)
                             }
+                        }else{
+                            "一键导出表情包".printlnNotSupportVersion(versionCode)
                         }
                     }
                 }
@@ -1777,7 +1790,7 @@ fun Context.exportEmojiDialog(
  */
 fun PackageParam.importAudio(versionCode: Int) {
     when (versionCode) {
-        in 884..890 -> {
+        in 884..900 -> {
             findClass("com.qidian.QDReader.ui.fragment.reader.ParagraphDubbingFragment").hook {
                 injectMember {
                     method {
@@ -1794,7 +1807,7 @@ fun PackageParam.importAudio(versionCode: Int) {
                         }.get(instance).call()
                         val mBtnStartViewId = when (versionCode) {
                             884 -> 0x7F090FFC
-                            890 -> 0x7F091008
+                            in 890..900 -> 0x7F091008
                             else -> null
                         } ?: return@afterHook
                         val button = XposedHelpers.callMethod(
@@ -1802,7 +1815,13 @@ fun PackageParam.importAudio(versionCode: Int) {
                             "findViewById",
                             mBtnStartViewId
                         ) as? LinearLayout
-                        val e = button?.getView<TextView>("e")
+                        val qDUIButtonTextViewVariableName =
+                            versionCode.QDUIButtonTextViewVariableName
+                        if (qDUIButtonTextViewVariableName == null) {
+                            "导入音频".printlnNotSupportVersion(versionCode)
+                            return@afterHook
+                        }
+                        val e = button?.getView<TextView>(qDUIButtonTextViewVariableName)
                         if (e?.text == "点击配音") {
                             e.text = "点击配音/长按导入"
                             e.setOnLongClickListener {
@@ -1830,6 +1849,8 @@ fun PackageParam.importAudio(versionCode: Int) {
                 }
             }
         }
+
+        else -> "导入音频文件".printlnNotSupportVersion(versionCode)
 
     }
 }

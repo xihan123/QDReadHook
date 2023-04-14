@@ -292,6 +292,7 @@ fun PackageParam.disableReadPageFloatAd(versionCode: Int) {
         872 -> "G"
         878 -> "j1"
         in 884..890 -> "g1"
+        in 896..900 -> "c1"
         else -> null
     }
     hookMethodName?.let {
@@ -525,17 +526,17 @@ fun PackageParam.disableUpdate(versionCode: Int) {
         in 800..834 -> "com.qidian.QDReader.util.l5"
         in 842..878 -> "com.qidian.QDReader.util.m5"
         884 ->  "com.qidian.QDReader.util.k5"
-        890 -> "com.qidian.QDReader.util.l5"
+        in 890..900 -> "com.qidian.QDReader.util.l5"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 758..878 -> "b"
-        in 884..890 -> "judian"
+        in 884..900 -> "judian"
         else -> null
     }
     val needHookMethod2 = when (versionCode) {
         in 758..878 -> "a"
-        in 884..890 -> "search"
+        in 884..900 -> "search"
         else -> null
     }
     needHookClass?.hook {

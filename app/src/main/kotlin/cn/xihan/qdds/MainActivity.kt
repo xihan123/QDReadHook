@@ -321,14 +321,7 @@ fun SwitchSetting(
     }
 }
 
-/**
- * 编辑框设置模型
- * @param title 标题
- * @param subTitle 副标题
- * @param text 文本
- * @param showInsert 插入文本
- * @param onTextChange 文本改变事件
- */
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditTextSetting(
@@ -403,8 +396,8 @@ fun EditTextSetting(
 
                 },
                 // shape = RoundedCornerShape(30.dp),
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.Transparent,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
                 )
             )
         }
@@ -890,8 +883,10 @@ fun MainScreen(
                         })
                 }
 
+
                 if (versionCode >= 868) {
                     SwitchSetting(title = "新我的布局",
+                        subTitle = "896+版本已无旧版布局建议开启防止日志刷屏",
                         checked = rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.accountOption.enableNewAccountLayout),
                         onCheckedChange = {
                             HookEntry.optionEntity.viewHideOption.accountOption.enableNewAccountLayout =
@@ -1918,6 +1913,10 @@ fun AboutScreen(
 
         TextSetting(title = "作者", subTitle = "希涵", onClick = {
             context.openUrl("https://github.com/xihan123")
+        })
+
+        TextSetting(title = "常见问题", subTitle = "", onClick = {
+            context.openUrl("https://jihulab.com/xihan123/QDReadHook/-/wikis/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98")
         })
 
         TextSetting(

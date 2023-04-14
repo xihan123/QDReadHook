@@ -28,12 +28,12 @@ fun PackageParam.customReadBackgroundPath(versionCode: Int) {
         827 -> "d6.f"
         in 834..868 -> "b6.f"
         in 872..878 -> "z5.f"
-        in 884..890 -> "u5.c"
+        in 884..900 -> "u5.c"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 827..878 -> "G"
-        in 884..890 -> "C"
+        in 884..900 -> "C"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -66,7 +66,7 @@ fun PackageParam.readerPageChapterReviewPictures(
     enableShowReaderPageChapterSaveAudioDialog: Boolean = false,
     enableCopyReaderPageChapterComment: Boolean = false,
 ) {
-    if (enableShowReaderPageChapterSaveRawPictures && versionCode in 868..890) {
+    if (enableShowReaderPageChapterSaveRawPictures && versionCode in 868..900) {
         findClass("com.qd.ui.component.modules.imagepreivew.QDUIGalleryActivity").hook {
             injectMember {
                 method {
@@ -85,13 +85,13 @@ fun PackageParam.readerPageChapterReviewPictures(
         val needHookClass = when (versionCode) {
             in 868..878 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.b0"
             884 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.y"
-            890 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.e0"
+            in 890..900 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.e0"
             else -> null
         }
         val needHookMethod = when (versionCode) {
             in 868..878 -> "A"
             884 -> "x"
-            890 -> "z"
+            in 890..900 -> "z"
             else -> null
         }
         if (needHookClass == null || needHookMethod == null) {
@@ -149,7 +149,7 @@ fun PackageParam.readerPageChapterReviewPictures(
         }
     }
 
-    if (enableShowReaderPageChapterSaveAudioDialog && versionCode in 884..890) {
+    if (enableShowReaderPageChapterSaveAudioDialog && versionCode in 884..900) {
 
         when (versionCode) {
             884 -> {
@@ -177,7 +177,7 @@ fun PackageParam.readerPageChapterReviewPictures(
                 }
             }
 
-            890 -> {
+            in 890..900 -> {
                 findClass("com.qidian.QDReader.ui.view.chapter_review.VoicePlayerView").hook {
                     injectMember {
                         method {
@@ -221,11 +221,12 @@ fun PackageParam.readTimeDouble(
         in 872..872 -> "qf.a"
         878 -> "pf.a"
         in 884..890 -> "jf.search"
+        in 896..900 -> "kf.search"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 868..878 -> "d"
-        in 884..890 -> "a"
+        in 884..900 -> "a"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
