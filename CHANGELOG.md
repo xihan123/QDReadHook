@@ -1,5 +1,31 @@
 # Changelog
 
+## [2.0.8](https://github.com/xihan123/QDReadHook/compare/v2.0.7...v2.0.8) (2023-04-16)
+
+
+### Features
+
+* `896`、`900` 版本新增阅读页最后一页相关 ([e56e33f](https://github.com/xihan123/QDReadHook/commit/e56e33f9fc305f4370c21b3e02527be4bea0b2dd))
+* 适配 `896`、`900` 版本 ([4666116](https://github.com/xihan123/QDReadHook/commit/4666116fb78120209a5485e9771147e631c951c5))
+
+
+### Bug Fixes
+
+* 可能出现的屏蔽失效 ([53fecd9](https://github.com/xihan123/QDReadHook/commit/53fecd9427b7882dbbdafb897efaf077a376aad2))
+
+
+### Miscellaneous
+
+* **master:** release 2.0.7 ([6952b49](https://github.com/xihan123/QDReadHook/commit/6952b493813436868d70f0997129a62cc87d9f00))
+* **master:** release 2.0.7 ([4c83ba0](https://github.com/xihan123/QDReadHook/commit/4c83ba0d1d2205a90ef05dd458373130df4e2c25))
+* 更新依赖库 ([8e395bc](https://github.com/xihan123/QDReadHook/commit/8e395bc0a6bf830e85245779028d6d5979a97259))
+* 更新依赖库 ([a51d4ab](https://github.com/xihan123/QDReadHook/commit/a51d4ab136d1142ff9eecc224b80ac887b4f80b1))
+
+
+### CI
+
+* release.yml ([c2b07d6](https://github.com/xihan123/QDReadHook/commit/c2b07d6690cba39abff8649af6242a55d506a270))
+
 ## [2.0.7](https://github.com/xihan123/QDReadHook/compare/v2.0.7...v2.0.7) (2023-04-01)
 
 
