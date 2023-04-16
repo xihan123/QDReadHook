@@ -5,6 +5,26 @@
 
 ### Miscellaneous
 
+* **master:** release 2.0.7 ([4c83ba0](https://github.com/xihan123/QDReadHook/commit/4c83ba0d1d2205a90ef05dd458373130df4e2c25))
+
+## [2.0.7](https://github.com/xihan123/QDReadHook/compare/v2.0.7...v2.0.7) (2023-04-01)
+
+
+### Bug Fixes
+
+* `890` 版本新"我"布局隐藏控件失效 ([3a31d74](https://github.com/xihan123/QDReadHook/commit/3a31d74aebd1ee03869803dd06f9ba8bc71d768f))
+
+
+### Miscellaneous
+
+* **master:** release 2.0.7 ([3f08b07](https://github.com/xihan123/QDReadHook/commit/3f08b079d2440825abeb4bfee97b8fdd3213964c))
+* **master:** release 2.0.7 ([b35c104](https://github.com/xihan123/QDReadHook/commit/b35c10478159d77ee95332d80c14389cb5ae83eb))
+
+## [2.0.7](https://github.com/xihan123/QDReadHook/compare/v2.0.7...v2.0.7) (2023-04-01)
+
+
+### Miscellaneous
+
 * **master:** release 2.0.7 ([b35c104](https://github.com/xihan123/QDReadHook/commit/b35c10478159d77ee95332d80c14389cb5ae83eb))
 
 ## [2.0.7](https://github.com/xihan123/QDReadHook/compare/v2.0.6...v2.0.7) (2023-04-01)
