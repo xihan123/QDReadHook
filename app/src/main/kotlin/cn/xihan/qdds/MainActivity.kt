@@ -396,9 +396,7 @@ fun EditTextSetting(
 
                 },
                 // shape = RoundedCornerShape(30.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                )
+
             )
         }
     }
@@ -514,9 +512,7 @@ fun CustomBookShelfTopImageOption(
                     Icon(imageVector = Icons.Default.Close, contentDescription = null)
                 }
             }
-        }, colors = TextFieldDefaults.textFieldColors(
-            containerColor = Color.Transparent,
-        )
+        }
         )
 
         TextField(modifier = M.fillMaxWidth(), value = font.value, label = {
@@ -536,9 +532,7 @@ fun CustomBookShelfTopImageOption(
                     Icon(imageVector = Icons.Default.Close, contentDescription = null)
                 }
             }
-        }, colors = TextFieldDefaults.textFieldColors(
-            containerColor = Color.Transparent,
-        )
+        }
         )
 
         TextField(modifier = M.fillMaxWidth(), value = fontHLight.value, label = {
@@ -558,9 +552,7 @@ fun CustomBookShelfTopImageOption(
                     Icon(imageVector = Icons.Default.Close, contentDescription = null)
                 }
             }
-        }, colors = TextFieldDefaults.textFieldColors(
-            containerColor = Color.Transparent,
-        )
+        }
         )
 
         TextField(modifier = M.fillMaxWidth(), value = fontLight.value, label = {
@@ -580,9 +572,7 @@ fun CustomBookShelfTopImageOption(
                     Icon(imageVector = Icons.Default.Close, contentDescription = null)
                 }
             }
-        }, colors = TextFieldDefaults.textFieldColors(
-            containerColor = Color.Transparent,
-        )
+        }
         )
 
         TextField(modifier = M.fillMaxWidth(), value = fontOnSurface.value, label = {
@@ -602,9 +592,7 @@ fun CustomBookShelfTopImageOption(
                     Icon(imageVector = Icons.Default.Close, contentDescription = null)
                 }
             }
-        }, colors = TextFieldDefaults.textFieldColors(
-            containerColor = Color.Transparent,
-        )
+        }
         )
 
         TextField(modifier = M.fillMaxWidth(), value = surface01.value, label = {
@@ -624,9 +612,7 @@ fun CustomBookShelfTopImageOption(
                     Icon(imageVector = Icons.Default.Close, contentDescription = null)
                 }
             }
-        }, colors = TextFieldDefaults.textFieldColors(
-            containerColor = Color.Transparent,
-        )
+        }
         )
 
         TextField(modifier = M.fillMaxWidth(), value = surfaceIcon.value, label = {
@@ -646,9 +632,7 @@ fun CustomBookShelfTopImageOption(
                     Icon(imageVector = Icons.Default.Close, contentDescription = null)
                 }
             }
-        }, colors = TextFieldDefaults.textFieldColors(
-            containerColor = Color.Transparent,
-        )
+        }
         )
 
         TextField(modifier = M.fillMaxWidth(), value = headImage.value, label = {
@@ -671,9 +655,7 @@ fun CustomBookShelfTopImageOption(
                     Icon(imageVector = Icons.Default.Close, contentDescription = null)
                 }
             }
-        }, colors = TextFieldDefaults.textFieldColors(
-            containerColor = Color.Transparent,
-        )
+        }
         )
 
     }
@@ -1404,7 +1386,10 @@ fun PurifyScreen(
                         "精选-新书",
                         "每日导读",
                         "精选-漫画",
-                        "精选-漫画-其他"
+                        "精选-漫画-其他",
+                        "阅读-最后一页-看过此书的人还看过",
+                        "阅读-最后一页-同类作品推荐",
+                        "阅读-最后一页-推荐",
                     )
                     val checkedItems = BooleanArray(shieldOptionList.size)
                     if (HookEntry.optionEntity.shieldOption.shieldOptionValueSet.isNotEmpty()) {
@@ -1683,6 +1668,24 @@ fun PurifyScreen(
                         })
                 }
 
+                val hideBookReadLastPage =
+                    rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.bookLastPageOptions.enableHideBookLastPage)
+                SwitchSetting(
+                    title = "启用阅读页-最后一页-隐藏控件",
+                    checked = hideBookReadLastPage,
+                    onCheckedChange = {
+                        HookEntry.optionEntity.viewHideOption.bookLastPageOptions.enableHideBookLastPage =
+                            it
+                    })
+
+                if (hideBookReadLastPage.value) {
+                    TextSetting(
+                        title = "阅读页-最后一页-隐藏控件列表",
+                        onClick = {
+                            context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.bookLastPageOptions.configurations)
+                        }
+                    )
+                }
 
             }
         }

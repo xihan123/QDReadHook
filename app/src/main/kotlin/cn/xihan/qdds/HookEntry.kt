@@ -20,7 +20,6 @@ import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
 import com.highcapable.yukihookapi.hook.log.YukiHookLogger
-import com.highcapable.yukihookapi.hook.log.loggerE
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.android.BundleClass
 import com.highcapable.yukihookapi.hook.type.android.ViewClass
@@ -128,7 +127,6 @@ class HookEntry : IYukiHookXposedInit {
                 hideBottomNavigation(versionCode)
             }
 
-
             if (optionEntity.viewHideOption.selectedOption.enableSelectedHide) {
                 selectedOption(versionCode)
             }
@@ -176,6 +174,34 @@ class HookEntry : IYukiHookXposedInit {
 
             if (optionEntity.viewHideOption.bookDetailOptions.enableHideBookDetail) {
                 bookDetailHide(versionCode)
+            }
+
+            if (optionEntity.viewHideOption.bookLastPageOptions.enableHideBookLastPage) {
+                readBookLastPage(
+                    versionCode = versionCode,
+                    shieldAlsoRead = isEnableShieldOption(16),
+                    shieldSimilarRecommend = isEnableShieldOption(17),
+                    shieldRecommendation = isEnableShieldOption(18),
+                    hideCircle = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
+                        optionEntity.viewHideOption.bookLastPageOptions.configurations[0].title
+                    ),
+                    hideAlsoRead = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
+                        optionEntity.viewHideOption.bookLastPageOptions.configurations[1].title
+                    ),
+                    hideRecommendation = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
+                        optionEntity.viewHideOption.bookLastPageOptions.configurations[2].title
+                    ),
+                    hideSimilarRecommend = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
+                        optionEntity.viewHideOption.bookLastPageOptions.configurations[3].title
+                    ),
+                    hideBookList = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
+                        optionEntity.viewHideOption.bookLastPageOptions.configurations[4].title
+                    ),
+                    hideTryRead = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
+                        optionEntity.viewHideOption.bookLastPageOptions.configurations[5].title
+                    ),
+                    hideAdView = isEnableAdvOption(16)
+                )
             }
 
             if (optionEntity.replaceRuleOption.enableReplace) {
@@ -1736,7 +1762,7 @@ fun PackageParam.exportEmoji(versionCode: Int) {
                                 textView.layoutParams = layoutParams
                                 topBar.addView(textView)
                             }
-                        }else{
+                        } else {
                             "一键导出表情包".printlnNotSupportVersion(versionCode)
                         }
                     }

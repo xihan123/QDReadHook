@@ -555,6 +555,16 @@ fun MutableList<OptionEntity.SelectedModel>.findOrPlus(
 }
 
 /**
+ *
+ */
+fun List<OptionEntity.SelectedModel>.isEnabled(title: String): Boolean = runCatching {
+    find { it.title == title }?.selected ?: false
+}.getOrElse {
+    false
+}
+
+
+/**
  * 多选项对话框
  * @param list 列表
  */

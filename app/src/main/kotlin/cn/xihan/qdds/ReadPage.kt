@@ -309,3 +309,192 @@ fun Context.audioExportDialog(filePath: String) {
     }
 
 }
+
+/**
+ * 阅读页最后一页
+ * @param versionCode 版本号
+ * @param shieldAlsoRead 是否屏蔽推荐
+ * @param shieldRecommendation 是否屏蔽推荐
+ * @param shieldSimilarRecommend 是否屏蔽相似推荐
+ * @param hideAlsoRead 是否隐藏读过的书
+ * @param hideRecommendation 是否隐藏推荐
+ * @param hideBookList 是否隐藏书单
+ * @param hideSimilarRecommend 是否隐藏相似推荐
+ * @param hideTryRead 是否隐藏试读
+ * @param hideCircle 是否隐藏圈子
+ * @param hideAdView 是否隐藏广告
+ */
+fun PackageParam.readBookLastPage(
+    versionCode: Int,
+    shieldAlsoRead: Boolean = false,
+    shieldRecommendation: Boolean = false,
+    shieldSimilarRecommend: Boolean = false,
+    hideAlsoRead: Boolean = false,
+    hideRecommendation: Boolean = false,
+    hideBookList: Boolean = false,
+    hideSimilarRecommend: Boolean = false,
+    hideTryRead: Boolean = false,
+    hideCircle: Boolean = false,
+    hideAdView: Boolean = false
+) {
+    when (versionCode) {
+        in 896..900 -> {
+            findClass("com.qidian.QDReader.ui.view.lastpage.LastPageRoleView").hook {
+                injectMember {
+                    method {
+                        name = "l"
+                        param("com.qidian.QDReader.repository.entity.BookLastPage".toClass())
+                        returnType = UnitType
+                    }
+                    afterHook {
+                        setBookLastPage(
+                            obj = args[0],
+                            shieldAlsoRead = shieldAlsoRead,
+                            shieldRecommendation = shieldRecommendation,
+                            shieldSimilarRecommend = shieldSimilarRecommend,
+                            hideAlsoRead = hideAlsoRead,
+                            hideRecommendation = hideRecommendation,
+                            hideBookList = hideBookList,
+                            hideSimilarRecommend = hideSimilarRecommend,
+                            hideTryRead = hideTryRead,
+                            hideCircle = hideCircle
+                        )
+                    }
+                }
+            }
+
+            findClass("com.qidian.QDReader.ui.view.lastpage.LastPageCircleView").hook {
+                injectMember {
+                    method {
+                        name = "f"
+                        param("com.qidian.QDReader.repository.entity.BookLastPage".toClass())
+                        returnType = UnitType
+                    }
+                    afterHook {
+                        setBookLastPage(
+                            obj = args[0],
+                            shieldAlsoRead = shieldAlsoRead,
+                            shieldRecommendation = shieldRecommendation,
+                            shieldSimilarRecommend = shieldSimilarRecommend,
+                            hideAlsoRead = hideAlsoRead,
+                            hideRecommendation = hideRecommendation,
+                            hideBookList = hideBookList,
+                            hideSimilarRecommend = hideSimilarRecommend,
+                            hideTryRead = hideTryRead,
+                            hideCircle = hideCircle
+                        )
+                    }
+                }
+            }
+
+            findClass("com.qidian.QDReader.ui.view.lastpage.LastPageTryReadViewWrap").hook {
+                injectMember {
+                    method {
+                        name = "bind"
+                        param("com.qidian.QDReader.repository.entity.BookLastPage".toClass())
+                        returnType = UnitType
+                    }
+                    afterHook {
+                        setBookLastPage(
+                            obj = args[0],
+                            shieldAlsoRead = shieldAlsoRead,
+                            shieldRecommendation = shieldRecommendation,
+                            shieldSimilarRecommend = shieldSimilarRecommend,
+                            hideAlsoRead = hideAlsoRead,
+                            hideRecommendation = hideRecommendation,
+                            hideBookList = hideBookList,
+                            hideSimilarRecommend = hideSimilarRecommend,
+                            hideTryRead = hideTryRead,
+                            hideCircle = hideCircle
+                        )
+                    }
+                }
+            }
+
+            if (hideAdView) {
+                findClass("com.qidian.QDReader.ui.activity.BookLastPageNewActivity").hook {
+                    injectMember {
+                        method {
+                            name = "updateADView"
+                            paramCount(1)
+                            returnType = UnitType
+                        }
+                        intercept()
+                    }
+                }
+            }
+        }
+
+        else -> "阅读页最后一页".printlnNotSupportVersion(versionCode)
+    }
+
+}
+
+/**
+ * 处理传入的对象
+ * @param obj 传入的对象
+ * @param shieldAlsoRead 是否屏蔽读过的书
+ * @param shieldRecommendation 是否屏蔽推荐
+ * @param hideAlsoRead 是否隐藏读过的书
+ * @param hideRecommendation 是否隐藏推荐
+ * @param hideBookList 是否隐藏书单
+ * @param shieldSimilarRecommend 是否屏蔽相似推荐
+ * @param hideSimilarRecommend 是否隐藏相似推荐
+ * @param hideTryRead 是否隐藏试读
+ * @param hideCircle 是否隐藏圈子
+ */
+fun setBookLastPage(
+    obj: Any?,
+    shieldAlsoRead: Boolean = false,
+    shieldRecommendation: Boolean = false,
+    shieldSimilarRecommend: Boolean = false,
+    hideAlsoRead: Boolean = true,
+    hideRecommendation: Boolean = true,
+    hideBookList: Boolean = true,
+    hideSimilarRecommend: Boolean = true,
+    hideTryRead: Boolean = true,
+    hideCircle: Boolean = true,
+) {
+
+    if (shieldAlsoRead) {
+        val alsoReadList = obj?.getParam<MutableList<*>>("alsoReadList")
+        alsoReadList?.let {
+            obj.setParam("alsoReadList", HookEntry.parseNeedShieldList(alsoReadList))
+        }
+    }
+    if (hideAlsoRead) {
+        obj?.setParam("alsoReadList", null)
+    }
+    if (shieldRecommendation) {
+        val recommendList = obj?.getParam<MutableList<*>>("recommendList")
+        recommendList?.let {
+            obj.setParam("recommendList", HookEntry.parseNeedShieldList(recommendList))
+        }
+    }
+    if (hideRecommendation) {
+        obj?.setParam("recommendList", null)
+    }
+    if (shieldSimilarRecommend) {
+        val similarRecommend = obj?.getParam<Any>("similarRecommend")
+        val bookList = similarRecommend?.getParam<MutableList<*>>("bookList")
+        bookList?.let {
+            similarRecommend.setParam("bookList", HookEntry.parseNeedShieldList(bookList))
+        }
+    }
+    if (hideSimilarRecommend) {
+        obj?.setParam("similarRecommend", null)
+    }
+    if (hideBookList) {
+        obj?.setParam("relatedBookList", null)
+    }
+    if (hideTryRead) {
+        obj?.setParam("tryReadInfo", null)
+    }
+    if (hideCircle) {
+        val bookCircleInfo = obj?.getParam<Any>("bookCircleInfo")
+        bookCircleInfo?.setParam("enableCircle", 0)
+    }
+
+
+}
+

@@ -72,7 +72,8 @@ data class OptionEntity(
             "阅读页-章末福利",
             "阅读页-章末广告",
             "阅读页-章末求票",
-            "阅读页-章末底部月票打赏红包"
+            "阅读页-章末底部月票打赏红包",
+            "阅读页-最后一页-中间广告"
         ),
         @SerialName("advOptionSelectedList") var advOptionSelectedList: MutableSet<Int> = mutableSetOf(),
     )
@@ -233,6 +234,8 @@ data class OptionEntity(
     /**
      * 阅读页配置
      * @param enableCustomReaderThemePath 启用自定义阅读页主题路径
+     * @param enableCustomBookLastPage 启用自定义书籍最后一页
+     * @param customBookLastPageModel 自定义书籍最后一页模型
      * @param enableShowReaderPageChapterSaveRawPicture 启用显示阅读页章节保存原图
      * @param enableShowReaderPageChapterSavePictureDialog 启用显示阅读页章节保存图片对话框
      * @param enableShowReaderPageChapterSaveAudioDialog 启用显示阅读页章节保存音频对话框
@@ -245,9 +248,10 @@ data class OptionEntity(
     @Serializable
     data class ReadPageOption(
         @SerialName("enableCustomReaderThemePath") var enableCustomReaderThemePath: Boolean = false,
+        @SerialName("enableCustomBookLastPage") var enableCustomBookLastPage: Boolean = false,
         @SerialName("enableShowReaderPageChapterSaveRawPicture") var enableShowReaderPageChapterSaveRawPicture: Boolean = false,
         @SerialName("enableShowReaderPageChapterSavePictureDialog") var enableShowReaderPageChapterSavePictureDialog: Boolean = false,
-        @SerialName("enaableShowReaderPageChapterSaveAudioDialog") var enableShowReaderPageChapterSaveAudioDialog: Boolean = false,
+        @SerialName("enableShowReaderPageChapterSaveAudioDialog") var enableShowReaderPageChapterSaveAudioDialog: Boolean = false,
         @SerialName("enableCopyReaderPageChapterComment") var enableCopyReaderPageChapterComment: Boolean = false,
         @SerialName("enableReadTimeDouble") var enableReadTimeDouble: Boolean = false,
         @SerialName("enableVIPChapterTime") var enableVIPChapterTime: Boolean = false,
@@ -291,6 +295,7 @@ data class OptionEntity(
      * @param findOption 发现配置
      * @param accountOption 用户页面配置
      * @param bookDetailOptions 书籍详情配置
+     * @param bookLastPageOptions 阅读最后一页配置
      */
     @Keep
     @Serializable
@@ -304,6 +309,7 @@ data class OptionEntity(
         @SerialName("findOption") var findOption: FindOption = FindOption(),
         @SerialName("AccountOption") var accountOption: AccountOption = AccountOption(),
         @SerialName("BookDetailOptions") var bookDetailOptions: BookDetailOptions = BookDetailOptions(),
+        @SerialName("BookLastPageOptions") var bookLastPageOptions: BookLastPageOptions = BookLastPageOptions()
     ) {
         /**
          * 主页配置
@@ -404,6 +410,25 @@ data class OptionEntity(
                 SelectedModel(title = "同类作品推荐"),
                 SelectedModel(title = "看过此书的人还看过")
             ),
+        )
+
+        /**
+         * BookLastPageOptions
+         * @param enableHideBookLastPage 启用隐藏书籍详情页面
+         * @param configurations 已选配置集合
+         */
+        @Keep
+        @Serializable
+        data class BookLastPageOptions(
+            @SerialName("enableHideBookLastPage") var enableHideBookLastPage: Boolean = false,
+            @SerialName("selectedConfigurations") var configurations: MutableList<SelectedModel> = mutableListOf(
+                SelectedModel("书友圈"),
+                SelectedModel("看过此书的人还看过"),
+                SelectedModel("推荐"),
+                SelectedModel("同类作品推荐"),
+                SelectedModel("收录此书的书单"),
+                SelectedModel("试读")
+            )
         )
 
     }
