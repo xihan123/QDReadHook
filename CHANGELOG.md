@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.9](https://github.com/xihan123/QDReadHook/compare/v2.0.9...v2.0.9) (2023-04-18)
+
+
+### Miscellaneous
+
+* **master:** release 2.0.9 ([98e245c](https://github.com/xihan123/QDReadHook/commit/98e245c5af1772535a5305c05edfaafc505f5c49))
+
 ## [2.0.9](https://github.com/xihan123/QDReadHook/compare/v2.0.8...v2.0.9) (2023-04-18)
 
 
