@@ -4,16 +4,16 @@ org-jetbrains-kotlin = "1.8.10"
 ksp-version = "1.8.10-1.0.9"
 activity = "1.8.0-alpha01"
 accompanist = "0.31.0-alpha"
-yuki = "1.1.8"
+yuki = "1.1.9"
 
 [libraries]
 core-ktx = { module = "androidx.core:core-ktx", version = "1.11.0-alpha02" }
 appcompat = { module = "androidx.appcompat:appcompat", version = "1.7.0-alpha02" }
 kotlin-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.5.0" }
-fast-json = { module = "com.alibaba.fastjson2:fastjson2-kotlin", version = "2.0.27" }
+fast-json = { module = "com.alibaba.fastjson2:fastjson2-kotlin", version = "2.0.28" }
 io-coil-compose = { module = "io.coil-kt:coil-compose", version = "2.3.0" }
 #https://github.com/skydoves/landscapist#coil
-landscapist-coil = { module = "com.github.skydoves:landscapist-coil", version = "2.1.10" }
+landscapist-coil = { module = "com.github.skydoves:landscapist-coil", version = "2.1.11" }
 #https://github.com/getActivity/XXPermissions
 xxpermissions = { module = "com.github.getActivity:XXPermissions", version = "16.8" }
 #

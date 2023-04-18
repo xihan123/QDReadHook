@@ -50,6 +50,8 @@ android {
 
         resourceConfigurations.addAll(listOf("zh"))
 
+        buildConfigField("long", "BUILD_TIMESTAMP", "${System.currentTimeMillis()}L")
+
         signingConfig = signingConfigs.getByName("xihantest")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
