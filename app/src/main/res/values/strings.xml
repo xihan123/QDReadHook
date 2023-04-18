@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="disclaimers_title">免责声明</string>
+    <string name="disclaimers_message">"1. 该Xposed模块仅供学习交流使用，使用者必须自行承担使用该模块所带来的风险和责任。
+        \n2. 该Xposed模块可以修改系统行为，使用者应该仔细审查模块的操作并自行决定是否使用。
+        \n3. 使用该Xposed模块可能导致设备不稳定、崩溃和数据丢失等问题。作者不对任何因使用该模块而导致的问题承担责任。
+        \n4. 开发者保留对该Xposed模块的更新、修改、暂停、终止等权利，使用者应该自行确认其使用版本的安全性和稳定性。
+        \n5. 任何人因使用该Xposed模块而导致的任何问题，作者不承担任何责任，一切后果由使用者自行承担。
+        \n6. 对于使用该Xposed模块所产生的任何问题，作者不提供任何形式的技术支持和解决方案。
+        \n请在使用该Xposed模块之前认真阅读以上免责声明并自行权衡风险和利益，如有异议请勿使用。如果您使用了该Xposed模块，即代表您已经完全接受本免责声明。 "</string>
+    <string name="disclaimers_agree">我已阅读并同意</string>
+    <string name="disclaimers_disagree">我不同意</string>
+    <!--剩余时间-->
+    <string name="remaining_time">剩余时间: %s 秒</string>
+</resources>

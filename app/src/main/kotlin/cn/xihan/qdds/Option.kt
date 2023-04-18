@@ -21,6 +21,7 @@ import java.io.File
 
 /**
  * 配置模型
+ * @param allowDisclaimers 是否允许免责声明
  * @param mainOption 主配置
  * @param advOption 广告配置
  * @param shieldOption 屏蔽配置
@@ -36,6 +37,7 @@ import java.io.File
 @Keep
 @Serializable
 data class OptionEntity(
+    @SerialName("allowDisclaimers") var allowDisclaimers: Boolean = false,
     @SerialName("advOption") var advOption: AdvOption = AdvOption(),
     @SerialName("mainOption") var mainOption: MainOption = MainOption(),
     @SerialName("shieldOption") var shieldOption: ShieldOption = ShieldOption(),

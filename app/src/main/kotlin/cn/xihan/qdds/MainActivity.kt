@@ -37,6 +37,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -52,21 +53,30 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.Lifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -81,6 +91,9 @@ import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil.CoilImage
+import kotlinx.coroutines.delay
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 /**
  * @项目名 : QDReadHook
@@ -128,6 +141,7 @@ class MainActivity : ModuleAppCompatActivity() {
                 ) else Permission.Group.STORAGE.plus(Permission.REQUEST_INSTALL_PACKAGES)
             )
         )
+        var allowDisclaimers by rememberMutableStateOf(value = HookEntry.optionEntity.allowDisclaimers)
         val items = listOf(
             MainScreen.MainSetting, MainScreen.PurifySetting, MainScreen.About
         )
@@ -154,104 +168,90 @@ class MainActivity : ModuleAppCompatActivity() {
                 )
             },
             bottomBar = {
-                if (permission.value) {
-                    NiaNavigationBar(
+                if (permission.value && allowDisclaimers) {
+                    BottomNavigationBar(
+                        navController = navController,
+                        items = items,
                         modifier = M
                             .fillMaxWidth()
                             .navigationBarsPadding()
-//                            .height(56.dp),
-                    ) {
-                        val navBackStackEntry by navController.currentBackStackEntryAsState()
-                        val currentDestination = navBackStackEntry?.destination
-                        items.forEachIndexed { index, screen ->
-                            NiaNavigationBarItem(
-                                icon = {
-                                    when (index) {
-                                        0 -> Icon(Icons.Filled.Home, null)
-                                        1 -> Icon(Icons.Filled.Delete, null)
-                                        2 -> Icon(Icons.Filled.Info, null)
-                                    }
-                                },
-                                label = { Text(screen.title) },
-                                selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-                                onClick = {
-                                    if (navBackStackEntry != null) {
-                                        navController.navigate(screen.route) {
-                                            popUpTo(navController.graph.findStartDestination().id) {
-                                                saveState = true
-                                            }
-                                            launchSingleTop = true
-                                            restoreState = true
-                                        }
-                                    }
-                                },
-                                modifier = M.weight(1f)
-                            )
-
-                        }
-                    }
+                    )
                 }
             }) { paddingValues ->
 
-            if (permission.value) {
-                NavHost(
-                    navController = navController,
-                    startDestination = MainScreen.MainSetting.route,
-                    modifier = M.padding(paddingValues)
-                ) {
-                    /**
-                     * 主设置
-                     */
-                    composable(MainScreen.MainSetting.route) {
-                        MainScreen(versionCode)
+            if (allowDisclaimers) {
+                if (permission.value) {
+                    NavHost(
+                        navController = navController,
+                        startDestination = MainScreen.MainSetting.route,
+                        modifier = M.padding(paddingValues)
+                    ) {
+                        /**
+                         * 主设置
+                         */
+                        composable(MainScreen.MainSetting.route) {
+                            MainScreen(versionCode)
+                        }
+
+                        /**
+                         * 净化
+                         */
+                        composable(MainScreen.PurifySetting.route) {
+                            PurifyScreen(versionCode)
+                        }
+
+                        /**
+                         * 关于
+                         */
+                        composable(MainScreen.About.route) {
+                            AboutScreen(versionCode)
+                        }
+
                     }
 
-                    /**
-                     * 净化
-                     */
-                    composable(MainScreen.PurifySetting.route) {
-                        PurifyScreen(versionCode)
-                    }
+                } else {
 
-                    /**
-                     * 关于
-                     */
-                    composable(MainScreen.About.route) {
-                        AboutScreen(versionCode)
-                    }
+                    Column(
+                        modifier = M.padding(paddingValues),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
 
-                }
-
-            } else {
-
-                Column(
-                    modifier = M.padding(paddingValues),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-
-                    Text(
-                        "需要存储以及安装未知应用权限",
-                        modifier = M.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Button(onClick = {
-                        requestPermission(
-                            onGranted = {
-                                permission.value = true
-                            }, onDenied = {
-                                permission.value = false
-                                jumpToPermission()
-                            }
+                        Text(
+                            "需要存储以及安装未知应用权限",
+                            modifier = M.fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Bold
                         )
 
-                    }) {
-                        Text("点我请求权限")
+                        Button(onClick = {
+                            requestPermission(
+                                onGranted = {
+                                    permission.value = true
+                                    restartApplication()
+                                }, onDenied = {
+                                    permission.value = false
+                                    jumpToPermission()
+                                }
+                            )
+                        }) {
+                            Text("点我请求权限")
+                        }
                     }
+
                 }
-
+            } else {
+                Disclaimers(
+                    modifier = M.padding(paddingValues),
+                    onAgreeClick = {
+                        allowDisclaimers = true
+                        HookEntry.optionEntity.allowDisclaimers = true
+                        updateOptionEntity()
+                    },
+                    onDisagreeClick = {
+                        finish()
+                    }
+                )
             }
-
 
         }
     }
@@ -321,8 +321,6 @@ fun SwitchSetting(
     }
 }
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditTextSetting(
     title: String,
@@ -465,10 +463,6 @@ fun TextSetting(
     }
 }
 
-/**
- * 自定义书架顶部图片配置
- */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomBookShelfTopImageOption(
     title: String,
@@ -1723,7 +1717,7 @@ fun PurifyScreen(
 
                 SwitchSetting(
                     title = "启用自定义书粉丝值",
-                    subTitle = "不会用可进群问\n使用此功能造成的一切后果均个人行为,与作者无关",
+                    subTitle = "不会用可进群问\n使用此功能默认你阅读并同意免责声明\n造成的一切后果均个人行为,与模块作者无关",
                     checked = enableCustomBookFansValue,
                     onCheckedChange = {
                         HookEntry.optionEntity.bookFansValueOption.enableCustomBookFansValue = it
@@ -1845,6 +1839,7 @@ fun PurifyScreen(
 /**
  * 关于
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutScreen(
     versionCode: Int,
@@ -1923,32 +1918,168 @@ fun AboutScreen(
         })
 
         TextSetting(
+            title = "编译时间",
+            subTitle = SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss",
+                Locale.getDefault()
+            ).format(BuildConfig.BUILD_TIMESTAMP),
+            showRightIcon = false
+        )
+
+        var openDialog by rememberMutableStateOf(value = false)
+        TextSetting(
+            title = stringResource(id = R.string.disclaimers_title),
+            showRightIcon = false,
+            onClick = {
+                openDialog = true
+            }
+        )
+
+        if (openDialog) {
+            AlertDialog(
+                onDismissRequest = { openDialog = false }
+            ) {
+                Card{
+                    Disclaimers(
+                        displayButton = false
+                    )
+                }
+            }
+        }
+
+        TextSetting(
             title = "版本号",
             subTitle = BuildConfig.VERSION_NAME,
             showRightIcon = false,
             onClick = {
                 context.checkModuleUpdate()
-            })
+            }
+        )
 
     }
 
 }
 
-private sealed class MainScreen(val route: String, val title: String) {
+/**
+ * 免责声明
+ * @param modifier Modifier
+ * @param onAgreeClick 点击同意
+ * @param onDisagreeClick 点击不同意
+ * @param displayButton 是否显示倒计时
+ */
+@Composable
+fun Disclaimers(
+    modifier: Modifier = Modifier,
+    onAgreeClick: () -> Unit = {},
+    onDisagreeClick: () -> Unit = {},
+    displayButton: Boolean = true,
+) {
+    var remainingTime by rememberMutableStateOf(value = 30L)
+    if (displayButton) {
+        val isActive =
+            LocalLifecycleOwner.current.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
+        LaunchedEffect(isActive) {
+            while (isActive && remainingTime > 0) {
+                delay(1000)
+                remainingTime -= 1
+            }
+        }
+    }
+
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = stringResource(id = R.string.disclaimers_title),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = stringResource(id = R.string.disclaimers_message))
+
+        if (displayButton) {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (remainingTime != 0L) {
+                Text(
+                    text = String.format(
+                        stringResource(id = R.string.remaining_time),
+                        remainingTime
+                    ),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 24.sp
+                )
+            } else {
+                Button(onClick = onAgreeClick) { Text(text = stringResource(id = R.string.disclaimers_agree)) }
+            }
+
+            Button(onClick = onDisagreeClick) { Text(text = stringResource(id = R.string.disclaimers_disagree)) }
+
+        }
+
+
+    }
+}
+
+@Composable
+private fun BottomNavigationBar(
+    navController: NavController,
+    items: List<MainScreen>,
+    modifier: Modifier = Modifier
+) {
+    NiaNavigationBar(
+        modifier = modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+    ) {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentDestination = navBackStackEntry?.destination
+        items.forEach { item ->
+            NiaNavigationBarItem(
+                icon = { Icon(item.imageVector, contentDescription = null) },
+                label = { Text(item.title) },
+                selected = currentDestination?.hierarchy?.any { it.route == item.route } == true,
+                onClick = {
+                    navController.navigate(item.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+//                    alwaysShowLabel = false
+            )
+        }
+    }
+
+}
+
+private sealed class MainScreen(
+    val route: String,
+    val imageVector: ImageVector,
+    val title: String
+) {
     /**
      * 主设置
      */
-    object MainSetting : MainScreen("main_setting", "主设置")
+    object MainSetting : MainScreen("main_setting", Icons.Filled.Home, "主设置")
 
     /**
      * 净化设置
      */
-    object PurifySetting : MainScreen("purify_setting", "净化")
+    object PurifySetting : MainScreen("purify_setting", Icons.Filled.Delete, "净化")
 
     /**
      * 关于
      */
-    object About : MainScreen("about", "关于")
+    object About : MainScreen("about", Icons.Filled.Info, "关于")
 
 
 }
