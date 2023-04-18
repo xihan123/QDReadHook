@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.0.8](https://github.com/xihan123/QDReadHook/compare/v2.0.8...v2.0.8) (2023-04-18)
+
+
+### Miscellaneous
+
+* **master:** release 2.0.8 ([b3baa6a](https://github.com/xihan123/QDReadHook/commit/b3baa6a90a7868c5d18469a11c7c80154ca06b66))
+* **master:** release 2.0.8 ([0bc1030](https://github.com/xihan123/QDReadHook/commit/0bc103040fbeeb29cedd831ce77e5cda315164ce))
+* 新增免责声明 ([b5b19d1](https://github.com/xihan123/QDReadHook/commit/b5b19d1e7fa1a46058ecddb75fd1e8d3345bd4a8))
+* 更新依赖库 ([0bc7b1e](https://github.com/xihan123/QDReadHook/commit/0bc7b1e36ce835206cbd6036781256317d6d02a5))
+
 ## [2.0.8](https://github.com/xihan123/QDReadHook/compare/v2.0.8...v2.0.8) (2023-04-16)
 
 
