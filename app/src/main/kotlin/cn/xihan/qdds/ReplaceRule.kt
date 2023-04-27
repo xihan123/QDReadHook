@@ -4,6 +4,7 @@ import android.content.Context
 import android.widget.TextView
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.highcapable.yukihookapi.hook.type.java.IntType
 import com.highcapable.yukihookapi.hook.type.java.LongType
 import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
@@ -358,4 +359,303 @@ fun PackageParam.customBookFansValue(versionCode: Int) {
 
         else -> "自定义书友值".printlnNotSupportVersion(versionCode)
     }
+}
+
+/**
+ * 自定义设备信息
+ * @param versionCode
+ * @param enableCustomDeviceInfo 是否启用自定义设备信息
+ * @param enableSaveOriginalDeviceInfo 是否保存原始设备信息
+ * @param deviceInfoModel 自定义设备信息模型
+ */
+fun PackageParam.customDeviceInfo(
+    versionCode: Int,
+    deviceInfoModel: OptionEntity.ReplaceRuleOption.CustomDeviceInfo,
+    enableCustomDeviceInfo: Boolean = false,
+    enableSaveOriginalDeviceInfo: Boolean = false
+) {
+    when (versionCode) {
+        in 896..900 -> {
+
+            /**
+             * android_release
+             */
+            findClass("com.qidian.QDReader.core.util.m").hook {
+
+                /**
+                 * 设备厂商
+                 */
+                injectMember {
+                    method {
+                        name = "k"
+                        emptyParam()
+                        returnType = StringClass
+                    }
+                    afterHook {
+                        if (enableSaveOriginalDeviceInfo) {
+                            HookEntry.optionEntity.replaceRuleOption.originalDeviceInfo.brand =
+                                result as String
+                            updateOptionEntity()
+                        }
+
+                        if (enableCustomDeviceInfo) {
+                            result = deviceInfoModel.brand
+                        }
+
+                    }
+//                    replaceTo(deviceInfo.brand)
+                }
+
+                /**
+                 * 设备型号
+                 */
+                injectMember {
+                    method {
+                        name = "l"
+                        emptyParam()
+                        returnType = StringClass
+                    }
+                    afterHook {
+                        if (enableSaveOriginalDeviceInfo) {
+                            HookEntry.optionEntity.replaceRuleOption.originalDeviceInfo.model =
+                                result as String
+                            updateOptionEntity()
+                        }
+                        if (enableCustomDeviceInfo) {
+                            result = deviceInfoModel.model
+                        }
+                    }
+//                    replaceTo(deviceInfo.model)
+                }
+
+                /**
+                 * Android 版本
+                 */
+                injectMember {
+                    method {
+                        name = "m"
+                        emptyParam()
+                        returnType = StringClass
+                    }
+                    afterHook {
+                        if (enableSaveOriginalDeviceInfo) {
+                            HookEntry.optionEntity.replaceRuleOption.originalDeviceInfo.androidVersion =
+                                result as String
+                            updateOptionEntity()
+                        }
+                        if (enableCustomDeviceInfo) {
+                            result = deviceInfoModel.androidVersion
+                        }
+                    }
+//                    replaceTo(deviceInfo.androidVersion)
+                }
+
+                /**
+                 * 发布版本
+                 */
+                injectMember {
+                    method {
+                        name = "r"
+                        emptyParam()
+                        returnType = StringClass
+                    }
+                    afterHook {
+                        if (enableSaveOriginalDeviceInfo) {
+                            HookEntry.optionEntity.replaceRuleOption.originalDeviceInfo.releaseVersion =
+                                result as String
+                            updateOptionEntity()
+                        }
+                        if (enableCustomDeviceInfo) {
+                            result = deviceInfoModel.releaseVersion
+                        }
+                    }
+//                    replaceTo(deviceInfo.releaseVersion)
+                }
+
+                /**
+                 * 屏幕高度
+                 */
+                injectMember {
+                    method {
+                        name = "t"
+                        emptyParam()
+                        returnType = IntType
+                    }
+                    afterHook {
+                        if (enableSaveOriginalDeviceInfo) {
+                            HookEntry.optionEntity.replaceRuleOption.originalDeviceInfo.screenHeight =
+                                result as Int
+                            updateOptionEntity()
+                        }
+                        if (enableCustomDeviceInfo) {
+                            result = deviceInfoModel.screenHeight
+                        }
+                    }
+//                    replaceTo(deviceInfo.screenHeight)
+                }
+
+                /**
+                 * IMEI
+                 */
+                injectMember {
+                    method {
+                        name = "d"
+                        emptyParam()
+                        returnType = StringClass
+                    }
+                    afterHook {
+                        if (enableSaveOriginalDeviceInfo) {
+                            HookEntry.optionEntity.replaceRuleOption.originalDeviceInfo.imei =
+                                result as String
+                            updateOptionEntity()
+                        }
+                        if (enableCustomDeviceInfo) {
+                            result = deviceInfoModel.imei
+                        }
+                    }
+//                    replaceTo(deviceInfo.imei)
+                }
+
+                injectMember {
+                    method {
+                        name = "e"
+                        emptyParam()
+                        returnType = StringClass
+                    }
+                    replaceTo(deviceInfoModel.imei)
+                }
+
+                injectMember {
+                    method {
+                        name = "f"
+                        emptyParam()
+                        returnType = StringClass
+                    }
+                    replaceTo(deviceInfoModel.imei)
+                }
+
+                injectMember {
+                    method {
+                        name = "h"
+                        emptyParam()
+                        returnType = StringClass
+                    }
+                    replaceTo(deviceInfoModel.imei)
+                }
+
+                /**
+                 * 设备返回信息
+                 */
+                injectMember {
+                    method {
+                        name = "B"
+                        emptyParam()
+                        returnType = StringClass
+                    }
+                    afterHook {
+                        if (enableCustomDeviceInfo) {
+                            result =
+                                "null${deviceInfoModel.releaseVersion}${deviceInfoModel.model}null"
+                        }
+                    }
+//                    replaceTo("null${deviceInfo.releaseVersion}${deviceInfo.model}null")
+                }
+
+                /**
+                 * 设备Mac地址
+                 */
+                injectMember {
+                    method {
+                        name = "E"
+                        emptyParam()
+                        returnType = StringClass
+                    }
+                    afterHook {
+                        if (enableSaveOriginalDeviceInfo) {
+                            HookEntry.optionEntity.replaceRuleOption.originalDeviceInfo.macAddress =
+                                result as String
+                            updateOptionEntity()
+                        }
+                        if (enableCustomDeviceInfo) {
+                            result = deviceInfoModel.macAddress
+                        }
+                    }
+//                    replaceTo(deviceInfo.macAddress)
+                }
+
+                /**
+                 * 设备序列号
+                 */
+                injectMember {
+                    method {
+                        name = "y"
+                        emptyParam()
+                        returnType = StringClass
+                    }
+                    afterHook {
+                        if (enableSaveOriginalDeviceInfo) {
+                            HookEntry.optionEntity.replaceRuleOption.originalDeviceInfo.serial =
+                                result as String
+                            updateOptionEntity()
+                        }
+
+                        if (enableCustomDeviceInfo) {
+                            result = deviceInfoModel.serial
+                        }
+                    }
+//                    replaceTo(deviceInfo.serial)
+                }
+
+                /**
+                 * cpu 信息
+                 */
+                injectMember {
+                    method {
+                        name = "a"
+                        emptyParam()
+                        returnType = StringClass
+                    }
+                    afterHook {
+                        if (enableSaveOriginalDeviceInfo) {
+                            HookEntry.optionEntity.replaceRuleOption.originalDeviceInfo.cpuInfo =
+                                result as String
+                            updateOptionEntity()
+                        }
+                        if (enableCustomDeviceInfo) {
+                            result = deviceInfoModel.cpuInfo
+                        }
+                    }
+//                    replaceTo(deviceInfo.cpuInfo)
+                }
+
+                /**
+                 * AndroidId
+                 */
+                injectMember {
+                    method {
+                        name = "cihai"
+                        emptyParam()
+                        returnType = StringClass
+                    }
+                    afterHook {
+                        if (enableSaveOriginalDeviceInfo) {
+                            HookEntry.optionEntity.replaceRuleOption.originalDeviceInfo.androidId =
+                                result as String
+                            updateOptionEntity()
+                        }
+                        if (enableCustomDeviceInfo) {
+                            result = deviceInfoModel.androidId
+                        }
+                    }
+//                    replaceTo(deviceInfo.androidId)
+                }
+
+            }
+
+        }
+
+        else -> "自定义设备信息".printlnNotSupportVersion(versionCode)
+    }
+
+
 }
