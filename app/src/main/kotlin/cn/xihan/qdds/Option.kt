@@ -75,7 +75,8 @@ data class OptionEntity(
             "阅读页-章末广告",
             "阅读页-章末求票",
             "阅读页-章末底部月票打赏红包",
-            "阅读页-最后一页-中间广告"
+            "阅读页-最后一页-中间广告",
+            "阅读页-最后一页-弹框广告",
         ),
         @SerialName("advOptionSelectedList") var advOptionSelectedList: MutableSet<Int> = mutableSetOf(),
     )
@@ -94,6 +95,8 @@ data class OptionEntity(
      * @param enableNewStore 启用新版精选
      * @param enableExportEmoji 启用导出表情包
      * @param enableImportAudio 启用导入音频
+     * @param enableForceTrialMode 启用强制试用模式
+     * @param enableTestFunction 启用测试功能
      */
     @Keep
     @Serializable
@@ -110,6 +113,8 @@ data class OptionEntity(
         @SerialName("enableNewStore") var enableNewStore: Boolean = false,
         @SerialName("enableExportEmoji") var enableExportEmoji: Boolean = false,
         @SerialName("enableImportAudio") var enableImportAudio: Boolean = false,
+        @SerialName("enableForceTrialMode") var enableForceTrialMode: Boolean = false,
+        @SerialName("enableTestFunction") var enableTestFunction: Boolean = false,
     )
 
     /**
@@ -274,6 +279,11 @@ data class OptionEntity(
             SelectedModel("WebSocket"),
             SelectedModel("青少年模式请求"),
             SelectedModel("闪屏广告页面"),
+            SelectedModel("部分检测设备环境"),
+            SelectedModel("异步主GDT广告任务|com.qidian.QDReader.start.AsyncMainGDTTask"),
+            SelectedModel("异步主游戏广告SDK任务|com.qidian.QDReader.start.AsyncMainGameADSDKTask"),
+            SelectedModel("异步主游戏下载任务|com.qidian.QDReader.start.AsyncMainGameDownloadTask"),
+            SelectedModel("异步子屏幕截图任务|com.qidian.QDReader.start.AsyncChildScreenShotTask"),
             SelectedModel("异步主用户操作任务|com.qidian.QDReader.start.AsyncMainUserActionTask"),
             SelectedModel("异步有赞-SDK任务|com.qidian.QDReader.start.AsyncChildYouZanTask"),
             SelectedModel("异步初始化KNOBS-SDK任务|com.qidian.QDReader.start.AsyncInitKnobsTask"),
@@ -439,12 +449,20 @@ data class OptionEntity(
      * 替换配置
      * @param enableReplace 启用替换
      * @param replaceRuleList 替换规则列表
+     * @param enableCustomDeviceInfo 启用自定义设备信息
+     * @param enableSaveOriginalDeviceInfo 启用保存原始设备信息
+     * @param customDeviceInfo 自定义设备信息
+     * @param originalDeviceInfo 原始设备信息
      */
     @Keep
     @Serializable
     data class ReplaceRuleOption(
         @SerialName("enableReplace") var enableReplace: Boolean = false,
         @SerialName("replaceRuleList") var replaceRuleList: MutableList<ReplaceItem> = mutableListOf(),
+        @SerialName("enableSaveOriginalDeviceInfo") var enableSaveOriginalDeviceInfo: Boolean = false,
+        @SerialName("enableCustomDeviceInfo") var enableCustomDeviceInfo: Boolean = false,
+        @SerialName("customDeviceInfo") var customDeviceInfo: CustomDeviceInfo = CustomDeviceInfo(),
+        @SerialName("originalDeviceInfo") var originalDeviceInfo: CustomDeviceInfo = CustomDeviceInfo(),
     ) {
 
         /**
@@ -462,6 +480,39 @@ data class OptionEntity(
             @SerialName("replaceRuleRegex") var replaceRuleRegex: String = "",
             @SerialName("replaceWith") var replaceWith: String = "",
         )
+
+        /**
+         * customDeviceInfo
+         * @param brand 设备厂商
+         * @param model 设备型号
+         * @param imei 设备IMEI
+         * @param androidId 设备AndroidId
+         * @param macAddress 设备Mac地址
+         * @param serial 设备序列号
+         * @param androidVersion 设备Android版本号
+         * @param releaseVersion 设备系统版本号
+         * @param screenHeight 设备屏幕高度
+         * @param cpuInfo 设备CPU信息
+         */
+        @Keep
+        @Serializable
+        data class CustomDeviceInfo(
+            @SerialName("brand") var brand: String = "",
+            @SerialName("model") var model: String = "",
+            @SerialName("imei") var imei: String = "",
+            @SerialName("androidId") var androidId: String = "",
+            @SerialName("macAddress") var macAddress: String = "02:00:00:00:00:00",
+            @SerialName("serial") var serial: String = "",
+            @SerialName("androidVersion") var androidVersion: String = "33",
+            @SerialName("releaseVersion") var releaseVersion: String = "13",
+            @SerialName("screenHeight") var screenHeight: Int = 2135,
+            @SerialName("cpuInfo") var cpuInfo: String = "0000000000000000"
+        ) {
+            override fun toString(): String {
+                return "brand:$brand\nmodel:$model\nimei:$imei\nandroidId:$androidId\nmacAddress:$macAddress\nserial:$serial\nandroidVersion:$androidVersion\nreleaseVersion:$releaseVersion\nscreenHeight:$screenHeight\ncpuInfo:$cpuInfo"
+            }
+        }
+
     }
 
     /**

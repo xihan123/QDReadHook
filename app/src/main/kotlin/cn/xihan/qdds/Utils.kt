@@ -15,12 +15,18 @@ import android.os.Environment
 import android.os.Looper
 import android.view.View
 import android.widget.Toast
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.highcapable.yukihookapi.hook.factory.MembersType
 import com.highcapable.yukihookapi.hook.log.loggerE
+import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
 import de.robv.android.xposed.XposedHelpers
@@ -30,6 +36,8 @@ import java.io.File
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
+import java.security.MessageDigest
+import java.util.Random
 import kotlin.system.exitProcess
 
 
@@ -623,6 +631,17 @@ typealias M = Modifier
 @Composable
 fun <T> rememberMutableStateOf(value: T): MutableState<T> = remember { mutableStateOf(value) }
 
+@Composable
+fun Insert(list: MutableState<String>){
+    if (list.value.isNotBlank()) {
+        IconButton(onClick = {
+            list.value = list.value.plus(";")
+        }) {
+            Icon(imageVector = Icons.Default.Add, contentDescription = null)
+        }
+    }
+}
+
 /**
  * QDUIButton TextView VariableName
  */
@@ -632,5 +651,91 @@ val Int.QDUIButtonTextViewVariableName
         in 896..900 -> "k"
         else -> null
     }
+
+/**
+ * 传入类名 打印所有方法以及参数
+ * @param className 类名
+ * @param printCallStack 是否打印调用栈
+ * @param printResult 是否打印返回值
+ * @param printType 打印参数类型
+ */
+fun PackageParam.findMethodAndPrint(
+    className: String,
+    printCallStack: Boolean = false,
+    printType: MembersType = MembersType.ALL
+) {
+    findClass(className).hook {
+        injectMember {
+            allMembers(printType)
+            afterHook {
+                val stringBuilder = StringBuilder()
+                stringBuilder.append("---类名: ${instanceClass.name} 方法名: ${method.name}\n")
+                if (args.isNotEmpty()) {
+                    args.forEachIndexed { index, any ->
+                        stringBuilder.append("参数${any?.javaClass?.simpleName} ${index}: ${any.mToString()}\n")
+                    }
+                } else {
+                    stringBuilder.append("无参数\n")
+                }
+
+                stringBuilder.append("---返回值: ${result?.mToString()}")
+                stringBuilder.toString().loge()
+                // 是否打印调用栈
+                if (printCallStack) {
+                    instance.printCallStack()
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Any 基础类型转为 String
+ */
+fun Any?.mToString(): String = when (this) {
+    is String -> this
+    is Int -> this.toString()
+    is Long -> this.toString()
+    is Float -> this.toString()
+    is Double -> this.toString()
+    is Boolean -> this.toString()
+    is Array<*> -> this.joinToString(",")
+    is ByteArray -> String(this)
+    else -> this?.toString() ?: ""
+}
+
+/**
+ * 随机IMEI码
+ */
+fun randomIMEI(): String {
+    val random = Random()
+    val sb = StringBuilder()
+    for (i in 0..14) {
+        sb.append(random.nextInt(10))
+    }
+    return sb.toString()
+}
+
+/**
+ * MD5加密
+ */
+fun String.md5(): String {
+    val md5 = MessageDigest.getInstance("MD5")
+    val digest = md5.digest(this.toByteArray())
+    val sb = StringBuilder()
+    for (b in digest) {
+        val i = b.toInt() and 0xff
+        var hexString = Integer.toHexString(i)
+        if (hexString.length < 2) {
+            hexString = "0$hexString"
+        }
+        sb.append(hexString)
+    }
+    return sb.toString()
+}
+
+
+
+
 
 
