@@ -1,5 +1,35 @@
 # Changelog
 
+## [2.1.0](https://github.com/xihan123/QDReadHook/compare/v2.0.9...v2.1.0) (2023-04-27)
+
+
+### Features
+
+* **主设置:** `896`+ 试用模式弹框、真·免广告领取奖励 ([782d270](https://github.com/xihan123/QDReadHook/commit/782d270831f63d97f60c9e02fa5e724efbc4135c))
+* **广告设置:** `896`+ 阅读页-最新页面弹框广告 ([327f2de](https://github.com/xihan123/QDReadHook/commit/327f2de57c8bbaf175cbe8dea76828dfbd789be3))
+* **拦截设置:** `896`+ 异步主GDT广告任务、异步主游戏广告SDK任务、异步主游戏下载任务、异步子屏幕截图任务、部分环境检测 ([3983fc4](https://github.com/xihan123/QDReadHook/commit/3983fc401ea91303aa9eb1a287ebeb49e9500b22))
+* **替换规则设置:** `896`+ 自定义设备信息 ([2853ead](https://github.com/xihan123/QDReadHook/commit/2853eadb1945b4d085e536240572f728c24db96b))
+
+
+### Bug Fixes
+
+* 免责声明逻辑 ([7165dff](https://github.com/xihan123/QDReadHook/commit/7165dff4814f7f9abe00cb6d53475ec57cf9f884))
+
+
+### CI
+
+* build.yml ([25a639c](https://github.com/xihan123/QDReadHook/commit/25a639c59a35f3d8677ad3263365fe43c9194849))
+* release.yml ([258a623](https://github.com/xihan123/QDReadHook/commit/258a623aa247b457d7eb2756df93be653ffcd5a0))
+
+
+### Miscellaneous
+
+* **master:** release 2.0.9 ([360b229](https://github.com/xihan123/QDReadHook/commit/360b22919ac401c7d7b57724210c547078753fb2))
+* **master:** release 2.0.9 ([98e245c](https://github.com/xihan123/QDReadHook/commit/98e245c5af1772535a5305c05edfaafc505f5c49))
+* 其他 ([69042cf](https://github.com/xihan123/QDReadHook/commit/69042cfe9e76f87e9a658046f9a74803acdaa079))
+* 更新依赖库 ([21d64cd](https://github.com/xihan123/QDReadHook/commit/21d64cdb95f2ec2233b2d60e8cfefea58b8203ee))
+* 更新图片 ([1259d28](https://github.com/xihan123/QDReadHook/commit/1259d2807ecfe7516f6ace20116550a6a8bab324))
+
 ## [2.0.9](https://github.com/xihan123/QDReadHook/compare/v2.0.9...v2.0.9) (2023-04-18)
 
 
