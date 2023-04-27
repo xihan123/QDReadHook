@@ -2,13 +2,13 @@
 com-android-application = "8.2.0-alpha01"
 org-jetbrains-kotlin = "1.8.20"
 ksp-version = "1.8.20-1.0.11"
-activity = "1.8.0-alpha03"
+activity = "1.7.1"
 accompanist = "0.31.0-alpha"
 yuki = "1.1.11"
 
 [libraries]
 junit = { group = "junit", name = "junit", version = "4.13.2" }
-core-ktx = { module = "androidx.core:core-ktx", version = "1.12.0-alpha03" }
+core-ktx = { module = "androidx.core:core-ktx", version = "1.10.0" }
 appcompat = { module = "androidx.appcompat:appcompat", version = "1.7.0-alpha02" }
 kotlin-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.5.0" }
 fast-json = { module = "com.alibaba.fastjson2:fastjson2-kotlin", version = "2.0.29" }
@@ -34,7 +34,7 @@ activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activ
 material3 = { group = "androidx.compose.material3", name = "material3" }
 com-google-accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 com-google-accompanist-themeadapter-material3 = { module = "com.google.accompanist:accompanist-themeadapter-material3", version.ref = "accompanist" }
-com-google-android-material  = { module = "com.google.android.material:material", version = "1.10.0-alpha01" }
+com-google-android-material  = { module = "com.google.android.material:material", version = "1.8.0" }
 
 [plugins]
 com-google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp-version" }

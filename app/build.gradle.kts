@@ -22,8 +22,8 @@ val androidMinSdkVersion by extra(26)
 
 android {
     namespace = "cn.xihan.qdds"
-//    compileSdk = androidTargetSdkVersion
-    compileSdkPreview = "UpsideDownCake"
+    compileSdk = androidTargetSdkVersion
+//    compileSdkPreview = "UpsideDownCake"
 
     androidResources.additionalParameters += arrayOf(
         "--allow-reserved-package-id",
