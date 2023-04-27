@@ -5,6 +5,15 @@
 
 ### Miscellaneous
 
+* **master:** release 2.1.0 ([b58da5a](https://github.com/xihan123/QDReadHook/commit/b58da5aa1d783e2a9cf06a7b3864e345d1c486e5))
+* **master:** release 2.1.0 ([e0ce41d](https://github.com/xihan123/QDReadHook/commit/e0ce41d0f3c8ab31281ee14672e687db42f4424c))
+* 其他 ([1898b9d](https://github.com/xihan123/QDReadHook/commit/1898b9d5983863c3ca8111b902a9def74ce99c9c))
+
+## [2.1.0](https://github.com/xihan123/QDReadHook/compare/v2.1.0...v2.1.0) (2023-04-27)
+
+
+### Miscellaneous
+
 * **master:** release 2.1.0 ([e0ce41d](https://github.com/xihan123/QDReadHook/commit/e0ce41d0f3c8ab31281ee14672e687db42f4424c))
 
 ## [2.1.0](https://github.com/xihan123/QDReadHook/compare/v2.0.9...v2.1.0) (2023-04-27)
