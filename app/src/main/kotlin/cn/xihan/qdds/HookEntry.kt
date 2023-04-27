@@ -87,6 +87,10 @@ class HookEntry : IYukiHookXposedInit {
                 importAudio(versionCode)
             }
 
+            if (optionEntity.mainOption.enableForceTrialMode) {
+                forceTrialMode(versionCode)
+            }
+
             if (optionEntity.bookshelfOption.enableOldLayout && versionCode < NOT_SUPPORT_OLD_LAYOUT_VERSION_CODE) {
                 enableOldLayout(versionCode)
             }
@@ -208,6 +212,13 @@ class HookEntry : IYukiHookXposedInit {
                 enableReplace(versionCode)
             }
 
+            customDeviceInfo(
+                versionCode = versionCode,
+                deviceInfoModel = optionEntity.replaceRuleOption.customDeviceInfo,
+                enableCustomDeviceInfo = optionEntity.replaceRuleOption.enableCustomDeviceInfo,
+                enableSaveOriginalDeviceInfo = optionEntity.replaceRuleOption.enableSaveOriginalDeviceInfo
+            )
+
             if (optionEntity.startImageOption.enableCustomStartImage) {
                 customStartImage(versionCode)
             }
@@ -321,106 +332,7 @@ class HookEntry : IYukiHookXposedInit {
 
                             readMoreSetting?.setOnLongClickListener {
                                 instance<Activity>().apply {
-                                    startActivity(Intent(this, MainActivity::class.java))/*
-                                    safeRun {
-                                        val linearLayout = CustomLinearLayout(this)
-                                        val mainOptionTextView = CustomTextView(
-                                            context = this, mText = "主设置", isBold = true
-                                        ) {
-                                            showMainOptionDialog()
-                                        }
-                                        val advOptionTextView = CustomTextView(
-                                            context = this, mText = "广告相关设置", isBold = true
-                                        ) {
-                                            showAdvOptionDialog()
-                                        }
-                                        val shieldOptionTextView = CustomTextView(
-                                            context = this, mText = "屏蔽相关设置", isBold = true
-                                        ) {
-                                            showShieldOptionDialog()
-                                        }
-                                        val splashOptionTextView = CustomTextView(
-                                            context = this, mText = "闪屏相关设置", isBold = true
-                                        ) {
-                                            showSplashOptionDialog()
-                                        }
-                                        val viewHideOptionTextView = CustomTextView(
-                                            context = this,
-                                            mText = "隐藏控件相关设置",
-                                            isBold = true
-                                        ) {
-                                            showHideOptionDialog()
-                                        }
-                                        val replaceOptionTextView = CustomTextView(
-                                            context = this,
-                                            mText = "替换相关设置",
-                                            isBold = true
-                                        ) {
-                                            showReplaceOptionDialog()
-                                        }
-                                        val openSourceryOptionTextView = CustomTextView(
-                                            context = this,
-                                            mText = "开源地址及详细说明",
-                                            isBold = true
-                                        ) {
-                                            val intent = Intent(Intent.ACTION_VIEW)
-                                            intent.data =
-                                                Uri.parse("https://github.com/xihan123/QDReadHook")
-                                            startActivity(intent)
-                                        }
-
-                                        val explainTextView = CustomTextView(
-                                            context = this,
-                                            mText = "此软件仅限用于学习和研究,不得用于其他用途,否则后果自负.\nQD模块交流群: 727983520\n如果你喜欢该模块可以打赏或给此项目点个star,谢谢~".replaceSpan(
-                                                "打赏",
-                                                replacement = {
-                                                    MyClickableSpan {
-                                                        val intent = Intent(Intent.ACTION_VIEW)
-                                                        intent.data =
-                                                            Uri.parse("https://github.com/xihan123/QDReadHook#%E5%A6%82%E6%9E%9C%E8%A7%89%E5%BE%97%E8%BF%99%E4%B8%AA%E6%A8%A1%E5%9D%97%E5%AF%B9%E6%82%A8%E6%9C%89%E7%94%A8%E5%8F%AF%E6%89%AB%E6%8F%8F%E4%B8%8B%E6%96%B9%E4%BA%8C%E7%BB%B4%E7%A0%81%E9%9A%8F%E6%84%8F%E6%89%93%E8%B5%8F%E8%A6%81%E6%98%AF%E8%83%BD%E6%89%93%E8%B5%8F%E4%B8%AA-1024-%E5%B0%B1%E5%A4%AA%E4%BA%86%E6%82%A8%E7%9A%84%E6%94%AF%E6%8C%81%E5%B0%B1%E6%98%AF%E6%88%91%E6%9B%B4%E6%96%B0%E7%9A%84%E5%8A%A8%E5%8A%9B")
-                                                        startActivity(intent)
-                                                    }
-                                                }
-                                            ).replaceSpan("点个star", replacement = {
-                                                MyClickableSpan {
-                                                    val intent = Intent(Intent.ACTION_VIEW)
-                                                    intent.data =
-                                                        Uri.parse("https://github.com/xihan123/QDReadHook")
-                                                    startActivity(intent)
-                                                }
-                                            }).replaceSpan("727983520", replacement = {
-                                                MyClickableSpan {
-                                                    joinQQGroup()
-                                                }
-                                            })
-                                        ) {}
-                                        explainTextView.textView.setTextIsSelectable(true)
-                                        explainTextView.textView.movementMethod =
-                                            ClickableMovementMethod.getInstance()
-                                        linearLayout.apply {
-                                            addView(mainOptionTextView)
-                                            addView(advOptionTextView)
-                                            addView(shieldOptionTextView)
-                                            addView(splashOptionTextView)
-                                            addView(viewHideOptionTextView)
-                                            addView(replaceOptionTextView)
-                                            addView(openSourceryOptionTextView)
-                                            addView(explainTextView)
-                                        }
-                                        alertDialog {
-                                            title = "模块版本: ${BuildConfig.VERSION_NAME}"
-                                            customView = linearLayout
-
-                                            positiveButton("重启起点") {
-                                                restartApplication()
-                                            }
-
-                                            build()
-                                            show()
-                                        }
-                                    }
-
-                                     */
+                                    startActivity(Intent(this, MainActivity::class.java))
                                 }
                                 true
                             }
@@ -549,72 +461,38 @@ class HookEntry : IYukiHookXposedInit {
              */
 
             /*
-            findClass("com.qidian.QDReader.ui.activity.BookLookForDetailActivity").hook {
+
+            findMethodAndPrint("com.qidian.QDReader.extras.x", false, MembersType.METHOD)
+
+            findMethodAndPrint("com.qidian.QDReader.extras.y", false, MembersType.METHOD)
+
+            findMethodAndPrint("ib.m0", false, MembersType.METHOD)
+
+            findMethodAndPrint("com.qidian.QDReader.core.util.m", false, MembersType.METHOD)
+
+            findMethodAndPrint("de.a",false, MembersType.METHOD)
+
+            findMethodAndPrint("ie.a",false, MembersType.METHOD)
+
+            findMethodAndPrint("ke.cihai",false, MembersType.METHOD)
+
+            findMethodAndPrint("ke.a",false, MembersType.METHOD)
+
+            findClass("java.net.HttpURLConnection").hook {
                 injectMember {
-                    method {
-                        name = "setupWidget\$lambda-19\$lambda-18"
-                        paramCount(5)
-                        returnType = UnitType
+                    allMembers(MembersType.CONSTRUCTOR)
+                    beforeHook {
+                        "url: ${args[0]}".loge()
+//                        instance.printCallStack()
                     }
-                    afterHook {
-                        val view = args[2] as? View
-
-                        val midPageAudioPlayerView = XposedHelpers.callMethod(
-                            view,
-                            "findViewById",
-                            0x7F090442
-                        ) as? FrameLayout
-                        midPageAudioPlayerView?.current {
-                            val g = field {
-                                name = "g"
-                                type = StringClass
-                            }
-                            "g: $g".loge()
-                        }
-
-
-                    }
-                }
-            }
-
-            findClass("com.qidian.QDReader.repository.entity.chaptercomment.NewParagraphCommentListBean\$DataListBean").hook {
-                injectMember {
-                    method {
-                        name = "getAudioUrl"
-                        returnType = StringClass
-                    }
-                    afterHook {
-                        val audioUrl = result as? String
-                        "audioUrl: $audioUrl".loge()
-                        instance.printCallStack()
-                    }
-                }
-            }
-
-            findClass("com.qidian.QDReader.ui.viewholder.chaptercomment.list.y").hook {
-                injectMember {
-                    method {
-                        name = "x"
-                        paramCount(2)
-                        returnType = UnitType
-                    }
-                    afterHook {
-                        val k = instance.getView<FrameLayout>("k")
-                        val g = k?.getView<RelativeLayout>("g")
-                        g?.setOnLongClickListener {
-                            "长按事件".loge()
-                            val l = k?.getParam<String>("l")
-                            "l: $l".loge()
-                            true
-                        }
-                    }
-
                 }
             }
 
              */
 
+
         }
+
     }
 
     companion object {
@@ -677,8 +555,7 @@ class HookEntry : IYukiHookXposedInit {
             bookName: String? = null,
             authorName: String? = null,
             bookType: Set<String>? = null,
-        ): Boolean {
-            /*
+        ): Boolean {/*
             if (BuildConfig.DEBUG) {
                 loggerE(msg = "bookName: $bookName\nauthorName:$authorName\nbookType:$bookType")
             }
@@ -847,8 +724,7 @@ class HookEntry : IYukiHookXposedInit {
          * @param authorName 作者
          */
         fun addShieldBook(
-            bookName: String = "",
-            authorName: String = ""
+            bookName: String = "", authorName: String = ""
         ) {
             when {
                 bookName.isNotBlank() -> {
@@ -1035,15 +911,13 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
                         }
                         afterHook {
                             val binding = instance.getParam<Any>("binding")
-                            val d =
-                                binding?.getParam<LinearLayout>(needHookVariableName)
+                            val d = binding?.getParam<LinearLayout>(needHookVariableName)
                             val e1 = d?.getParam<TextView>(needHookVariableName1)
                             e1?.let { tv ->
                                 if (tv.text == "签到") {
                                     d.performClick()
                                 }
-                            }
-                            /*
+                            }/*
                                             // 隐藏每日导读方案2
                                             val h = binding?.getParam<TextView>("h")
                                             val parent = h?.parent as? ViewGroup
@@ -1119,13 +993,23 @@ fun PackageParam.newOldLayout(
         else -> null
     }
 
+    /**
+     * gdt game
+     */
+    val needHookGDTGameMethod = when (versionCode) {
+        in 896..900 -> "U"
+        else -> null
+    }
+
     if (needHookClass == null) {
         "新旧布局".printlnNotSupportVersion(versionCode)
         return
     }
     needHookClass.hook {
         if (needHookNewUserAccountMethod == null) {
-            "新版我的布局".printlnNotSupportVersion(versionCode)
+            if (versionCode in 868..890) {
+                "新版我的布局".printlnNotSupportVersion(versionCode)
+            }
         } else {
             injectMember {
                 method {
@@ -1174,6 +1058,17 @@ fun PackageParam.newOldLayout(
                     replaceToFalse()
                 }
 
+            }
+        }
+
+        if (needHookGDTGameMethod != null) {
+            injectMember {
+                method {
+                    name = needHookGDTGameMethod
+                    emptyParam()
+                    returnType = BooleanType
+                }
+                replaceToFalse()
             }
         }
     }
@@ -1296,7 +1191,7 @@ fun PackageParam.unlockMemberBackground(versionCode: Int) {
  */
 fun PackageParam.freeAdReward(versionCode: Int) {
     when (versionCode) {
-        in 854..900 -> {
+        in 854..896 -> {
             findClass("com.qq.e.comm.managers.plugin.PM").hook {
                 injectMember {
                     method {
@@ -1467,6 +1362,62 @@ fun PackageParam.freeAdReward(versionCode: Int) {
                     }
                     afterHook {
                         args(1).set(0)
+                    }
+                }
+            }
+        }
+
+        in 896..900 -> {
+            /**
+             * showRewardVideo
+             * preloadRewardVideo
+             */
+            findClass("com.qidian.QDReader.framework.webview.g").hook {
+                injectMember {
+                    method {
+                        name = "judian"
+                        paramCount(3)
+                        returnType = UnitType
+                    }
+                    beforeHook {
+                        args(1).set(JSONObject("{\"status\":2}"))
+                    }
+                }
+            }
+
+            findClass("com.qidian.QDReader.repository.entity.Reward").hook {
+                injectMember {
+                    method {
+                        name = "getRewardId"
+                        emptyParam()
+                        returnType = LongType
+                    }
+                    replaceTo(1L)
+                }
+            }
+
+            findClass("com.qidian.QDReader.ui.modules.interact.InteractHBContainerView").hook {
+                injectMember {
+                    method {
+                        name = "showGdtAD\$lambda-20\$lambda-19"
+                        paramCount(3)
+                        returnType = UnitType
+                    }
+                    beforeHook {
+                        args(2).set(5)
+                    }
+                }
+            }
+
+            findClass("com.qq.e.tg.ADActivity").hook {
+                injectMember {
+                    method {
+                        name = "onCreate"
+                        param(BundleClass)
+                        returnType = UnitType
+                    }
+                    beforeHook {
+                        instance<Activity>().finish()
                     }
                 }
             }
@@ -1735,9 +1686,7 @@ fun PackageParam.exportEmoji(versionCode: Int) {
                         }
                         if (topBarViewId != null) {
                             val topBar = XposedHelpers.callMethod(
-                                context,
-                                "findViewById",
-                                topBarViewId
+                                context, "findViewById", topBarViewId
                             ) as? RelativeLayout
                             if (topBar != null) {
                                 val layoutParams = RelativeLayout.LayoutParams(
@@ -1778,9 +1727,7 @@ fun PackageParam.exportEmoji(versionCode: Int) {
  * 导出表情包对话框
  */
 fun Context.exportEmojiDialog(
-    context: Any,
-    yWImageLoader: Class<*>,
-    imageList: List<String>
+    context: Any, yWImageLoader: Class<*>, imageList: List<String>
 ) {
     alertDialog {
         title = "一键导出表情包"
@@ -1837,9 +1784,7 @@ fun PackageParam.importAudio(versionCode: Int) {
                             else -> null
                         } ?: return@afterHook
                         val button = XposedHelpers.callMethod(
-                            view,
-                            "findViewById",
-                            mBtnStartViewId
+                            view, "findViewById", mBtnStartViewId
                         ) as? LinearLayout
                         val qDUIButtonTextViewVariableName =
                             versionCode.QDUIButtonTextViewVariableName
@@ -1856,8 +1801,7 @@ fun PackageParam.importAudio(versionCode: Int) {
                                         e.context.toast("路径不能为空")
                                     } else {
                                         instance.setParams(
-                                            "mAudioFile" to File(path),
-                                            "mAudioDuration" to 1
+                                            "mAudioFile" to File(path), "mAudioDuration" to 1
                                         )
                                         instanceClass.method {
                                             name = "setViewInRecorded"
@@ -1895,17 +1839,37 @@ fun Context.importAudioFile(action: (String) -> Unit) {
     val files = file.listFiles()
 
     if (!files.isNullOrEmpty()) {
-        singleChoiceSelector(
-            items = files.map { it.name },
+        singleChoiceSelector(items = files.map { it.name },
             checkIndex = 0,
             title = "导入配音固定路径为: $path",
             onItemSelected = { _, _, index ->
 //            "onItemSelected: $it, $text, $index".loge()
                 action(files[index].absolutePath)
-            }
-        )
+            })
     } else {
         toast("固定路径为: $path, 但是没有文件")
     }
 
+}
+
+/**
+ * 试用模式弹框
+ */
+fun PackageParam.forceTrialMode(versionCode: Int) {
+    when (versionCode) {
+        in 896..900 -> {
+            findClass("com.qidian.QDReader.util.v4").hook {
+                injectMember {
+                    method {
+                        name = "M"
+                        paramCount(1)
+                        returnType = BooleanType
+                    }
+                    replaceToFalse()
+                }
+            }
+        }
+
+        else -> "试用模式".printlnNotSupportVersion(versionCode)
+    }
 }
