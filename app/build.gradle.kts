@@ -79,7 +79,7 @@ android {
 
     buildFeatures.compose = true
 
-    composeOptions.kotlinCompilerExtensionVersion = "1.4.3"
+    composeOptions.kotlinCompilerExtensionVersion = "1.4.4-dev-k1.8.20-f6ae19e64ff"
 
     packagingOptions.apply {
         resources.excludes += mutableSetOf(
@@ -129,6 +129,7 @@ dependencies {
 
     compileOnly(libs.xposed.api)
 
+    testImplementation(libs.junit)
 }
 
 /*
