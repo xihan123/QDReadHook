@@ -32,6 +32,7 @@ fun PackageParam.advOption(versionCode: Int, optionValueSet: Set<Int>) {
             7 -> disableReadPageFloatAd(versionCode)
             8 -> disableReadPageRewardTheater(versionCode)
             15 -> hideReadPageBottom(versionCode)
+            17 -> disableReadPageNewestPageWindowBannerAd(versionCode)
         }
     }
     disableReadPageChapterEnd(
@@ -335,6 +336,27 @@ fun PackageParam.disableReadPageRewardTheater(versionCode: Int) {
 }
 
 /**
+ * 禁用阅读页-最新页面弹框广告
+ * positionMask
+ */
+fun PackageParam.disableReadPageNewestPageWindowBannerAd(versionCode: Int) {
+    when(versionCode){
+        in 896..900 -> {
+            findClass("com.qidian.QDReader.bll.manager.QDBKTManager").hook {
+                injectMember {
+                    method {
+                        name = "c"
+                        paramCount(5)
+                        returnType = UnitType
+                    }
+                    intercept()
+                }
+            }
+        }
+    }
+}
+
+/**
  * 禁用阅读页-章末相关
  * @param versionCode 版本号
  * @param disableAll 一刀切
@@ -452,6 +474,7 @@ fun PackageParam.disableAd(versionCode: Int) {
                 }
             }
 
+            /*
             findClass("com.qq.e.comm.b").hook {
                 injectMember {
                     method {
@@ -463,25 +486,7 @@ fun PackageParam.disableAd(versionCode: Int) {
                 }
             }
 
-            findClass("com.qidian.QDReader.start.AsyncMainGDTTask").hook {
-                injectMember {
-                    method {
-                        name = "create"
-                        returnType = StringClass
-                    }
-                    intercept()
-                }
-            }
-
-            findClass("com.qidian.QDReader.start.AsyncMainGameADSDKTask").hook {
-                injectMember {
-                    method {
-                        name = "create"
-                        returnType = StringClass
-                    }
-                    intercept()
-                }
-            }
+             */
 
             /*
             findClass("com.qidian.QDReader.component.api.a").hook {
