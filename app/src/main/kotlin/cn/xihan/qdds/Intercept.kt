@@ -1,7 +1,11 @@
 package cn.xihan.qdds
 
+
+import android.content.pm.PackageInfo
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
+import com.highcapable.yukihookapi.hook.type.java.IntType
+import com.highcapable.yukihookapi.hook.type.java.ListClass
 import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
 
@@ -19,6 +23,7 @@ fun PackageParam.interceptOption(
     configurations: List<OptionEntity.SelectedModel>,
 ) {
     if (configurations.isEmpty()) return
+    val interceptList = mutableListOf<String>()
     configurations.filter { it.selected }.forEach { selected ->
         when (selected.title) {
             "隐私政策更新弹框" -> interceptPrivacyPolicy(version)
@@ -26,10 +31,13 @@ fun PackageParam.interceptOption(
             "WebSocket" -> interceptWebSocket(version)
             "青少年模式请求" -> interceptQSNModeRequest(version)
             "闪屏广告页面" -> interceptSplashAdActivity(version)
-            else -> interceptAsyncInitTask(version, selected.title.split("|"))
+            "部分检测设备环境" -> interceptEnvironmentCheck(version)
+            else -> interceptList.add(selected.title)
         }
+    }
 
-
+    if (interceptList.isNotEmpty()) {
+        interceptAsyncInitTask(version, interceptList)
     }
 }
 
@@ -171,9 +179,151 @@ fun PackageParam.interceptSplashAdActivity(version: Int) {
                 }
             }
         }
+
         else -> "拦截闪屏广告页面".printlnNotSupportVersion(version)
     }
 }
+
+/**
+ * 拦截部分检测设备环境
+ *
+ */
+fun PackageParam.interceptEnvironmentCheck(versionCode: Int) {
+    when (versionCode) {
+        in 896..900 -> {
+            /**
+             * lsposed
+             */
+            findClass("c6.b").hook {
+                injectMember {
+                    method {
+                        name = "a"
+                        emptyParam()
+                        returnType = IntType
+                    }
+                    replaceTo(0)
+                }
+
+                injectMember {
+                    method {
+                        name = "b"
+                        emptyParam()
+                        returnType = BooleanType
+                    }
+                    replaceToFalse()
+                }
+
+                injectMember {
+                    method {
+                        name = "cihai"
+                        emptyParam()
+                        returnType = BooleanType
+                    }
+                    replaceToFalse()
+                }
+            }
+
+            /**
+             * /system/bin/qemu_props
+             */
+            findClass("com.yw.baseutil.judian").hook {
+                injectMember {
+                    method {
+                        name = "t"
+                        paramCount(1)
+                        returnType = BooleanType
+                    }
+                    replaceToFalse()
+                }
+            }
+
+            findClass("com.qidian.QDReader.core.util.m").hook {
+
+                /**
+                 * 包名列表
+                 */
+                injectMember {
+                    method {
+                        name = "j"
+                        paramCount(1)
+                        returnType = ListClass
+                    }
+                    replaceTo(emptyList<PackageInfo>())
+                }
+
+                /**
+                 * 代理检测
+                 */
+                injectMember {
+                    method {
+                        name = "N"
+                        emptyParam()
+                        returnType = BooleanType
+                    }
+                    replaceToFalse()
+                }
+
+                /**
+                 * x86 检测
+                 */
+                injectMember {
+                    method {
+                        name = "O"
+                        emptyParam()
+                        returnType = BooleanType
+                    }
+                    replaceToFalse()
+                }
+
+            }
+
+            /**
+             * de.robv.android.xposed.XposedHelpers
+             */
+            findClass("fe.b").hook {
+                injectMember {
+                    method {
+                        name = "judian"
+                        emptyParam()
+                        returnType = UnitType
+                    }
+                    intercept()
+                }
+
+                injectMember {
+                    method {
+                        name = "cihai"
+                        emptyParam()
+                        returnType = UnitType
+                    }
+                    intercept()
+                }
+            }
+
+            /*
+            /**
+             * abcEncDyettonFeyedxadcDyettonqwy
+             */
+            findClass("ie.a").hook {
+                injectMember {
+                    method {
+                        name = "search"
+                        emptyParam()
+                        returnType = UnitType
+                    }
+                    intercept()
+                }
+
+            }
+
+             */
+
+        }
+
+        else -> "部分检测设备环境".printlnNotSupportVersion(HookEntry.versionCode)
+    }
+}
+
 
 /**
  * 拦截异步初始化任务
@@ -182,10 +332,11 @@ fun PackageParam.interceptSplashAdActivity(version: Int) {
  */
 fun PackageParam.interceptAsyncInitTask(
     version: Int,
-    substring: List<String>
+    clsNameList: List<String>
 ) {
     when (version) {
         in 872..900 -> {
+            /*
             findClass(substring[1]).hook {
                 injectMember {
                     method {
@@ -195,8 +346,31 @@ fun PackageParam.interceptAsyncInitTask(
                     intercept()
                 }
             }
+
+             */
+
+            findClass("com.rousetime.android_startup.StartupManager").hook {
+                injectMember {
+                    method {
+                        name = "start"
+                        emptyParam()
+                    }
+                    beforeHook {
+                        val startupList =
+                            instance.getParam<MutableList<*>>("startupList") ?: return@beforeHook
+                        val iterator = startupList.iterator()
+                        while (iterator.hasNext()) {
+                            val clsName = iterator.next()?.javaClass?.name
+                            if (clsNameList.any { it == clsName }) {
+                                iterator.remove()
+                            }
+                        }
+                    }
+                }
+            }
+
         }
 
-        else -> "拦截$${substring[0]}".printlnNotSupportVersion(version)
+        else -> "拦截初始化任务".printlnNotSupportVersion(version)
     }
 }
