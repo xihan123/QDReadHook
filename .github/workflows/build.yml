@@ -38,7 +38,7 @@ jobs:
           echo keyPassword='${{ secrets.KEY_PASSWORD }}' >> keystore.properties
           echo storeFile='${{ steps.write_file.outputs.filePath }}' >> keystore.properties
 
-      - name: Set up JDK 11
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
@@ -94,15 +94,15 @@ jobs:
           repository: Xposed-Modules-Repo/cn.xihan.qdds
           files: app/build/outputs/apk/release/*.apk
 
-      - name: Push a README.md to another repository
-        uses: dmnemec/copy_file_to_another_repo_action@main
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.RELEASE_TOKEN }}
-        with:
-          source_file: 'README.md'
-          destination_repo: 'Xposed-Modules-Repo/cn.xihan.qdds'
-          user_email: 'srxqzxs@vip.qq.com'
-          user_name: 'xihan123'
+#      - name: Push a README.md to another repository
+#        uses: dmnemec/copy_file_to_another_repo_action@main
+#        env:
+#          API_TOKEN_GITHUB: ${{ secrets.RELEASE_TOKEN }}
+#        with:
+#          source_file: 'README.md'
+#          destination_repo: 'Xposed-Modules-Repo/cn.xihan.qdds'
+#          user_email: 'srxqzxs@vip.qq.com'
+#          user_name: 'xihan123'
 
       - name: Telegram Notify
         uses: appleboy/telegram-action@master
