@@ -71,9 +71,9 @@ class HookEntry : IYukiHookXposedInit {
                 freeAdReward(versionCode)
             }
 
-            if (optionEntity.mainOption.enableIgnoreFansValueJumpLimit) {
-                ignoreFansValueJumpLimit(versionCode)
-            }
+//            if (optionEntity.mainOption.enableIgnoreFansValueJumpLimit) {
+//                ignoreFansValueJumpLimit(versionCode)
+//            }
 
             if (optionEntity.mainOption.enableIgnoreFreeSubscribeLimit) {
                 ignoreFreeSubscribeLimit(versionCode)
@@ -245,9 +245,9 @@ class HookEntry : IYukiHookXposedInit {
                 quickShield(versionCode)
             }
 
-            if (optionEntity.bookFansValueOption.enableCustomBookFansValue) {
-                customBookFansValue(versionCode)
-            }
+//            if (optionEntity.bookFansValueOption.enableCustomBookFansValue) {
+//                customBookFansValue(versionCode)
+//            }
 
             /**
              * 开启OkHttp3 日志拦截器
@@ -862,10 +862,10 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
             }
         }
 
-        in 842..900 -> {
+        in 842..906 -> {
             val needHookMethod = when (versionCode) {
                 in 842..878 -> "E"
-                in 884..900 -> "B"
+                in 884..906 -> "B"
                 else -> null
             }
             val needHookVariableName1 = versionCode.QDUIButtonTextViewVariableName
@@ -898,7 +898,7 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
             // 需要Hook的变量名
             val needHookVariableName = when (versionCode) {
                 in 884..890 -> "a"
-                in 896..900 -> "b"
+                in 896..906 -> "b"
                 else -> null
             }
             if (needHookVariableName != null && needHookVariableName1 != null) {
@@ -952,6 +952,7 @@ fun PackageParam.newOldLayout(
         868 -> "r4.a\$a"
         in 872..878 -> "p4.a\$a"
         in 884..900 -> "l4.search\$search"
+        906 -> "o4.search\$search"
         else -> null
     }
 
@@ -998,6 +999,7 @@ fun PackageParam.newOldLayout(
      */
     val needHookGDTGameMethod = when (versionCode) {
         in 896..900 -> "U"
+        906 -> "W"
         else -> null
     }
 
@@ -1026,7 +1028,9 @@ fun PackageParam.newOldLayout(
         }
 
         if (needHookBookStoreV2Method == null) {
-            "新旧精选布局".printlnNotSupportVersion(versionCode)
+            if (versionCode in 868..900){
+                "新旧精选布局".printlnNotSupportVersion(versionCode)
+            }
         } else {
             injectMember {
                 method {
@@ -1043,8 +1047,9 @@ fun PackageParam.newOldLayout(
         }
 
         if (needHookMethod == null) {
-            "新版书架布局".printlnNotSupportVersion(versionCode)
-            return
+            if (versionCode in 827..900){
+                "新版书架布局".printlnNotSupportVersion(versionCode)
+            }
         } else {
             injectMember {
                 method {
@@ -1079,7 +1084,7 @@ fun PackageParam.newOldLayout(
  */
 fun PackageParam.enableLocalCard(versionCode: Int) {
     when (versionCode) {
-        in 758..900 -> {
+        in 758..896 -> {
 
             findClass("com.qidian.QDReader.repository.entity.UserAccountDataBean\$MemberBean").hook {
                 injectMember {
@@ -1146,6 +1151,26 @@ fun PackageParam.enableLocalCard(versionCode: Int) {
                 }
             }
         }
+        in 896..950 -> {
+            findClass("com.qidian.QDReader.repository.entity.user_account.Member").hook {
+                injectMember {
+                    method {
+                        name = "isMember"
+                        emptyParam()
+                    }
+                    replaceTo(1)
+                }
+
+//                    injectMember {
+//                        method {
+//                            name = "isAuto"
+//                            emptyParam()
+//                            returnType = IntType
+//                        }
+//                        replaceTo(1)
+//                    }
+            }
+        }
 
         else -> "启用本地至尊卡".printlnNotSupportVersion(versionCode)
     }
@@ -1156,7 +1181,7 @@ fun PackageParam.enableLocalCard(versionCode: Int) {
  */
 fun PackageParam.unlockMemberBackground(versionCode: Int) {
     when (versionCode) {
-        in 827..900 -> {
+        in 827..950 -> {
             findClass("com.qidian.QDReader.ui.activity.QDReaderThemeDetailActivity").hook {
                 injectMember {
                     method {
@@ -1367,7 +1392,7 @@ fun PackageParam.freeAdReward(versionCode: Int) {
             }
         }
 
-        in 896..900 -> {
+        in 896..906 -> {
             /**
              * showRewardVideo
              * preloadRewardVideo
@@ -1427,6 +1452,7 @@ fun PackageParam.freeAdReward(versionCode: Int) {
     }
 }
 
+/*
 /**
  * 忽略粉丝值跳转加群限制
  * ValidateActionLimitUtil Limits
@@ -1467,6 +1493,8 @@ fun PackageParam.ignoreFansValueJumpLimit(versionCode: Int) {
     }
 }
 
+ */
+
 /**
  * 忽略限时免费不能批量订阅限制
  * IsFreeLimit
@@ -1475,12 +1503,13 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
     val needHookClass = when (versionCode) {
         in 854..878 -> "com.qidian.QDReader.component.bll.manager.e1"
         in 884..900 -> "com.qidian.QDReader.component.bll.manager.b1"
+        906 -> "com.qidian.QDReader.component.bll.manager.y0"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 854..878 -> "n0"
         in 884..890 -> "k0"
-        in 896..900 -> "l0"
+        in 896..906 -> "l0"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -1653,7 +1682,7 @@ fun Context.showMainOptionDialog() {
  */
 fun PackageParam.exportEmoji(versionCode: Int) {
     when (versionCode) {
-        in 884..900 -> {
+        in 884..906 -> {
             findClass("com.qidian.QDReader.ui.activity.QDStickersDetailActivity").hook {
                 injectMember {
                     method {
@@ -1682,6 +1711,7 @@ fun PackageParam.exportEmoji(versionCode: Int) {
                             884 -> 0x7F09176F
                             890 -> 0x7F091784
                             in 896..900 -> 0x7F091789
+                            906 -> 0x7F0917F5
                             else -> null
                         }
                         if (topBarViewId != null) {
@@ -1763,7 +1793,7 @@ fun Context.exportEmojiDialog(
  */
 fun PackageParam.importAudio(versionCode: Int) {
     when (versionCode) {
-        in 884..900 -> {
+        in 884..906 -> {
             findClass("com.qidian.QDReader.ui.fragment.reader.ParagraphDubbingFragment").hook {
                 injectMember {
                     method {
@@ -1781,6 +1811,7 @@ fun PackageParam.importAudio(versionCode: Int) {
                         val mBtnStartViewId = when (versionCode) {
                             884 -> 0x7F090FFC
                             in 890..900 -> 0x7F091008
+                            906 -> 0x7F091055
                             else -> null
                         } ?: return@afterHook
                         val button = XposedHelpers.callMethod(
@@ -1856,20 +1887,25 @@ fun Context.importAudioFile(action: (String) -> Unit) {
  * 试用模式弹框
  */
 fun PackageParam.forceTrialMode(versionCode: Int) {
-    when (versionCode) {
-        in 896..900 -> {
-            findClass("com.qidian.QDReader.util.v4").hook {
-                injectMember {
-                    method {
-                        name = "M"
-                        paramCount(1)
-                        returnType = BooleanType
-                    }
-                    replaceToFalse()
-                }
-            }
-        }
-
-        else -> "试用模式".printlnNotSupportVersion(versionCode)
+    val needHookClass = when(versionCode){
+        in 896..900 -> "com.qidian.QDReader.util.v4"
+        906 -> "com.qidian.QDReader.util.w4"
+        else -> null
     }
+    val needHookMethod = when(versionCode){
+        in 896..906 -> "M"
+        else -> null
+    }
+
+    needHookClass?.hook {
+        injectMember {
+            method {
+                name = needHookMethod!!
+                paramCount(1)
+                returnType = BooleanType
+            }
+            replaceToFalse()
+        }
+    } ?: "试用模式".printlnNotSupportVersion(versionCode)
+
 }

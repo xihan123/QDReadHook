@@ -58,7 +58,7 @@ fun PackageParam.interceptGeetest(version: Int) {
  */
 fun PackageParam.interceptPrivacyPolicy(version: Int) {
     when (version) {
-        in 868..900 -> {
+        in 868..950 -> {
             findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
                 injectMember {
                     method {
@@ -84,12 +84,13 @@ fun PackageParam.interceptAgreePrivacyPolicy(version: Int) {
         in 868..878 -> "com.qidian.QDReader.util.w4"
         884 -> "com.qidian.QDReader.util.u4"
         in 890..900 -> "com.qidian.QDReader.util.v4"
+        906 -> "com.qidian.QDReader.util.w4"
         else -> null
     }
     val needHookMethod = when (version) {
         in 868..872 -> "k0"
         878 -> "l0"
-        in 884..900 -> "i0"
+        in 884..906 -> "i0"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -115,12 +116,12 @@ fun PackageParam.interceptAgreePrivacyPolicy(version: Int) {
 fun PackageParam.interceptWebSocket(version: Int) {
     val needHookClass = when (version) {
         in 868..878 -> "com.qidian.QDReader.component.msg.c"
-        in 884..900 -> "com.qidian.QDReader.component.msg.cihai"
+        in 884..906 -> "com.qidian.QDReader.component.msg.cihai"
         else -> null
     }
     val needHookMethod = when (version) {
         in 868..878 -> "r"
-        in 884..900 -> "o"
+        in 884..906 -> "o"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -144,7 +145,7 @@ fun PackageParam.interceptWebSocket(version: Int) {
  */
 fun PackageParam.interceptQSNModeRequest(version: Int) {
     when (version) {
-        in 868..900 -> {
+        in 868..950 -> {
             findClass("com.qidian.QDReader.bll.manager.QDTeenagerManager").hook {
                 injectMember {
                     method {
@@ -167,21 +168,25 @@ fun PackageParam.interceptQSNModeRequest(version: Int) {
  * SettingSplashEnableGDT
  */
 fun PackageParam.interceptSplashAdActivity(version: Int) {
-    when (version) {
-        in 884..900 -> {
-            findClass("g6.search").hook {
-                injectMember {
-                    method {
-                        name = "b"
-                        returnType = BooleanType
-                    }
-                    replaceToFalse()
-                }
-            }
-        }
-
-        else -> "拦截闪屏广告页面".printlnNotSupportVersion(version)
+    val needHookClass = when (version) {
+        in 884..900 -> "g6.search"
+        906 -> "j6.search"
+        else -> null
     }
+    val needHookMethod = when (version) {
+        in 884..906 -> "b"
+        else -> null
+    }
+
+    needHookClass?.hook {
+        injectMember {
+            method {
+                name = needHookMethod!!
+                returnType = BooleanType
+            }
+            replaceToFalse()
+        }
+    } ?: "拦截闪屏广告页面".printlnNotSupportVersion(version)
 }
 
 /**
@@ -189,39 +194,74 @@ fun PackageParam.interceptSplashAdActivity(version: Int) {
  *
  */
 fun PackageParam.interceptEnvironmentCheck(versionCode: Int) {
-    when (versionCode) {
-        in 896..900 -> {
-            /**
-             * lsposed
-             */
-            findClass("c6.b").hook {
-                injectMember {
-                    method {
-                        name = "a"
-                        emptyParam()
-                        returnType = IntType
-                    }
-                    replaceTo(0)
-                }
+    val needHookClass = when(versionCode){
+        in 896..900 -> "c6.b"
+        906 -> "f6.b"
+        else -> null
+    }
 
-                injectMember {
-                    method {
-                        name = "b"
-                        emptyParam()
-                        returnType = BooleanType
-                    }
-                    replaceToFalse()
-                }
-
-                injectMember {
-                    method {
-                        name = "cihai"
-                        emptyParam()
-                        returnType = BooleanType
-                    }
-                    replaceToFalse()
-                }
+    /**
+     * lsposed
+     */
+    needHookClass?.hook {
+        injectMember {
+            method {
+                name = "a"
+                emptyParam()
+                returnType = IntType
             }
+            replaceTo(0)
+        }
+
+        injectMember {
+            method {
+                name = "b"
+                emptyParam()
+                returnType = BooleanType
+            }
+            replaceToFalse()
+        }
+
+        injectMember {
+            method {
+                name = "cihai"
+                emptyParam()
+                returnType = BooleanType
+            }
+            replaceToFalse()
+        }
+    }
+
+
+    /**
+     * de.robv.android.xposed.XposedHelpers
+     */
+    val needHookClass2 = when(versionCode){
+        in 896..900 -> "fe.b"
+        906 -> "ke.b"
+        else -> null
+    }
+    needHookClass2?.hook {
+        injectMember {
+            method {
+                name = "judian"
+                emptyParam()
+                returnType = UnitType
+            }
+            intercept()
+        }
+
+        injectMember {
+            method {
+                name = "cihai"
+                emptyParam()
+                returnType = UnitType
+            }
+            intercept()
+        }
+    }
+    when (versionCode) {
+        in 896..906 -> {
 
             /**
              * /system/bin/qemu_props
@@ -237,67 +277,60 @@ fun PackageParam.interceptEnvironmentCheck(versionCode: Int) {
                 }
             }
 
-            findClass("com.qidian.QDReader.core.util.m").hook {
+            /**
+             * 包名列表
+             */
+            val needHookMethod = when (versionCode) {
+                in 896..900 -> "j"
+                906 -> "k"
+                else -> null
+            }
 
-                /**
-                 * 包名列表
-                 */
+            /**
+             * 代理检测
+             */
+            val needHookMethod2 = when (versionCode) {
+                in 896..900 -> "N"
+                906 -> "O"
+                else -> null
+            }
+            /**
+             * x86 检测
+             */
+            val needHookMethod3 = when (versionCode) {
+                in 896..900 -> "O"
+                906 -> "P"
+                else -> null
+            }
+
+            findClass("com.qidian.QDReader.core.util.m").hook {
                 injectMember {
                     method {
-                        name = "j"
+                        name = needHookMethod!!
                         paramCount(1)
                         returnType = ListClass
                     }
                     replaceTo(emptyList<PackageInfo>())
                 }
 
-                /**
-                 * 代理检测
-                 */
                 injectMember {
                     method {
-                        name = "N"
+                        name =needHookMethod2!!
                         emptyParam()
                         returnType = BooleanType
                     }
                     replaceToFalse()
                 }
 
-                /**
-                 * x86 检测
-                 */
                 injectMember {
                     method {
-                        name = "O"
+                        name =needHookMethod3!!
                         emptyParam()
                         returnType = BooleanType
                     }
                     replaceToFalse()
                 }
 
-            }
-
-            /**
-             * de.robv.android.xposed.XposedHelpers
-             */
-            findClass("fe.b").hook {
-                injectMember {
-                    method {
-                        name = "judian"
-                        emptyParam()
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-
-                injectMember {
-                    method {
-                        name = "cihai"
-                        emptyParam()
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
             }
 
             /*
@@ -335,7 +368,7 @@ fun PackageParam.interceptAsyncInitTask(
     clsNameList: List<String>
 ) {
     when (version) {
-        in 872..900 -> {
+        in 872..906 -> {
             /*
             findClass(substring[1]).hook {
                 injectMember {

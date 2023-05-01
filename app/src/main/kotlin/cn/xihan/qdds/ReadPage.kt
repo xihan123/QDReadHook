@@ -29,11 +29,12 @@ fun PackageParam.customReadBackgroundPath(versionCode: Int) {
         in 834..868 -> "b6.f"
         in 872..878 -> "z5.f"
         in 884..900 -> "u5.c"
+        906 -> "x5.c"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 827..878 -> "G"
-        in 884..900 -> "C"
+        in 884..906 -> "C"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -48,10 +49,7 @@ fun PackageParam.customReadBackgroundPath(versionCode: Int) {
                 paramCount(1)
                 returnType = StringClass
             }
-            afterHook {
-                result =
-                    "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/QDReader/ReaderTheme/"
-            }
+            replaceTo("${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/QDReader/ReaderTheme/")
         }
     }
 }
@@ -66,7 +64,7 @@ fun PackageParam.readerPageChapterReviewPictures(
     enableShowReaderPageChapterSaveAudioDialog: Boolean = false,
     enableCopyReaderPageChapterComment: Boolean = false,
 ) {
-    if (enableShowReaderPageChapterSaveRawPictures && versionCode in 868..900) {
+    if (enableShowReaderPageChapterSaveRawPictures && versionCode in 868..906) {
         findClass("com.qd.ui.component.modules.imagepreivew.QDUIGalleryActivity").hook {
             injectMember {
                 method {
@@ -85,13 +83,13 @@ fun PackageParam.readerPageChapterReviewPictures(
         val needHookClass = when (versionCode) {
             in 868..878 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.b0"
             884 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.y"
-            in 890..900 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.e0"
+            in 890..906 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.e0"
             else -> null
         }
         val needHookMethod = when (versionCode) {
             in 868..878 -> "A"
             884 -> "x"
-            in 890..900 -> "z"
+            in 890..906 -> "z"
             else -> null
         }
         if (needHookClass == null || needHookMethod == null) {
@@ -149,7 +147,7 @@ fun PackageParam.readerPageChapterReviewPictures(
         }
     }
 
-    if (enableShowReaderPageChapterSaveAudioDialog && versionCode in 884..900) {
+    if (enableShowReaderPageChapterSaveAudioDialog && versionCode in 884..906) {
 
         when (versionCode) {
             884 -> {
@@ -177,7 +175,7 @@ fun PackageParam.readerPageChapterReviewPictures(
                 }
             }
 
-            in 890..900 -> {
+            in 890..906 -> {
                 findClass("com.qidian.QDReader.ui.view.chapter_review.VoicePlayerView").hook {
                     injectMember {
                         method {
@@ -222,11 +220,12 @@ fun PackageParam.readTimeDouble(
         878 -> "pf.a"
         in 884..890 -> "jf.search"
         in 896..900 -> "kf.search"
+        906 -> "pf.search"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 868..878 -> "d"
-        in 884..900 -> "a"
+        in 884..906 -> "a"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -337,80 +336,105 @@ fun PackageParam.readBookLastPage(
     hideCircle: Boolean = false,
     hideAdView: Boolean = false
 ) {
+    val needHookClass = when (versionCode) {
+        in 896..906 -> "com.qidian.QDReader.ui.view.lastpage.LastPageRoleView"
+        else -> null
+    }
+    val needHookMethod = when (versionCode) {
+        in 896..906 -> "l"
+        else -> null
+    }
+    needHookClass?.hook {
+        injectMember {
+            method {
+                name = needHookMethod!!
+                param("com.qidian.QDReader.repository.entity.BookLastPage".toClass())
+                returnType = UnitType
+            }
+            afterHook {
+                setBookLastPage(
+                    obj = args[0],
+                    shieldAlsoRead = shieldAlsoRead,
+                    shieldRecommendation = shieldRecommendation,
+                    shieldSimilarRecommend = shieldSimilarRecommend,
+                    hideAlsoRead = hideAlsoRead,
+                    hideRecommendation = hideRecommendation,
+                    hideBookList = hideBookList,
+                    hideSimilarRecommend = hideSimilarRecommend,
+                    hideTryRead = hideTryRead,
+                    hideCircle = hideCircle
+                )
+            }
+        }
+    }
+
+    val needHookClass2 = when (versionCode) {
+        in 896..906 -> "com.qidian.QDReader.ui.view.lastpage.LastPageCircleView"
+        else -> null
+    }
+    val needHookMethod2 = when (versionCode) {
+        in 896..900 -> "f"
+        906 -> "g"
+        else -> null
+    }
+
+    needHookClass2?.hook {
+        injectMember {
+            method {
+                name = needHookMethod2!!
+                param("com.qidian.QDReader.repository.entity.BookLastPage".toClass())
+                returnType = UnitType
+            }
+            afterHook {
+                setBookLastPage(
+                    obj = args[0],
+                    shieldAlsoRead = shieldAlsoRead,
+                    shieldRecommendation = shieldRecommendation,
+                    shieldSimilarRecommend = shieldSimilarRecommend,
+                    hideAlsoRead = hideAlsoRead,
+                    hideRecommendation = hideRecommendation,
+                    hideBookList = hideBookList,
+                    hideSimilarRecommend = hideSimilarRecommend,
+                    hideTryRead = hideTryRead,
+                    hideCircle = hideCircle
+                )
+            }
+        }
+    }
+
+    val needHookClass3 = when (versionCode) {
+        in 896..906 -> "com.qidian.QDReader.ui.view.lastpage.LastPageTryReadViewWrap"
+        else -> null
+    }
+    val needHookMethod3 = when (versionCode) {
+        in 896..906 -> "bind"
+        else -> null
+    }
+    needHookClass3?.hook {
+        injectMember {
+            method {
+                name = needHookMethod3!!
+                param("com.qidian.QDReader.repository.entity.BookLastPage".toClass())
+                returnType = UnitType
+            }
+            afterHook {
+                setBookLastPage(
+                    obj = args[0],
+                    shieldAlsoRead = shieldAlsoRead,
+                    shieldRecommendation = shieldRecommendation,
+                    shieldSimilarRecommend = shieldSimilarRecommend,
+                    hideAlsoRead = hideAlsoRead,
+                    hideRecommendation = hideRecommendation,
+                    hideBookList = hideBookList,
+                    hideSimilarRecommend = hideSimilarRecommend,
+                    hideTryRead = hideTryRead,
+                    hideCircle = hideCircle
+                )
+            }
+        }
+    }
     when (versionCode) {
-        in 896..900 -> {
-            findClass("com.qidian.QDReader.ui.view.lastpage.LastPageRoleView").hook {
-                injectMember {
-                    method {
-                        name = "l"
-                        param("com.qidian.QDReader.repository.entity.BookLastPage".toClass())
-                        returnType = UnitType
-                    }
-                    afterHook {
-                        setBookLastPage(
-                            obj = args[0],
-                            shieldAlsoRead = shieldAlsoRead,
-                            shieldRecommendation = shieldRecommendation,
-                            shieldSimilarRecommend = shieldSimilarRecommend,
-                            hideAlsoRead = hideAlsoRead,
-                            hideRecommendation = hideRecommendation,
-                            hideBookList = hideBookList,
-                            hideSimilarRecommend = hideSimilarRecommend,
-                            hideTryRead = hideTryRead,
-                            hideCircle = hideCircle
-                        )
-                    }
-                }
-            }
-
-            findClass("com.qidian.QDReader.ui.view.lastpage.LastPageCircleView").hook {
-                injectMember {
-                    method {
-                        name = "f"
-                        param("com.qidian.QDReader.repository.entity.BookLastPage".toClass())
-                        returnType = UnitType
-                    }
-                    afterHook {
-                        setBookLastPage(
-                            obj = args[0],
-                            shieldAlsoRead = shieldAlsoRead,
-                            shieldRecommendation = shieldRecommendation,
-                            shieldSimilarRecommend = shieldSimilarRecommend,
-                            hideAlsoRead = hideAlsoRead,
-                            hideRecommendation = hideRecommendation,
-                            hideBookList = hideBookList,
-                            hideSimilarRecommend = hideSimilarRecommend,
-                            hideTryRead = hideTryRead,
-                            hideCircle = hideCircle
-                        )
-                    }
-                }
-            }
-
-            findClass("com.qidian.QDReader.ui.view.lastpage.LastPageTryReadViewWrap").hook {
-                injectMember {
-                    method {
-                        name = "bind"
-                        param("com.qidian.QDReader.repository.entity.BookLastPage".toClass())
-                        returnType = UnitType
-                    }
-                    afterHook {
-                        setBookLastPage(
-                            obj = args[0],
-                            shieldAlsoRead = shieldAlsoRead,
-                            shieldRecommendation = shieldRecommendation,
-                            shieldSimilarRecommend = shieldSimilarRecommend,
-                            hideAlsoRead = hideAlsoRead,
-                            hideRecommendation = hideRecommendation,
-                            hideBookList = hideBookList,
-                            hideSimilarRecommend = hideSimilarRecommend,
-                            hideTryRead = hideTryRead,
-                            hideCircle = hideCircle
-                        )
-                    }
-                }
-            }
-
+        in 896..950 -> {
             if (hideAdView) {
                 findClass("com.qidian.QDReader.ui.activity.BookLastPageNewActivity").hook {
                     injectMember {

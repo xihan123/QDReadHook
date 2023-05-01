@@ -804,11 +804,11 @@ fun MainScreen(
                         })
                 }
 
-                SwitchSetting(title = "忽略粉丝值跳转加群限制",
-                    checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableIgnoreFansValueJumpLimit),
-                    onCheckedChange = {
-                        HookEntry.optionEntity.mainOption.enableIgnoreFansValueJumpLimit = it
-                    })
+//                SwitchSetting(title = "忽略粉丝值跳转加群限制",
+//                    checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableIgnoreFansValueJumpLimit),
+//                    onCheckedChange = {
+//                        HookEntry.optionEntity.mainOption.enableIgnoreFansValueJumpLimit = it
+//                    })
 
                 SwitchSetting(title = "忽略限时免费批量订阅限制",
                     checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableIgnoreFreeSubscribeLimit),
@@ -826,7 +826,6 @@ fun MainScreen(
                         })
                 }
 
-
                 if (versionCode >= 868) {
                     SwitchSetting(title = "新我的布局",
                         subTitle = "896+版本已无旧版布局建议开启防止日志刷屏",
@@ -837,6 +836,7 @@ fun MainScreen(
                         })
 
                     SwitchSetting(title = "新精选布局",
+                        subTitle = "906+版本已无旧版布局建议开启防止日志刷屏",
                         checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableNewStore),
                         onCheckedChange = {
                             HookEntry.optionEntity.mainOption.enableNewStore = it
@@ -899,6 +899,7 @@ fun MainScreen(
                 if (versionCode > 827) {
 
                     SwitchSetting(title = "新书架布局",
+                        subTitle = "906+版本已无旧版布局建议开启防止日志刷屏",
                         checked = rememberMutableStateOf(value = HookEntry.optionEntity.bookshelfOption.enableNewBookShelfLayout),
                         onCheckedChange = {
                             HookEntry.optionEntity.bookshelfOption.enableNewBookShelfLayout = it
@@ -1662,6 +1663,7 @@ fun PurifyScreen(
                     })
                 }
 
+                /*
                 val enableCustomBookFansValue =
                     rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.enableCustomBookFansValue)
 
@@ -1751,6 +1753,8 @@ fun PurifyScreen(
                             HookEntry.optionEntity.bookFansValueOption.mTitleImage = it
                         })
                 }
+
+                 */
 
                 if (versionCode >= 896) {
 
@@ -2049,7 +2053,7 @@ fun Disclaimers(
     onDisagreeClick: () -> Unit = {},
     displayButton: Boolean = true,
 ) {
-    var remainingTime by rememberMutableStateOf(value = 30L)
+    var remainingTime by rememberMutableStateOf(value = 3L)
     if (displayButton) {
         val isActive =
             LocalLifecycleOwner.current.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
