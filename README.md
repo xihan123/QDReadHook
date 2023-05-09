@@ -122,6 +122,7 @@
 ## 截图
 
 ![image1](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/1.png)
+![image1-1](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/1-1.png)
 ![image2](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/2.png)
 ![image3](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/3.png)
 ![image4](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/4.png)
