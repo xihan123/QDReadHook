@@ -73,10 +73,6 @@ class HookEntry : IYukiHookXposedInit {
                 freeAdReward(versionCode)
             }
 
-//            if (optionEntity.mainOption.enableIgnoreFansValueJumpLimit) {
-//                ignoreFansValueJumpLimit(versionCode)
-//            }
-
             if (optionEntity.mainOption.enableIgnoreFreeSubscribeLimit) {
                 ignoreFreeSubscribeLimit(versionCode)
             }
@@ -250,10 +246,6 @@ class HookEntry : IYukiHookXposedInit {
             if (optionEntity.shieldOption.enableQuickShieldDialog) {
                 quickShield(versionCode)
             }
-
-//            if (optionEntity.bookFansValueOption.enableCustomBookFansValue) {
-//                customBookFansValue(versionCode)
-//            }
 
             /**
              * 开启OkHttp3 日志拦截器
@@ -1522,145 +1514,6 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
         }
     }
 }
-
-/*
-/**
- * 主要配置弹框
- */
-fun Context.showMainOptionDialog() {
-    val linearLayout = CustomLinearLayout(this, isAutoWidth = false)
-    val packageNameOption = CustomEditText(
-        context = this,
-        title = "包名设置",
-        message = "一般默认即可,不建议更改",
-        value = optionEntity.mainOption.packageName
-    ) {
-        optionEntity.mainOption.packageName = it
-    }
-    val enableAutoSignOption = CustomSwitch(
-        context = this,
-        title = "启用自动签到",
-        isEnable = optionEntity.mainOption.enableAutoSign
-    ) {
-        optionEntity.mainOption.enableAutoSign = it
-    }
-    val enableOldLayoutOption = CustomSwitch(
-        context = this,
-        title = "启用旧版布局",
-        isEnable = optionEntity.mainOption.enableOldLayout
-    ) {
-        optionEntity.mainOption.enableOldLayout = it
-    }
-    val enableOldBookShelfLayout = CustomSwitch(
-        context = this,
-        title = "启用旧版书架布局",
-        isEnable = optionEntity.mainOption.enableOldBookShelfLayout
-    ) {
-        optionEntity.mainOption.enableOldBookShelfLayout = it
-    }
-
-    val enableLocalCardOption = CustomSwitch(
-        context = this,
-        title = "启用本地至尊卡",
-        isEnable = optionEntity.mainOption.enableLocalCard
-    ) {
-        optionEntity.mainOption.enableLocalCard = it
-    }
-
-    val enableUnlockMemberBackgroundOption = CustomSwitch(
-        context = this,
-        title = "解锁会员卡专属背景",
-        isEnable = optionEntity.mainOption.enableUnlockMemberBackground
-    ) {
-        optionEntity.mainOption.enableUnlockMemberBackground = it
-    }
-
-    val enableFreeAdRewardOption = CustomSwitch(
-        context = this,
-        title = "免广告领取奖励",
-        isEnable = optionEntity.mainOption.enableFreeAdReward
-    ) {
-        optionEntity.mainOption.enableFreeAdReward = it
-    }
-
-    val freeAdRewardAutoExitTimeOption = CustomEditText(
-        context = this,
-        title = "免广告领取奖励自动退出时间",
-        message = "单位为秒,默认为3秒,如不需要把此数值设定大一些",
-        value = optionEntity.mainOption.freeAdRewardAutoExitTime.toString()
-    ) {
-        optionEntity.mainOption.freeAdRewardAutoExitTime = it.toInt()
-    }
-
-    val enableIgnoreFansValueJumpLimitOption = CustomSwitch(
-        context = this,
-        title = "忽略粉丝值跳转加群限制",
-        isEnable = optionEntity.mainOption.enableIgnoreFansValueJumpLimit
-    ) {
-        optionEntity.mainOption.enableIgnoreFansValueJumpLimit = it
-    }
-
-    val enableIgnoreFreeSubscribeLimitOption = CustomSwitch(
-        context = this,
-        title = "忽略限时免费批量订阅限制",
-        isEnable = optionEntity.mainOption.enableIgnoreFreeSubscribeLimit
-    ) {
-        optionEntity.mainOption.enableIgnoreFreeSubscribeLimit = it
-    }
-
-    val enableCustomReaderThemeOption = CustomSwitch(
-        context = this,
-        title = "启用自定义阅读页主题路径",
-        isEnable = optionEntity.mainOption.enableCustomReaderThemePath
-    ) {
-        optionEntity.mainOption.enableCustomReaderThemePath = it
-    }
-
-    val visualizeReadingPageBackgroundColorAdjustmentOption = CustomTextView(
-        context = this,
-        mText = "可视化阅读页背景色调调整",
-        isBold = true,
-    ) {
-        showVisualizeReadingPageBackgroundColorAdjustmentDialog()
-    }
-    linearLayout.apply {
-        addView(packageNameOption)
-        addView(enableAutoSignOption)
-        addView(enableLocalCardOption)
-        addView(enableFreeAdRewardOption)
-        if (optionEntity.mainOption.enableFreeAdReward) {
-            addView(freeAdRewardAutoExitTimeOption)
-        }
-        addView(enableIgnoreFansValueJumpLimitOption)
-        addView(enableIgnoreFreeSubscribeLimitOption)
-        if (versionCode < NOT_SUPPORT_OLD_LAYOUT_VERSION_CODE) {
-            addView(enableOldLayoutOption)
-        }
-        if (versionCode > 827) {
-            addView(enableOldBookShelfLayout)
-            addView(enableUnlockMemberBackgroundOption)
-            addView(enableCustomReaderThemeOption)
-            if (optionEntity.mainOption.enableCustomReaderThemePath) {
-                addView(visualizeReadingPageBackgroundColorAdjustmentOption)
-            }
-        }
-    }
-    alertDialog {
-        title = "主要配置"
-        customView = linearLayout
-        okButton {
-            updateOptionEntity()
-        }
-        negativeButton("返回") {
-            it.dismiss()
-        }
-
-        build()
-        show()
-    }
-}
-
- */
 
 /**
  * 一键导出表情包
