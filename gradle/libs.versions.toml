@@ -1,5 +1,5 @@
 [versions]
-com-android-application = "8.0.0"
+com-android-application = "8.0.1"
 org-jetbrains-kotlin = "1.8.20"
 ksp-version = "1.8.20-1.0.11"
 activity = "1.8.0-alpha03"
@@ -14,7 +14,7 @@ kotlin-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", ver
 fast-json = { module = "com.alibaba.fastjson2:fastjson2-kotlin", version = "2.0.29" }
 io-coil-compose = { module = "io.coil-kt:coil-compose", version = "2.3.0" }
 #https://github.com/skydoves/landscapist#coil
-landscapist-coil = { module = "com.github.skydoves:landscapist-coil", version = "2.1.11" }
+landscapist-coil = { module = "com.github.skydoves:landscapist-coil", version = "2.1.12" }
 #https://github.com/getActivity/XXPermissions
 xxpermissions = { module = "com.github.getActivity:XXPermissions", version = "18.0" }
 #
