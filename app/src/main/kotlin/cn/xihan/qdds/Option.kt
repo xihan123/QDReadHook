@@ -33,6 +33,7 @@ import java.io.File
  * @param viewHideOption 控件隐藏配置
  * @param replaceRuleOption 替换配置
  * @param bookFansValueOption 书粉丝值配置
+ * @param hideBenefitsOption 隐藏福利配置
  */
 @Keep
 @Serializable
@@ -49,6 +50,7 @@ data class OptionEntity(
     @SerialName("viewHideOption") var viewHideOption: ViewHideOption = ViewHideOption(),
     @SerialName("replaceRuleOption") var replaceRuleOption: ReplaceRuleOption = ReplaceRuleOption(),
     @SerialName("bookFansValueOption") var bookFansValueOption: BookFansValueOption = BookFansValueOption(),
+    @SerialName("hideBenefitsOption") var hideBenefitsOption: HideWelfareOption = HideWelfareOption(),
 ) {
     /**
      * 广告配置
@@ -578,6 +580,44 @@ data class OptionEntity(
             "黄金盟" to 10000000,
         )
     )
+
+    /**
+     * 隐藏福利配置
+     * @param enableHideWelfare 启用隐藏福利
+     * @param configurations 配置
+     * @param remoteCHideWelfareList 远程隐藏福利列表
+     * @param hideWelfareList 隐藏福利列表
+     */
+    @Keep
+    @Serializable
+    data class HideWelfareOption(
+        @SerialName("enableHideWelfare") var enableHideWelfare: Boolean = false,
+        @SerialName("configurations") var configurations: List<SelectedModel> = listOf(
+            SelectedModel("内部浏览器右上角菜单", true),
+            SelectedModel("我的", false)
+        ),
+        @SerialName("remoteCHideWelfareList") var remoteCHideWelfareList: MutableSet<String> = mutableSetOf(
+            "https://raw.githubusercontent.com/xihan123/AGE-API/master/details/HideWelfareList.json"
+        ),
+        @SerialName("hideWelfareList") var hideWelfareList: MutableSet<HideWelfare> = mutableSetOf()
+    ){
+
+        /**
+         * 隐藏福利模型
+         * @param title 标题
+         * @param imageUrl 图片地址
+         * @param actionUrl 跳转地址
+         */
+        @Keep
+        @Serializable
+        data class HideWelfare(
+            @SerialName("title") var title: String = "",
+            @SerialName("imageUrl") var imageUrl: String = "",
+            @SerialName("actionUrl") var actionUrl: String = ""
+        )
+    }
+
+
 }
 
 /**
@@ -626,6 +666,16 @@ fun readOptionEntity(): OptionEntity {
                         viewHideOption.bookDetailOptions.configurations =
                             bookDetailOptionConfigurations.updateSelectedListOptionEntity(
                                 newBookDetailOptionConfigurations
+                            )
+                    }
+                    val hideWelfareOptionConfigurations =
+                        hideBenefitsOption.configurations.toMutableList()
+                    val newHideWelfareOptionConfigurations =
+                        newOptionEntity.hideBenefitsOption.configurations
+                    if (hideWelfareOptionConfigurations.size != newHideWelfareOptionConfigurations.size) {
+                        hideBenefitsOption.configurations =
+                            hideWelfareOptionConfigurations.updateSelectedListOptionEntity(
+                                newHideWelfareOptionConfigurations
                             )
                     }
                 }

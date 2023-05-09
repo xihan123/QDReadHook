@@ -32,8 +32,10 @@ import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import de.robv.android.xposed.XposedHelpers
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * @项目名 : BaseHook
@@ -89,6 +91,10 @@ class HookEntry : IYukiHookXposedInit {
 
             if (optionEntity.mainOption.enableForceTrialMode) {
                 forceTrialMode(versionCode)
+            }
+
+            if (optionEntity.hideBenefitsOption.enableHideWelfare){
+                hideWelfare(versionCode)
             }
 
             if (optionEntity.bookshelfOption.enableOldLayout && versionCode < NOT_SUPPORT_OLD_LAYOUT_VERSION_CODE) {
@@ -1028,7 +1034,7 @@ fun PackageParam.newOldLayout(
         }
 
         if (needHookBookStoreV2Method == null) {
-            if (versionCode in 868..900){
+            if (versionCode in 868..900) {
                 "新旧精选布局".printlnNotSupportVersion(versionCode)
             }
         } else {
@@ -1047,7 +1053,7 @@ fun PackageParam.newOldLayout(
         }
 
         if (needHookMethod == null) {
-            if (versionCode in 827..900){
+            if (versionCode in 827..900) {
                 "新版书架布局".printlnNotSupportVersion(versionCode)
             }
         } else {
@@ -1151,6 +1157,7 @@ fun PackageParam.enableLocalCard(versionCode: Int) {
                 }
             }
         }
+
         in 896..950 -> {
             findClass("com.qidian.QDReader.repository.entity.user_account.Member").hook {
                 injectMember {
@@ -1170,6 +1177,27 @@ fun PackageParam.enableLocalCard(versionCode: Int) {
 //                        replaceTo(1)
 //                    }
             }
+
+            findClass("com.qidian.QDReader.repository.entity.config.MemberBean").hook {
+                injectMember {
+                    method {
+                        name = "getMemberType"
+                        emptyParam()
+                        returnType = IntType
+                    }
+                    replaceTo(1)
+                }
+
+                injectMember {
+                    method {
+                        name = "getExpireTime"
+                        emptyParam()
+                        returnType = LongType
+                    }
+                    replaceTo(4102329600000L)
+                }
+            }
+
         }
 
         else -> "启用本地至尊卡".printlnNotSupportVersion(versionCode)
@@ -1887,12 +1915,12 @@ fun Context.importAudioFile(action: (String) -> Unit) {
  * 试用模式弹框
  */
 fun PackageParam.forceTrialMode(versionCode: Int) {
-    val needHookClass = when(versionCode){
+    val needHookClass = when (versionCode) {
         in 896..900 -> "com.qidian.QDReader.util.v4"
         906 -> "com.qidian.QDReader.util.w4"
         else -> null
     }
-    val needHookMethod = when(versionCode){
+    val needHookMethod = when (versionCode) {
         in 896..906 -> "M"
         else -> null
     }
@@ -1908,4 +1936,102 @@ fun PackageParam.forceTrialMode(versionCode: Int) {
         }
     } ?: "试用模式".printlnNotSupportVersion(versionCode)
 
+}
+
+/**
+ * 隐藏福利列表
+ */
+fun PackageParam.hideWelfare(versionCode: Int){
+    when(versionCode){
+        906 -> {
+            findClass("com.qidian.QDReader.ui.activity.QDSearchActivity").hook {
+                injectMember {
+                    method {
+                        name = "getOperateKey"
+                        paramCount(1)
+                    }
+                    afterHook {
+                        val list = instance.getParam<CopyOnWriteArrayList<*>>("operateKeys")
+                            ?: return@afterHook
+                        if (list.isEmpty()) {
+                            return@afterHook
+                        }
+                        val hideWriteArrayList =
+                            mutableSetOf<OptionEntity.HideWelfareOption.HideWelfare>()
+                        val iterator = list.iterator()
+                        while (iterator.hasNext()) {
+                            val adItem = iterator.next()
+                            val adImage = adItem?.getParam<String>("ADImage")
+                            val adText = adItem?.getParam<String>("ADText")
+                            val actionUrl = adItem?.getParam<String>("ActionUrl")
+                            if (!adImage.isNullOrBlank() && !adText.isNullOrBlank() && !actionUrl.isNullOrBlank()) {
+                                hideWriteArrayList += OptionEntity.HideWelfareOption.HideWelfare(
+                                    title = adText,
+                                    imageUrl = adImage,
+                                    actionUrl = actionUrl
+                                )
+                            }
+                        }
+                        if (hideWriteArrayList.isNotEmpty()) {
+                            optionEntity.hideBenefitsOption.hideWelfareList.clear()
+                            optionEntity.hideBenefitsOption.hideWelfareList.addAll(
+                                hideWriteArrayList
+                            )
+                            updateOptionEntity()
+                        }
+                    }
+                }
+            }
+
+            if (optionEntity.hideBenefitsOption.configurations[0].selected){
+                findClass("com.qidian.QDReader.ui.fragment.QDBrowserFragment").hook {
+                    injectMember {
+                        method {
+                            name = "showMore"
+                            paramCount(2)
+                            returnType = UnitType
+                        }
+                        beforeHook {
+                            val hideWelfareList = optionEntity.hideBenefitsOption.hideWelfareList
+                            if (hideWelfareList.isEmpty()) {
+                                return@beforeHook
+                            }
+                            val jsonArray = JSONArray()
+                            hideWelfareList.forEachIndexed { index, hideWelfare ->
+                                jsonArray.put(
+                                    index,
+                                    JSONObject().apply {
+                                        put("icon", hideWelfare.imageUrl)
+                                        put("text", hideWelfare.title)
+                                        put("url", hideWelfare.actionUrl)
+                                    })
+                            }
+                            args(0).set((args[0] as JSONObject).put("otherItems", jsonArray))
+                        }
+                    }
+
+                    /*
+                    injectMember {
+                        method {
+                            name = "lambda\$showMoreDialog\$10"
+                            returnType = UnitType
+                        }
+                        beforeHook {
+                            val args4 = args[4] ?: return@beforeHook
+                            if ("com.qidian.QDReader.repository.entity.ShareMoreItem" == args4.javaClass.name) {
+                                val iconUrl = args4.getParam<String>("iconUrl") ?: args4.getParam<String>("IconUrl")
+                                val actionUrl = args4.getParam<String>("actionUrl") ?: args4.getParam<String>("ActionUrl")
+                                val title = args4.getParam<String>("title") ?: args4.getParam<String>("Title")
+                                "title: $title".loge()
+                            }
+                        }
+                    }
+
+                     */
+                }
+            }
+        }
+
+        else -> "隐藏福利列表".printlnNotSupportVersion(versionCode)
+    }
 }

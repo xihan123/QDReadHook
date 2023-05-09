@@ -8,6 +8,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import com.alibaba.fastjson2.parseObject
 import com.alibaba.fastjson2.toJSONString
+import com.highcapable.yukihookapi.hook.factory.constructor
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.android.ViewClass
@@ -762,7 +763,7 @@ fun PackageParam.accountViewHide(
             }
         }
 
-        in 812..950 -> {
+        in 812..900 -> {
             findClass("com.qidian.QDReader.ui.fragment.QDUserAccountFragment").hook {
                 injectMember {
                     method {
@@ -799,8 +800,7 @@ fun PackageParam.accountViewHide(
                     }
                 }
             }
-
-            if (versionCode >= 868) {
+            if (versionCode in 868..900) {
                 findClass("com.qidian.QDReader.ui.fragment.main_group.QDUserAccountRebornFragment").hook {
                     injectMember {
                         method {
@@ -868,6 +868,128 @@ fun PackageParam.accountViewHide(
                                 }
 
                             }
+                        }
+                    }
+                }
+            }
+        }
+
+        906 -> {
+            findClass("com.qidian.QDReader.ui.fragment.main_group.QDUserAccountRebornFragment").hook {
+                injectMember {
+                    method {
+                        name = "processAccountItem"
+                        param("com.qidian.QDReader.repository.entity.user_account.UserAccountItemBean".toClass())
+                        returnType = ListClass
+                    }
+                    afterHook {
+                        val userAccountItemBean = args[0] ?: return@afterHook
+//                            val member = userAccountItemBean.getParam<Any>("member")
+//                            member?.setParams(
+//                                "isMember" to 1,
+//                                "title" to "至尊卡",
+//                                "subTitle" to "会员到期时间：2099-12-31"
+//                            )
+                        val benefitButtonList =
+                            userAccountItemBean.getParam<MutableList<*>>("benefitButtonList")
+                        if (!benefitButtonList.isNullOrEmpty()) {
+                            val iterator = benefitButtonList.iterator()
+                            while (iterator.hasNext()) {
+                                val next = iterator.next().toJSONString().parseObject()
+                                val name = next?.getString("name") ?: next?.getString("Name")
+                                if (!name.isNullOrBlank()) {
+                                    HookEntry.optionEntity.viewHideOption.accountOption.newConfiguration.findOrPlus(
+                                        title = name,
+                                        iterator = iterator
+                                    )
+                                }
+                            }
+
+
+                        }
+
+                        val functionButtonList =
+                            userAccountItemBean.getParam<MutableList<Any?>>("functionButtonList")
+                        if (!functionButtonList.isNullOrEmpty()) {
+                            val iterator = functionButtonList.iterator()
+                            while (iterator.hasNext()) {
+                                val next = iterator.next().toJSONString().parseObject()
+                                val name = next?.getString("name") ?: next?.getString("Name")
+                                if (!name.isNullOrBlank()) {
+                                    HookEntry.optionEntity.viewHideOption.accountOption.newConfiguration.findOrPlus(
+                                        title = name,
+                                        iterator = iterator
+                                    )
+                                }
+                            }
+
+                            // 添加列表
+                            if (HookEntry.optionEntity.hideBenefitsOption.configurations[1].selected){
+                                val hideWelfareList =
+                                    HookEntry.optionEntity.hideBenefitsOption.hideWelfareList
+                                if (hideWelfareList.isNotEmpty()) {
+                                    val copyFunctionButtonList = functionButtonList
+                                    copyFunctionButtonList.first()?.let { item ->
+                                        val className = item::class.java.name
+                                        if ("com.qidian.QDReader.repository.entity.user_account.FunctionButton" == className) {
+                                            hideWelfareList.forEach { model ->
+                                                val copyFunctionButton = item::class.java.constructor {
+                                                    param(
+                                                        StringClass,
+                                                        StringClass,
+                                                        StringClass,
+                                                        StringClass,
+                                                        StringClass,
+                                                        "com.qidian.QDReader.repository.entity.RedDot".toClass(),
+                                                        LongType,
+                                                        LongType,
+                                                        IntType,
+                                                        IntType
+                                                    )
+                                                }.get().call(
+                                                    "",
+                                                    model.imageUrl,
+                                                    model.title,
+                                                    "",
+                                                    model.actionUrl,
+                                                    null,
+                                                    0L,
+                                                    0L,
+                                                    0,
+                                                    0
+                                                )
+
+                                                copyFunctionButtonList += copyFunctionButton
+                                            }
+                                            if (copyFunctionButtonList.isNotEmpty()) {
+                                                userAccountItemBean.setParam(
+                                                    "functionButtonList",
+                                                    copyFunctionButtonList
+                                                )
+                                            }
+
+                                        }
+                                        "className:$className".loge()
+                                    }
+                                }
+                            }
+                        }
+
+                        val bottomButtonList =
+                            userAccountItemBean.getParam<MutableList<*>>("bottomButtonList")
+                        if (!bottomButtonList.isNullOrEmpty()) {
+                            val iterator = bottomButtonList.iterator()
+                            while (iterator.hasNext()) {
+                                val next = iterator.next().toJSONString().parseObject()
+                                val name = next?.getString("name") ?: next?.getString("Name")
+                                if (!name.isNullOrBlank()) {
+                                    HookEntry.optionEntity.viewHideOption.accountOption.newConfiguration.findOrPlus(
+                                        title = name,
+                                        iterator = iterator
+                                    )
+                                }
+                            }
+
                         }
                     }
                 }

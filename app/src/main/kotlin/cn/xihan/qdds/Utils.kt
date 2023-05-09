@@ -13,6 +13,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.os.Looper
+import android.os.Parcelable
 import android.view.View
 import android.widget.Toast
 import androidx.compose.material.icons.Icons
@@ -24,16 +25,19 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.alibaba.fastjson2.toJSONString
 import com.highcapable.yukihookapi.hook.factory.MembersType
 import com.highcapable.yukihookapi.hook.log.loggerE
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
 import de.robv.android.xposed.XposedHelpers
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
+import java.io.Serializable
 import java.net.HttpURLConnection
 import java.net.URL
 import java.security.MessageDigest
@@ -301,6 +305,88 @@ fun Context.checkModuleUpdate() {
             loggerE(msg = "checkModuleUpdate 报错: ${e.message}")
         } finally {
             connection.disconnect()
+        }
+        Looper.loop()
+    }.start()
+}
+
+@Throws(Exception::class)
+fun Context.checkHideWelfareUpdate() {
+    // 创建一个子线程
+    Thread {
+        Looper.prepare()
+        val remoteHideWelfareList = HookEntry.optionEntity.hideBenefitsOption.remoteCHideWelfareList
+        if (remoteHideWelfareList.isNotEmpty()) {
+            val hideWelfareList =
+                mutableListOf<OptionEntity.HideWelfareOption.HideWelfare>()
+            remoteHideWelfareList.forEach { url ->
+                // Java 原生网络请求
+                val url = URL(url)
+                val connection = url.openConnection() as HttpURLConnection
+                connection.apply {
+                    requestMethod = "GET"
+                    connectTimeout = 5000
+                    readTimeout = 5000
+                    doInput = true
+                    useCaches = false
+                    setRequestProperty("Content-Type", "application/json")
+                    setRequestProperty("Accept", "application/json")
+                    setRequestProperty(
+                        "User-Agent",
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36"
+                    )
+                }
+                try {
+                    connection.connect()
+                    if (connection.responseCode == 200) {
+                        val inputStream = connection.inputStream
+                        val bufferedReader = BufferedReader(InputStreamReader(inputStream))
+                        val stringBuilder = StringBuilder()
+                        bufferedReader.forEachLine {
+                            stringBuilder.append(it)
+                        }
+                        val jsonArray = JSONArray(stringBuilder.toString())
+                        if (jsonArray.length() == 0) {
+                            Toast.makeText(this, "$url 当前已是最新版本", Toast.LENGTH_SHORT).show()
+                        } else {
+                            for (i in 0 until jsonArray.length()) {
+                                val jsonObject = jsonArray.optJSONObject(i)
+                                if (jsonObject != null) {
+                                    val text = jsonObject.optString("text")
+                                    val icon = jsonObject.getString("url")
+                                    val url = jsonObject.getString("url")
+                                    hideWelfareList.add(
+                                        OptionEntity.HideWelfareOption.HideWelfare(
+                                            title = text,
+                                            imageUrl = icon,
+                                            actionUrl = url
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        Toast.makeText(this, "检查隐藏福利列表失败", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    loggerE(msg = "checkModuleUpdate 报错: ${e.message}")
+                } finally {
+                    connection.disconnect()
+                }
+            }
+
+            if (hideWelfareList.isNotEmpty()) {
+                HookEntry.optionEntity.hideBenefitsOption.hideWelfareList.addAll(hideWelfareList)
+                updateOptionEntity()
+                Toast.makeText(
+                    this,
+                    "检查隐藏福利列表成功 更新了: ${hideWelfareList.size} 个",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+        } else {
+            Toast.makeText(this, "远程隐藏福利列表为空", Toast.LENGTH_SHORT).show()
         }
         Looper.loop()
     }.start()
@@ -632,7 +718,7 @@ typealias M = Modifier
 fun <T> rememberMutableStateOf(value: T): MutableState<T> = remember { mutableStateOf(value) }
 
 @Composable
-fun Insert(list: MutableState<String>){
+fun Insert(list: MutableState<String>) {
     if (list.value.isNotBlank()) {
         IconButton(onClick = {
             list.value = list.value.plus(";")
@@ -701,6 +787,8 @@ fun Any?.mToString(): String = when (this) {
     is Boolean -> this.toString()
     is Array<*> -> this.joinToString(",")
     is ByteArray -> String(this)
+    is Serializable -> this.toJSONString()
+    is Parcelable -> this.toJSONString()
     else -> this?.toString() ?: ""
 }
 

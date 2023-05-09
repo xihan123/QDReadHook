@@ -880,6 +880,68 @@ fun MainScreen(
                      */
                 }
 
+                if (versionCode >= 906) {
+                    val hideWelfare =
+                        rememberMutableStateOf(value = HookEntry.optionEntity.hideBenefitsOption.enableHideWelfare)
+                    SwitchSetting(
+                        title = "显示全部隐藏福利",
+                        subTitle = "开启后去搜索页面随便搜索一个内容，然后下面这个配置显示位置即可\n如果下面没有选项先去搜索一下",
+                        checked = hideWelfare,
+                        onCheckedChange = {
+                            HookEntry.optionEntity.hideBenefitsOption.enableHideWelfare = it
+                        }
+                    )
+
+                    if (hideWelfare.value) {
+
+                        val remoteHideWelfareList = rememberMutableStateOf(
+                            value = HookEntry.optionEntity.hideBenefitsOption.remoteCHideWelfareList.joinToString(
+                                ";"
+                            )
+                        )
+
+                        EditTextSetting(title = "填入远程隐藏福利配置直链",
+                            subTitle = "以\";\"分隔",
+                            right = {
+                                Insert(list = remoteHideWelfareList)
+                            },
+                            text = remoteHideWelfareList,
+                            onTextChange = {
+                                HookEntry.optionEntity.hideBenefitsOption.remoteCHideWelfareList =
+                                    HookEntry.parseKeyWordOption(it)
+                            })
+
+                        if (remoteHideWelfareList.value.isNotBlank()){
+                            TextSetting(
+                                title = "获取远程隐藏福利信息",
+                                modifier = M.padding(4.dp),
+                                onClick = {
+                                    context.checkHideWelfareUpdate()
+                                }
+                            )
+                        }
+
+                        TextSetting(
+                            title = "隐藏福利显示位置列表",
+                            modifier = M.padding(4.dp),
+                            onClick = {
+                                context.multiChoiceSelector(HookEntry.optionEntity.hideBenefitsOption.configurations)
+                            }
+                        )
+
+                        TextSetting(
+                            title = "清空隐藏福利列表",
+                            modifier = M.padding(4.dp),
+                            onClick = {
+                                HookEntry.optionEntity.hideBenefitsOption.hideWelfareList.clear()
+                                updateOptionEntity()
+                                hideWelfare.value = false
+                            }
+                        )
+                    }
+
+                }
+
 
             }
 
