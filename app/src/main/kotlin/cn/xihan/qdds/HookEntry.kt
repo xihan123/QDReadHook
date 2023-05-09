@@ -1480,49 +1480,6 @@ fun PackageParam.freeAdReward(versionCode: Int) {
     }
 }
 
-/*
-/**
- * 忽略粉丝值跳转加群限制
- * ValidateActionLimitUtil Limits
- */
-fun PackageParam.ignoreFansValueJumpLimit(versionCode: Int) {
-    val needHookClass = when (versionCode) {
-        in 854..878 -> "com.qidian.QDReader.util.ValidateActionLimitUtil\$a"
-        in 884..900 -> "com.qidian.QDReader.util.ValidateActionLimitUtil\$search"
-        else -> null
-    }
-    val needHookMethod = when (versionCode) {
-        in 854..878 -> "e"
-        in 884..900 -> "b"
-        else -> null
-    }
-    if (needHookClass == null || needHookMethod == null) {
-        "忽略粉丝值加群限制".printlnNotSupportVersion(versionCode)
-        return
-    }
-    needHookClass.hook {
-        injectMember {
-            method {
-                name = needHookMethod
-                param(JSONObjectClass, StringClass, IntType)
-                returnType = UnitType
-            }
-            beforeHook {
-                val jb = args[0] as? JSONObject
-                jb?.let {
-                    safeRun {
-                        it.put("Passed", 1)
-                        it.optJSONArray("Limits")?.optJSONObject(0)?.put("Passed", 1)
-                    }
-                    args(0).set(it)
-                }
-            }
-        }
-    }
-}
-
- */
-
 /**
  * 忽略限时免费不能批量订阅限制
  * IsFreeLimit

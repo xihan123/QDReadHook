@@ -32,7 +32,6 @@ import java.io.File
  * @param interceptOption 拦截配置
  * @param viewHideOption 控件隐藏配置
  * @param replaceRuleOption 替换配置
- * @param bookFansValueOption 书粉丝值配置
  * @param hideBenefitsOption 隐藏福利配置
  */
 @Keep
@@ -49,7 +48,6 @@ data class OptionEntity(
     @SerialName("interceptOption") var interceptOption: InterceptOption = InterceptOption(),
     @SerialName("viewHideOption") var viewHideOption: ViewHideOption = ViewHideOption(),
     @SerialName("replaceRuleOption") var replaceRuleOption: ReplaceRuleOption = ReplaceRuleOption(),
-    @SerialName("bookFansValueOption") var bookFansValueOption: BookFansValueOption = BookFansValueOption(),
     @SerialName("hideBenefitsOption") var hideBenefitsOption: HideWelfareOption = HideWelfareOption(),
 ) {
     /**
@@ -527,58 +525,6 @@ data class OptionEntity(
     data class SelectedModel(
         @SerialName("title") var title: String = "",
         @SerialName("selected") var selected: Boolean = false,
-    )
-
-    /**
-     * 书粉丝值配置
-     * @param enableCustomBookFansValue 启用自定义书粉丝值
-     * @param nickName 昵称
-     * @param dValue 相差的粉丝值
-     * @param daShangDesc 打赏描述
-     * @param headImageUrl 头像地址
-     * @param leagueRank 联盟排名
-     * @param leagueType 联盟类型
-     * @param rank 排名
-     * @param rankName 排名名称
-     * @param rankUpgradeDesc 排名升级描述
-     * @param orderId 排序id
-     * @param amount 粉丝值
-     * @param fansRank 粉丝排名
-     * @param mTitleImage 标题图片地址
-     * @param leagueTypeMap 联盟类型集合
-     */
-    @Keep
-    @Serializable
-    data class BookFansValueOption(
-        @SerialName("enableCustomBookFansValue") var enableCustomBookFansValue: Boolean = false,
-        @SerialName("nickName") var nickName: String = "",
-        @SerialName("dValue") var dValue: Long = 0L,
-        @SerialName("daShangDesc") var daShangDesc: String = "",
-        @SerialName("headImageUrl") var headImageUrl: String = "",
-        @SerialName("leagueRank") var leagueRank: Int = 0,
-        @SerialName("leagueType") var leagueType: Int = 0,
-        @SerialName("rank") var rank: Int = 0,
-        @SerialName("rankName") var rankName: String = "",
-        @SerialName("rankUpgradeDesc") var rankUpgradeDesc: String = "",
-        @SerialName("orderId") var orderId: Int = -1,
-        @SerialName("amount") var amount: Int = 0,
-        @SerialName("fansRank") var fansRank: Int = 0,
-        @SerialName("mTitleImage") var mTitleImage: String = "",
-        @SerialName("leagueTypeMap") var leagueTypeMap: Map<String, Int> = mapOf(
-            "见习" to 1,
-            "学徒" to 500,
-            "弟子" to 2000,
-            "执事" to 5000,
-            "舵主" to 10000,
-            "堂主" to 20000,
-            "护法" to 30000,
-            "长老" to 40000,
-            "掌门" to 50000,
-            "宗师" to 70000,
-            "盟主" to 100000,
-            "白银盟" to 1000000,
-            "黄金盟" to 10000000,
-        )
     )
 
     /**
