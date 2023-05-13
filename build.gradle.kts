@@ -1,6 +1,6 @@
 buildscript {
-    val appVersionName by extra("2.1.2")
-    val appVersionCode by extra(212)
+    val appVersionName by extra("2.1.3")
+    val appVersionCode by extra(213)
 }
 plugins {
     alias(libs.plugins.com.android.application) apply false

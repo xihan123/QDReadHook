@@ -42,14 +42,14 @@ fun PackageParam.splashPage(
  */
 fun PackageParam.disableSplash(versionCode: Int) {
     when (versionCode) {
-        in 758..906 -> {
+        in 758..916 -> {
             /**
              * com.qidian.QDReader.ui.activity.MainGroupActivity.onCreate
              * SplashManager.c().h(this.getApplicationContext());
              */
             val splashManagerNeedHookMethod = when (versionCode) {
                 in 758..878 -> "k"
-                in 884..906 -> "h"
+                in 884..916 -> "h"
                 else -> null
             }
             if (splashManagerNeedHookMethod != null) {
@@ -102,7 +102,7 @@ fun PackageParam.enableCustomSplash(
     customSplashImageType: Int = 0,
 ) {
     when (versionCode) {
-        in 758..906 -> {
+        in 758..916 -> {
             findClass("com.qidian.QDReader.ui.activity.SplashImageActivity").hook {
                 if (!isEnableCustomSplashImageShowAllButton) {
                     injectMember {

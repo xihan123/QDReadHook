@@ -20,7 +20,7 @@ import com.highcapable.yukihookapi.hook.type.java.UnitType
  */
 fun PackageParam.enableReplace(versionCode: Int) {
     when (versionCode) {
-        in 812..906 -> {
+        in 812..950 -> {
             findClass("com.qidian.QDReader.component.util.FockUtil").hook {
                 injectMember {
                     method {
@@ -192,7 +192,7 @@ fun PackageParam.customDeviceInfo(
      * android_release
      */
     val needHookClass = when (versionCode) {
-        in 896..906 -> "com.qidian.QDReader.core.util.m"
+        in 896..916 -> "com.qidian.QDReader.core.util.m"
         else -> null
     }
 
@@ -201,7 +201,7 @@ fun PackageParam.customDeviceInfo(
      */
     val brand = when (versionCode) {
         in 896..900 -> "k"
-        906 -> "l"
+        in 906..916 -> "l"
         else -> null
     }
 
@@ -210,7 +210,7 @@ fun PackageParam.customDeviceInfo(
      */
     val model = when (versionCode) {
         in 896..900 -> "l"
-        906 -> "m"
+        in 906..916 -> "m"
         else -> null
     }
 
@@ -219,7 +219,7 @@ fun PackageParam.customDeviceInfo(
      */
     val androidVersion = when (versionCode) {
         in 896..900 -> "m"
-        906 -> "n"
+        in 906..916 -> "n"
         else -> null
     }
 
@@ -228,7 +228,7 @@ fun PackageParam.customDeviceInfo(
      */
     val release = when (versionCode) {
         in 896..900 -> "r"
-        906 -> "s"
+        in 906..916 -> "s"
         else -> null
     }
 
@@ -237,7 +237,7 @@ fun PackageParam.customDeviceInfo(
      */
     val heightPixels = when (versionCode) {
         in 896..900 -> "t"
-        906 -> "u"
+        in 906..916 -> "u"
         else -> null
     }
 
@@ -246,7 +246,7 @@ fun PackageParam.customDeviceInfo(
      */
     val imei = when (versionCode) {
         in 896..900 -> listOf("d", "e", "f", "h")
-        906 -> listOf("e", "f", "g", "i")
+        in 906..916 -> listOf("e", "f", "g", "i")
         else -> null
     }
 
@@ -255,7 +255,7 @@ fun PackageParam.customDeviceInfo(
      */
     val deviceInfo = when (versionCode) {
         in 896..900 -> "B"
-        906 -> "C"
+        in 906..916 -> "C"
         else -> null
     }
     /**
@@ -263,7 +263,7 @@ fun PackageParam.customDeviceInfo(
      */
     val macAddress = when (versionCode) {
         in 896..900 -> "E"
-        906 -> "F"
+        in 906..916 -> "F"
         else -> null
     }
     /**
@@ -271,21 +271,21 @@ fun PackageParam.customDeviceInfo(
      */
     val serial = when (versionCode) {
         in 896..900 -> "y"
-        906 -> "z"
+        in 906..916 -> "z"
         else -> null
     }
     /**
      * cpu 信息
      */
     val cpuInfo = when (versionCode) {
-        in 896..906 -> "a"
+        in 896..916 -> "a"
         else -> null
     }
     /**
      * AndroidId
      */
     val androidId = when (versionCode) {
-        in 896..906 -> "cihai"
+        in 896..916 -> "cihai"
         else -> null
     }
 
@@ -481,7 +481,6 @@ fun PackageParam.customDeviceInfo(
             }
 //                    replaceTo(deviceInfo.cpuInfo)
         }
-
 
         injectMember {
             method {

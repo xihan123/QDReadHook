@@ -353,7 +353,7 @@ fun Context.checkHideWelfareUpdate() {
                                 val jsonObject = jsonArray.optJSONObject(i)
                                 if (jsonObject != null) {
                                     val text = jsonObject.optString("text")
-                                    val icon = jsonObject.getString("url")
+                                    val icon = jsonObject.getString("icon")
                                     val url = jsonObject.getString("url")
                                     hideWelfareList.add(
                                         OptionEntity.HideWelfareOption.HideWelfare(
@@ -709,7 +709,7 @@ fun Insert(list: MutableState<String>) {
 val Int.QDUIButtonTextViewVariableName
     get() = when (this) {
         in 884..890 -> "e"
-        in 896..906 -> "k"
+        in 896..916 -> "k"
         else -> null
     }
 

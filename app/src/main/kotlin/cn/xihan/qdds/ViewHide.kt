@@ -47,7 +47,7 @@ fun PackageParam.homeOption(versionCode: Int, optionValueSet: List<OptionEntity.
  */
 fun PackageParam.selectedOption(versionCode: Int) {
     when (versionCode) {
-        in 868..906 -> {
+        in 868..916 -> {
             /*
             findClass("com.qidian.morphing.card.BaseMorphingCard").hook {
                 injectMember {
@@ -238,7 +238,7 @@ fun PackageParam.selectedOption(versionCode: Int) {
  */
 fun PackageParam.selectedTitleOption(versionCode: Int) {
     when (versionCode) {
-        in 872..906 -> {
+        in 872..916 -> {
             findClass("com.qidian.QDReader.ui.fragment.QDStorePagerFragment").hook {
                 injectMember {
                     method {
@@ -396,14 +396,14 @@ fun PackageParam.hideBookshelfDailyReading(versionCode: Int) {
         in 804..812 -> "com.qidian.QDReader.ui.adapter.j0"
         in 827..860 -> "com.qidian.QDReader.ui.adapter.i0"
         in 868..878 -> "com.qidian.QDReader.ui.adapter.j0"
-        in 884..906 -> "com.qidian.QDReader.ui.adapter.g0"
+        in 884..916 -> "com.qidian.QDReader.ui.adapter.g0"
         else -> null
     }
     val listAdapterClass = when (versionCode) {
         in 804..812 -> "com.qidian.QDReader.ui.adapter.h0"
         in 827..860 -> "com.qidian.QDReader.ui.adapter.k0"
         in 868..878 -> "com.qidian.QDReader.ui.adapter.l0"
-        in 884..906 -> "com.qidian.QDReader.ui.adapter.i0"
+        in 884..916 -> "com.qidian.QDReader.ui.adapter.i0"
         else -> null
     }
     if (gridAdapterClass == null || listAdapterClass == null) {
@@ -451,13 +451,13 @@ fun PackageParam.hideBookshelfDailyReading(versionCode: Int) {
  */
 fun PackageParam.hideBookshelfFindBook(versionCode: Int) {
     when (versionCode) {
-        in 868..906 -> {
+        in 868..916 -> {
             /**
              * QDBookShelfBrowserRecordHolder
              */
             val needHookClass = when (versionCode) {
                 in 868..878 -> "com.qidian.QDReader.ui.viewholder.bookshelf.r"
-                in 884..906 -> "com.qidian.QDReader.ui.viewholder.bookshelf.o"
+                in 884..916 -> "com.qidian.QDReader.ui.viewholder.bookshelf.o"
                 else -> null
             }
             needHookClass?.hook {
@@ -523,7 +523,7 @@ fun PackageParam.hideBottomRedDot(versionCode: Int) {
     val needHookClass = when (versionCode) {
         in 758..768 -> "com.qidian.QDReader.ui.widget.maintab.a"
         in 772..878 -> "com.qidian.QDReader.ui.widget.maintab.e"
-        in 884..906 -> "com.qidian.QDReader.ui.widget.maintab.b"
+        in 884..916 -> "com.qidian.QDReader.ui.widget.maintab.b"
         else -> null
     }
     val needHookMethod = when (versionCode) {
@@ -531,6 +531,7 @@ fun PackageParam.hideBottomRedDot(versionCode: Int) {
         884 -> "e"
         in 890..900 -> "h"
         906 -> "e"
+        916 -> "h"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -555,7 +556,7 @@ fun PackageParam.hideBottomNavigation(versionCode: Int) {
 
     val needHookMethod = when (versionCode) {
         in 872..878 -> "s"
-        in 884..906 -> "p"
+        in 884..916 -> "p"
         else -> null
     }
     if (needHookMethod == null) {
@@ -874,7 +875,7 @@ fun PackageParam.accountViewHide(
             }
         }
 
-        906 -> {
+        in 906..916 -> {
             findClass("com.qidian.QDReader.ui.fragment.main_group.QDUserAccountRebornFragment").hook {
                 injectMember {
                     method {
@@ -1005,7 +1006,7 @@ fun PackageParam.accountViewHide(
  */
 fun PackageParam.accountRightTopRedDot(versionCode: Int) {
     when (versionCode) {
-        in 812..906 -> {
+        in 812..916 -> {
             findClass("com.qidian.QDReader.component.config.QDAppConfigHelper\$Companion").hook {
                 injectMember {
                     method {
@@ -1091,7 +1092,7 @@ fun PackageParam.removeQSNYDialog(versionCode: Int) {
         in 858..868 -> "com.qidian.QDReader.bll.helper.m1"
         in 872..878 -> "com.qidian.QDReader.bll.helper.k1"
         in 884..900 -> "com.qidian.QDReader.bll.helper.h1"
-        906 -> "com.qidian.QDReader.bll.helper.n1"
+        in 906..916 -> "com.qidian.QDReader.bll.helper.n1"
         else -> null
     }
     needHookClass?.hook {
@@ -1312,7 +1313,7 @@ fun PackageParam.bookDetailHide(
             }
         }
 
-        in 827..906 -> {
+        in 827..916 -> {
             findClass("com.qidian.QDReader.ui.activity.QDBookDetailActivity").hook {
                 injectMember {
                     method {
@@ -1428,7 +1429,7 @@ fun PackageParam.bookDetailHide(
                  */
                 val bookFansModuleNeedHookMethod = when (versionCode) {
                     in 827..878 -> "d"
-                    in 884..906 -> "a"
+                    in 884..916 -> "a"
                     else -> null
                 }
                 if (bookFansModuleNeedHookMethod == null) {
@@ -1519,7 +1520,7 @@ fun PackageParam.comicHideBannerAd(versionCode: Int) {
         878 -> "ma.g"
         in 884..890 -> "fa.d"
         in 896..900 -> "ga.d"
-        906 -> "ka.d"
+        in 906..916 -> "ka.d"
         else -> null
     }
     needHookClass?.hook {
@@ -1547,7 +1548,7 @@ fun PackageParam.comicHideBannerAd(versionCode: Int) {
  */
 fun PackageParam.hideRedDot(versionCode: Int) {
     when (versionCode) {
-        in 868..906 -> {
+        in 868..916 -> {
             findClass("com.qidian.QDReader.framework.widget.customerview.SmallDotsView").hook {
                 injectMember {
                     method {

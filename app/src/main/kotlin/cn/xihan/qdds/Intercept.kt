@@ -84,13 +84,13 @@ fun PackageParam.interceptAgreePrivacyPolicy(version: Int) {
         in 868..878 -> "com.qidian.QDReader.util.w4"
         884 -> "com.qidian.QDReader.util.u4"
         in 890..900 -> "com.qidian.QDReader.util.v4"
-        906 -> "com.qidian.QDReader.util.w4"
+        in 906..916 -> "com.qidian.QDReader.util.w4"
         else -> null
     }
     val needHookMethod = when (version) {
         in 868..872 -> "k0"
         878 -> "l0"
-        in 884..906 -> "i0"
+        in 884..916 -> "i0"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -116,12 +116,12 @@ fun PackageParam.interceptAgreePrivacyPolicy(version: Int) {
 fun PackageParam.interceptWebSocket(version: Int) {
     val needHookClass = when (version) {
         in 868..878 -> "com.qidian.QDReader.component.msg.c"
-        in 884..906 -> "com.qidian.QDReader.component.msg.cihai"
+        in 884..916 -> "com.qidian.QDReader.component.msg.cihai"
         else -> null
     }
     val needHookMethod = when (version) {
         in 868..878 -> "r"
-        in 884..906 -> "o"
+        in 884..916 -> "o"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -170,11 +170,11 @@ fun PackageParam.interceptQSNModeRequest(version: Int) {
 fun PackageParam.interceptSplashAdActivity(version: Int) {
     val needHookClass = when (version) {
         in 884..900 -> "g6.search"
-        906 -> "j6.search"
+        in 906..916 -> "j6.search"
         else -> null
     }
     val needHookMethod = when (version) {
-        in 884..906 -> "b"
+        in 884..916 -> "b"
         else -> null
     }
 
@@ -196,7 +196,7 @@ fun PackageParam.interceptSplashAdActivity(version: Int) {
 fun PackageParam.interceptEnvironmentCheck(versionCode: Int) {
     val needHookClass = when(versionCode){
         in 896..900 -> "c6.b"
-        906 -> "f6.b"
+        in 906..916 -> "f6.b"
         else -> null
     }
 
@@ -238,7 +238,7 @@ fun PackageParam.interceptEnvironmentCheck(versionCode: Int) {
      */
     val needHookClass2 = when(versionCode){
         in 896..900 -> "fe.b"
-        906 -> "ke.b"
+        in 906..916 -> "ke.b"
         else -> null
     }
     needHookClass2?.hook {
@@ -261,7 +261,7 @@ fun PackageParam.interceptEnvironmentCheck(versionCode: Int) {
         }
     }
     when (versionCode) {
-        in 896..906 -> {
+        in 896..916 -> {
 
             /**
              * /system/bin/qemu_props
@@ -282,7 +282,7 @@ fun PackageParam.interceptEnvironmentCheck(versionCode: Int) {
              */
             val needHookMethod = when (versionCode) {
                 in 896..900 -> "j"
-                906 -> "k"
+                in 906..916 -> "k"
                 else -> null
             }
 
@@ -291,7 +291,7 @@ fun PackageParam.interceptEnvironmentCheck(versionCode: Int) {
              */
             val needHookMethod2 = when (versionCode) {
                 in 896..900 -> "N"
-                906 -> "O"
+                in 906..916 -> "O"
                 else -> null
             }
             /**
@@ -299,7 +299,7 @@ fun PackageParam.interceptEnvironmentCheck(versionCode: Int) {
              */
             val needHookMethod3 = when (versionCode) {
                 in 896..900 -> "O"
-                906 -> "P"
+                in 906..916 -> "P"
                 else -> null
             }
 
@@ -357,7 +357,6 @@ fun PackageParam.interceptEnvironmentCheck(versionCode: Int) {
     }
 }
 
-
 /**
  * 拦截异步初始化任务
  * @param version 版本号
@@ -368,7 +367,7 @@ fun PackageParam.interceptAsyncInitTask(
     clsNameList: List<String>
 ) {
     when (version) {
-        in 872..906 -> {
+        in 872..916 -> {
             /*
             findClass(substring[1]).hook {
                 injectMember {
