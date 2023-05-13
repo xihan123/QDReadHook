@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.1.2](https://github.com/xihan123/QDReadHook/compare/v2.1.2...v2.1.2) (2023-05-13)
+
+
+### Features
+
+* 适配 `916` 版本 ([162c6b6](https://github.com/xihan123/QDReadHook/commit/162c6b624d7577e6b61d7cc0001937c8fd227897))
+
+
+### Miscellaneous
+
+* **master:** release 2.1.2 ([62adb53](https://github.com/xihan123/QDReadHook/commit/62adb53b26ec9a03e14027f4b5597b9b6775616c))
+* **master:** release 2.1.2 ([bdd54bd](https://github.com/xihan123/QDReadHook/commit/bdd54bd29a72cd289c0fbc74d326b56a95405cbd))
+* 更新依赖 ([fea1055](https://github.com/xihan123/QDReadHook/commit/fea1055f800b1845bd1d75e29384adee9252a58c))
+* 更新图片 ([c45e0f6](https://github.com/xihan123/QDReadHook/commit/c45e0f6291745ed32286d709eb5c51674dbcfe56))
+* 清理代码 ([c8afa81](https://github.com/xihan123/QDReadHook/commit/c8afa81ad75a49a4e1317c80f4da3aa16f044af8))
+
 ## [2.1.2](https://github.com/xihan123/QDReadHook/compare/v2.1.2...v2.1.2) (2023-05-09)
 
 
