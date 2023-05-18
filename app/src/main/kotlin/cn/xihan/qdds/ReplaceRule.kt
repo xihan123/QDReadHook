@@ -192,7 +192,7 @@ fun PackageParam.customDeviceInfo(
      * android_release
      */
     val needHookClass = when (versionCode) {
-        in 896..916 -> "com.qidian.QDReader.core.util.m"
+        in 896..924 -> "com.qidian.QDReader.core.util.m"
         else -> null
     }
 
@@ -201,7 +201,7 @@ fun PackageParam.customDeviceInfo(
      */
     val brand = when (versionCode) {
         in 896..900 -> "k"
-        in 906..916 -> "l"
+        in 906..924 -> "l"
         else -> null
     }
 
@@ -210,7 +210,7 @@ fun PackageParam.customDeviceInfo(
      */
     val model = when (versionCode) {
         in 896..900 -> "l"
-        in 906..916 -> "m"
+        in 906..924 -> "m"
         else -> null
     }
 
@@ -219,7 +219,7 @@ fun PackageParam.customDeviceInfo(
      */
     val androidVersion = when (versionCode) {
         in 896..900 -> "m"
-        in 906..916 -> "n"
+        in 906..924 -> "n"
         else -> null
     }
 
@@ -229,6 +229,7 @@ fun PackageParam.customDeviceInfo(
     val release = when (versionCode) {
         in 896..900 -> "r"
         in 906..916 -> "s"
+        924 -> "t"
         else -> null
     }
 
@@ -238,6 +239,7 @@ fun PackageParam.customDeviceInfo(
     val heightPixels = when (versionCode) {
         in 896..900 -> "t"
         in 906..916 -> "u"
+        924 -> "r"
         else -> null
     }
 
@@ -246,7 +248,7 @@ fun PackageParam.customDeviceInfo(
      */
     val imei = when (versionCode) {
         in 896..900 -> listOf("d", "e", "f", "h")
-        in 906..916 -> listOf("e", "f", "g", "i")
+        in 906..924 -> listOf("e", "f", "g", "i")
         else -> null
     }
 
@@ -256,6 +258,7 @@ fun PackageParam.customDeviceInfo(
     val deviceInfo = when (versionCode) {
         in 896..900 -> "B"
         in 906..916 -> "C"
+        924 -> "D"
         else -> null
     }
     /**
@@ -264,6 +267,7 @@ fun PackageParam.customDeviceInfo(
     val macAddress = when (versionCode) {
         in 896..900 -> "E"
         in 906..916 -> "F"
+        924 -> "G"
         else -> null
     }
     /**
@@ -272,20 +276,21 @@ fun PackageParam.customDeviceInfo(
     val serial = when (versionCode) {
         in 896..900 -> "y"
         in 906..916 -> "z"
+        924 -> "A"
         else -> null
     }
     /**
      * cpu 信息
      */
     val cpuInfo = when (versionCode) {
-        in 896..916 -> "a"
+        in 896..924 -> "a"
         else -> null
     }
     /**
      * AndroidId
      */
     val androidId = when (versionCode) {
-        in 896..916 -> "cihai"
+        in 896..924 -> "cihai"
         else -> null
     }
 

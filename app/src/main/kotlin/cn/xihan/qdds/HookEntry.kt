@@ -89,7 +89,7 @@ class HookEntry : IYukiHookXposedInit {
                 forceTrialMode(versionCode)
             }
 
-            if (optionEntity.hideBenefitsOption.enableHideWelfare){
+            if (optionEntity.hideBenefitsOption.enableHideWelfare) {
                 hideWelfare(versionCode)
             }
 
@@ -860,10 +860,10 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
             }
         }
 
-        in 842..916 -> {
+        in 842..924 -> {
             val needHookMethod = when (versionCode) {
                 in 842..878 -> "E"
-                in 884..916 -> "B"
+                in 884..924 -> "B"
                 else -> null
             }
             val needHookVariableName1 = versionCode.QDUIButtonTextViewVariableName
@@ -896,7 +896,7 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
             // 需要Hook的变量名
             val needHookVariableName = when (versionCode) {
                 in 884..890 -> "a"
-                in 896..916 -> "b"
+                in 896..924 -> "b"
                 else -> null
             }
             if (needHookVariableName != null && needHookVariableName1 != null) {
@@ -951,6 +951,7 @@ fun PackageParam.newOldLayout(
         in 872..878 -> "p4.a\$a"
         in 884..900 -> "l4.search\$search"
         in 906..916 -> "o4.search\$search"
+        924 -> "p4.search\$search"
         else -> null
     }
 
@@ -999,6 +1000,7 @@ fun PackageParam.newOldLayout(
     val needHookGDTGameMethod = when (versionCode) {
         in 896..900 -> "U"
         in 906..916 -> "W"
+        924 -> "Y"
         else -> null
     }
 
@@ -1413,7 +1415,7 @@ fun PackageParam.freeAdReward(versionCode: Int) {
             }
         }
 
-        in 896..916 -> {
+        in 896..924 -> {
             /**
              * showRewardVideo
              * preloadRewardVideo
@@ -1483,12 +1485,13 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
         in 884..900 -> "com.qidian.QDReader.component.bll.manager.b1"
         906 -> "com.qidian.QDReader.component.bll.manager.y0"
         916 -> "com.qidian.QDReader.component.bll.manager.z0"
+        924 -> "com.qidian.QDReader.component.bll.manager.a1"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 854..878 -> "n0"
         in 884..890 -> "k0"
-        in 896..916 -> "l0"
+        in 896..924 -> "l0"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -1522,7 +1525,7 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
  */
 fun PackageParam.exportEmoji(versionCode: Int) {
     when (versionCode) {
-        in 884..916 -> {
+        in 884..924 -> {
             findClass("com.qidian.QDReader.ui.activity.QDStickersDetailActivity").hook {
                 injectMember {
                     method {
@@ -1552,6 +1555,7 @@ fun PackageParam.exportEmoji(versionCode: Int) {
                             890 -> 0x7F091784
                             in 896..900 -> 0x7F091789
                             in 906..916 -> 0x7F0917F5
+                            924 -> 0x7F0917F6
                             else -> null
                         }
                         if (topBarViewId != null) {
@@ -1633,7 +1637,7 @@ fun Context.exportEmojiDialog(
  */
 fun PackageParam.importAudio(versionCode: Int) {
     when (versionCode) {
-        in 884..916 -> {
+        in 884..924 -> {
             findClass("com.qidian.QDReader.ui.fragment.reader.ParagraphDubbingFragment").hook {
                 injectMember {
                     method {
@@ -1652,6 +1656,7 @@ fun PackageParam.importAudio(versionCode: Int) {
                             884 -> 0x7F090FFC
                             in 890..900 -> 0x7F091008
                             in 906..916 -> 0x7F091055
+                            824 -> 0x7F091056
                             else -> null
                         } ?: return@afterHook
                         val button = XposedHelpers.callMethod(
@@ -1729,11 +1734,16 @@ fun Context.importAudioFile(action: (String) -> Unit) {
 fun PackageParam.forceTrialMode(versionCode: Int) {
     val needHookClass = when (versionCode) {
         in 896..900 -> "com.qidian.QDReader.util.v4"
-        in 906..916 -> "com.qidian.QDReader.util.w4"
+        in 906..924 -> "com.qidian.QDReader.util.w4"
         else -> null
     }
+
+    /**
+     * tryuse
+     * is_agree_privacy
+     */
     val needHookMethod = when (versionCode) {
-        in 896..916 -> "M"
+        in 896..924 -> "M"
         else -> null
     }
 
@@ -1753,9 +1763,9 @@ fun PackageParam.forceTrialMode(versionCode: Int) {
 /**
  * 隐藏福利列表
  */
-fun PackageParam.hideWelfare(versionCode: Int){
-    when(versionCode){
-        in 906..916 -> {
+fun PackageParam.hideWelfare(versionCode: Int) {
+    when (versionCode) {
+        in 906..924 -> {
             findClass("com.qidian.QDReader.ui.activity.QDSearchActivity").hook {
                 injectMember {
                     method {
@@ -1778,9 +1788,7 @@ fun PackageParam.hideWelfare(versionCode: Int){
                             val actionUrl = adItem?.getParam<String>("ActionUrl")
                             if (!adImage.isNullOrBlank() && !adText.isNullOrBlank() && !actionUrl.isNullOrBlank()) {
                                 hideWriteArrayList += OptionEntity.HideWelfareOption.HideWelfare(
-                                    title = adText,
-                                    imageUrl = adImage,
-                                    actionUrl = actionUrl
+                                    title = adText, imageUrl = adImage, actionUrl = actionUrl
                                 )
                             }
                         }
@@ -1795,7 +1803,7 @@ fun PackageParam.hideWelfare(versionCode: Int){
                 }
             }
 
-            if (optionEntity.hideBenefitsOption.configurations[0].selected){
+            if (optionEntity.hideBenefitsOption.configurations[0].selected) {
                 findClass("com.qidian.QDReader.ui.fragment.QDBrowserFragment").hook {
                     injectMember {
                         method {
@@ -1810,13 +1818,11 @@ fun PackageParam.hideWelfare(versionCode: Int){
                             }
                             val jsonArray = JSONArray()
                             hideWelfareList.forEachIndexed { index, hideWelfare ->
-                                jsonArray.put(
-                                    index,
-                                    JSONObject().apply {
-                                        put("icon", hideWelfare.imageUrl)
-                                        put("text", hideWelfare.title)
-                                        put("url", hideWelfare.actionUrl)
-                                    })
+                                jsonArray.put(index, JSONObject().apply {
+                                    put("icon", hideWelfare.imageUrl)
+                                    put("text", hideWelfare.title)
+                                    put("url", hideWelfare.actionUrl)
+                                })
                             }
                             args(0).set((args[0] as JSONObject).put("otherItems", jsonArray))
                         }

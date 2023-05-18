@@ -6,7 +6,6 @@ import androidx.compose.runtime.Immutable
 import com.highcapable.yukihookapi.hook.log.loggerE
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
@@ -242,7 +241,6 @@ data class OptionEntity(
      * 阅读页配置
      * @param enableCustomReaderThemePath 启用自定义阅读页主题路径
      * @param enableCustomBookLastPage 启用自定义书籍最后一页
-     * @param customBookLastPageModel 自定义书籍最后一页模型
      * @param enableShowReaderPageChapterSaveRawPicture 启用显示阅读页章节保存原图
      * @param enableShowReaderPageChapterSavePictureDialog 启用显示阅读页章节保存图片对话框
      * @param enableShowReaderPageChapterSaveAudioDialog 启用显示阅读页章节保存音频对话框
