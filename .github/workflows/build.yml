@@ -85,14 +85,14 @@ jobs:
           allow_override: true
           gzip: false
 
-      - name: Release Lsposed Modules Repo
-        uses: phuonghuynh/action-ghrelease@v1.1.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-        with:
-          tag_name: ${{ env.RELEASE_TAG }}
-          repository: Xposed-Modules-Repo/cn.xihan.qdds
-          files: app/build/outputs/apk/release/*.apk
+#      - name: Release Lsposed Modules Repo
+#        uses: phuonghuynh/action-ghrelease@v1.1.0
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+#        with:
+#          tag_name: ${{ env.RELEASE_TAG }}
+#          repository: Xposed-Modules-Repo/cn.xihan.qdds
+#          files: app/build/outputs/apk/release/*.apk
 
 #      - name: Push a README.md to another repository
 #        uses: dmnemec/copy_file_to_another_repo_action@main
