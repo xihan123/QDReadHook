@@ -1,5 +1,34 @@
 # Changelog
 
+## [2.1.4](https://github.com/xihan123/QDReadHook/compare/v2.1.4...v2.1.4) (2023-05-20)
+
+
+### Miscellaneous
+
+* **master:** release 2.1.4 ([ba2f338](https://github.com/xihan123/QDReadHook/commit/ba2f338876e8316383d6e87978a216c73edff48a))
+
+## [2.1.4](https://github.com/xihan123/QDReadHook/compare/v2.1.3...v2.1.4) (2023-05-20)
+
+
+### Features
+
+* 适配 `924` 版本 ([f0a5165](https://github.com/xihan123/QDReadHook/commit/f0a51650e7aa27f2e698842fee2cb692411f5749))
+
+
+### Miscellaneous
+
+* **master:** release 2.1.2 ([2433660](https://github.com/xihan123/QDReadHook/commit/243366077d580c1eeefe4dd4a44f606e3e33aaa8))
+* **master:** release 2.1.3 ([3487c69](https://github.com/xihan123/QDReadHook/commit/3487c69ecb7d97d030641656b5e8128c9e0774de))
+* **master:** release 2.1.3 ([25e0055](https://github.com/xihan123/QDReadHook/commit/25e00559f09a1d16871d0311eac01d8f8467e10e))
+* 更新依赖 ([ad90e71](https://github.com/xihan123/QDReadHook/commit/ad90e71a91383a9f812c321d6d55020cafe8dac0))
+
+
+### CI
+
+* build.yml ([65b18de](https://github.com/xihan123/QDReadHook/commit/65b18debdf373d95efcd60a8eb6d34e73fa85607))
+* release.yml ([4aa87bf](https://github.com/xihan123/QDReadHook/commit/4aa87bfbeb9896e28e26c08e416afdf4d30d2b1a))
+* release.yml ([a8462df](https://github.com/xihan123/QDReadHook/commit/a8462df14cdca9efe0b9329d99d211874e9466ec))
+
 ## [2.1.3](https://github.com/xihan123/QDReadHook/compare/v2.1.3...v2.1.3) (2023-05-13)
 
 
