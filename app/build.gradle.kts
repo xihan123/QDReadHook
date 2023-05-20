@@ -79,7 +79,7 @@ android {
 
     buildFeatures.compose = true
 
-    composeOptions.kotlinCompilerExtensionVersion = "1.4.5"
+    composeOptions.kotlinCompilerExtensionVersion = "1.4.6-dev-k1.8.21-290a127309e"
 
     packagingOptions.apply {
         resources.excludes += mutableSetOf(
