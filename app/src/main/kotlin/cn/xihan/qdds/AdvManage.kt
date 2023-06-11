@@ -536,6 +536,39 @@ fun PackageParam.disableAd(versionCode: Int) {
                 }
             }
         }
+        in 932..950 -> {
+            findClass("com.qq.e.comm.managers.GDTADManager").hook {
+                injectMember {
+                    method {
+                        name = "initPlugin"
+                        emptyParam()
+                        returnType = UnitType
+                    }
+                    intercept()
+                }
+
+                injectMember {
+                    method {
+                        name = "initWith"
+                        paramCount(2)
+                    }
+                    replaceAny {
+                        true
+                    }
+                }
+            }
+
+            findClass("com.qidian.QDReader.bll.helper.QDInternalAdHelper").hook {
+                injectMember {
+                    method {
+                        name = "analyzeAdInfo"
+                        emptyParam()
+                        returnType = UnitType
+                    }
+                    intercept()
+                }
+            }
+        }
 
         else -> "禁用广告".printlnNotSupportVersion(versionCode)
     }
