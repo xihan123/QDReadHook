@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.1.5](https://github.com/xihan123/QDReadHook/compare/v2.1.4...v2.1.5) (2023-06-11)
+
+
+### Features
+
+* **广告:** 禁用初始化GDT SDK ([4335d0d](https://github.com/xihan123/QDReadHook/commit/4335d0d20f39bc96dca4a604cd0334cb9bebc72b))
+* 适配 `932` 版本 ([3e709bf](https://github.com/xihan123/QDReadHook/commit/3e709bf936bebf4c2d9da2d6d57fd298cd623076))
+
+
+### Miscellaneous
+
+* 更新依赖 ([f9cf0d1](https://github.com/xihan123/QDReadHook/commit/f9cf0d199e9edb93797af17a0920e95bafd0c313))
+
+
+### CI
+
+* release.yml ([8f4a426](https://github.com/xihan123/QDReadHook/commit/8f4a4261d004e192ce60e71e30c091b59e9a24c0))
+
 ## [2.1.4](https://github.com/xihan123/QDReadHook/compare/v2.1.4...v2.1.4) (2023-05-20)
 
 
