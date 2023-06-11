@@ -320,6 +320,7 @@ fun PackageParam.disableReadPageFloatAd(versionCode: Int) {
         in 884..890 -> "g1"
         in 896..906 -> "c1"
         in 916..924 -> "h1"
+        932 -> "B0"
         else -> null
     }
     hookMethodName?.let {
@@ -367,7 +368,7 @@ fun PackageParam.disableReadPageRewardTheater(versionCode: Int) {
  */
 fun PackageParam.disableReadPageNewestPageWindowBannerAd(versionCode: Int) {
     when(versionCode){
-        in 896..924 -> {
+        in 896..932 -> {
             findClass("com.qidian.QDReader.bll.manager.QDBKTManager").hook {
                 injectMember {
                     method {
@@ -402,7 +403,7 @@ fun PackageParam.disableReadPageChapterEnd(
     disableVoteTicketSpecialLine: Boolean = false,
 ) {
     when (versionCode) {
-        in 812..924 -> {
+        in 812..932 -> {
             findClass("com.qidian.QDReader.readerengine.manager.ChapterProvider").hook {
                 if (disableAll) {
                     /**
@@ -488,7 +489,7 @@ fun PackageParam.disableReadPageChapterEnd(
  */
 fun PackageParam.disableAd(versionCode: Int) {
     when (versionCode) {
-        in 758..950 -> {
+        in 758..924 -> {
             findClass("com.qq.e.comm.constants.CustomPkgConstants").hook {
                 injectMember {
                     method {
@@ -555,17 +556,17 @@ fun PackageParam.disableUpdate(versionCode: Int) {
         in 842..878 -> "com.qidian.QDReader.util.m5"
         884 ->  "com.qidian.QDReader.util.k5"
         in 890..900 -> "com.qidian.QDReader.util.l5"
-        in 906..924 -> "com.qidian.QDReader.util.m5"
+        in 906..932 -> "com.qidian.QDReader.util.m5"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 758..878 -> "b"
-        in 884..924 -> "judian"
+        in 884..932 -> "judian"
         else -> null
     }
     val needHookMethod2 = when (versionCode) {
         in 758..878 -> "a"
-        in 884..924 -> "search"
+        in 884..932 -> "search"
         else -> null
     }
     needHookClass?.hook {

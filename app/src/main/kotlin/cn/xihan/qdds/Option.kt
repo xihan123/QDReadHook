@@ -277,7 +277,7 @@ data class OptionEntity(
             SelectedModel("WebSocket"),
             SelectedModel("青少年模式请求"),
             SelectedModel("闪屏广告页面"),
-            SelectedModel("部分检测设备环境"),
+//            SelectedModel("部分检测设备环境"),
             SelectedModel("异步主GDT广告任务|com.qidian.QDReader.start.AsyncMainGDTTask"),
             SelectedModel("异步主游戏广告SDK任务|com.qidian.QDReader.start.AsyncMainGameADSDKTask"),
             SelectedModel("异步主游戏下载任务|com.qidian.QDReader.start.AsyncMainGameDownloadTask"),
@@ -544,7 +544,7 @@ data class OptionEntity(
             "https://raw.githubusercontent.com/xihan123/AGE-API/master/details/HideWelfareList.json"
         ),
         @SerialName("hideWelfareList") var hideWelfareList: MutableSet<HideWelfare> = mutableSetOf()
-    ){
+    ) {
 
         /**
          * 隐藏福利模型
@@ -588,6 +588,10 @@ fun readOptionEntity(): OptionEntity {
                     }
                     val interceptConfigurations = interceptOption.configurations.toMutableList()
                     val newConfiguration = newOptionEntity.interceptOption.configurations
+
+                    if (newConfiguration.isNotEmpty() && interceptConfigurations.isNotEmpty()) {
+                        interceptConfigurations.deleteSelectedOption(newConfiguration)
+                    }
                     if (interceptConfigurations.size != newConfiguration.size) {
                         interceptOption.configurations =
                             interceptConfigurations.updateSelectedListOptionEntity(newConfiguration)

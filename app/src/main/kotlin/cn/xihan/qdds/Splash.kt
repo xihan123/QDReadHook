@@ -42,14 +42,14 @@ fun PackageParam.splashPage(
  */
 fun PackageParam.disableSplash(versionCode: Int) {
     when (versionCode) {
-        in 758..924 -> {
+        in 758..932 -> {
             /**
              * com.qidian.QDReader.ui.activity.MainGroupActivity.onCreate
              * SplashManager.c().h(this.getApplicationContext());
              */
             val splashManagerNeedHookMethod = when (versionCode) {
                 in 758..878 -> "k"
-                in 884..924 -> "h"
+                in 884..932 -> "h"
                 else -> null
             }
             if (splashManagerNeedHookMethod != null) {

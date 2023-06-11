@@ -1,13 +1,8 @@
 package cn.xihan.qdds
 
 import android.content.Context
-import android.widget.TextView
-import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.type.java.IntType
-import com.highcapable.yukihookapi.hook.type.java.LongType
 import com.highcapable.yukihookapi.hook.type.java.StringClass
-import com.highcapable.yukihookapi.hook.type.java.UnitType
 
 /**
  * @项目名 : QDReadHook
@@ -175,6 +170,7 @@ fun Context.showAddOrEditReplaceRuleDialog(
     }
 }
 
+/*
 /**
  * 自定义设备信息
  * @param versionCode
@@ -509,3 +505,5 @@ fun PackageParam.customDeviceInfo(
     } ?: "自定义设备信息".printlnNotSupportVersion(versionCode)
 
 }
+
+ */

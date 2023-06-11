@@ -16,12 +16,14 @@ import com.alibaba.fastjson2.toJSONString
 import com.google.android.material.appbar.AppBarLayout
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
+import com.highcapable.yukihookapi.hook.factory.MembersType
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
 import com.highcapable.yukihookapi.hook.log.YukiHookLogger
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.android.BundleClass
+import com.highcapable.yukihookapi.hook.type.android.MessageClass
 import com.highcapable.yukihookapi.hook.type.android.ViewClass
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
 import com.highcapable.yukihookapi.hook.type.java.IntType
@@ -214,12 +216,12 @@ class HookEntry : IYukiHookXposedInit {
                 enableReplace(versionCode)
             }
 
-            customDeviceInfo(
-                versionCode = versionCode,
-                deviceInfoModel = optionEntity.replaceRuleOption.customDeviceInfo,
-                enableCustomDeviceInfo = optionEntity.replaceRuleOption.enableCustomDeviceInfo,
-                enableSaveOriginalDeviceInfo = optionEntity.replaceRuleOption.enableSaveOriginalDeviceInfo
-            )
+//            customDeviceInfo(
+//                versionCode = versionCode,
+//                deviceInfoModel = optionEntity.replaceRuleOption.customDeviceInfo,
+//                enableCustomDeviceInfo = optionEntity.replaceRuleOption.enableCustomDeviceInfo,
+//                enableSaveOriginalDeviceInfo = optionEntity.replaceRuleOption.enableSaveOriginalDeviceInfo
+//            )
 
             if (optionEntity.startImageOption.enableCustomStartImage) {
                 customStartImage(versionCode)
@@ -486,7 +488,50 @@ class HookEntry : IYukiHookXposedInit {
                 }
             }
 
+            findClass("y5.search").hook {
+                injectMember {
+                    method {
+                        name = "r"
+                        param(BooleanType)
+                        returnType = BooleanType
+                    }
+                    replaceToTrue()
+                }
+            }
              */
+
+            /*
+            findClass("com.qidian.QDReader.ui.activity.QDReaderActivity").hook {
+                injectMember {
+                    method {
+                        name = "getIsVip"
+                        emptyParam()
+                        returnType = IntType
+                    }
+                    replaceTo(0)
+                }
+
+                /*
+                injectMember {
+                    method {
+                        name = "handleMessage"
+                        paramCount(1)
+                        returnType = BooleanType
+                    }
+                    replaceAny { true }
+                }
+
+                 */
+            }
+
+             */
+
+
+            findMethodAndPrint(
+                className = "com.qidian.QDReader.ui.activity.QDReaderActivity",
+                printCallStack = true,
+                printType = MembersType.METHOD
+            )
 
 
         }
@@ -736,7 +781,9 @@ class HookEntry : IYukiHookXposedInit {
             updateOptionEntity()
         }
 
-        val optionEntity = readOptionEntity()
+        val optionEntity by lazy {
+            readOptionEntity()
+        }
 
     }
 
@@ -860,10 +907,10 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
             }
         }
 
-        in 842..924 -> {
+        in 842..932 -> {
             val needHookMethod = when (versionCode) {
                 in 842..878 -> "E"
-                in 884..924 -> "B"
+                in 884..932 -> "B"
                 else -> null
             }
             val needHookVariableName1 = versionCode.QDUIButtonTextViewVariableName
@@ -896,7 +943,7 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
             // 需要Hook的变量名
             val needHookVariableName = when (versionCode) {
                 in 884..890 -> "a"
-                in 896..924 -> "b"
+                in 896..932 -> "b"
                 else -> null
             }
             if (needHookVariableName != null && needHookVariableName1 != null) {
@@ -952,6 +999,7 @@ fun PackageParam.newOldLayout(
         in 884..900 -> "l4.search\$search"
         in 906..916 -> "o4.search\$search"
         924 -> "p4.search\$search"
+        932 -> "s4.search\$search"
         else -> null
     }
 
@@ -1001,6 +1049,7 @@ fun PackageParam.newOldLayout(
         in 896..900 -> "U"
         in 906..916 -> "W"
         924 -> "Y"
+        932 -> "d0"
         else -> null
     }
 
@@ -1415,7 +1464,7 @@ fun PackageParam.freeAdReward(versionCode: Int) {
             }
         }
 
-        in 896..924 -> {
+        in 896..932 -> {
             /**
              * showRewardVideo
              * preloadRewardVideo
@@ -1486,12 +1535,14 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
         906 -> "com.qidian.QDReader.component.bll.manager.y0"
         916 -> "com.qidian.QDReader.component.bll.manager.z0"
         924 -> "com.qidian.QDReader.component.bll.manager.a1"
+        932 -> "com.qidian.QDReader.component.bll.manager.c1"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 854..878 -> "n0"
         in 884..890 -> "k0"
         in 896..924 -> "l0"
+        932 -> "p0"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -1525,7 +1576,7 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
  */
 fun PackageParam.exportEmoji(versionCode: Int) {
     when (versionCode) {
-        in 884..924 -> {
+        in 884..932 -> {
             findClass("com.qidian.QDReader.ui.activity.QDStickersDetailActivity").hook {
                 injectMember {
                     method {
@@ -1556,6 +1607,7 @@ fun PackageParam.exportEmoji(versionCode: Int) {
                             in 896..900 -> 0x7F091789
                             in 906..916 -> 0x7F0917F5
                             924 -> 0x7F0917F6
+                            932 -> 0x7F09184E
                             else -> null
                         }
                         if (topBarViewId != null) {
@@ -1637,7 +1689,7 @@ fun Context.exportEmojiDialog(
  */
 fun PackageParam.importAudio(versionCode: Int) {
     when (versionCode) {
-        in 884..924 -> {
+        in 884..932 -> {
             findClass("com.qidian.QDReader.ui.fragment.reader.ParagraphDubbingFragment").hook {
                 injectMember {
                     method {
@@ -1656,7 +1708,8 @@ fun PackageParam.importAudio(versionCode: Int) {
                             884 -> 0x7F090FFC
                             in 890..900 -> 0x7F091008
                             in 906..916 -> 0x7F091055
-                            824 -> 0x7F091056
+                            924 -> 0x7F091056
+                            932 -> 0x7F091092
                             else -> null
                         } ?: return@afterHook
                         val button = XposedHelpers.callMethod(
@@ -1734,7 +1787,7 @@ fun Context.importAudioFile(action: (String) -> Unit) {
 fun PackageParam.forceTrialMode(versionCode: Int) {
     val needHookClass = when (versionCode) {
         in 896..900 -> "com.qidian.QDReader.util.v4"
-        in 906..924 -> "com.qidian.QDReader.util.w4"
+        in 906..932 -> "com.qidian.QDReader.util.w4"
         else -> null
     }
 
@@ -1743,7 +1796,7 @@ fun PackageParam.forceTrialMode(versionCode: Int) {
      * is_agree_privacy
      */
     val needHookMethod = when (versionCode) {
-        in 896..924 -> "M"
+        in 896..932 -> "M"
         else -> null
     }
 
@@ -1765,7 +1818,7 @@ fun PackageParam.forceTrialMode(versionCode: Int) {
  */
 fun PackageParam.hideWelfare(versionCode: Int) {
     when (versionCode) {
-        in 906..924 -> {
+        in 906..932 -> {
             findClass("com.qidian.QDReader.ui.activity.QDSearchActivity").hook {
                 injectMember {
                     method {

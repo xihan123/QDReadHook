@@ -1,12 +1,8 @@
 package cn.xihan.qdds
 
 
-import android.content.pm.PackageInfo
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
-import com.highcapable.yukihookapi.hook.type.java.IntType
-import com.highcapable.yukihookapi.hook.type.java.ListClass
-import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
 
 /**
@@ -31,7 +27,7 @@ fun PackageParam.interceptOption(
             "WebSocket" -> interceptWebSocket(version)
             "青少年模式请求" -> interceptQSNModeRequest(version)
             "闪屏广告页面" -> interceptSplashAdActivity(version)
-            "部分检测设备环境" -> interceptEnvironmentCheck(version)
+//            "部分检测设备环境" -> interceptEnvironmentCheck(version)
             else -> interceptList.add(selected.title)
         }
     }
@@ -84,13 +80,13 @@ fun PackageParam.interceptAgreePrivacyPolicy(version: Int) {
         in 868..878 -> "com.qidian.QDReader.util.w4"
         884 -> "com.qidian.QDReader.util.u4"
         in 890..900 -> "com.qidian.QDReader.util.v4"
-        in 906..924 -> "com.qidian.QDReader.util.w4"
+        in 906..932 -> "com.qidian.QDReader.util.w4"
         else -> null
     }
     val needHookMethod = when (version) {
         in 868..872 -> "k0"
         878 -> "l0"
-        in 884..924 -> "i0"
+        in 884..932 -> "i0"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -116,12 +112,12 @@ fun PackageParam.interceptAgreePrivacyPolicy(version: Int) {
 fun PackageParam.interceptWebSocket(version: Int) {
     val needHookClass = when (version) {
         in 868..878 -> "com.qidian.QDReader.component.msg.c"
-        in 884..924 -> "com.qidian.QDReader.component.msg.cihai"
+        in 884..932 -> "com.qidian.QDReader.component.msg.cihai"
         else -> null
     }
     val needHookMethod = when (version) {
         in 868..878 -> "r"
-        in 884..924 -> "o"
+        in 884..932 -> "o"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -172,10 +168,11 @@ fun PackageParam.interceptSplashAdActivity(version: Int) {
         in 884..900 -> "g6.search"
         in 906..916 -> "j6.search"
         924 -> "k6.search"
+        932 -> "n6.search"
         else -> null
     }
     val needHookMethod = when (version) {
-        in 884..924 -> "b"
+        in 884..932 -> "b"
         else -> null
     }
 
@@ -195,170 +192,7 @@ fun PackageParam.interceptSplashAdActivity(version: Int) {
  *
  */
 fun PackageParam.interceptEnvironmentCheck(versionCode: Int) {
-    val needHookClass = when(versionCode){
-        in 896..900 -> "c6.b"
-        in 906..916 -> "f6.b"
-        924 -> "g6.b"
-        else -> null
-    }
 
-    /**
-     * lsposed
-     */
-    needHookClass?.hook {
-        injectMember {
-            method {
-                name = "a"
-                emptyParam()
-                returnType = IntType
-            }
-            replaceTo(0)
-        }
-
-        injectMember {
-            method {
-                name = "b"
-                emptyParam()
-                returnType = BooleanType
-            }
-            replaceToFalse()
-        }
-
-        injectMember {
-            method {
-                name = "cihai"
-                emptyParam()
-                returnType = BooleanType
-            }
-            replaceToFalse()
-        }
-    }
-
-
-    /**
-     * de.robv.android.xposed.XposedHelpers
-     */
-    val needHookClass2 = when(versionCode){
-        in 896..900 -> "fe.b"
-        in 906..924 -> "ke.b"
-        else -> null
-    }
-    needHookClass2?.hook {
-        injectMember {
-            method {
-                name = "judian"
-                emptyParam()
-                returnType = UnitType
-            }
-            intercept()
-        }
-
-        injectMember {
-            method {
-                name = "cihai"
-                emptyParam()
-                returnType = UnitType
-            }
-            intercept()
-        }
-    }
-    when (versionCode) {
-        in 896..924 -> {
-
-            /**
-             * /system/bin/qemu_props
-             */
-            findClass("com.yw.baseutil.judian").hook {
-                injectMember {
-                    method {
-                        name = "t"
-                        paramCount(1)
-                        returnType = BooleanType
-                    }
-                    replaceToFalse()
-                }
-            }
-
-            /**
-             * 包名列表
-             */
-            val needHookMethod = when (versionCode) {
-                in 896..900 -> "j"
-                in 906..924 -> "k"
-                else -> null
-            }
-
-            /**
-             * 代理检测
-             */
-            val needHookMethod2 = when (versionCode) {
-                in 896..900 -> "N"
-                in 906..916 -> "O"
-                924 -> "P"
-                else -> null
-            }
-            /**
-             * x86 检测
-             */
-            val needHookMethod3 = when (versionCode) {
-                in 896..900 -> "O"
-                in 906..916 -> "P"
-                924 -> "Q"
-                else -> null
-            }
-
-            findClass("com.qidian.QDReader.core.util.m").hook {
-                injectMember {
-                    method {
-                        name = needHookMethod!!
-                        paramCount(1)
-                        returnType = ListClass
-                    }
-                    replaceTo(emptyList<PackageInfo>())
-                }
-
-                injectMember {
-                    method {
-                        name =needHookMethod2!!
-                        emptyParam()
-                        returnType = BooleanType
-                    }
-                    replaceToFalse()
-                }
-
-                injectMember {
-                    method {
-                        name =needHookMethod3!!
-                        emptyParam()
-                        returnType = BooleanType
-                    }
-                    replaceToFalse()
-                }
-
-            }
-
-            /*
-            /**
-             * abcEncDyettonFeyedxadcDyettonqwy
-             */
-            findClass("ie.a").hook {
-                injectMember {
-                    method {
-                        name = "search"
-                        emptyParam()
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-
-            }
-
-             */
-
-        }
-
-        else -> "部分检测设备环境".printlnNotSupportVersion(HookEntry.versionCode)
-    }
 }
 
 /**
@@ -371,7 +205,7 @@ fun PackageParam.interceptAsyncInitTask(
     clsNameList: List<String>
 ) {
     when (version) {
-        in 872..924 -> {
+        in 872..932 -> {
             /*
             findClass(substring[1]).hook {
                 injectMember {

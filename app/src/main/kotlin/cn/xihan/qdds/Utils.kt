@@ -1,6 +1,5 @@
 package cn.xihan.qdds
 
-
 import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -589,6 +588,16 @@ fun MutableList<OptionEntity.SelectedModel>.updateSelectedListOptionEntity(newCo
 }
 
 /**
+ * 删除列表选项标题
+ */
+fun MutableList<OptionEntity.SelectedModel>.deleteSelectedOption(newConfigurations: List<OptionEntity.SelectedModel>): MutableList<OptionEntity.SelectedModel> {
+    this.removeAll {
+        it.title !in newConfigurations.map { newConfigurationItem -> newConfigurationItem.title }
+    }
+    return this
+}
+
+/**
  * 更新列表选项实体
  */
 fun MutableList<String>.updateStringListOptionEntity(newConfigurations: List<String>): List<String> {
@@ -709,7 +718,7 @@ fun Insert(list: MutableState<String>) {
 val Int.QDUIButtonTextViewVariableName
     get() = when (this) {
         in 884..890 -> "e"
-        in 896..924 -> "k"
+        in 896..932 -> "k"
         else -> null
     }
 

@@ -396,14 +396,14 @@ fun PackageParam.hideBookshelfDailyReading(versionCode: Int) {
         in 804..812 -> "com.qidian.QDReader.ui.adapter.j0"
         in 827..860 -> "com.qidian.QDReader.ui.adapter.i0"
         in 868..878 -> "com.qidian.QDReader.ui.adapter.j0"
-        in 884..924 -> "com.qidian.QDReader.ui.adapter.g0"
+        in 884..932 -> "com.qidian.QDReader.ui.adapter.g0"
         else -> null
     }
     val listAdapterClass = when (versionCode) {
         in 804..812 -> "com.qidian.QDReader.ui.adapter.h0"
         in 827..860 -> "com.qidian.QDReader.ui.adapter.k0"
         in 868..878 -> "com.qidian.QDReader.ui.adapter.l0"
-        in 884..924 -> "com.qidian.QDReader.ui.adapter.i0"
+        in 884..932 -> "com.qidian.QDReader.ui.adapter.i0"
         else -> null
     }
     if (gridAdapterClass == null || listAdapterClass == null) {
@@ -451,13 +451,13 @@ fun PackageParam.hideBookshelfDailyReading(versionCode: Int) {
  */
 fun PackageParam.hideBookshelfFindBook(versionCode: Int) {
     when (versionCode) {
-        in 868..924 -> {
+        in 868..932 -> {
             /**
              * QDBookShelfBrowserRecordHolder
              */
             val needHookClass = when (versionCode) {
                 in 868..878 -> "com.qidian.QDReader.ui.viewholder.bookshelf.r"
-                in 884..924 -> "com.qidian.QDReader.ui.viewholder.bookshelf.o"
+                in 884..932 -> "com.qidian.QDReader.ui.viewholder.bookshelf.o"
                 else -> null
             }
             needHookClass?.hook {
@@ -521,7 +521,7 @@ fun PackageParam.hideBottomRedDot(versionCode: Int) {
     val needHookClass = when (versionCode) {
         in 758..768 -> "com.qidian.QDReader.ui.widget.maintab.a"
         in 772..878 -> "com.qidian.QDReader.ui.widget.maintab.e"
-        in 884..924 -> "com.qidian.QDReader.ui.widget.maintab.b"
+        in 884..932 -> "com.qidian.QDReader.ui.widget.maintab.b"
         else -> null
     }
     val needHookMethod = when (versionCode) {
@@ -530,6 +530,7 @@ fun PackageParam.hideBottomRedDot(versionCode: Int) {
         in 890..900 -> "h"
         906 -> "e"
         in 916..924 -> "h"
+        932 -> "e"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -554,7 +555,7 @@ fun PackageParam.hideBottomNavigation(versionCode: Int) {
 
     val needHookMethod = when (versionCode) {
         in 872..878 -> "s"
-        in 884..924 -> "p"
+        in 884..932 -> "p"
         else -> null
     }
     if (needHookMethod == null) {
@@ -923,7 +924,7 @@ fun PackageParam.accountViewHide(
                             }
 
                             // 添加列表
-                            if (HookEntry.optionEntity.hideBenefitsOption.configurations[1].selected){
+                            if (HookEntry.optionEntity.hideBenefitsOption.configurations[1].selected) {
                                 val hideWelfareList =
                                     HookEntry.optionEntity.hideBenefitsOption.hideWelfareList
                                 if (hideWelfareList.isNotEmpty()) {
@@ -932,31 +933,32 @@ fun PackageParam.accountViewHide(
                                         val className = item::class.java.name
                                         if ("com.qidian.QDReader.repository.entity.user_account.FunctionButton" == className) {
                                             hideWelfareList.forEach { model ->
-                                                val copyFunctionButton = item::class.java.constructor {
-                                                    param(
-                                                        StringClass,
-                                                        StringClass,
-                                                        StringClass,
-                                                        StringClass,
-                                                        StringClass,
-                                                        "com.qidian.QDReader.repository.entity.RedDot".toClass(),
-                                                        LongType,
-                                                        LongType,
-                                                        IntType,
-                                                        IntType
+                                                val copyFunctionButton =
+                                                    item::class.java.constructor {
+                                                        param(
+                                                            StringClass,
+                                                            StringClass,
+                                                            StringClass,
+                                                            StringClass,
+                                                            StringClass,
+                                                            "com.qidian.QDReader.repository.entity.RedDot".toClass(),
+                                                            LongType,
+                                                            LongType,
+                                                            IntType,
+                                                            IntType
+                                                        )
+                                                    }.get().call(
+                                                        "",
+                                                        model.imageUrl,
+                                                        model.title,
+                                                        "",
+                                                        model.actionUrl,
+                                                        null,
+                                                        0L,
+                                                        0L,
+                                                        0,
+                                                        0
                                                     )
-                                                }.get().call(
-                                                    "",
-                                                    model.imageUrl,
-                                                    model.title,
-                                                    "",
-                                                    model.actionUrl,
-                                                    null,
-                                                    0L,
-                                                    0L,
-                                                    0,
-                                                    0
-                                                )
 
                                                 copyFunctionButtonList += copyFunctionButton
                                             }
@@ -1091,6 +1093,7 @@ fun PackageParam.removeQSNYDialog(versionCode: Int) {
         in 872..878 -> "com.qidian.QDReader.bll.helper.k1"
         in 884..900 -> "com.qidian.QDReader.bll.helper.h1"
         in 906..924 -> "com.qidian.QDReader.bll.helper.n1"
+        932 -> "com.qidian.QDReader.bll.helper.m0"
         else -> null
     }
     needHookClass?.hook {
@@ -1311,7 +1314,7 @@ fun PackageParam.bookDetailHide(
             }
         }
 
-        in 827..924 -> {
+        in 827..932 -> {
             findClass("com.qidian.QDReader.ui.activity.QDBookDetailActivity").hook {
                 injectMember {
                     method {
@@ -1409,12 +1412,21 @@ fun PackageParam.bookDetailHide(
                             returnType = UnitType
                         }
                         afterHook {
-                            val view = XposedHelpers.callMethod(
-                                instance,
-                                "findViewById",
-                                0x7F090442
-                            ) as? View
-                            view?.visibility = View.GONE
+                            val tvCircleMarkLevelId = when (versionCode) {
+                                in 827..924 -> 0x7F090442
+                                932 -> 0x7F0904A8
+                                else -> null
+                            }
+                            if (tvCircleMarkLevelId != null) {
+                                val view = XposedHelpers.callMethod(
+                                    instance,
+                                    "findViewById",
+                                    tvCircleMarkLevelId
+                                ) as? View
+                                view?.visibility = View.GONE
+                            } else {
+                                "隐藏出圈指数".printlnNotSupportVersion(versionCode)
+                            }
                         }
                     }
                 }
@@ -1427,7 +1439,7 @@ fun PackageParam.bookDetailHide(
                  */
                 val bookFansModuleNeedHookMethod = when (versionCode) {
                     in 827..878 -> "d"
-                    in 884..924 -> "a"
+                    in 884..932 -> "a"
                     else -> null
                 }
                 if (bookFansModuleNeedHookMethod == null) {
@@ -1520,6 +1532,7 @@ fun PackageParam.comicHideBannerAd(versionCode: Int) {
         in 896..900 -> "ga.d"
         in 906..916 -> "ka.d"
         924 -> "la.d"
+        932 -> "oa.d"
         else -> null
     }
     needHookClass?.hook {

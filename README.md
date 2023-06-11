@@ -1,4 +1,4 @@
-# QDReadHook
+![QDReadHook](https://socialify.git.ci/xihan123/QDReadHook/image?description=1&font=Inter&forks=1&issues=1&language=1&logo=https%3A%2F%2Ft3.picb.cc%2F2023%2F05%2F30%2FIj8tn6.png&name=1&owner=1&pattern=Plus&pulls=1&stargazers=1&theme=Light)
 
 ![above](https://img.shields.io/badge/Android-8.0%20or%20above-brightgreen.svg)
 [![Android CI](https://github.com/xihan123/QDReadHook/actions/workflows/build.yml/badge.svg)](https://github.com/xihan123/QDReadHook/actions/workflows/build.yml)
@@ -16,7 +16,7 @@
 
 * 设置页面在:起点->我的->左上角设置->阅读设置/模块设置(长按)(1.1.2+)
 
-* 目前支持 758~768、772、776、780、784、788、792、796、800、804、808、812、827、834、842、843、850、854、858、860、868、872、878、884、890、896、900、906、916、924版本
+* 目前支持 758~768、772、776、780、784、788、792、796、800、804、808、812、827、834、842、843、850、854、858、860、868、872、878、884、890、896、900、906、916、924、932版本
 
 * 暂时提高版本号范围以支持一些不容易改变的类
 
