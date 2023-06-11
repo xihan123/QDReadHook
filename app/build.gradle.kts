@@ -4,7 +4,7 @@ import java.util.Properties
 apply {
     from("${rootProject.projectDir}/gradle/release.gradle")
 }
-
+@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.com.android.application)
     alias(libs.plugins.org.jetbrains.kotlin.android)
@@ -79,7 +79,7 @@ android {
 
     buildFeatures.compose = true
 
-    composeOptions.kotlinCompilerExtensionVersion = "1.4.6-dev-k1.8.21-290a127309e"
+    composeOptions.kotlinCompilerExtensionVersion = "1.4.7-dev-k1.9.0-Beta-bb7dc8b44eb"
 
     packagingOptions.apply {
         resources.excludes += mutableSetOf(
@@ -132,8 +132,15 @@ dependencies {
     testImplementation(libs.junit)
 }
 
-/*
-kotlin{
+val service = project.extensions.getByType<JavaToolchainService>()
+val customLauncher = service.launcherFor {
+    languageVersion.set(JavaLanguageVersion.of("17"))
+}
+project.tasks.withType<org.jetbrains.kotlin.gradle.tasks.UsesKotlinJavaToolchain>().configureEach {
+    kotlinJavaToolchain.toolchain.use(customLauncher)
+}
+
+kotlin {
     sourceSets.all {
         languageSettings.apply {
             languageVersion = "2.0"
@@ -141,7 +148,6 @@ kotlin{
     }
 }
 
- */
 
 
 

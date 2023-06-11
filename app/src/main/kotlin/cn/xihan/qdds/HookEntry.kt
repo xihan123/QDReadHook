@@ -16,14 +16,12 @@ import com.alibaba.fastjson2.toJSONString
 import com.google.android.material.appbar.AppBarLayout
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
-import com.highcapable.yukihookapi.hook.factory.MembersType
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
 import com.highcapable.yukihookapi.hook.log.YukiHookLogger
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.android.BundleClass
-import com.highcapable.yukihookapi.hook.type.android.MessageClass
 import com.highcapable.yukihookapi.hook.type.android.ViewClass
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
 import com.highcapable.yukihookapi.hook.type.java.IntType
@@ -499,41 +497,6 @@ class HookEntry : IYukiHookXposedInit {
                 }
             }
              */
-
-            /*
-            findClass("com.qidian.QDReader.ui.activity.QDReaderActivity").hook {
-                injectMember {
-                    method {
-                        name = "getIsVip"
-                        emptyParam()
-                        returnType = IntType
-                    }
-                    replaceTo(0)
-                }
-
-                /*
-                injectMember {
-                    method {
-                        name = "handleMessage"
-                        paramCount(1)
-                        returnType = BooleanType
-                    }
-                    replaceAny { true }
-                }
-
-                 */
-            }
-
-             */
-
-
-            findMethodAndPrint(
-                className = "com.qidian.QDReader.ui.activity.QDReaderActivity",
-                printCallStack = true,
-                printType = MembersType.METHOD
-            )
-
-
         }
 
     }
