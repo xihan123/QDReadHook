@@ -8,13 +8,13 @@ yuki = "1.1.11"
 
 [libraries]
 junit = { group = "junit", name = "junit", version = "4.13.2" }
-core-ktx = { module = "androidx.core:core-ktx", version = "1.12.0-alpha04" }
+core-ktx = { module = "androidx.core:core-ktx", version = "1.12.0-alpha05" }
 appcompat = { module = "androidx.appcompat:appcompat", version = "1.7.0-alpha02" }
 kotlin-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.5.1" }
 fast-json = { module = "com.alibaba.fastjson2:fastjson2-kotlin", version = "2.0.33" }
 io-coil-compose = { module = "io.coil-kt:coil-compose", version = "2.4.0" }
 #https://github.com/skydoves/landscapist#coil
-landscapist-coil = { module = "com.github.skydoves:landscapist-coil", version = "2.2.1" }
+landscapist-coil = { module = "com.github.skydoves:landscapist-coil", version = "2.2.2" }
 #https://github.com/getActivity/XXPermissions
 xxpermissions = { module = "com.github.getActivity:XXPermissions", version = "18.2" }
 #
@@ -28,13 +28,13 @@ ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 foundation = { group = "androidx.compose.foundation", name = "foundation" }
 runtime = { group = "androidx.compose.runtime", name = "runtime" }
 animation = { group = "androidx.compose.animation", name = "animation" }
-navigation-compose = { module = "androidx.navigation:navigation-compose", version = "2.6.0-rc02" }
+navigation-compose = { module = "androidx.navigation:navigation-compose", version = "2.6.0" }
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity" }
 activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activity" }
 material3 = { group = "androidx.compose.material3", name = "material3" }
 com-google-accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 com-google-accompanist-themeadapter-material3 = { module = "com.google.accompanist:accompanist-themeadapter-material3", version.ref = "accompanist" }
-com-google-android-material  = { module = "com.google.android.material:material", version = "1.10.0-alpha02" }
+com-google-android-material  = { module = "com.google.android.material:material", version = "1.10.0-alpha03" }
 
 [plugins]
 com-google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

@@ -1,6 +1,6 @@
 buildscript {
-    val appVersionName by extra("2.1.5")
-    val appVersionCode by extra(215)
+    val appVersionName by extra("2.1.6")
+    val appVersionCode by extra(216)
 }
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
