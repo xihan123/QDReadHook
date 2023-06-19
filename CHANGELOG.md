@@ -3,6 +3,19 @@
 ## [2.1.6](https://github.com/xihan123/QDReadHook/compare/v2.1.6...v2.1.6) (2023-06-19)
 
 
+### Bug Fixes
+
+* **deps:** update dependency com.alibaba.fastjson2:fastjson2-kotlin to v2.0.34 ([116cac9](https://github.com/xihan123/QDReadHook/commit/116cac9163d08c49c66f41b61a476e831ea9258f))
+
+
+### Miscellaneous
+
+* **master:** release 2.1.6 ([1559607](https://github.com/xihan123/QDReadHook/commit/1559607f925e8d0b6347d571d3434055d30cdae9))
+* **master:** release 2.1.6 ([b5b8a56](https://github.com/xihan123/QDReadHook/commit/b5b8a56f0b2c2beda0292ef6fcdccee12522499f))
+
+## [2.1.6](https://github.com/xihan123/QDReadHook/compare/v2.1.6...v2.1.6) (2023-06-19)
+
+
 ### Miscellaneous
 
 * **master:** release 2.1.6 ([b5b8a56](https://github.com/xihan123/QDReadHook/commit/b5b8a56f0b2c2beda0292ef6fcdccee12522499f))
