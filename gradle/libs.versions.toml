@@ -21,7 +21,7 @@ xxpermissions = { module = "com.github.getActivity:XXPermissions", version = "18
 yukihook-api = { module = "com.highcapable.yukihookapi:api", version.ref = "yuki" }
 yukihook-ksp = { module = "com.highcapable.yukihookapi:ksp-xposed", version.ref = "yuki" }
 xposed-api = { module = "de.robv.android.xposed:api", version = "82" }
-htmlunit = { module = "org.htmlunit:htmlunit3-android", version = "3.1.0" }
+htmlunit = { module = "org.htmlunit:htmlunit3-android", version = "3.3.0" }
 compose-bom = { module = "dev.chrisbanes.compose:compose-bom", version = "2023.04.00-beta02" }
 ui = { group = "androidx.compose.ui", name = "ui" }
 ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
