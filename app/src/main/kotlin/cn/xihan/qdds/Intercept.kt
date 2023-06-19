@@ -80,13 +80,13 @@ fun PackageParam.interceptAgreePrivacyPolicy(version: Int) {
         in 868..878 -> "com.qidian.QDReader.util.w4"
         884 -> "com.qidian.QDReader.util.u4"
         in 890..900 -> "com.qidian.QDReader.util.v4"
-        in 906..932 -> "com.qidian.QDReader.util.w4"
+        in 906..938 -> "com.qidian.QDReader.util.w4"
         else -> null
     }
     val needHookMethod = when (version) {
         in 868..872 -> "k0"
         878 -> "l0"
-        in 884..932 -> "i0"
+        in 884..938 -> "i0"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -112,12 +112,12 @@ fun PackageParam.interceptAgreePrivacyPolicy(version: Int) {
 fun PackageParam.interceptWebSocket(version: Int) {
     val needHookClass = when (version) {
         in 868..878 -> "com.qidian.QDReader.component.msg.c"
-        in 884..932 -> "com.qidian.QDReader.component.msg.cihai"
+        in 884..938 -> "com.qidian.QDReader.component.msg.cihai"
         else -> null
     }
     val needHookMethod = when (version) {
         in 868..878 -> "r"
-        in 884..932 -> "o"
+        in 884..938 -> "o"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -168,11 +168,11 @@ fun PackageParam.interceptSplashAdActivity(version: Int) {
         in 884..900 -> "g6.search"
         in 906..916 -> "j6.search"
         924 -> "k6.search"
-        932 -> "n6.search"
+        in 932..938 -> "n6.search"
         else -> null
     }
     val needHookMethod = when (version) {
-        in 884..932 -> "b"
+        in 884..938 -> "b"
         else -> null
     }
 
@@ -188,14 +188,6 @@ fun PackageParam.interceptSplashAdActivity(version: Int) {
 }
 
 /**
- * 拦截部分检测设备环境
- *
- */
-fun PackageParam.interceptEnvironmentCheck(versionCode: Int) {
-
-}
-
-/**
  * 拦截异步初始化任务
  * @param version 版本号
  * @param substring 0:标题 1:拦截的类名
@@ -205,20 +197,7 @@ fun PackageParam.interceptAsyncInitTask(
     clsNameList: List<String>
 ) {
     when (version) {
-        in 872..932 -> {
-            /*
-            findClass(substring[1]).hook {
-                injectMember {
-                    method {
-                        name = "create"
-                        returnType = StringClass
-                    }
-                    intercept()
-                }
-            }
-
-             */
-
+        in 872..950 -> {
             findClass("com.rousetime.android_startup.StartupManager").hook {
                 injectMember {
                     method {
@@ -238,7 +217,6 @@ fun PackageParam.interceptAsyncInitTask(
                     }
                 }
             }
-
         }
 
         else -> "拦截初始化任务".printlnNotSupportVersion(version)
