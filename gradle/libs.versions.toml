@@ -2,7 +2,7 @@
 agp = "8.0.2"
 kotlin = "1.9.0-Beta"
 ksp = "1.9.0-Beta-1.0.11"
-activity = "1.8.0-alpha05"
+activity = "1.8.0-alpha06"
 accompanist = "0.31.3-beta"
 yuki = "1.1.11"
 
