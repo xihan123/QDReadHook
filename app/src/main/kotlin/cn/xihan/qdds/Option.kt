@@ -111,7 +111,7 @@ data class OptionEntity(
         @SerialName("enableHideAppIcon") var enableHideAppIcon: Boolean = false,
         @SerialName("enableNewStore") var enableNewStore: Boolean = false,
         @SerialName("enableExportEmoji") var enableExportEmoji: Boolean = false,
-        @SerialName("enableImportAudio") var enableImportAudio: Boolean = false,
+//        @SerialName("enableImportAudio") var enableImportAudio: Boolean = false,
         @SerialName("enableForceTrialMode") var enableForceTrialMode: Boolean = false,
         @SerialName("enableTestFunction") var enableTestFunction: Boolean = false,
     )
