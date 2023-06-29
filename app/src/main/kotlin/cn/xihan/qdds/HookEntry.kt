@@ -22,7 +22,6 @@ import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
 import com.highcapable.yukihookapi.hook.log.YukiHookLogger
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.android.BundleClass
-import com.highcapable.yukihookapi.hook.type.android.ViewClass
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
 import com.highcapable.yukihookapi.hook.type.java.IntType
 import com.highcapable.yukihookapi.hook.type.java.JSONObjectClass
@@ -34,7 +33,6 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import de.robv.android.xposed.XposedHelpers
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.File
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -81,9 +79,9 @@ class HookEntry : IYukiHookXposedInit {
                 exportEmoji(versionCode)
             }
 
-            if (optionEntity.mainOption.enableImportAudio) {
-                importAudio(versionCode)
-            }
+//            if (optionEntity.mainOption.enableImportAudio) {
+//                importAudio(versionCode)
+//            }
 
             if (optionEntity.mainOption.enableForceTrialMode) {
                 forceTrialMode(versionCode)
@@ -213,13 +211,6 @@ class HookEntry : IYukiHookXposedInit {
             if (optionEntity.replaceRuleOption.enableReplace) {
                 enableReplace(versionCode)
             }
-
-//            customDeviceInfo(
-//                versionCode = versionCode,
-//                deviceInfoModel = optionEntity.replaceRuleOption.customDeviceInfo,
-//                enableCustomDeviceInfo = optionEntity.replaceRuleOption.enableCustomDeviceInfo,
-//                enableSaveOriginalDeviceInfo = optionEntity.replaceRuleOption.enableSaveOriginalDeviceInfo
-//            )
 
             if (optionEntity.startImageOption.enableCustomStartImage) {
                 customStartImage(versionCode)
@@ -497,6 +488,7 @@ class HookEntry : IYukiHookXposedInit {
                 }
             }
              */
+
         }
 
     }
@@ -870,10 +862,10 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
             }
         }
 
-        in 842..938 -> {
+        in 842..944 -> {
             val needHookMethod = when (versionCode) {
                 in 842..878 -> "E"
-                in 884..938 -> "B"
+                in 884..944 -> "B"
                 else -> null
             }
             val needHookVariableName1 = versionCode.QDUIButtonTextViewVariableName
@@ -906,7 +898,7 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
             // 需要Hook的变量名
             val needHookVariableName = when (versionCode) {
                 in 884..890 -> "a"
-                in 896..938 -> "b"
+                in 896..944 -> "b"
                 else -> null
             }
             if (needHookVariableName != null && needHookVariableName1 != null) {
@@ -963,6 +955,7 @@ fun PackageParam.newOldLayout(
         in 906..916 -> "o4.search\$search"
         924 -> "p4.search\$search"
         in 932..938 -> "s4.search\$search"
+        944 -> "r4.search\$search"
         else -> null
     }
 
@@ -1012,7 +1005,7 @@ fun PackageParam.newOldLayout(
         in 896..900 -> "U"
         in 906..916 -> "W"
         924 -> "Y"
-        in 932..938 -> "d0"
+        in 932..944 -> "d0"
         else -> null
     }
 
@@ -1427,7 +1420,7 @@ fun PackageParam.freeAdReward(versionCode: Int) {
             }
         }
 
-        in 896..938 -> {
+        in 896..944 -> {
             /**
              * showRewardVideo
              * preloadRewardVideo
@@ -1498,7 +1491,7 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
         906 -> "com.qidian.QDReader.component.bll.manager.y0"
         916 -> "com.qidian.QDReader.component.bll.manager.z0"
         924 -> "com.qidian.QDReader.component.bll.manager.a1"
-        in 932..938 -> "com.qidian.QDReader.component.bll.manager.c1"
+        in 932..944 -> "com.qidian.QDReader.component.bll.manager.c1"
         else -> null
     }
     val needHookMethod = when (versionCode) {
@@ -1506,6 +1499,7 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
         in 884..890 -> "k0"
         in 896..924 -> "l0"
         in 932..938 -> "p0"
+        944 -> "q0"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -1539,7 +1533,7 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
  */
 fun PackageParam.exportEmoji(versionCode: Int) {
     when (versionCode) {
-        in 884..938 -> {
+        in 884..944 -> {
             findClass("com.qidian.QDReader.ui.activity.QDStickersDetailActivity").hook {
                 injectMember {
                     method {
@@ -1572,6 +1566,7 @@ fun PackageParam.exportEmoji(versionCode: Int) {
                             924 -> 0x7F0917F6
                             932 -> 0x7F09184E
                             938 -> 0x7F091863
+                            944 -> 0x7F091876
                             else -> null
                         }
                         if (topBarViewId != null) {
@@ -1646,104 +1641,6 @@ fun Context.exportEmojiDialog(
         build()
         show()
     }
-}
-
-/**
- * 导入音频文件
- */
-fun PackageParam.importAudio(versionCode: Int) {
-    when (versionCode) {
-        in 884..938 -> {
-            findClass("com.qidian.QDReader.ui.fragment.reader.ParagraphDubbingFragment").hook {
-                injectMember {
-                    method {
-                        name = "onViewInject"
-                        param(ViewClass)
-                        returnType = UnitType
-                    }
-                    afterHook {
-                        val view = instanceClass.method {
-                            name = "getView"
-                            emptyParam()
-                            returnType = ViewClass
-                            superClass()
-                        }.get(instance).call()
-                        val mBtnStartViewId = when (versionCode) {
-                            884 -> 0x7F090FFC
-                            in 890..900 -> 0x7F091008
-                            in 906..916 -> 0x7F091055
-                            924 -> 0x7F091056
-                            932 -> 0x7F091092
-                            938 -> 0x7F09109F
-                            else -> null
-                        } ?: return@afterHook
-                        val button = XposedHelpers.callMethod(
-                            view, "findViewById", mBtnStartViewId
-                        ) as? LinearLayout
-                        val qDUIButtonTextViewVariableName =
-                            versionCode.QDUIButtonTextViewVariableName
-                        if (qDUIButtonTextViewVariableName == null) {
-                            "导入音频".printlnNotSupportVersion(versionCode)
-                            return@afterHook
-                        }
-                        val e = button?.getView<TextView>(qDUIButtonTextViewVariableName)
-                        if (e?.text == "点击配音") {
-                            e.text = "点击配音/长按导入"
-                            e.setOnLongClickListener {
-                                e.context.importAudioFile { path ->
-                                    if (path.isBlank()) {
-                                        e.context.toast("路径不能为空")
-                                    } else {
-                                        instance.setParams(
-                                            "mAudioFile" to File(path), "mAudioDuration" to 1
-                                        )
-                                        instanceClass.method {
-                                            name = "setViewInRecorded"
-                                            emptyParam()
-                                            returnType = UnitType
-                                        }.get(instance).call()
-                                    }
-                                }
-
-                                true
-                            }
-                        }
-                    }
-
-                }
-            }
-        }
-
-        else -> "导入音频文件".printlnNotSupportVersion(versionCode)
-
-    }
-}
-
-/**
- * 导入音频文件
- */
-fun Context.importAudioFile(action: (String) -> Unit) {
-    val path =
-        "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/QDReader/Audio"
-    val file = File(path).apply {
-        if (!exists()) {
-            mkdirs()
-        }
-    }
-    val files = file.listFiles()
-
-    if (!files.isNullOrEmpty()) {
-        singleChoiceSelector(items = files.map { it.name },
-            checkIndex = 0,
-            title = "导入配音固定路径为: $path",
-            onItemSelected = { _, _, index ->
-//            "onItemSelected: $it, $text, $index".loge()
-                action(files[index].absolutePath)
-            })
-    } else {
-        toast("固定路径为: $path, 但是没有文件")
-    }
-
 }
 
 /**

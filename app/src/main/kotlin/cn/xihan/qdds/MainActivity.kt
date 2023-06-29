@@ -761,18 +761,6 @@ fun MainScreen(
             TextSetting(title = "主设置", showRightIcon = false, bigTitle = true)
 
             Column(modifier = M.padding(4.dp)) {
-
-                /*
-                EditTextSetting(
-                    title = "包名设置",
-                    text = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.packageName),
-                    showInsert = true,
-                    onTextChange = {
-                        HookEntry.optionEntity.mainOption.packageName = it
-                    }
-                )
-                 */
-
                 SwitchSetting(title = "自动签到",
                     checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableAutoSign),
                     onCheckedChange = {
@@ -850,11 +838,6 @@ fun MainScreen(
                             HookEntry.optionEntity.mainOption.enableExportEmoji = it
                         })
 
-                    SwitchSetting(title = "配音导入音频",
-                        checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableImportAudio),
-                        onCheckedChange = {
-                            HookEntry.optionEntity.mainOption.enableImportAudio = it
-                        })
                 }
 
                 if (versionCode >= 896) {
@@ -911,7 +894,7 @@ fun MainScreen(
                                     HookEntry.parseKeyWordOption(it)
                             })
 
-                        if (remoteHideWelfareList.value.isNotBlank()){
+                        if (remoteHideWelfareList.value.isNotBlank()) {
                             TextSetting(
                                 title = "获取远程隐藏福利信息",
                                 modifier = M.padding(4.dp),
