@@ -759,6 +759,15 @@ fun PackageParam.findMethodAndPrint(
     }
 }
 
+
+fun Array<Any?>.printArgs(): String {
+    val stringBuilder = StringBuilder()
+    this.forEachIndexed { index, any ->
+        stringBuilder.append("args[$index]: ${any.mToString()}\n")
+    }
+    return stringBuilder.toString()
+}
+
 /**
  * Any 基础类型转为 String
  */
