@@ -449,46 +449,6 @@ class HookEntry : IYukiHookXposedInit {
 
              */
 
-            /*
-
-            findMethodAndPrint("com.qidian.QDReader.extras.x", false, MembersType.METHOD)
-
-            findMethodAndPrint("com.qidian.QDReader.extras.y", false, MembersType.METHOD)
-
-            findMethodAndPrint("ib.m0", false, MembersType.METHOD)
-
-            findMethodAndPrint("com.qidian.QDReader.core.util.m", false, MembersType.METHOD)
-
-            findMethodAndPrint("de.a",false, MembersType.METHOD)
-
-            findMethodAndPrint("ie.a",false, MembersType.METHOD)
-
-            findMethodAndPrint("ke.cihai",false, MembersType.METHOD)
-
-            findMethodAndPrint("ke.a",false, MembersType.METHOD)
-
-            findClass("java.net.HttpURLConnection").hook {
-                injectMember {
-                    allMembers(MembersType.CONSTRUCTOR)
-                    beforeHook {
-                        "url: ${args[0]}".loge()
-//                        instance.printCallStack()
-                    }
-                }
-            }
-
-            findClass("y5.search").hook {
-                injectMember {
-                    method {
-                        name = "r"
-                        param(BooleanType)
-                        returnType = BooleanType
-                    }
-                    replaceToTrue()
-                }
-            }
-             */
-
         }
 
     }
