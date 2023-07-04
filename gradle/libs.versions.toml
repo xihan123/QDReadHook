@@ -3,7 +3,7 @@ agp = "8.0.2"
 kotlin = "1.9.0-RC"
 ksp = "1.9.0-RC-1.0.11"
 activity = "1.8.0-alpha06"
-accompanist = "0.31.3-beta"
+accompanist = "0.31.5-beta"
 yuki = "1.1.11"
 
 [libraries]
@@ -17,12 +17,12 @@ io-coil-compose = { module = "io.coil-kt:coil-compose", version = "2.4.0" }
 landscapist-coil = { module = "com.github.skydoves:landscapist-coil", version = "2.2.2" }
 #https://github.com/getActivity/XXPermissions
 xxpermissions = { module = "com.github.getActivity:XXPermissions", version = "18.2" }
-#
+#https://github.com/fankes/YukiHookAPI
 yukihook-api = { module = "com.highcapable.yukihookapi:api", version.ref = "yuki" }
 yukihook-ksp = { module = "com.highcapable.yukihookapi:ksp-xposed", version.ref = "yuki" }
 xposed-api = { module = "de.robv.android.xposed:api", version = "82" }
 htmlunit = { module = "org.htmlunit:htmlunit3-android", version = "3.3.0" }
-compose-bom = { module = "dev.chrisbanes.compose:compose-bom", version = "2023.04.00-beta02" }
+compose-bom = { module = "dev.chrisbanes.compose:compose-bom", version = "2023.07.00-alpha01" }
 ui = { group = "androidx.compose.ui", name = "ui" }
 ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 foundation = { group = "androidx.compose.foundation", name = "foundation" }
@@ -34,7 +34,7 @@ activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activ
 material3 = { group = "androidx.compose.material3", name = "material3" }
 com-google-accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 com-google-accompanist-themeadapter-material3 = { module = "com.google.accompanist:accompanist-themeadapter-material3", version.ref = "accompanist" }
-com-google-android-material  = { module = "com.google.android.material:material", version = "1.10.0-alpha04" }
+com-google-android-material = { module = "com.google.android.material:material", version = "1.10.0-alpha05" }
 
 [plugins]
 com-google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
