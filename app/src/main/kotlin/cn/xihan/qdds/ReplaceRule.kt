@@ -15,7 +15,7 @@ import com.highcapable.yukihookapi.hook.type.java.StringClass
  */
 fun PackageParam.enableReplace(versionCode: Int) {
     when (versionCode) {
-        in 812..950 -> {
+        in 812..980 -> {
             findClass("com.qidian.QDReader.component.util.FockUtil").hook {
                 injectMember {
                     method {

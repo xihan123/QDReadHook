@@ -53,7 +53,7 @@ fun PackageParam.interceptGeetest(version: Int) {
  */
 fun PackageParam.interceptPrivacyPolicy(version: Int) {
     when (version) {
-        in 868..950 -> {
+        in 868..980 -> {
             findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
                 injectMember {
                     method {
@@ -79,13 +79,13 @@ fun PackageParam.interceptAgreePrivacyPolicy(version: Int) {
         in 868..878 -> "com.qidian.QDReader.util.w4"
         884 -> "com.qidian.QDReader.util.u4"
         in 890..900 -> "com.qidian.QDReader.util.v4"
-        in 906..944 -> "com.qidian.QDReader.util.w4"
+        in 906..950 -> "com.qidian.QDReader.util.w4"
         else -> null
     }
     val needHookMethod = when (version) {
         in 868..872 -> "k0"
         878 -> "l0"
-        in 884..944 -> "i0"
+        in 884..950 -> "i0"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -111,12 +111,12 @@ fun PackageParam.interceptAgreePrivacyPolicy(version: Int) {
 fun PackageParam.interceptWebSocket(version: Int) {
     val needHookClass = when (version) {
         in 868..878 -> "com.qidian.QDReader.component.msg.c"
-        in 884..944 -> "com.qidian.QDReader.component.msg.cihai"
+        in 884..950 -> "com.qidian.QDReader.component.msg.cihai"
         else -> null
     }
     val needHookMethod = when (version) {
         in 868..878 -> "r"
-        in 884..944 -> "o"
+        in 884..950 -> "o"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -140,7 +140,7 @@ fun PackageParam.interceptWebSocket(version: Int) {
  */
 fun PackageParam.interceptQSNModeRequest(version: Int) {
     when (version) {
-        in 868..950 -> {
+        in 868..980 -> {
             findClass("com.qidian.QDReader.bll.manager.QDTeenagerManager").hook {
                 injectMember {
                     method {
@@ -168,11 +168,11 @@ fun PackageParam.interceptSplashAdActivity(version: Int) {
         in 906..916 -> "j6.search"
         924 -> "k6.search"
         in 932..938 -> "n6.search"
-        944 -> "m6.search"
+        in 944..950 -> "m6.search"
         else -> null
     }
     val needHookMethod = when (version) {
-        in 884..944 -> "b"
+        in 884..950 -> "b"
         else -> null
     }
 
@@ -197,7 +197,7 @@ fun PackageParam.interceptAsyncInitTask(
     clsNameList: List<String>
 ) {
     when (version) {
-        in 872..950 -> {
+        in 872..980 -> {
             findClass("com.rousetime.android_startup.StartupManager").hook {
                 injectMember {
                     method {

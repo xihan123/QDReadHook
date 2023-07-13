@@ -720,7 +720,7 @@ fun Insert(list: MutableState<String>) {
 val Int.QDUIButtonTextViewVariableName
     get() = when (this) {
         in 884..890 -> "e"
-        in 896..944 -> "k"
+        in 896..950 -> "k"
         else -> null
     }
 

@@ -20,12 +20,14 @@ import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
 import com.highcapable.yukihookapi.hook.log.YukiHookLogger
+import com.highcapable.yukihookapi.hook.log.loggerE
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.android.ActivityClass
-import com.highcapable.yukihookapi.hook.type.android.BitmapClass
 import com.highcapable.yukihookapi.hook.type.android.BundleClass
+import com.highcapable.yukihookapi.hook.type.android.ContextClass
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
 import com.highcapable.yukihookapi.hook.type.java.IntType
+import com.highcapable.yukihookapi.hook.type.java.JSONArrayClass
 import com.highcapable.yukihookapi.hook.type.java.JSONObjectClass
 import com.highcapable.yukihookapi.hook.type.java.ListClass
 import com.highcapable.yukihookapi.hook.type.java.LongType
@@ -259,52 +261,50 @@ class HookEntry : IYukiHookXposedInit {
 
             /**
              * 调试-查看跳转关键词
-             *//*
-                        findClass("com.qidian.QDReader.other.ActionUrlProcess").hook {
-                            /*
-                            injectMember {
-                                method {
-                                    name = "processOpenBookListReborn"
-                                    param(ContextClass, JSONObjectClass)
-                                }
-                                afterHook {
-                                    printCallStack(instanceClass.name)
-                                    val s = args[1] as? JSONObject
-                                    loggerE(msg = "s: $s")
-                                }
-                            }
-
-                             */
-
-                            injectMember {
-                                method {
-                                    name = "processSinceV650"
-                                    param(ContextClass, StringType, JSONObjectClass)
-                                }
-                                afterHook {
-                                    //printCallStack(instance.javaClass.name)
-                                    val s = args[1] as? String
-                                    val jb = args[2] as? JSONObject
-                                    loggerE(msg = "s: $s\njb: $jb")
-                                }
-                            }
-
-                            injectMember {
-                                method {
-                                    name = "processComicSquare"
-                                    param(ContextClass, StringType, JSONObjectClass)
-                                }
-                                afterHook {
-                                    //printCallStack(instance.javaClass.name)
-                                    val s = args[1] as? String
-                                    val jb = args[2] as? JSONObject
-                                    loggerE(msg = "s: $s\njb: $jb")
-                                }
-                            }
-                        }
-
-
              */
+
+            findClass("com.qidian.QDReader.other.ActionUrlProcess").hook {
+                /*
+                injectMember {
+                    method {
+                        name = "processOpenBookListReborn"
+                        param(ContextClass, JSONObjectClass)
+                    }
+                    afterHook {
+                        printCallStack(instanceClass.name)
+                        val s = args[1] as? JSONObject
+                        loggerE(msg = "s: $s")
+                    }
+                }
+
+                 */
+
+                injectMember {
+                    method {
+                        name = "processSinceV650"
+                        param(ContextClass, StringClass, JSONObjectClass)
+                    }
+                    afterHook {
+                        //printCallStack(instance.javaClass.name)
+                        val s = args[1] as? String
+                        val jb = args[2] as? JSONObject
+                        loggerE(msg = "s: $s\njb: $jb")
+                    }
+                }
+
+                injectMember {
+                    method {
+                        name = "processComicSquare"
+                        param(ContextClass, StringClass, JSONObjectClass)
+                    }
+                    afterHook {
+                        //printCallStack(instance.javaClass.name)
+                        val s = args[1] as? String
+                        val jb = args[2] as? JSONObject
+                        loggerE(msg = "s: $s\njb: $jb")
+                    }
+                }
+            }
 
             findClass("com.qidian.QDReader.ui.activity.MoreActivity").hook {
                 injectMember {
@@ -450,9 +450,6 @@ class HookEntry : IYukiHookXposedInit {
             }
 
              */
-
-
-
 
         }
 
@@ -749,6 +746,7 @@ fun PackageParam.autoSignIn(
 /**
  * 老版布局自动签到
  */
+@Deprecated("老版布局已经不支持")
 fun PackageParam.oldAutoSignIn(versionCode: Int) {
     when (versionCode) {
         in 758..800 -> {
@@ -845,10 +843,10 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
             }
         }
 
-        in 842..944 -> {
+        in 842..950 -> {
             val needHookMethod = when (versionCode) {
                 in 842..878 -> "E"
-                in 884..944 -> "B"
+                in 884..950 -> "B"
                 else -> null
             }
             val needHookVariableName1 = versionCode.QDUIButtonTextViewVariableName
@@ -881,7 +879,7 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
             // 需要Hook的变量名
             val needHookVariableName = when (versionCode) {
                 in 884..890 -> "a"
-                in 896..944 -> "b"
+                in 896..950 -> "b"
                 else -> null
             }
             if (needHookVariableName != null && needHookVariableName1 != null) {
@@ -938,7 +936,7 @@ fun PackageParam.newOldLayout(
         in 906..916 -> "o4.search\$search"
         924 -> "p4.search\$search"
         in 932..938 -> "s4.search\$search"
-        944 -> "r4.search\$search"
+        in 944..950 -> "r4.search\$search"
         else -> null
     }
 
@@ -989,6 +987,7 @@ fun PackageParam.newOldLayout(
         in 906..916 -> "W"
         924 -> "Y"
         in 932..944 -> "d0"
+        950 -> "e0"
         else -> null
     }
 
@@ -1141,7 +1140,7 @@ fun PackageParam.enableLocalCard(versionCode: Int) {
             }
         }
 
-        in 896..950 -> {
+        in 896..980 -> {
             findClass("com.qidian.QDReader.repository.entity.user_account.Member").hook {
                 injectMember {
                     method {
@@ -1192,7 +1191,7 @@ fun PackageParam.enableLocalCard(versionCode: Int) {
  */
 fun PackageParam.unlockMemberBackground(versionCode: Int) {
     when (versionCode) {
-        in 827..950 -> {
+        in 827..980 -> {
             findClass("com.qidian.QDReader.ui.activity.QDReaderThemeDetailActivity").hook {
                 injectMember {
                     method {
@@ -1403,7 +1402,7 @@ fun PackageParam.freeAdReward(versionCode: Int) {
             }
         }
 
-        in 896..944 -> {
+        in 896..950 -> {
             /**
              * showRewardVideo
              * preloadRewardVideo
@@ -1530,6 +1529,7 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
         916 -> "com.qidian.QDReader.component.bll.manager.z0"
         924 -> "com.qidian.QDReader.component.bll.manager.a1"
         in 932..944 -> "com.qidian.QDReader.component.bll.manager.c1"
+        950 -> "com.qidian.QDReader.component.bll.manager.b1"
         else -> null
     }
     val needHookMethod = when (versionCode) {
@@ -1537,7 +1537,7 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
         in 884..890 -> "k0"
         in 896..924 -> "l0"
         in 932..938 -> "p0"
-        944 -> "q0"
+        in 944..950 -> "q0"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -1571,7 +1571,7 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
  */
 fun PackageParam.exportEmoji(versionCode: Int) {
     when (versionCode) {
-        in 884..944 -> {
+        in 884..950 -> {
             findClass("com.qidian.QDReader.ui.activity.QDStickersDetailActivity").hook {
                 injectMember {
                     method {
@@ -1605,6 +1605,7 @@ fun PackageParam.exportEmoji(versionCode: Int) {
                             932 -> 0x7F09184E
                             938 -> 0x7F091863
                             944 -> 0x7F091876
+                            950 -> 0x7F0918A1
                             else -> null
                         }
                         if (topBarViewId != null) {
@@ -1687,7 +1688,7 @@ fun Context.exportEmojiDialog(
 fun PackageParam.forceTrialMode(versionCode: Int) {
     val needHookClass = when (versionCode) {
         in 896..900 -> "com.qidian.QDReader.util.v4"
-        in 906..938 -> "com.qidian.QDReader.util.w4"
+        in 906..950 -> "com.qidian.QDReader.util.w4"
         else -> null
     }
 
@@ -1696,7 +1697,7 @@ fun PackageParam.forceTrialMode(versionCode: Int) {
      * is_agree_privacy
      */
     val needHookMethod = when (versionCode) {
-        in 896..938 -> "M"
+        in 896..950 -> "M"
         else -> null
     }
 
@@ -1718,7 +1719,7 @@ fun PackageParam.forceTrialMode(versionCode: Int) {
  */
 fun PackageParam.hideWelfare(versionCode: Int) {
     when (versionCode) {
-        in 906..950 -> {
+        in 906..980 -> {
             findClass("com.qidian.QDReader.ui.activity.QDSearchActivity").hook {
                 injectMember {
                     method {

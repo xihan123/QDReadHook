@@ -13,7 +13,7 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
  */
 fun PackageParam.customBookShelfTopImage(versionCode: Int) {
     when (versionCode) {
-        in 860..950 -> {
+        in 860..980 -> {
             findClass("com.qidian.QDReader.repository.entity.config.BookshelfConfig").hook {
                 injectMember {
                     method {
@@ -53,6 +53,7 @@ fun PackageParam.customBookShelfTopImage(versionCode: Int) {
 /**
  * Hook 启用旧版布局
  */
+@Deprecated("启用旧版布局")
 fun PackageParam.enableOldLayout(versionCode: Int) {
     when (versionCode) {
         in 758..799 -> {

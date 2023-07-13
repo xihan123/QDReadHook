@@ -1427,6 +1427,7 @@ fun PurifyScreen(
                         "阅读-最后一页-看过此书的人还看过",
                         "阅读-最后一页-同类作品推荐",
                         "阅读-最后一页-推荐",
+                        "分类-小编力荐、本周强推等更多"
                     )
                     val checkedItems = BooleanArray(shieldOptionList.size)
                     if (HookEntry.optionEntity.shieldOption.shieldOptionValueSet.isNotEmpty()) {

@@ -32,12 +32,12 @@ fun PackageParam.customReadBackgroundPath(versionCode: Int) {
         in 906..916 -> "x5.c"
         924 -> "y5.c"
         in 932..938 -> "b6.c"
-        944 -> "a6.c"
+        in 944..950 -> "a6.c"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 827..878 -> "G"
-        in 884..944 -> "C"
+        in 884..950 -> "C"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -67,7 +67,7 @@ fun PackageParam.readerPageChapterReviewPictures(
     enableShowReaderPageChapterSaveAudioDialog: Boolean = false,
     enableCopyReaderPageChapterComment: Boolean = false,
 ) {
-    if (enableShowReaderPageChapterSaveRawPictures && versionCode in 868..950) {
+    if (enableShowReaderPageChapterSaveRawPictures && versionCode in 868..980) {
         findClass("com.qd.ui.component.modules.imagepreivew.QDUIGalleryActivity").hook {
             injectMember {
                 method {
@@ -87,12 +87,13 @@ fun PackageParam.readerPageChapterReviewPictures(
             in 868..878 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.b0"
             884 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.y"
             in 890..944 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.e0"
+            950 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.m0"
             else -> null
         }
         val needHookMethod = when (versionCode) {
             in 868..878 -> "A"
             884 -> "x"
-            in 890..944 -> "z"
+            in 890..950 -> "z"
             else -> null
         }
         if (needHookClass == null || needHookMethod == null) {
@@ -224,11 +225,12 @@ fun PackageParam.readTimeDouble(
         in 896..900 -> "kf.search"
         in 906..924 -> "pf.search"
         in 932..944 -> "sf.search"
+        950 -> "uf.search"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 868..878 -> "d"
-        in 884..944 -> "a"
+        in 884..950 -> "a"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -340,11 +342,11 @@ fun PackageParam.readBookLastPage(
     hideAdView: Boolean = false
 ) {
     val needHookClass = when (versionCode) {
-        in 896..944 -> "com.qidian.QDReader.ui.view.lastpage.LastPageRoleView"
+        in 896..950 -> "com.qidian.QDReader.ui.view.lastpage.LastPageRoleView"
         else -> null
     }
     val needHookMethod = when (versionCode) {
-        in 896..944 -> "l"
+        in 896..950 -> "l"
         else -> null
     }
     needHookClass?.hook {
@@ -372,12 +374,12 @@ fun PackageParam.readBookLastPage(
     }
 
     val needHookClass2 = when (versionCode) {
-        in 896..944 -> "com.qidian.QDReader.ui.view.lastpage.LastPageCircleView"
+        in 896..950 -> "com.qidian.QDReader.ui.view.lastpage.LastPageCircleView"
         else -> null
     }
     val needHookMethod2 = when (versionCode) {
         in 896..900 -> "f"
-        in 906..944 -> "g"
+        in 906..950 -> "g"
         else -> null
     }
 
@@ -406,11 +408,11 @@ fun PackageParam.readBookLastPage(
     }
 
     val needHookClass3 = when (versionCode) {
-        in 896..944 -> "com.qidian.QDReader.ui.view.lastpage.LastPageTryReadViewWrap"
+        in 896..950 -> "com.qidian.QDReader.ui.view.lastpage.LastPageTryReadViewWrap"
         else -> null
     }
     val needHookMethod3 = when (versionCode) {
-        in 896..944 -> "bind"
+        in 896..950 -> "bind"
         else -> null
     }
     needHookClass3?.hook {
