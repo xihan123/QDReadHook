@@ -86,6 +86,7 @@ data class OptionEntity(
      * @param enableAutoSign 启用自动签到
      * @param enableLocalCard 启用本地至尊卡
      * @param enableFreeAdReward 启用免广告奖励
+     * @param enableQQReadFreeAdReward 启用QQ阅读免广告奖励
      * @param freeAdRewardAutoExitTime 免广告奖励自动退出时间
      * @param enableIgnoreFansValueJumpLimit 启用忽略粉丝值跳转限制
      * @param enableIgnoreFreeSubscribeLimit 启用忽略免费批量订阅限制
@@ -93,7 +94,6 @@ data class OptionEntity(
      * @param enableHideAppIcon 启用隐藏应用图标
      * @param enableNewStore 启用新版精选
      * @param enableExportEmoji 启用导出表情包
-     * @param enableImportAudio 启用导入音频
      * @param enableForceTrialMode 启用强制试用模式
      * @param enableTestFunction 启用测试功能
      */
@@ -104,6 +104,7 @@ data class OptionEntity(
         @SerialName("enableAutoSign") var enableAutoSign: Boolean = false,
         @SerialName("enableLocalCard") var enableLocalCard: Boolean = false,
         @SerialName("enableFreeAdReward") var enableFreeAdReward: Boolean = false,
+        @SerialName("enableQQReadFreeAdReward") var enableQQReadFreeAdReward: Boolean = false,
         @SerialName("freeAdRewardAutoExitTime") var freeAdRewardAutoExitTime: Int = 3,
         @SerialName("enableIgnoreFansValueJumpLimit") var enableIgnoreFansValueJumpLimit: Boolean = false,
         @SerialName("enableIgnoreFreeSubscribeLimit") var enableIgnoreFreeSubscribeLimit: Boolean = false,
@@ -159,6 +160,7 @@ data class OptionEntity(
     /**
      * 启动图配置
      * @param enableCustomStartImage 启用自定义启动图
+     * @param enableCustomLocalStartImage 启用自定义本地启动图
      * @param customStartImageUrlList 自定义启动图url列表
      * @param enableCaptureTheOfficialLaunchMapList 启用抓取官方启动图列表
      * @param officialLaunchMapList 官方启动图列表
@@ -167,6 +169,7 @@ data class OptionEntity(
     @Serializable
     data class StartImageOption(
         @SerialName("enableCustomStartImage") var enableCustomStartImage: Boolean = false,
+        @SerialName("enableCustomLocalStartImage") var enableCustomLocalStartImage: Boolean = false,
         @SerialName("customStartImageUrlList") var customStartImageUrlList: Set<String> = emptySet(),
         @SerialName("enableCaptureTheOfficialLaunchMapList") var enableCaptureTheOfficialLaunchMapList: Boolean = false,
         @SerialName("OfficialLaunchMapList") var officialLaunchMapList: MutableList<StartImageModel> = mutableListOf(),

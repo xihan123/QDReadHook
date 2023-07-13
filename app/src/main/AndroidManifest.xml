@@ -26,7 +26,7 @@
             android:value="true" />
         <meta-data
             android:name="xposedscope"
-            android:value="com.qidian.QDReader" />
+            android:value="com.qidian.QDReader;com.qq.reader" />
 
         <activity
             android:name=".MainActivity"

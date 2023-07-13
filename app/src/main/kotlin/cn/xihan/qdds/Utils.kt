@@ -7,6 +7,8 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
@@ -175,7 +177,7 @@ fun Context.getVersionCode(packageName: String): Int {
  */
 fun printCallStack(className: String = "") {
     val stringBuilder = StringBuilder()
-    stringBuilder.appendLine("className: $className")
+    stringBuilder.appendLine("----className: $className ----")
     stringBuilder.appendLine("Dump Stack: ---------------start----------------")
     val ex = Throwable()
     val stackElements = ex.stackTrace
@@ -783,6 +785,28 @@ fun Any?.mToString(): String = when (this) {
     is Serializable -> this.toJSONString()
     is Parcelable -> this.toJSONString()
     else -> this?.toString() ?: ""
+}
+
+/**
+ * 重定向启动图路径
+ */
+val splashPath = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/QDReader/Splash/"
+
+/**
+ * 随机返回一个 bitmap
+ */
+fun randomBitmap(): Bitmap? {
+    val files =  File(splashPath)
+    if (!files.exists()) {
+        files.mkdirs()
+    }
+    val list = files.listFiles()
+    if (list.isNullOrEmpty()) {
+        return null
+    }
+    val random = Random()
+    val index = random.nextInt(list.size)
+    return BitmapFactory.decodeFile(list[index].absolutePath)
 }
 
 /**

@@ -5,6 +5,7 @@ import cn.xihan.qdds.HookEntry.Companion.optionEntity
 import com.alibaba.fastjson2.toJSONString
 import com.highcapable.yukihookapi.hook.factory.constructor
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.highcapable.yukihookapi.hook.type.android.BitmapClass
 import com.highcapable.yukihookapi.hook.type.java.IntType
 import com.highcapable.yukihookapi.hook.type.java.LongType
 import com.highcapable.yukihookapi.hook.type.java.StringClass
@@ -118,7 +119,7 @@ fun PackageParam.captureTheOfficialLaunchMapList(versionCode: Int) {
                                 optionEntity.startImageOption.officialLaunchMapList
                             dataList?.forEach { item ->
                                 item?.let {
-                                    val text = item.toJSONString()
+//                                    val text = item.toJSONString()
                                     val imageUrl = item.getParam<String>("imageUrl")
                                     val paperId = item.getParam<Long>("paperId")
                                     val name = item.getParam<String>("name")
@@ -153,4 +154,46 @@ fun PackageParam.captureTheOfficialLaunchMapList(versionCode: Int) {
         else -> "抓取官方启动图列表".printlnNotSupportVersion(versionCode)
     }
 
+}
+
+/**
+ * 自定义本地启动图
+ */
+fun PackageParam.customLocalStartImage(versionCode: Int) {
+    when (versionCode) {
+        944 -> {
+            val list = listOf(
+                "com.qidian.QDReader.ui.activity.SplashActivity\$judian",
+                "com.qidian.QDReader.ui.activity.SplashActivity\$cihai"
+            )
+            list.forEach {
+                it.hook {
+                    injectMember {
+                        method {
+                            name = "onSuccess"
+                            param(BitmapClass)
+                            returnType = UnitType
+                        }
+                        beforeHook {
+                            randomBitmap()?.let { bitmap ->
+                                args(0).set(bitmap)
+                            }
+                        }
+                    }
+                }
+            }
+
+            findClass("com.qidian.QDReader.util.SplashDownloadUtil").hook {
+                injectMember {
+                    method {
+                        name = "cihai"
+                        emptyParam()
+                        returnType = StringClass
+                    }
+                    replaceTo(splashPath)
+                }
+            }
+
+        }
+    }
 }

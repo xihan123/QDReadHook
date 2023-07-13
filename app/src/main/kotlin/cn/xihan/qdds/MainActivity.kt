@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.os.Build.*
 import android.os.Bundle
+import android.os.Environment
 import androidx.activity.compose.setContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
@@ -780,6 +781,14 @@ fun MainScreen(
                     HookEntry.optionEntity.mainOption.enableFreeAdReward = it
                 })
 
+
+                SwitchSetting(title = "QQ阅读免广告领取奖励",
+                    subTitle = "没有安装QQ阅读请勿打开此选项",
+                    checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableQQReadFreeAdReward),
+                    onCheckedChange = {
+                        HookEntry.optionEntity.mainOption.enableQQReadFreeAdReward = it
+                    })
+
                 if (freeAdReward.value && versionCode < 896) {
                     EditTextSetting(title = "免广告领取奖励自动退出时间",
                         text = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.freeAdRewardAutoExitTime.toString()),
@@ -1125,6 +1134,14 @@ fun MainScreen(
                         subTitle = "启用后去启动图页面滑到底，然后重启起点/模块就可以看到数据了,之后可关闭",
                         onCheckedChange = {
                             HookEntry.optionEntity.startImageOption.enableCaptureTheOfficialLaunchMapList =
+                                it
+                        })
+
+                    SwitchSetting(title = "启用自定义本地启动图",
+                        checked = rememberMutableStateOf(value = HookEntry.optionEntity.startImageOption.enableCustomLocalStartImage),
+                        subTitle = "启用后会重定向下载路径为:\"$splashPath\"\n随机所存在的图片参与启动图",
+                        onCheckedChange = {
+                            HookEntry.optionEntity.startImageOption.enableCustomLocalStartImage =
                                 it
                         })
 
