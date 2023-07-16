@@ -71,10 +71,10 @@ jobs:
           echo 'org.gradle.caching=true' >> gradle.properties
           echo 'org.gradle.parallel=true' >> gradle.properties
           echo 'org.gradle.vfs.watch=true' >> gradle.properties
-          echo 'org.gradle.jvmargs=-Xmx2048m' >> gradle.properties
+          echo 'org.gradle.jvmargs=-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8 -XX:+UseParallelGC -XX:MaxMetaspaceSize=1g' >> gradle.properties
           echo 'android.native.buildOutput=verbose' >> gradle.properties
           chmod +x gradlew
-          ./gradlew assembleRelease
+          ./gradlew assembleRelease -Pkotlin.experimental.tryK2=true
           ccache -s
 
       - name: Upload assets to a Release
