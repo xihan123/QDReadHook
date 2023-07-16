@@ -261,7 +261,7 @@ class HookEntry : IYukiHookXposedInit {
             /**
              * 调试-查看跳转关键词
              */
-
+            /*
             findClass("com.qidian.QDReader.other.ActionUrlProcess").hook {
                 /*
                 injectMember {
@@ -304,6 +304,8 @@ class HookEntry : IYukiHookXposedInit {
                     }
                 }
             }
+
+             */
 
             findClass("com.qidian.QDReader.ui.activity.MoreActivity").hook {
                 injectMember {
