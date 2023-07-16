@@ -59,6 +59,15 @@
 
 ### Miscellaneous
 
+* **master:** release 2.1.8 ([1fccf07](https://github.com/xihan123/QDReadHook/commit/1fccf072ce675a1b5be2911fabbd048be10419b8))
+* **master:** release 2.1.8 ([7d4dcaa](https://github.com/xihan123/QDReadHook/commit/7d4dcaaa375c07cc4a99a3e3ab1ea97ad5e774bc))
+* 整理代码 ([30b7d8c](https://github.com/xihan123/QDReadHook/commit/30b7d8cf599e417b49367c012144bee15e5a0012))
+
+## [2.1.8](https://github.com/xihan123/QDReadHook/compare/v2.1.8...v2.1.8) (2023-07-16)
+
+
+### Miscellaneous
+
 * **master:** release 2.1.8 ([7d4dcaa](https://github.com/xihan123/QDReadHook/commit/7d4dcaaa375c07cc4a99a3e3ab1ea97ad5e774bc))
 
 ## [2.1.8](https://github.com/xihan123/QDReadHook/compare/v2.1.7...v2.1.8) (2023-07-16)
