@@ -454,11 +454,6 @@ class HookEntry : IYukiHookXposedInit {
 
         }
 
-        if (optionEntity.mainOption.enableQQReadFreeAdReward) {
-            loadApp(name = QQ_READER_PACKAGE_NAME) {
-                qqReadFreeAdReward(qrVersionCode)
-            }
-        }
     }
 
     companion object {
@@ -470,20 +465,7 @@ class HookEntry : IYukiHookXposedInit {
             optionEntity.mainOption.packageName.ifBlank { "com.qidian.QDReader" }
         }
 
-        /**
-         * QQ阅读包名
-         */
-        const val QQ_READER_PACKAGE_NAME = "com.qq.reader"
-
         val versionCode by lazy { getSystemContext().getVersionCode(QD_PACKAGE_NAME) }
-
-        val qrVersionCode by lazy {
-            runCatching {
-                getSystemContext().getVersionCode(
-                    QQ_READER_PACKAGE_NAME
-                )
-            }.getOrElse { 0 }
-        }
 
         /**
          * 不支持旧版布局的版本号
@@ -1460,61 +1442,6 @@ fun PackageParam.freeAdReward(versionCode: Int) {
         }
 
         else -> "免广告领取奖励".printlnNotSupportVersion(versionCode)
-    }
-}
-
-/**
- * QQ阅读免广告领取奖励
- */
-fun PackageParam.qqReadFreeAdReward(versionCode: Int) {
-    when (versionCode) {
-        310 -> {
-            findClass("com.qq.reader.ad.e").hook {
-                injectMember {
-                    method {
-                        name = "search"
-                        param(IntType, StringClass)
-                        returnType = BooleanType
-                    }
-                    replaceToTrue()
-                }
-
-                injectMember {
-                    method {
-                        name = "search"
-                        param(
-                            "com.qq.reader.activity.WebBrowserForContents".toClass(),
-                            "com.qq.reader.activity.WebBrowserForContents\$judian".toClass(),
-                            "com.yuewen.cooperate.adsdk.model.AdContextInfo".toClass(),
-                            StringClass,
-                            BooleanType
-                        )
-                        returnType = UnitType
-                    }
-                    beforeHook {
-                        args(4).set(false)
-                    }
-                }
-            }
-
-            findClass("com.yuewen.cooperate.adsdk.core.AdManager").hook {
-                injectMember {
-                    method {
-                        name = "search"
-                        param(
-                            ActivityClass,
-                            "com.yuewen.cooperate.adsdk.model.request.RewardVideoAdRequestParam".toClass(),
-                            "com.yuewen.cooperate.adsdk.interf.IRewardVideoShowListener".toClass()
-                        )
-                    }
-                    beforeHook {
-                        args(0).set(null)
-                    }
-                }
-            }
-        }
-
-        else -> "QQ阅读免广告领取奖励".printlnNotSupportVersion(versionCode)
     }
 }
 

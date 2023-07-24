@@ -86,7 +86,6 @@ data class OptionEntity(
      * @param enableAutoSign 启用自动签到
      * @param enableLocalCard 启用本地至尊卡
      * @param enableFreeAdReward 启用免广告奖励
-     * @param enableQQReadFreeAdReward 启用QQ阅读免广告奖励
      * @param freeAdRewardAutoExitTime 免广告奖励自动退出时间
      * @param enableIgnoreFansValueJumpLimit 启用忽略粉丝值跳转限制
      * @param enableIgnoreFreeSubscribeLimit 启用忽略免费批量订阅限制
@@ -104,7 +103,6 @@ data class OptionEntity(
         @SerialName("enableAutoSign") var enableAutoSign: Boolean = false,
         @SerialName("enableLocalCard") var enableLocalCard: Boolean = false,
         @SerialName("enableFreeAdReward") var enableFreeAdReward: Boolean = false,
-        @SerialName("enableQQReadFreeAdReward") var enableQQReadFreeAdReward: Boolean = false,
         @SerialName("freeAdRewardAutoExitTime") var freeAdRewardAutoExitTime: Int = 3,
         @SerialName("enableIgnoreFansValueJumpLimit") var enableIgnoreFansValueJumpLimit: Boolean = false,
         @SerialName("enableIgnoreFreeSubscribeLimit") var enableIgnoreFreeSubscribeLimit: Boolean = false,
