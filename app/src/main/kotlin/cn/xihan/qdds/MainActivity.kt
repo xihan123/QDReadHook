@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Context
 import android.os.Build.*
 import android.os.Bundle
-import android.os.Environment
 import androidx.activity.compose.setContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
@@ -781,14 +780,6 @@ fun MainScreen(
                     HookEntry.optionEntity.mainOption.enableFreeAdReward = it
                 })
 
-
-                SwitchSetting(title = "QQ阅读免广告领取奖励",
-                    subTitle = "没有安装QQ阅读请勿打开此选项",
-                    checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableQQReadFreeAdReward),
-                    onCheckedChange = {
-                        HookEntry.optionEntity.mainOption.enableQQReadFreeAdReward = it
-                    })
-
                 if (freeAdReward.value && versionCode < 896) {
                     EditTextSetting(title = "免广告领取奖励自动退出时间",
                         text = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.freeAdRewardAutoExitTime.toString()),
@@ -801,19 +792,11 @@ fun MainScreen(
                         })
                 }
 
-//                SwitchSetting(title = "忽略粉丝值跳转加群限制",
-//                    checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableIgnoreFansValueJumpLimit),
-//                    onCheckedChange = {
-//                        HookEntry.optionEntity.mainOption.enableIgnoreFansValueJumpLimit = it
-//                    })
-
                 SwitchSetting(title = "忽略限时免费批量订阅限制",
                     checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableIgnoreFreeSubscribeLimit),
                     onCheckedChange = {
                         HookEntry.optionEntity.mainOption.enableIgnoreFreeSubscribeLimit = it
                     })
-
-
 
                 if (versionCode > 827) {
                     SwitchSetting(title = "解锁会员卡专属背景",
