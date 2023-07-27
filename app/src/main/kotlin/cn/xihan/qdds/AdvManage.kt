@@ -289,7 +289,7 @@ fun PackageParam.disableAccountCenterAd(versionCode: Int) {
             }
         }
 
-        in 896..980 -> {
+        in 896..980 ->{
             findClass("com.qidian.QDReader.ui.fragment.main_group.QDUserAccountRebornFragment").hook {
                 injectMember {
                     method {
@@ -310,21 +310,6 @@ fun PackageParam.disableAccountCenterAd(versionCode: Int) {
  * 禁用阅读页-浮窗广告
  */
 fun PackageParam.disableReadPageFloatAd(versionCode: Int) {
-    when(versionCode){
-        in 958..970 -> {
-            findClass("com.qidian.QDReader.readerengine.view.QDSuperEngineView").hook {
-                injectMember {
-                   method {
-                       name = "setReadMenuData"
-                       paramCount(1)
-                       returnType = UnitType
-                   }
-                    intercept()
-                }
-            }
-        }
-    }
-
     val hookMethodName = when (versionCode) {
         812 -> "O0"
         in 827..834 -> "K"
@@ -337,7 +322,6 @@ fun PackageParam.disableReadPageFloatAd(versionCode: Int) {
         in 916..924 -> "h1"
         in 932..944 -> "B0"
         in 950..958 -> "t1"
-        970 -> "s1"
         else -> null
     }
     hookMethodName?.let {
@@ -352,17 +336,9 @@ fun PackageParam.disableReadPageFloatAd(versionCode: Int) {
                 }
                 intercept()
             }
-
-            injectMember {
-                method {
-                    name = "getReadMenuData"
-                    emptyParam()
-                    returnType = UnitType
-                }
-                intercept()
-            }
         }
     } ?: "移除阅读页-浮窗广告".printlnNotSupportVersion(versionCode)
+
 }
 
 /**
@@ -392,8 +368,8 @@ fun PackageParam.disableReadPageRewardTheater(versionCode: Int) {
  * positionMask
  */
 fun PackageParam.disableReadPageNewestPageWindowBannerAd(versionCode: Int) {
-    when (versionCode) {
-        in 896..970 -> {
+    when(versionCode){
+        in 896..958 -> {
             findClass("com.qidian.QDReader.bll.manager.QDBKTManager").hook {
                 injectMember {
                     method {
@@ -561,7 +537,6 @@ fun PackageParam.disableAd(versionCode: Int) {
                 }
             }
         }
-
         in 932..980 -> {
             findClass("com.qq.e.comm.managers.GDTADManager").hook {
                 injectMember {
@@ -613,19 +588,19 @@ fun PackageParam.disableUpdate(versionCode: Int) {
         in 792..796 -> "com.qidian.QDReader.util.i5"
         in 800..834 -> "com.qidian.QDReader.util.l5"
         in 842..878 -> "com.qidian.QDReader.util.m5"
-        884 -> "com.qidian.QDReader.util.k5"
+        884 ->  "com.qidian.QDReader.util.k5"
         in 890..900 -> "com.qidian.QDReader.util.l5"
-        in 906..970 -> "com.qidian.QDReader.util.m5"
+        in 906..958 -> "com.qidian.QDReader.util.m5"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 758..878 -> "b"
-        in 884..970 -> "judian"
+        in 884..958 -> "judian"
         else -> null
     }
     val needHookMethod2 = when (versionCode) {
         in 758..878 -> "a"
-        in 884..970 -> "search"
+        in 884..958 -> "search"
         else -> null
     }
     needHookClass?.hook {
