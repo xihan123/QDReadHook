@@ -321,7 +321,7 @@ fun PackageParam.disableReadPageFloatAd(versionCode: Int) {
         in 896..906 -> "c1"
         in 916..924 -> "h1"
         in 932..944 -> "B0"
-        950 -> "t1"
+        in 950..958 -> "t1"
         else -> null
     }
     hookMethodName?.let {
@@ -369,7 +369,7 @@ fun PackageParam.disableReadPageRewardTheater(versionCode: Int) {
  */
 fun PackageParam.disableReadPageNewestPageWindowBannerAd(versionCode: Int) {
     when(versionCode){
-        in 896..950 -> {
+        in 896..958 -> {
             findClass("com.qidian.QDReader.bll.manager.QDBKTManager").hook {
                 injectMember {
                     method {
@@ -590,17 +590,17 @@ fun PackageParam.disableUpdate(versionCode: Int) {
         in 842..878 -> "com.qidian.QDReader.util.m5"
         884 ->  "com.qidian.QDReader.util.k5"
         in 890..900 -> "com.qidian.QDReader.util.l5"
-        in 906..950 -> "com.qidian.QDReader.util.m5"
+        in 906..958 -> "com.qidian.QDReader.util.m5"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 758..878 -> "b"
-        in 884..950 -> "judian"
+        in 884..958 -> "judian"
         else -> null
     }
     val needHookMethod2 = when (versionCode) {
         in 758..878 -> "a"
-        in 884..950 -> "search"
+        in 884..958 -> "search"
         else -> null
     }
     needHookClass?.hook {

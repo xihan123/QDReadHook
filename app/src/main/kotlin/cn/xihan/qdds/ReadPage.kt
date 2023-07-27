@@ -33,11 +33,12 @@ fun PackageParam.customReadBackgroundPath(versionCode: Int) {
         924 -> "y5.c"
         in 932..938 -> "b6.c"
         in 944..950 -> "a6.c"
+        958 -> "y5.c"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 827..878 -> "G"
-        in 884..950 -> "C"
+        in 884..958 -> "C"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -88,70 +89,72 @@ fun PackageParam.readerPageChapterReviewPictures(
             884 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.y"
             in 890..944 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.e0"
             950 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.m0"
+            958 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.e0"
             else -> null
         }
         val needHookMethod = when (versionCode) {
             in 868..878 -> "A"
             884 -> "x"
-            in 890..950 -> "z"
+            in 890..958 -> "z"
             else -> null
         }
         if (needHookClass == null || needHookMethod == null) {
             "阅读页-章评图片".printlnNotSupportVersion(versionCode)
-            return
+        } else {
+            needHookClass.hook {
+                injectMember {
+                    method {
+                        name = needHookMethod
+                        paramCount(2)
+                        returnType = UnitType
+                    }
+                    afterHook {
+                        if (enableShowReaderPageChapterSavePictureDialog) {
+                            val rawImgUrl =
+                                args[0]?.toJSONString().parseObject().getString("imageDetail")
+                            val p = instance.getParam<ImageView>("p")
+                            if (rawImgUrl == null || p == null) return@afterHook
+                            p.setOnLongClickListener {
+                                p.context.alertDialog {
+                                    title = "图片地址"
+                                    message = rawImgUrl
+                                    positiveButton("复制") {
+                                        p.context.copyToClipboard(rawImgUrl)
+                                    }
+                                    negativeButton("取消") {
+                                        it.dismiss()
+                                    }
+                                    build()
+                                    show()
+                                }
+                                true
+                            }
+                        }
+
+                        if (enableCopyReaderPageChapterComment) {
+                            val r = instance.getView<TextView>("r") ?: return@afterHook
+                            val v = instance.getParam<Context>("v") ?: return@afterHook
+                            r.setOnLongClickListener {
+                                v.apply {
+                                    copyToClipboard(r.text.toString())
+                                    toast("已复制到剪贴板")
+                                }
+                                false
+                            }
+                        }
+
+                    }
+                }
+            }
         }
         /**
          * com.qidian.QDReader.ui.adapter.reader.ChapterParagraphCommentAdapter.onBindContentItemViewHolder
          * b00.A(newParagraphCommentListBean$DataListBean0, this.getMBookInfo());
          */
-        needHookClass.hook {
-            injectMember {
-                method {
-                    name = needHookMethod
-                    paramCount(2)
-                    returnType = UnitType
-                }
-                afterHook {
-                    if (enableShowReaderPageChapterSavePictureDialog) {
-                        val rawImgUrl =
-                            args[0]?.toJSONString().parseObject().getString("imageDetail")
-                        val p = instance.getParam<ImageView>("p")
-                        if (rawImgUrl == null || p == null) return@afterHook
-                        p.setOnLongClickListener {
-                            p.context.alertDialog {
-                                title = "图片地址"
-                                message = rawImgUrl
-                                positiveButton("复制") {
-                                    p.context.copyToClipboard(rawImgUrl)
-                                }
-                                negativeButton("取消") {
-                                    it.dismiss()
-                                }
-                                build()
-                                show()
-                            }
-                            true
-                        }
-                    }
 
-                    if (enableCopyReaderPageChapterComment) {
-                        val r = instance.getView<TextView>("r") ?: return@afterHook
-                        val v = instance.getParam<Context>("v") ?: return@afterHook
-                        r.setOnLongClickListener {
-                            v.apply {
-                                copyToClipboard(r.text.toString())
-                                toast("已复制到剪贴板")
-                            }
-                            false
-                        }
-                    }
-
-                }
-            }
-        }
     }
 
-    if (enableShowReaderPageChapterSaveAudioDialog && versionCode in 884..944) {
+    if (enableShowReaderPageChapterSaveAudioDialog && versionCode in 884..958) {
         when (versionCode) {
             884 -> {
                 findClass("com.qidian.QDReader.ui.view.chapter_review.VoicePlayerView").hook {
@@ -178,7 +181,7 @@ fun PackageParam.readerPageChapterReviewPictures(
                 }
             }
 
-            in 890..944 -> {
+            in 890..958 -> {
                 findClass("com.qidian.QDReader.ui.view.chapter_review.VoicePlayerView").hook {
                     injectMember {
                         method {
@@ -203,7 +206,7 @@ fun PackageParam.readerPageChapterReviewPictures(
                 }
             }
 
-            else -> "音频导入".printlnNotSupportVersion(versionCode)
+            else -> "音频导出".printlnNotSupportVersion(versionCode)
         }
     }
 }
@@ -226,11 +229,12 @@ fun PackageParam.readTimeDouble(
         in 906..924 -> "pf.search"
         in 932..944 -> "sf.search"
         950 -> "uf.search"
+        958 -> "rf.search"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 868..878 -> "d"
-        in 884..950 -> "a"
+        in 884..958 -> "a"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -342,11 +346,11 @@ fun PackageParam.readBookLastPage(
     hideAdView: Boolean = false
 ) {
     val needHookClass = when (versionCode) {
-        in 896..950 -> "com.qidian.QDReader.ui.view.lastpage.LastPageRoleView"
+        in 896..958 -> "com.qidian.QDReader.ui.view.lastpage.LastPageRoleView"
         else -> null
     }
     val needHookMethod = when (versionCode) {
-        in 896..950 -> "l"
+        in 896..958 -> "l"
         else -> null
     }
     needHookClass?.hook {
@@ -374,12 +378,12 @@ fun PackageParam.readBookLastPage(
     }
 
     val needHookClass2 = when (versionCode) {
-        in 896..950 -> "com.qidian.QDReader.ui.view.lastpage.LastPageCircleView"
+        in 896..958 -> "com.qidian.QDReader.ui.view.lastpage.LastPageCircleView"
         else -> null
     }
     val needHookMethod2 = when (versionCode) {
         in 896..900 -> "f"
-        in 906..950 -> "g"
+        in 906..958 -> "g"
         else -> null
     }
 
@@ -408,11 +412,11 @@ fun PackageParam.readBookLastPage(
     }
 
     val needHookClass3 = when (versionCode) {
-        in 896..950 -> "com.qidian.QDReader.ui.view.lastpage.LastPageTryReadViewWrap"
+        in 896..958 -> "com.qidian.QDReader.ui.view.lastpage.LastPageTryReadViewWrap"
         else -> null
     }
     val needHookMethod3 = when (versionCode) {
-        in 896..950 -> "bind"
+        in 896..958 -> "bind"
         else -> null
     }
     needHookClass3?.hook {
@@ -439,7 +443,7 @@ fun PackageParam.readBookLastPage(
         }
     }
     when (versionCode) {
-        in 896..950 -> {
+        in 896..980 -> {
             if (hideAdView) {
                 findClass("com.qidian.QDReader.ui.activity.BookLastPageNewActivity").hook {
                     injectMember {
