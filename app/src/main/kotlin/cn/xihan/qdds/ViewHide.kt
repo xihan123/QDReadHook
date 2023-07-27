@@ -396,14 +396,14 @@ fun PackageParam.hideBookshelfDailyReading(versionCode: Int) {
         in 804..812 -> "com.qidian.QDReader.ui.adapter.j0"
         in 827..860 -> "com.qidian.QDReader.ui.adapter.i0"
         in 868..878 -> "com.qidian.QDReader.ui.adapter.j0"
-        in 884..950 -> "com.qidian.QDReader.ui.adapter.g0"
+        in 884..958 -> "com.qidian.QDReader.ui.adapter.g0"
         else -> null
     }
     val listAdapterClass = when (versionCode) {
         in 804..812 -> "com.qidian.QDReader.ui.adapter.h0"
         in 827..860 -> "com.qidian.QDReader.ui.adapter.k0"
         in 868..878 -> "com.qidian.QDReader.ui.adapter.l0"
-        in 884..950 -> "com.qidian.QDReader.ui.adapter.i0"
+        in 884..958 -> "com.qidian.QDReader.ui.adapter.i0"
         else -> null
     }
     if (gridAdapterClass == null || listAdapterClass == null) {
@@ -451,13 +451,13 @@ fun PackageParam.hideBookshelfDailyReading(versionCode: Int) {
  */
 fun PackageParam.hideBookshelfFindBook(versionCode: Int) {
     when (versionCode) {
-        in 868..950 -> {
+        in 868..958 -> {
             /**
              * QDBookShelfBrowserRecordHolder
              */
             val needHookClass = when (versionCode) {
                 in 868..878 -> "com.qidian.QDReader.ui.viewholder.bookshelf.r"
-                in 884..950 -> "com.qidian.QDReader.ui.viewholder.bookshelf.o"
+                in 884..958 -> "com.qidian.QDReader.ui.viewholder.bookshelf.o"
                 else -> null
             }
             needHookClass?.hook {
@@ -521,7 +521,7 @@ fun PackageParam.hideBottomRedDot(versionCode: Int) {
     val needHookClass = when (versionCode) {
         in 758..768 -> "com.qidian.QDReader.ui.widget.maintab.a"
         in 772..878 -> "com.qidian.QDReader.ui.widget.maintab.e"
-        in 884..950 -> "com.qidian.QDReader.ui.widget.maintab.b"
+        in 884..958 -> "com.qidian.QDReader.ui.widget.maintab.b"
         else -> null
     }
     val needHookMethod = when (versionCode) {
@@ -530,7 +530,7 @@ fun PackageParam.hideBottomRedDot(versionCode: Int) {
         in 890..900 -> "h"
         906 -> "e"
         in 916..924 -> "h"
-        in 932..950 -> "e"
+        in 932..958 -> "e"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -555,7 +555,7 @@ fun PackageParam.hideBottomNavigation(versionCode: Int) {
 
     val needHookMethod = when (versionCode) {
         in 872..878 -> "s"
-        in 884..950 -> "p"
+        in 884..958 -> "p"
         else -> null
     }
     if (needHookMethod == null) {
@@ -1093,7 +1093,7 @@ fun PackageParam.removeQSNYDialog(versionCode: Int) {
         in 872..878 -> "com.qidian.QDReader.bll.helper.k1"
         in 884..900 -> "com.qidian.QDReader.bll.helper.h1"
         in 906..924 -> "com.qidian.QDReader.bll.helper.n1"
-        in 932..950 -> "com.qidian.QDReader.bll.helper.m0"
+        in 932..958 -> "com.qidian.QDReader.bll.helper.m0"
         else -> null
     }
     needHookClass?.hook {
@@ -1314,7 +1314,7 @@ fun PackageParam.bookDetailHide(
             }
         }
 
-        in 827..950 -> {
+        in 827..958 -> {
             findClass("com.qidian.QDReader.ui.activity.QDBookDetailActivity").hook {
                 injectMember {
                     method {
@@ -1418,6 +1418,7 @@ fun PackageParam.bookDetailHide(
                                 938 -> 0x7F0919CA
                                 944 -> 0x7F0919DF
                                 950 -> 0x7F091A0B
+                                958 -> 0x7F091A12
                                 else -> null
                             }
                             if (tvCircleMarkLevelId != null) {
@@ -1442,7 +1443,7 @@ fun PackageParam.bookDetailHide(
                  */
                 val bookFansModuleNeedHookMethod = when (versionCode) {
                     in 827..878 -> "d"
-                    in 884..950 -> "a"
+                    in 884..958 -> "a"
                     else -> null
                 }
                 if (bookFansModuleNeedHookMethod == null) {
@@ -1538,6 +1539,7 @@ fun PackageParam.comicHideBannerAd(versionCode: Int) {
         in 932..938 -> "oa.d"
         944 -> "na.d"
         950 -> "pa.d"
+        958 -> "ma.d"
         else -> null
     }
     needHookClass?.hook {
