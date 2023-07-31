@@ -114,7 +114,7 @@ fun PackageParam.shieldChoice(versionCode: Int) {
                         name = "getItems"
                         returnType = ListClass
                     }
-                    afterHook {
+                    beforeHook {
                         val list = instance.getParam<MutableList<*>>("items")
                         list?.let {
                             safeRun {
