@@ -1,5 +1,31 @@
 # Changelog
 
+## [2.1.9](https://github.com/xihan123/QDReadHook/compare/v2.1.8...v2.1.9) (2023-07-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* 移除`QQ阅读免广告领取奖励`
+
+### Features
+
+* 移除`QQ阅读免广告领取奖励` ([c1b8962](https://github.com/xihan123/QDReadHook/commit/c1b8962d60fbf283651c6fca9d520ebde77aefbb))
+* 适配 `958` 版本、修复配音导出 ([33dd884](https://github.com/xihan123/QDReadHook/commit/33dd884562066f60f030153068df3e10a7005526))
+
+
+### Bug Fixes
+
+* `屏蔽-精选主页面`失效 ([4d6cc21](https://github.com/xihan123/QDReadHook/commit/4d6cc212a4155b40a08bb81344f17c4b2e614e55))
+
+
+### Miscellaneous
+
+* **master:** release 2.1.8 ([2deef1c](https://github.com/xihan123/QDReadHook/commit/2deef1cab6d30eeb734b2b09fc2b860f69d7a322))
+* **master:** release 2.1.8 ([1fccf07](https://github.com/xihan123/QDReadHook/commit/1fccf072ce675a1b5be2911fabbd048be10419b8))
+* **master:** release 2.1.8 ([7d4dcaa](https://github.com/xihan123/QDReadHook/commit/7d4dcaaa375c07cc4a99a3e3ab1ea97ad5e774bc))
+* 整理代码 ([30b7d8c](https://github.com/xihan123/QDReadHook/commit/30b7d8cf599e417b49367c012144bee15e5a0012))
+* 更新依赖 ([0756c65](https://github.com/xihan123/QDReadHook/commit/0756c65081f60799dd19cd7f0c25bfeccd596073))
+
 ## [2.1.8](https://github.com/xihan123/QDReadHook/compare/v2.1.8...v2.1.8) (2023-07-16)
 
 
