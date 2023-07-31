@@ -1,24 +1,5 @@
 # Changelog
 
-## [2.2.0](https://github.com/xihan123/QDReadHook/compare/v2.1.9...v2.2.0) (2023-08-10)
-
-
-### Features
-
-* `阅读页-浮窗广告` 尝试性增强 ([38c6e80](https://github.com/xihan123/QDReadHook/commit/38c6e802f4edcfa1d3bc1da80c6d1520768c696a))
-
-
-### Miscellaneous
-
-* 更新依赖 ([891350f](https://github.com/xihan123/QDReadHook/commit/891350faaec942b2248538d65556409d24bf1105))
-
-## [2.1.9](https://github.com/xihan123/QDReadHook/compare/v2.1.9...v2.1.9) (2023-07-31)
-
-
-### Miscellaneous
-
-* **master:** release 2.1.9 ([8cd40da](https://github.com/xihan123/QDReadHook/commit/8cd40da3afd48eb0d8bb8f0c63bcccec9deaa3f0))
-
 ## [2.1.9](https://github.com/xihan123/QDReadHook/compare/v2.1.8...v2.1.9) (2023-07-31)
 
 
@@ -44,15 +25,6 @@
 * **master:** release 2.1.8 ([7d4dcaa](https://github.com/xihan123/QDReadHook/commit/7d4dcaaa375c07cc4a99a3e3ab1ea97ad5e774bc))
 * 整理代码 ([30b7d8c](https://github.com/xihan123/QDReadHook/commit/30b7d8cf599e417b49367c012144bee15e5a0012))
 * 更新依赖 ([0756c65](https://github.com/xihan123/QDReadHook/commit/0756c65081f60799dd19cd7f0c25bfeccd596073))
-
-## [2.1.8](https://github.com/xihan123/QDReadHook/compare/v2.1.8...v2.1.8) (2023-07-16)
-
-
-### Miscellaneous
-
-* **master:** release 2.1.8 ([1fccf07](https://github.com/xihan123/QDReadHook/commit/1fccf072ce675a1b5be2911fabbd048be10419b8))
-* **master:** release 2.1.8 ([7d4dcaa](https://github.com/xihan123/QDReadHook/commit/7d4dcaaa375c07cc4a99a3e3ab1ea97ad5e774bc))
-* 整理代码 ([30b7d8c](https://github.com/xihan123/QDReadHook/commit/30b7d8cf599e417b49367c012144bee15e5a0012))
 
 ## [2.1.8](https://github.com/xihan123/QDReadHook/compare/v2.1.8...v2.1.8) (2023-07-16)
 
