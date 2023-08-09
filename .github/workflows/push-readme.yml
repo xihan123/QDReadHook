@@ -1,0 +1,27 @@
+name: Push README.md to another repository
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  push-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Push file to Lsp repository
+        env:
+          COMMIT_FILTER: "doc"
+          API_TOKEN_GITHUB: ${{ secrets.RELEASE_TOKEN }}
+        if: contains(github.event.head_commit.message, 'doc')
+        uses: dmnemec/copy_file_to_another_repo_action@v1.1.1
+        with:
+          source_file: 'README.md'
+          destination_repo: 'Xposed-Modules-Repo/cn.xihan.qdds'
+          user_email: 'srxqzxs@vip.qq.com'
+          user_name: 'xihan123'
+          commit_message: 'Update README.MD'
+
