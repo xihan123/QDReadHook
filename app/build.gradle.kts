@@ -15,8 +15,8 @@ val keystoreProperties = Properties()
 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
 val repo = jgit.repo()
-val commitCount = (repo?.commitCount("refs/remotes/origin/master") ?: 1) + 12
-val latestTag = repo?.latestTag?.removePrefix("v") ?: "2.2.1-SNAPSHOT"
+val commitCount = (repo?.commitCount("refs/remotes/origin/master") ?: 1) + 1
+val latestTag = repo?.latestTag?.removePrefix("v") ?: "2.2.0-SNAPSHOT"
 
 val verCode by extra(commitCount)
 val verName by extra(latestTag)
