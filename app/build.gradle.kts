@@ -1,24 +1,27 @@
 import java.io.FileInputStream
 import java.util.Properties
 
-apply {
-    from("${rootProject.projectDir}/gradle/release.gradle")
-}
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
-    alias(libs.plugins.com.android.application)
-    alias(libs.plugins.org.jetbrains.kotlin.android)
-    alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
-    alias(libs.plugins.com.google.devtools.ksp)
+    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.jgit)
 }
 
 val keystorePropertiesFile = rootProject.file("keystore.properties")
 val keystoreProperties = Properties()
 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
-val androidTargetSdkVersion by extra(33)
-val androidMinSdkVersion by extra(26)
+val repo = jgit.repo()
+val commitCount = (repo?.commitCount("refs/remotes/origin/master") ?: 1) + 1
+val latestTag = repo?.latestTag?.removePrefix("v") ?: "2.2.0-SNAPSHOT"
 
+val verCode by extra(commitCount)
+val verName by extra(latestTag)
+val androidTargetSdkVersion by extra(34)
+val androidMinSdkVersion by extra(26)
 
 android {
     namespace = "cn.xihan.qdds"
@@ -45,8 +48,8 @@ android {
     defaultConfig {
         minSdk = androidMinSdkVersion
         targetSdk = androidTargetSdkVersion
-        versionCode = rootProject.extra["appVersionCode"] as Int
-        versionName = rootProject.extra["appVersionName"] as String
+        versionCode = verCode
+        versionName = verName
 
         resourceConfigurations.addAll(listOf("zh"))
 
@@ -58,7 +61,7 @@ android {
     }
 
     buildTypes {
-        getByName("release") {
+        release {
             isDebuggable = false
             isJniDebuggable = false
             isMinifyEnabled = true
@@ -67,6 +70,53 @@ android {
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
+
+            applicationVariants.all {
+                outputs.all {
+                    this as com.android.build.gradle.internal.api.ApkVariantOutputImpl
+                    if (buildType.name != "debug" && outputFileName.endsWith(".apk")) {
+                        val apkName = "QDReadHook-release_${verName}_$verCode.apk"
+                        outputFileName = apkName
+                    }
+                }
+                tasks.configureEach {
+                    var maybeNeedCopy = false
+                    if (name.startsWith("assembleRelease")) {
+                        maybeNeedCopy = true
+                    }
+                    if (maybeNeedCopy) {
+                        doLast {
+                            this@all.outputs.all {
+                                this as com.android.build.gradle.internal.api.ApkVariantOutputImpl
+                                if (buildType.name != "debug" && outputFileName.endsWith(".apk")) {
+                                    if (outputFile != null && outputFileName.endsWith(".apk")) {
+                                        val targetDir =
+                                            rootProject.file("归档/v${verName}-${verCode}")
+                                        val targetDir2 = rootProject.file("release")
+                                        targetDir.mkdirs()
+                                        targetDir2.mkdirs()
+                                        println("path: ${outputFile.absolutePath}")
+                                        copy {
+                                            from(outputFile)
+                                            into(targetDir)
+                                        }
+                                        copy {
+                                            from(outputFile)
+                                            into(targetDir2)
+                                        }
+                                        copy {
+                                            from(rootProject.file("app/build/outputs/mapping/release/mapping.txt"))
+                                            into(targetDir)
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+
+                }
+            }
         }
     }
 
@@ -129,6 +179,8 @@ dependencies {
 
     compileOnly(libs.xposed.api)
 
+//    debugImplementation(libs.dexkit)
+
     testImplementation(libs.junit)
 }
 
@@ -136,9 +188,10 @@ val service = project.extensions.getByType<JavaToolchainService>()
 val customLauncher = service.launcherFor {
     languageVersion.set(JavaLanguageVersion.of("17"))
 }
-project.tasks.withType<org.jetbrains.kotlin.gradle.tasks.UsesKotlinJavaToolchain>().configureEach {
-    kotlinJavaToolchain.toolchain.use(customLauncher)
-}
+project.tasks.withType<org.jetbrains.kotlin.gradle.tasks.UsesKotlinJavaToolchain>()
+    .configureEach {
+        kotlinJavaToolchain.toolchain.use(customLauncher)
+    }
 
 kotlin {
     compilerOptions {
@@ -151,8 +204,6 @@ kotlin {
         }
     }
 }
-
-
 
 
 

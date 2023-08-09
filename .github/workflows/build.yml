@@ -2,6 +2,7 @@ name: Android CI
 
 on:
   workflow_dispatch:
+  pull_request:
   push:
     tags:
       - "v*"
@@ -25,12 +26,13 @@ jobs:
       - name: base64-to-file
         id: write_file
         uses: timheuer/base64-to-file@v1.2
+        if: ${{ ( github.event_name != 'pull_request' && github.ref == 'refs/heads/master' ) || github.ref_type == 'tag' }}
         with:
           fileName: 'key.jks'
           encodedString: ${{ secrets.SIGNING_KEY }}
 
       - name: Write key
-        if: github.event_name != 'pull_request'
+        if: ${{ ( github.event_name != 'pull_request' && github.ref == 'refs/heads/master' ) || github.ref_type == 'tag' }}
         run: |
           touch keystore.properties
           echo storePassword='${{ secrets.KEY_STORE_PASSWORD }}' >> keystore.properties
@@ -85,38 +87,13 @@ jobs:
           allow_override: true
           gzip: false
 
-#      - name: Release Lsposed Modules Repo
-#        uses: phuonghuynh/action-ghrelease@v1.1.0
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-#        with:
-#          tag_name: ${{ env.RELEASE_TAG }}
-#          repository: Xposed-Modules-Repo/cn.xihan.qdds
-#          files: app/build/outputs/apk/release/*.apk
-
-#      - name: Push a README.md to another repository
-#        uses: dmnemec/copy_file_to_another_repo_action@main
-#        env:
-#          API_TOKEN_GITHUB: ${{ secrets.RELEASE_TOKEN }}
-#        with:
-#          source_file: 'README.md'
-#          destination_repo: 'Xposed-Modules-Repo/cn.xihan.qdds'
-#          user_email: 'srxqzxs@vip.qq.com'
-#          user_name: 'xihan123'
-
       - name: Telegram Notify
-        uses: appleboy/telegram-action@master
+        uses: appleboy/telegram-action@v0.1.1
         with:
           token: ${{ secrets.BOT_TOKEN }}
           to: ${{ secrets.CHANGELOG_CHANNEL_ID }}
           message: |
-            Here is the signed APK for ${{ github.event_name }}
-            Runner OS: ${{ runner.os }}
-            Event: ${{ github.event_name }}
-            Job ID: ${{ github.job }}
-            Triggered by: ${{ github.actor }}
-            Branch or TAG: ${{ github.ref }}
-            Base ref: ${{ github.base_ref }}
-            Head ref: ${{ github.head_ref }}
-            Commit SHA: ${{ github.sha }}
+            *${{ github.repository }}* new release *${{ steps.get_latest_release.outputs.tag_name }}* is available
+            ${{ github.event.release.body }}
+          format: markdown
           document: app/build/outputs/apk/release/*.apk
