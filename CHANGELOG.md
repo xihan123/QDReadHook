@@ -1,5 +1,30 @@
 # Changelog
 
+## [2.2.1](https://github.com/xihan123/QDReadHook/compare/v2.2.0...v2.2.1) (2023-08-10)
+
+
+### Features
+
+* 适配 `970` 版本 ([f589c4a](https://github.com/xihan123/QDReadHook/commit/f589c4a41c238fe50f8fe437116fea5536c022f5))
+
+
+### CI
+
+* build.yml ([6b420eb](https://github.com/xihan123/QDReadHook/commit/6b420ebe8849d6ed1ac305b08f00ecc4f78c5364))
+* release.yml ([8a1dca0](https://github.com/xihan123/QDReadHook/commit/8a1dca0b826c954ce873d45ea91fa5ee687cc18d))
+
+## [2.2.0](https://github.com/xihan123/QDReadHook/compare/v2.1.9...v2.2.0) (2023-08-10)
+
+
+### Features
+
+* `阅读页-浮窗广告` 尝试性增强 ([38c6e80](https://github.com/xihan123/QDReadHook/commit/38c6e802f4edcfa1d3bc1da80c6d1520768c696a))
+
+
+### Miscellaneous
+
+* 更新依赖 ([891350f](https://github.com/xihan123/QDReadHook/commit/891350faaec942b2248538d65556409d24bf1105))
+
 ## [2.1.9](https://github.com/xihan123/QDReadHook/compare/v2.1.9...v2.1.9) (2023-07-31)
 
 
