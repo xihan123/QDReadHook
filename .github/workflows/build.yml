@@ -86,13 +86,28 @@ jobs:
           allow_override: true
           gzip: false
 
+      - name: Get Latest Release Body
+        id: get_latest_release
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.RELEASE_TOKEN }}
+          script: |
+            const latestRelease = await github.repos.getLatestRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+            console.log(latestRelease.data.body);
+            console.log(latestRelease.data.tag_name);
+            core.setOutput("body", latestRelease.data.body);
+            core.setOutput("tag_name", latestRelease.data.tag_name);
+
       - name: Telegram Notify
         uses: appleboy/telegram-action@v0.1.1
         with:
           token: ${{ secrets.BOT_TOKEN }}
           to: ${{ secrets.CHANGELOG_CHANNEL_ID }}
           message: |
-            *${{ github.repository }}* new release *${{ steps.get_latest_release.outputs.tag_name }}* is available
-            ${{ github.event.release.body }}
+            *${{ github.repository }}* new release *${{ steps.outputs.tag_name }}* is available
+            ${{ steps.get_latest_release.outputs.body}}
           format: markdown
           document: app/build/outputs/apk/release/*.apk
