@@ -1,6 +1,4 @@
 on:
-  release:
-    types: [ published ]
   push:
     branches:
       - master
