@@ -91,6 +91,7 @@ fun PackageParam.disableBookshelfActivityPopup(versionCode: Int) {
                 }
             }
         }
+
         in 906..980 -> {
             findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
                 injectMember {
@@ -310,15 +311,15 @@ fun PackageParam.disableAccountCenterAd(versionCode: Int) {
  * 禁用阅读页-浮窗广告
  */
 fun PackageParam.disableReadPageFloatAd(versionCode: Int) {
-    when(versionCode){
+    when (versionCode) {
         in 958..970 -> {
             findClass("com.qidian.QDReader.readerengine.view.QDSuperEngineView").hook {
                 injectMember {
-                   method {
-                       name = "setReadMenuData"
-                       paramCount(1)
-                       returnType = UnitType
-                   }
+                    method {
+                        name = "setReadMenuData"
+                        paramCount(1)
+                        returnType = UnitType
+                    }
                     intercept()
                 }
             }
@@ -740,4 +741,23 @@ fun PackageParam.disableUpdate(versionCode: Int) {
 
         else -> "禁用检查更新".printlnNotSupportVersion(versionCode)
     }
+
+    /**
+     * SettingUpdateVersionNotifyTime
+     */
+    val needHookClass2 = when (versionCode) {
+        970 -> "r4.d"
+        else -> null
+    }
+    needHookClass2?.hook {
+        injectMember {
+            method {
+                name = "run"
+                emptyParam()
+                returnType = UnitType
+            }
+            intercept()
+        }
+    } ?: "禁用检查更新弹框".printlnNotSupportVersion(versionCode)
+
 }
