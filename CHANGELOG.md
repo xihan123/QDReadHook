@@ -1,5 +1,45 @@
 # Changelog
 
+## [2.2.2](https://github.com/xihan123/QDReadHook/compare/v2.2.0...v2.2.2) (2023-08-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* 移除`QQ阅读免广告领取奖励`
+
+### Features
+
+* `阅读页-浮窗广告` 尝试性增强 ([ccf2927](https://github.com/xihan123/QDReadHook/commit/ccf29277b095a46ff2cc96cfc9fde9c0bf1786e6))
+* 尝试性禁用检查更新弹框 ([a5b8f68](https://github.com/xihan123/QDReadHook/commit/a5b8f68a38020b6a7c4b4ce9306120c24b24679a))
+* 移除`QQ阅读免广告领取奖励` ([26c9851](https://github.com/xihan123/QDReadHook/commit/26c9851dfee1c43950ae0b89f1447b800e951165))
+* 适配 `958` 版本、修复配音导出 ([fbfe684](https://github.com/xihan123/QDReadHook/commit/fbfe684ddd85f2c738a00265ff5fec401e8cb0b1))
+* 适配 `970` 版本 ([40c07ff](https://github.com/xihan123/QDReadHook/commit/40c07ff1db57948473b604a997141e109a51b14a))
+* 适配 `970` 版本 ([f589c4a](https://github.com/xihan123/QDReadHook/commit/f589c4a41c238fe50f8fe437116fea5536c022f5))
+
+
+### Bug Fixes
+
+* `屏蔽-精选主页面`失效 ([1a77a0d](https://github.com/xihan123/QDReadHook/commit/1a77a0d45a37cbfbf55d40b98fd1113efcc6b001))
+
+
+### CI
+
+* build.yml ([e147043](https://github.com/xihan123/QDReadHook/commit/e1470431dbd66260329dfbf8c22d79132ed72dd2))
+* build.yml ([6b420eb](https://github.com/xihan123/QDReadHook/commit/6b420ebe8849d6ed1ac305b08f00ecc4f78c5364))
+* release.yml ([a687038](https://github.com/xihan123/QDReadHook/commit/a6870384b6a7d99d74688003d5d775834236fabb))
+* release.yml ([afd689b](https://github.com/xihan123/QDReadHook/commit/afd689b74f90f483f3db0ada5f5685a3cf4cd379))
+* release.yml ([8a1dca0](https://github.com/xihan123/QDReadHook/commit/8a1dca0b826c954ce873d45ea91fa5ee687cc18d))
+
+
+### Miscellaneous
+
+* **master:** release 2.1.8 ([0450cb6](https://github.com/xihan123/QDReadHook/commit/0450cb64d65539ca7af7343c0624192d8e1ee422))
+* **master:** release 2.1.9 ([143ec94](https://github.com/xihan123/QDReadHook/commit/143ec944f35b2278d2106dcee448f609e2c3a26c))
+* **master:** release 2.1.9 ([31dd984](https://github.com/xihan123/QDReadHook/commit/31dd984f56f71c8a4118b9186221433df69d2c19))
+* 更新依赖 ([afd689b](https://github.com/xihan123/QDReadHook/commit/afd689b74f90f483f3db0ada5f5685a3cf4cd379))
+* 更新依赖 ([52958c9](https://github.com/xihan123/QDReadHook/commit/52958c9cc065567d5171d6388a4fe91204032f42))
+* 更新依赖 ([5185e83](https://github.com/xihan123/QDReadHook/commit/5185e83c54be94265ddedd01c8e0957e3c465c86))
+
 ## [2.2.1](https://github.com/xihan123/QDReadHook/compare/v2.2.0...v2.2.1) (2023-08-10)
 
 
