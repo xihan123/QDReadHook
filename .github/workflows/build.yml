@@ -102,5 +102,5 @@ jobs:
           message: |
             *${{ github.repository }}* new release *${{ steps.outputs.tag_name }}* is available
             ${{ steps.get_latest_release.outputs.description}}
-          format: markdown
+#          format: markdown
           document: app/build/outputs/apk/release/*.apk

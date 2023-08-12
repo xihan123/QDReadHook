@@ -85,6 +85,7 @@ fun PackageParam.readerPageChapterReviewPictures(
     }
 
     if (enableShowReaderPageChapterSavePictureDialog || enableCopyReaderPageChapterComment) {
+
         val needHookClass = when (versionCode) {
             in 868..878 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.b0"
             884 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.y"
@@ -93,14 +94,22 @@ fun PackageParam.readerPageChapterReviewPictures(
             in 958..970 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.e0"
             else -> null
         }
+        val needHookClass2 = when (versionCode) {
+            970 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.m0"
+            else -> null
+        }
         val needHookMethod = when (versionCode) {
             in 868..878 -> "A"
             884 -> "x"
             in 890..970 -> "z"
             else -> null
         }
+        val needHookMethod2 = when (versionCode) {
+            970 -> "z"
+            else -> null
+        }
         if (needHookClass == null || needHookMethod == null) {
-            "阅读页-章评图片".printlnNotSupportVersion(versionCode)
+            "阅读页-章评相关复制".printlnNotSupportVersion(versionCode)
         } else {
             needHookClass.hook {
                 injectMember {
@@ -113,37 +122,138 @@ fun PackageParam.readerPageChapterReviewPictures(
                         if (enableShowReaderPageChapterSavePictureDialog) {
                             val rawImgUrl =
                                 args[0]?.toJSONString().parseObject().getString("imageDetail")
-                            val p = instance.getParam<ImageView>("p")
-                            if (rawImgUrl == null || p == null) return@afterHook
-                            p.setOnLongClickListener {
-                                p.context.alertDialog {
-                                    title = "图片地址"
-                                    message = rawImgUrl
-                                    positiveButton("复制") {
-                                        p.context.copyToClipboard(rawImgUrl)
+                            val imageViews = instance.getViews<ImageView>()
+                            val contexts = instance.getParams<Context>()
+                            if (rawImgUrl == null || imageViews.isEmpty() || contexts.isEmpty()) return@afterHook
+                            imageViews.forEach { s, imageView ->
+                                imageView.setOnLongClickListener {
+                                    imageView.context.alertDialog {
+                                        title = "图片地址"
+                                        message = rawImgUrl
+                                        positiveButton("复制") {
+                                            imageView.context.copyToClipboard(rawImgUrl)
+                                        }
+                                        negativeButton("取消") {
+                                            it.dismiss()
+                                        }
+                                        build()
+                                        show()
                                     }
-                                    negativeButton("取消") {
-                                        it.dismiss()
-                                    }
-                                    build()
-                                    show()
+                                    true
                                 }
-                                true
                             }
                         }
 
                         if (enableCopyReaderPageChapterComment) {
-                            val r = instance.getView<TextView>("r") ?: return@afterHook
-                            val v = instance.getParam<Context>("v") ?: return@afterHook
-                            r.setOnLongClickListener {
-                                v.apply {
-                                    copyToClipboard(r.text.toString())
-                                    toast("已复制到剪贴板")
+                            val messageTextView =
+                                "com.qd.ui.component.widget.textview.MessageTextView".toClass()
+                            val textViews = instance.getViews(messageTextView)
+                            if (textViews.isNotEmpty()) {
+                                textViews.forEach { (s, any) ->
+                                    val textView = any as? TextView
+                                    textView?.setOnLongClickListener {
+                                        textView.context.alertDialog {
+                                            title = "评论内容"
+                                            message = textView.text.toString()
+                                            positiveButton("复制") {
+                                                textView.context.copyToClipboard(textView.text.toString())
+                                            }
+                                            negativeButton("取消") {
+                                                it.dismiss()
+                                            }
+                                            build()
+                                            show()
+                                        }
+                                        true
+                                    }
+
                                 }
-                                false
+                            }
+
+                            val textViews2 = instance.getViews<TextView>()
+
+                            if (textViews2.isNotEmpty()) {
+                                textViews2.forEach { (s, textView) ->
+                                    "text: ${textView.text}".loge()
+                                }
+
+                            }
+
+                        }
+
+                    }
+                }
+            }
+
+            needHookClass2?.hook {
+                injectMember {
+                    method {
+                        name = needHookMethod2!!
+                        paramCount(2)
+                        returnType = UnitType
+                    }
+                    afterHook {
+                        if (enableShowReaderPageChapterSavePictureDialog) {
+                            val rawImgUrl =
+                                args[0]?.toJSONString().parseObject().getString("imageDetail")
+                            val imageViews = instance.getViews<ImageView>()
+                            val contexts = instance.getParams<Context>()
+                            if (rawImgUrl == null || imageViews.isEmpty() || contexts.isEmpty()) return@afterHook
+                            imageViews.forEach { s, imageView ->
+                                imageView.setOnLongClickListener {
+                                    imageView.context.alertDialog {
+                                        title = "图片地址"
+                                        message = rawImgUrl
+                                        positiveButton("复制") {
+                                            imageView.context.copyToClipboard(rawImgUrl)
+                                        }
+                                        negativeButton("取消") {
+                                            it.dismiss()
+                                        }
+                                        build()
+                                        show()
+                                    }
+                                    true
+                                }
                             }
                         }
 
+                        if (enableCopyReaderPageChapterComment) {
+                            val messageTextView =
+                                "com.qd.ui.component.widget.textview.MessageTextView".toClass()
+                            val textViews = instance.getViews(messageTextView)
+                            if (textViews.isNotEmpty()) {
+                                textViews.forEach { (s, any) ->
+                                    val textView = any as? TextView
+                                    textView?.setOnLongClickListener {
+                                        textView.context.alertDialog {
+                                            title = "评论内容"
+                                            message = textView.text.toString()
+                                            positiveButton("复制") {
+                                                textView.context.copyToClipboard(textView.text.toString())
+                                            }
+                                            negativeButton("取消") {
+                                                it.dismiss()
+                                            }
+                                            build()
+                                            show()
+                                        }
+                                        true
+                                    }
+
+                                }
+                            }
+
+                            val textViews2 = instance.getViews<TextView>()
+
+                            if (textViews2.isNotEmpty()) {
+                                textViews2.forEach { (s, textView) ->
+                                    "text: ${textView.text}".loge()
+                                }
+
+                            }
+
+                        }
                     }
                 }
             }
@@ -152,7 +262,6 @@ fun PackageParam.readerPageChapterReviewPictures(
          * com.qidian.QDReader.ui.adapter.reader.ChapterParagraphCommentAdapter.onBindContentItemViewHolder
          * b00.A(newParagraphCommentListBean$DataListBean0, this.getMBookInfo());
          */
-
     }
 
     if (enableShowReaderPageChapterSaveAudioDialog && versionCode in 884..970) {

@@ -60,6 +60,29 @@ import kotlin.system.exitProcess
 inline fun <reified T : View> Any.getView(name: String): T? = getParam<T>(name)
 
 /**
+ * 反射所有类型为T的控件 并附带字段名 返回Map
+ */
+@Throws(NoSuchFieldException::class, IllegalAccessException::class)
+inline fun <reified T : View> Any.getViews(): Map<String, T> = getParams<T>()
+
+/**
+ * 反射所有类型为指定 Class<*>名的控件并附带字段名 返回Map
+ * @param type 类型
+ */
+@Throws(NoSuchFieldException::class, IllegalAccessException::class)
+fun Any.getViews(type: Class<*>): Map<String, Any> {
+    val map = mutableMapOf<String, Any>()
+    val fields = javaClass.declaredFields
+    for (field in fields) {
+        if (field.type == type) {
+            field.isAccessible = true
+            map[field.name] = field[this] as Any
+        }
+    }
+    return map
+}
+
+/**
  * 反射获取父类控件
  */
 @Throws(NoSuchFieldException::class, IllegalAccessException::class)
@@ -72,6 +95,22 @@ inline fun <reified T : View> Any.getParentView(name: String): T? = getParentPar
 inline fun <reified T> Any.getParam(name: String): T? = javaClass.getDeclaredField(name).apply {
     isAccessible = true
 }[this] as? T
+
+/**
+ * 反射获取任何T类型 并附带字段名 返回Map
+ */
+@Throws(NoSuchFieldException::class, IllegalAccessException::class)
+inline fun <reified T> Any.getParams(): Map<String, T> {
+    val map = mutableMapOf<String, T>()
+    val fields = javaClass.declaredFields
+    for (field in fields) {
+        if (field.type == T::class.java) {
+            field.isAccessible = true
+            map[field.name] = field[this] as T
+        }
+    }
+    return map
+}
 
 /**
  * 反射获取父类任何类型
@@ -761,7 +800,6 @@ fun PackageParam.findMethodAndPrint(
     }
 }
 
-
 fun Array<Any?>.printArgs(): String {
     val stringBuilder = StringBuilder()
     this.forEachIndexed { index, any ->
@@ -790,13 +828,14 @@ fun Any?.mToString(): String = when (this) {
 /**
  * 重定向启动图路径
  */
-val splashPath = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/QDReader/Splash/"
+val splashPath =
+    "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/QDReader/Splash/"
 
 /**
  * 随机返回一个 bitmap
  */
 fun randomBitmap(): Bitmap? {
-    val files =  File(splashPath)
+    val files = File(splashPath)
     if (!files.exists()) {
         files.mkdirs()
     }
