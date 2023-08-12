@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.4](https://github.com/xihan123/QDReadHook/compare/v2.2.3...v2.2.4) (2023-08-12)
+
+
+### Features
+
+* `970` 版本阅读页章评以及楼中楼图片、评论复制 ([5099804](https://github.com/xihan123/QDReadHook/commit/50998047a728597fac5358f1378cf65ff9b1662a))
+
 ## [2.2.3](https://github.com/xihan123/QDReadHook/compare/v2.2.2...v2.2.3) (2023-08-12)
 
 
