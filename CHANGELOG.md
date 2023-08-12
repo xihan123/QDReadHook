@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.3](https://github.com/xihan123/QDReadHook/compare/v2.2.2...v2.2.3) (2023-08-12)
+
+
+### Bug Fixes
+
+* `970` 版本底部导航栏隐藏失效 ([50f8ccb](https://github.com/xihan123/QDReadHook/commit/50f8ccb76b18431a0ccb0779289ea0d8acf69c26))
+
 ## [2.2.2](https://github.com/xihan123/QDReadHook/compare/v2.2.0...v2.2.2) (2023-08-11)
 
 
