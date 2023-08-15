@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.5](https://github.com/xihan123/QDReadHook/compare/v2.2.5...v2.2.5) (2023-08-15)
+
+
+### Bug Fixes
+
+* `970` 版本 `精选-标题`隐藏失效 ([3069996](https://github.com/xihan123/QDReadHook/commit/30699966a0ae8257f000b81cc693e686a154a12c))
+
 ## [2.2.5](https://github.com/xihan123/QDReadHook/compare/v2.2.4...v2.2.5) (2023-08-15)
 
 
