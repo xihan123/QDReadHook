@@ -822,7 +822,13 @@ fun Any?.mToString(): String = when (this) {
     is ByteArray -> String(this)
     is Serializable -> this.toJSONString()
     is Parcelable -> this.toJSONString()
-    else -> this?.toString() ?: ""
+    else -> {
+        if (this?.javaClass?.name?.contains("Entity") == true)
+            this.toJSONString()
+        else {
+            this?.toString() ?: "null"
+        }
+    }
 }
 
 /**

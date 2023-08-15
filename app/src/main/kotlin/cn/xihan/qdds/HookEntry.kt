@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Environment
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
@@ -22,7 +23,9 @@ import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
 import com.highcapable.yukihookapi.hook.log.YukiHookLogger
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.android.BundleClass
+import com.highcapable.yukihookapi.hook.type.android.ViewClass
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
+import com.highcapable.yukihookapi.hook.type.java.CharSequenceClass
 import com.highcapable.yukihookapi.hook.type.java.IntType
 import com.highcapable.yukihookapi.hook.type.java.JSONObjectClass
 import com.highcapable.yukihookapi.hook.type.java.ListClass
@@ -57,6 +60,10 @@ class HookEntry : IYukiHookXposedInit {
 
             if (optionEntity.mainOption.enableAutoSign) {
                 autoSignIn(versionCode, optionEntity.bookshelfOption.enableOldLayout)
+            }
+
+            if (optionEntity.mainOption.enableReceiveReadingCreditsAutomatically) {
+                receiveReadingCreditsAutomatically(versionCode)
             }
 
             if (optionEntity.mainOption.enableLocalCard) {
@@ -556,53 +563,56 @@ class HookEntry : IYukiHookXposedInit {
         fun parseNeedShieldList(list: MutableList<*>): List<*> {
             val iterator = list.iterator()
             while (iterator.hasNext()) {
-                val item = iterator.next().toJSONString()
-                val jb = item.parseObject()
-                val bookName =
-                    jb.getString("BookName") ?: jb.getString("bookName") ?: jb.getString("itemName")
-                    ?: jb.getString("ItemName")
-                val authorName = jb.getString("AuthorName") ?: jb.getString("authorName")
-                val categoryName = jb.getString("CategoryName") ?: jb.getString("categoryName")
-                val subCategoryName =
-                    jb.getString("SubCategoryName") ?: jb.getString("subCategoryName")
-                    ?: jb.getString("itemSubName") ?: jb.getString("ItemSubName")
-                val tagName = jb.getString("TagName") ?: jb.getString("tagName")
-                val array = jb.getJSONArray("AuthorTags") ?: jb.getJSONArray("tags")
-                ?: jb.getJSONArray("Tags") ?: jb.getJSONArray("tagList")
-                val tip = jb.getString("Tip") ?: jb.getString("tip")
-                val bookTypeArray = mutableSetOf<String>()
-                if (categoryName != null) {
-                    bookTypeArray += categoryName
-                }
-                if (subCategoryName != null) {
-                    bookTypeArray += subCategoryName
-                }
-                if (tagName != null) {
-                    bookTypeArray += tagName
-                }
-                if (tip != null) {
-                    bookTypeArray += tip
-                }
-                if (!array.isNullOrEmpty()) {
-                    for (i in array.indices) {
-                        val tag = array.getString(i)
-                        if ("{" in tag) {
-                            val tags = tag.parseObject()
-                            tags?.getString("tagName")?.let {
-                                bookTypeArray += it
-                            }
-                            tags?.getString("TagName")?.let {
-                                bookTypeArray += it
-                            }
-                        } else {
-                            array.getString(i)?.let {
-                                bookTypeArray += it
+                runCatching {
+                    val item = iterator.next().toJSONString()
+                    val jb = item.parseObject()
+                    val bookName =
+                        jb.getString("BookName") ?: jb.getString("bookName")
+                        ?: jb.getString("itemName")
+                        ?: jb.getString("ItemName")
+                    val authorName = jb.getString("AuthorName") ?: jb.getString("authorName")
+                    val categoryName = jb.getString("CategoryName") ?: jb.getString("categoryName")
+                    val subCategoryName =
+                        jb.getString("SubCategoryName") ?: jb.getString("subCategoryName")
+                        ?: jb.getString("itemSubName") ?: jb.getString("ItemSubName")
+                    val tagName = jb.getString("TagName") ?: jb.getString("tagName")
+                    val array = jb.getJSONArray("AuthorTags") ?: jb.getJSONArray("tags")
+                    ?: jb.getJSONArray("Tags") ?: jb.getJSONArray("tagList")
+                    val tip = jb.getString("Tip") ?: jb.getString("tip")
+                    val bookTypeArray = mutableSetOf<String>()
+                    if (categoryName != null) {
+                        bookTypeArray += categoryName
+                    }
+                    if (subCategoryName != null) {
+                        bookTypeArray += subCategoryName
+                    }
+                    if (tagName != null) {
+                        bookTypeArray += tagName
+                    }
+                    if (tip != null) {
+                        bookTypeArray += tip
+                    }
+                    if (!array.isNullOrEmpty()) {
+                        for (i in array.indices) {
+                            val tag = array.getString(i)
+                            if ("{" in tag) {
+                                val tags = tag.parseObject()
+                                tags?.getString("tagName")?.let {
+                                    bookTypeArray += it
+                                }
+                                tags?.getString("TagName")?.let {
+                                    bookTypeArray += it
+                                }
+                            } else {
+                                array.getString(i)?.let {
+                                    bookTypeArray += it
+                                }
                             }
                         }
                     }
-                }
-                if (isNeedShield(bookName, authorName, bookTypeArray)) {
-                    iterator.remove()
+                    if (isNeedShield(bookName, authorName, bookTypeArray)) {
+                        iterator.remove()
+                    }
                 }
             }
             return list
@@ -1718,5 +1728,142 @@ fun PackageParam.hideWelfare(versionCode: Int) {
         }
 
         else -> "隐藏福利列表".printlnNotSupportVersion(versionCode)
+    }
+}
+
+/**
+ * 自动领取阅读积分
+ */
+fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
+    when (versionCode) {
+        970 -> {
+            /**
+             * 自动领取今日阅读时长积分
+             */
+            findClass("com.qidian.QDReader.ui.view.readtime.ReadTimeTodayCardView").hook {
+                injectMember {
+                    method {
+                        name = "addBubbleView"
+                        paramCount(4)
+                        returnType = UnitType
+                    }
+                    afterHook {
+                        val bubbleViewMap =
+                            instance.getParam<HashMap<*, *>>("bubbleViewMap")
+                        bubbleViewMap?.forEach { (_, any2) ->
+                            val readTimeBubbleView = any2 as? LinearLayout
+                            readTimeBubbleView?.performClick()
+                        }
+                    }
+                }
+            }
+
+            /**
+             * 自动领取每周阅读时长宝箱
+             */
+            findClass("com.qidian.QDReader.ui.view.readtime.ReadTimeWeekCardView").hook {
+                injectMember {
+                    method {
+                        name = "bindBox"
+                        paramCount(2)
+                        returnType = IntType
+                    }
+                    afterHook {
+                        val list = args[1] as? List<*>
+                        if (list.isNullOrEmpty()) {
+                            return@afterHook
+                        }
+                        val viewId = when (HookEntry.versionCode) {
+                            970 -> 0x7F091391
+                            else -> null
+                        }
+                        if (viewId == null) {
+                            "自动领取每周阅读时长宝箱".printlnNotSupportVersion(HookEntry.versionCode)
+                            return@afterHook
+                        }
+                        val view = instanceClass.method {
+                            name = "_\$_findCachedViewById"
+                            paramCount(1)
+                            returnType = ViewClass
+                        }.get(instance).call(viewId) as? FrameLayout
+
+                        view?.let {
+                            val count = it.childCount
+                            for (i in 0..<count) {
+                                val child = it.getChildAt(i)
+                                if (child is LinearLayout) {
+                                    child.performClick()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            /**
+             * 自动领取每日任务奖励
+             */
+            findClass("com.qidian.QDReader.ui.activity.ReadTimeMainPageActivity").hook {
+                injectMember {
+                    method {
+                        name = "changeSubmitStatus"
+                        paramCount(2)
+                        returnType = UnitType
+                    }
+                    afterHook {
+                        val button = args[0] as? LinearLayout ?: return@afterHook
+                        button.current {
+                            val text = method {
+                                name = "getText"
+                                emptyParam()
+                                returnType = CharSequenceClass
+                            }.call()
+
+                            if ("领取" == text) {
+                                button.post { button.performClick() }
+                            }
+                        }
+                    }
+                }
+            }
+
+            /**
+             * 自动领取(开始)阅读PK场
+             */
+            findClass("com.qidian.QDReader.ui.view.readtime.ReadTimePKCardView").hook {
+                injectMember {
+                    method {
+                        name = "bindData"
+                        paramCount(1)
+                        returnType = UnitType
+                    }
+                    afterHook {
+                        val button = instanceClass.method {
+                            name = "getQdButtonBottom"
+                            emptyParam()
+                            returnType = "com.qd.ui.component.widget.QDUIButton".toClass()
+                        }.get(instance).call() as? LinearLayout ?: return@afterHook
+
+                        button.current {
+                            val text = method {
+                                name = "getText"
+                                emptyParam()
+                                returnType = CharSequenceClass
+                            }.call()
+                            val list = listOf(
+                                "领取奖励",
+                                "开启新一周PK"
+                            )
+                            if (text in list) {
+                                button.post { button.performClick() }
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+
+        else -> "自动领取阅读积分".printlnNotSupportVersion(versionCode)
     }
 }

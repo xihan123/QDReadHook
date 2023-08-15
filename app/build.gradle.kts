@@ -16,7 +16,7 @@ keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
 val repo = jgit.repo()
 val commitCount = (repo?.commitCount("refs/remotes/origin/master") ?: 1) + 12
-val latestTag = repo?.latestTag?.removePrefix("v") ?: "2.2.1-SNAPSHOT"
+val latestTag = repo?.latestTag?.removePrefix("v") ?: "2.x.x-SNAPSHOT"
 
 val verCode by extra(commitCount)
 val verName by extra(latestTag)
@@ -178,7 +178,6 @@ dependencies {
     ksp(libs.yukihook.ksp)
 
     compileOnly(libs.xposed.api)
-
 //    debugImplementation(libs.dexkit)
 
     testImplementation(libs.junit)

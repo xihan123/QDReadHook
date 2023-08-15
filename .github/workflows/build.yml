@@ -46,29 +46,9 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
 
-      - name: Cache gradle dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-            !~/.gradle/caches/build-cache-*
-          key: gradle-deps-core-${{ hashFiles('**/build.gradle.kts') }}
-          restore-keys: |
-            gradle-deps
-
-      - name: Install dep
-        run: |
-          sudo apt-get install -y ccache
-          ccache -o max_size=1G
-          ccache -o hash_dir=false
-          ccache -o compiler_check='%compiler% -dumpmachine; %compiler% -dumpversion'
-          ccache -zp
-
       - name: Build with Gradle
         run: |
           [ $(du -s ~/.gradle/wrapper | awk '{ print $1 }') -gt 250000 ] && rm -rf ~/.gradle/wrapper/* || true
-          find ~/.gradle/caches -exec touch -d "2 days ago" {} + || true
           echo 'org.gradle.caching=true' >> gradle.properties
           echo 'org.gradle.parallel=true' >> gradle.properties
           echo 'org.gradle.vfs.watch=true' >> gradle.properties
@@ -76,7 +56,6 @@ jobs:
           echo 'android.native.buildOutput=verbose' >> gradle.properties
           chmod +x gradlew
           ./gradlew assembleRelease -Pkotlin.experimental.tryK2=true
-          ccache -s
 
       - name: Upload assets to a Release
         uses: meeDamian/github-release@v2.0.3
@@ -95,12 +74,14 @@ jobs:
           excludes: prerelease, draft
 
       - name: Telegram Notify
-        uses: appleboy/telegram-action@v0.1.1
-        with:
-          token: ${{ secrets.BOT_TOKEN }}
-          to: ${{ secrets.CHANGELOG_CHANNEL_ID }}
-          message: |
-            *${{ github.repository }}* new release *${{ steps.outputs.tag_name }}* is available
-            ${{ steps.get_latest_release.outputs.description}}
-#          format: markdown
-          document: app/build/outputs/apk/release/*.apk
+        env:
+          CHANNEL_ID: ${{ secrets.CHANGELOG_CHANNEL_ID }}
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          description: ${{ steps.get_latest_release.outputs.description }}
+        run: |
+          if [ ! -z "${{ secrets.BOT_TOKEN }}" ]; then
+            OUTPUT="app/release/"
+            export apkRelease=$(find $OUTPUT -name "*.apk")
+            ESCAPED=`python3 -c '''import requests,os;body = os.environ["description"]; r = requests.get("https://api.github.com/repos/${{github.repository}}/releases/latest"); tag_name = r.json()["tag_name"]; html_url = r.json()["html_url"]; change_log = "# 完整更新日志 " + "[" + tag_name + "](" + html_url + ")"; print(body + "\n\n" + change_log if len(body) <= 1024 else change_log)'''`
+            curl -v "https://api.telegram.org/bot${BOT_TOKEN}/sendDocument?chat_id=${CHANNEL_ID}" -F document="@$apkRelease" -F caption="${ESCAPED}"
+          fi

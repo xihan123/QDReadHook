@@ -761,11 +761,23 @@ fun MainScreen(
             TextSetting(title = "主设置", showRightIcon = false, bigTitle = true)
 
             Column(modifier = M.padding(4.dp)) {
-                SwitchSetting(title = "自动签到",
+                SwitchSetting(
+                    title = "自动签到",
                     checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableAutoSign),
                     onCheckedChange = {
                         HookEntry.optionEntity.mainOption.enableAutoSign = it
-                    })
+                    }
+                )
+
+                SwitchSetting(
+                    title = "自动领取阅读积分",
+                    subTitle = "非后台领取，需要进到阅读积分页面",
+                    checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableReceiveReadingCreditsAutomatically),
+                    onCheckedChange = {
+                        HookEntry.optionEntity.mainOption.enableReceiveReadingCreditsAutomatically =
+                            it
+                    }
+                )
 
                 SwitchSetting(title = "本地至尊卡",
                     subTitle = "仅美观，无任何实际作用",

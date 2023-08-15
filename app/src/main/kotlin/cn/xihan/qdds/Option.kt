@@ -84,6 +84,7 @@ data class OptionEntity(
      * 主配置
      * @param packageName 包名
      * @param enableAutoSign 启用自动签到
+     * @param enableReceiveReadingCreditsAutomatically 启用自动领取阅读积分
      * @param enableLocalCard 启用本地至尊卡
      * @param enableFreeAdReward 启用免广告奖励
      * @param freeAdRewardAutoExitTime 免广告奖励自动退出时间
@@ -101,6 +102,7 @@ data class OptionEntity(
     data class MainOption(
         @SerialName("packageName") var packageName: String = "com.qidian.QDReader",
         @SerialName("enableAutoSign") var enableAutoSign: Boolean = false,
+        @SerialName("enableReceiveReadingCreditsAutomatically") var enableReceiveReadingCreditsAutomatically: Boolean = false,
         @SerialName("enableLocalCard") var enableLocalCard: Boolean = false,
         @SerialName("enableFreeAdReward") var enableFreeAdReward: Boolean = false,
         @SerialName("freeAdRewardAutoExitTime") var freeAdRewardAutoExitTime: Int = 3,
