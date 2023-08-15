@@ -16,6 +16,7 @@ import android.os.Environment
 import android.os.Looper
 import android.os.Parcelable
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -884,8 +885,29 @@ fun String.md5(): String {
     return sb.toString()
 }
 
+/**
+ * 找到视图类型
+ * @param [viewClass] 视图类
+ * @return [List<View>]
+ */
+fun ViewGroup.findViewsByType(viewClass: Class<*>): ArrayList<View> {
+    val result = arrayListOf<View>()
+    val queue = ArrayDeque<View>()
+    queue.add(this)
 
+    while (queue.isNotEmpty()) {
+        val view = queue.removeFirst()
+        if (viewClass.isInstance(view)) {
+            result.add(view)
+        }
 
+        if (view is ViewGroup) {
+            for (i in 0 until view.childCount) {
+                queue.add(view.getChildAt(i))
+            }
+        }
+    }
 
-
+    return result
+}
 
