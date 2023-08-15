@@ -11,6 +11,7 @@ import com.alibaba.fastjson2.toJSONString
 import com.highcapable.yukihookapi.hook.factory.constructor
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.highcapable.yukihookapi.hook.type.android.TextViewClass
 import com.highcapable.yukihookapi.hook.type.android.ViewClass
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
 import com.highcapable.yukihookapi.hook.type.java.IntType
@@ -261,17 +262,6 @@ fun PackageParam.selectedTitleOption(versionCode: Int) {
                             val pageList = mutableListOf<Any?>()
                             val needShieldTitleList = HookEntry.getNeedShieldTitleList()
                             if (countSize > 0 && needShieldTitleList.isNotEmpty()) {
-                                /*
-                                for (i in 0 until countSize) {
-                                    val type = superClass().method {
-                                        name = "getType"
-                                        paramCount(1)
-                                        returnType = IntType
-                                    }.int(i)
-                                    typeList.add(type)
-                                }
-
-                                 */
                                 needShieldTitleList.forEach {
                                     val page = superClass().method {
                                         name = "getItemByType"
@@ -311,28 +301,19 @@ fun PackageParam.selectedTitleOption(versionCode: Int) {
                             }.call()
                         }
 
-                        val child = mTabLayout.getChildAt(0) as FrameLayout
-                        val child2 = child.getChildAt(0) as FrameLayout
-                        val child3 = child2.getChildAt(1) as LinearLayout
-                        val needRemoveView = mutableListOf<View>()
-                        for (i in 0 until child3.childCount) {
-                            val childAt = child3.getChildAt(i) as FrameLayout
-                            val textView = childAt.getView<TextView>("j") ?: continue
-                            if (textView.text.isNotBlank()) {
+                        val textViews = mTabLayout.findViewsByType(TextViewClass)
+
+                        textViews.forEach { view ->
+                            val text = (view as TextView).text.toString()
+                            if (text.isNotBlank()) {
                                 HookEntry.optionEntity.viewHideOption.selectedOption.selectedTitleConfigurations.findOrPlus(
-                                    title = textView.text.toString()
+                                    title = text
                                 ) {
-                                    needRemoveView.add(childAt)
-//                                    childAt.visibility = View.INVISIBLE
+                                    val parent = view.parent.parent.parent as LinearLayout
+                                    parent.removeView(view.parent.parent as View)
                                 }
                             }
                         }
-                        if (needRemoveView.isNotEmpty()) {
-                            needRemoveView.forEach {
-                                child3.removeView(it)
-                            }
-                        }
-
                     }
                 }
 
@@ -630,7 +611,8 @@ fun PackageParam.hideBottomNavigation(versionCode: Int) {
                                                     HookEntry.optionEntity.viewHideOption.homeOption.configurations.findOrPlus(
                                                         title = "主页底部导航栏${childViewChild3.text}"
                                                     ) {
-                                                        val view = childViewChild3.parent.parent as? View
+                                                        val view =
+                                                            childViewChild3.parent.parent as? View
                                                         view?.visibility = View.GONE
                                                     }
                                                 }

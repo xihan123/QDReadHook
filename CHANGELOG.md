@@ -1,4 +1,10 @@
 # Changelog
+## [2.2.5](https://github.com/xihan123/QDReadHook/compare/v2.2.4...v2.2.5) (2023-08-15)
+
+
+### Features
+
+* `970` 版本`阅读积分`页面自动领取奖励 ([c89412a](https://github.com/xihan123/QDReadHook/commit/c89412a7ac87f18c88d409ab1e25a4f573526d1f))
 
 ## [2.2.4](https://github.com/xihan123/QDReadHook/compare/v2.2.3...v2.2.4) (2023-08-12)
 

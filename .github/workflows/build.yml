@@ -80,7 +80,7 @@ jobs:
           description: ${{ steps.get_latest_release.outputs.description }}
         run: |
           if [ ! -z "${{ secrets.BOT_TOKEN }}" ]; then
-            OUTPUT="app/release/"
+            OUTPUT="app/build/outputs/apk/release/"
             export apkRelease=$(find $OUTPUT -name "*.apk")
             ESCAPED=`python3 -c '''import requests,os;body = os.environ["description"]; r = requests.get("https://api.github.com/repos/${{github.repository}}/releases/latest"); tag_name = r.json()["tag_name"]; html_url = r.json()["html_url"]; change_log = "# 完整更新日志 " + "[" + tag_name + "](" + html_url + ")"; print(body + "\n\n" + change_log if len(body) <= 1024 else change_log)'''`
             curl -v "https://api.telegram.org/bot${BOT_TOKEN}/sendDocument?chat_id=${CHANNEL_ID}" -F document="@$apkRelease" -F caption="${ESCAPED}"
