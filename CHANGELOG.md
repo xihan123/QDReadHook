@@ -1,4 +1,11 @@
 # Changelog
+## [2.2.7](https://github.com/xihan123/QDReadHook/compare/v2.2.6...v2.2.7) (2023-08-16)
+
+
+### Features
+
+* `970` 版本 `自动领取阅读积分`100~500ms随机延迟领取 ([5bcecb6](https://github.com/xihan123/QDReadHook/commit/5bcecb60ac7328ff1ee9c722376d461b7d6e771e))
+
 ## [2.2.6](https://github.com/xihan123/QDReadHook/compare/v2.2.4...v2.2.6) (2023-08-15)
 
 
