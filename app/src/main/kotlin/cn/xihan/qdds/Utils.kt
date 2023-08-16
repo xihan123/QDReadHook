@@ -26,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import com.alibaba.fastjson2.toJSONString
 import com.highcapable.yukihookapi.hook.factory.MembersType
 import com.highcapable.yukihookapi.hook.log.loggerE
@@ -48,79 +47,154 @@ import kotlin.system.exitProcess
 
 
 /**
- * @项目名 : QDReadHook
- * @作者 : MissYang
- * @创建时间 : 2022/8/28 16:13
- * @介绍 :
- */
-/**
  * 反射获取控件
- * @param name 字段名
+ * @param [name] 字段名
+ * @param [isSuperClass] 是超类
+ * @return [T?]
  */
 @Throws(NoSuchFieldException::class, IllegalAccessException::class)
-inline fun <reified T : View> Any.getView(name: String): T? = getParam<T>(name)
+inline fun <reified T : View> Any.getView(name: String, isSuperClass: Boolean = false): T? =
+    getParam<T>(name, isSuperClass)
 
 /**
- * 反射所有类型为T的控件 并附带字段名 返回Map
+ * 获取控件集合
+ * @param [isSuperClass] 是超类
  */
 @Throws(NoSuchFieldException::class, IllegalAccessException::class)
-inline fun <reified T : View> Any.getViews(): Map<String, T> = getParams<T>()
+inline fun <reified T : View> Any.getViews(isSuperClass: Boolean = false) =
+    getParamList<T>(isSuperClass)
 
 /**
- * 反射所有类型为指定 Class<*>名的控件并附带字段名 返回Map
- * @param type 类型
+ * 获取控件集合
+ * @param [type] 类型
+ * @param [isSuperClass] 是超类
+ * @return [ArrayList<Any>]
  */
 @Throws(NoSuchFieldException::class, IllegalAccessException::class)
-fun Any.getViews(type: Class<*>): Map<String, Any> {
-    val map = mutableMapOf<String, Any>()
-    val fields = javaClass.declaredFields
-    for (field in fields) {
-        if (field.type == type) {
-            field.isAccessible = true
-            map[field.name] = field[this] as Any
+fun Any.getViews(type: Class<*>, isSuperClass: Boolean = false): ArrayList<Any> {
+    val results = arrayListOf<Any>()
+    if (isSuperClass) {
+        var clazz: Class<*>? = javaClass
+        while (clazz != null) {
+            val fields = clazz.declaredFields
+            for (field in fields) {
+                if (type.isAssignableFrom(field.type)) {
+                    field.isAccessible = true
+                    val value = field.get(this)
+                    if (type.isInstance(value)) {
+                        results += value as Any
+                    }
+                }
+            }
+            clazz = clazz.superclass
+        }
+    } else {
+        val fields = javaClass.declaredFields
+        for (field in fields) {
+            if (type.isAssignableFrom(field.type)) {
+                field.isAccessible = true
+                val value = field.get(this)
+                if (type.isInstance(value)) {
+                    results += value as Any
+                }
+            }
         }
     }
-    return map
+    return results
 }
-
-/**
- * 反射获取父类控件
- */
-@Throws(NoSuchFieldException::class, IllegalAccessException::class)
-inline fun <reified T : View> Any.getParentView(name: String): T? = getParentParam<T>(name)
 
 /**
  * 反射获取任何类型
  */
 @Throws(NoSuchFieldException::class, IllegalAccessException::class)
-inline fun <reified T> Any.getParam(name: String): T? = javaClass.getDeclaredField(name).apply {
-    isAccessible = true
-}[this] as? T
+inline fun <reified T> Any.getParam(name: String, isSuperClass: Boolean = false): T? =
+    if (isSuperClass) javaClass.superclass.getDeclaredField(name).apply {
+        isAccessible = true
+    }[this] as? T else javaClass.getDeclaredField(name).apply {
+        isAccessible = true
+    }[this] as? T
 
 /**
- * 反射获取任何T类型 并附带字段名 返回Map
+ * 获取参数集合
+ * @param [isSuperClass] 是超类
+ * @return [ArrayList<T>]
  */
 @Throws(NoSuchFieldException::class, IllegalAccessException::class)
-inline fun <reified T> Any.getParams(): Map<String, T> {
-    val map = mutableMapOf<String, T>()
-    val fields = javaClass.declaredFields
-    for (field in fields) {
-        if (field.type == T::class.java) {
-            field.isAccessible = true
-            map[field.name] = field[this] as T
+inline fun <reified T> Any.getParamList(isSuperClass: Boolean = false): ArrayList<T> {
+    val results = ArrayList<T>()
+    if (isSuperClass) {
+        var clazz: Class<*>? = javaClass
+        val type = T::class.java
+        while (clazz != null) {
+            val fields = clazz.declaredFields
+            for (field in fields) {
+                if (type.isAssignableFrom(field.type)) {
+                    field.isAccessible = true
+                    val value = field.get(this)
+                    if (type.isInstance(value)) {
+                        results += value as T
+                    }
+                }
+            }
+            clazz = clazz.superclass
+        }
+    } else {
+        val fields = javaClass.declaredFields
+        val type = T::class.java
+        for (field in fields) {
+            if (type.isAssignableFrom(field.type)) {
+                field.isAccessible = true
+                val value = field.get(this)
+                if (type.isInstance(value)) {
+                    results += value as T
+                }
+            }
         }
     }
-    return map
+
+    return results
 }
 
 /**
- * 反射获取父类任何类型
+ * 获取参数 Map 集合
  */
 @Throws(NoSuchFieldException::class, IllegalAccessException::class)
-inline fun <reified T> Any.getParentParam(name: String): T? =
-    javaClass.superclass.getDeclaredField(name).apply {
-        isAccessible = true
-    }[this] as? T
+inline fun <reified T> Any.getParamMap(isSuperClass: Boolean = false): Map<String, T> {
+    val results = mutableMapOf<String, T>()
+    if (isSuperClass) {
+        var clazz: Class<*>? = javaClass
+        val type = T::class.java
+        while (clazz != null) {
+            val fields = clazz.declaredFields
+            for (field in fields) {
+                if (type.isAssignableFrom(field.type)) {
+                    field.isAccessible = true
+                    val value = field.get(this)
+                    if (type.isInstance(value)) {
+                        results[field.name] = value as T
+                    }
+                }
+            }
+            clazz = clazz.superclass
+        }
+    } else {
+        val fields = javaClass.declaredFields
+        val type = T::class.java
+        for (field in fields) {
+            if (type.isAssignableFrom(field.type)) {
+                field.isAccessible = true
+                val value = field.get(this)
+                if (type.isInstance(value)) {
+                    results[field.name] = value as T
+                }
+            }
+        }
+    }
+
+    return results
+
+}
+
 
 /**
  * Xposed 设置字段值
@@ -167,8 +241,7 @@ fun Context.getApplicationApkPath(packageName: String): String {
     val pm = this.packageManager
     val apkPath = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         pm.getApplicationInfo(
-            packageName,
-            PackageManager.ApplicationInfoFlags.of(0)
+            packageName, PackageManager.ApplicationInfoFlags.of(0)
         ).publicSourceDir
     } else {
         pm.getApplicationInfo(packageName, 0).publicSourceDir
@@ -196,8 +269,7 @@ fun Context.getVersionCode(packageName: String): Int {
     return when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
             pm.getPackageInfo(
-                packageName,
-                PackageManager.PackageInfoFlags.of(0)
+                packageName, PackageManager.PackageInfoFlags.of(0)
             ).longVersionCode.toInt()
         }
 
@@ -358,8 +430,7 @@ fun Context.checkHideWelfareUpdate() {
         Looper.prepare()
         val remoteHideWelfareList = HookEntry.optionEntity.hideBenefitsOption.remoteCHideWelfareList
         if (remoteHideWelfareList.isNotEmpty()) {
-            val hideWelfareList =
-                mutableListOf<OptionEntity.HideWelfareOption.HideWelfare>()
+            val hideWelfareList = mutableListOf<OptionEntity.HideWelfareOption.HideWelfare>()
             remoteHideWelfareList.forEach { url ->
                 // Java 原生网络请求
                 val url = URL(url)
@@ -398,9 +469,7 @@ fun Context.checkHideWelfareUpdate() {
                                     val url = jsonObject.getString("url")
                                     hideWelfareList.add(
                                         OptionEntity.HideWelfareOption.HideWelfare(
-                                            title = text,
-                                            imageUrl = icon,
-                                            actionUrl = url
+                                            title = text, imageUrl = icon, actionUrl = url
                                         )
                                     )
                                 }
@@ -489,8 +558,7 @@ fun String.isHexColor(): Boolean {
  * 字符串复制到剪切板
  */
 fun Context.copyToClipboard(text: String) {
-    val clipboardManager =
-        this.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val clipboardManager = this.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     clipboardManager.setPrimaryClip(ClipData.newPlainText(null, text))
 }
 
@@ -587,13 +655,12 @@ fun Context.jumpToPermission() {
 /**
  * 判断字符串是否为数字
  */
-fun String.isNumber(): Boolean =
-    try {
-        this.toDouble()
-        true
-    } catch (e: Exception) {
-        false
-    }
+fun String.isNumber(): Boolean = try {
+    this.toDouble()
+    true
+} catch (e: Exception) {
+    false
+}
 
 /**
  * 默认浏览器打开url
@@ -738,8 +805,6 @@ fun Context.multiChoiceSelector(
     }
 }
 
-typealias M = Modifier
-
 @Composable
 fun <T> rememberMutableStateOf(value: T): MutableState<T> = remember { mutableStateOf(value) }
 
@@ -772,9 +837,7 @@ val Int.QDUIButtonTextViewVariableName
  * @param printType 打印参数类型
  */
 fun PackageParam.findMethodAndPrint(
-    className: String,
-    printCallStack: Boolean = false,
-    printType: MembersType = MembersType.ALL
+    className: String, printCallStack: Boolean = false, printType: MembersType = MembersType.METHOD
 ) {
     findClass(className).hook {
         injectMember {
@@ -820,13 +883,17 @@ fun Any?.mToString(): String = when (this) {
     is Double -> this.toString()
     is Boolean -> this.toString()
     is Array<*> -> this.joinToString(",")
-    is ByteArray -> String(this)
+    is ByteArray -> this.toString(Charsets.UTF_8)
     is Serializable -> this.toJSONString()
     is Parcelable -> this.toJSONString()
     else -> {
-        if (this?.javaClass?.name?.contains("Entity") == true)
-            this.toJSONString()
-        else {
+        if (this?.javaClass?.name?.contains("Entity") == true || this?.javaClass?.name?.contains("Model") == true || this?.javaClass?.name?.contains(
+                "Bean"
+            ) == true || this?.javaClass?.name?.contains("Result") == true
+        ) this.toJSONString()
+        else if (this?.javaClass?.name?.contains("QDHttpResp") == true) {
+            this.getParamList<String>().toString()
+        } else {
             this?.toString() ?: "null"
         }
     }
@@ -902,7 +969,7 @@ fun ViewGroup.findViewsByType(viewClass: Class<*>): ArrayList<View> {
         }
 
         if (view is ViewGroup) {
-            for (i in 0 until view.childCount) {
+            for (i in 0..<view.childCount) {
                 queue.add(view.getChildAt(i))
             }
         }
@@ -914,7 +981,7 @@ fun ViewGroup.findViewsByType(viewClass: Class<*>): ArrayList<View> {
 /**
  * 随机 100至500 之间的数
  */
-val randomTime: Long = Random().nextInt(400) + 100L
+val randomTime: Long get() = Random().nextInt(400) + 100L
 
 /**
  * 随机延迟运行

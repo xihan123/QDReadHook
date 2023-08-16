@@ -233,7 +233,7 @@ class CustomTextView(
     isBold: Boolean = false,
     isAutoWidth: Boolean = false,
     isAutoHeight: Boolean = true,
-    onClickAction: () -> Unit,
+    onClickAction: () -> Unit = {},
 ) : CustomLinearLayout(context, isAutoWidth, isAutoHeight) {
 
     val textView: TextView

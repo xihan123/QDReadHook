@@ -143,10 +143,10 @@ class MainActivity : ModuleAppCompatActivity() {
             MainScreen.MainSetting, MainScreen.PurifySetting, MainScreen.About
         )
         val navController = rememberNavController()
-        Scaffold(modifier = M.fillMaxSize(), topBar = {
+        Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
             CenterAlignedTopAppBar(title = {
                 Text(text = "QDReadHook")
-            }, modifier = M.fillMaxWidth(), actions = {
+            }, modifier = Modifier.fillMaxWidth(), actions = {
                 Row {
                     IconButton(onClick = {
                         restartApplication()
@@ -166,8 +166,7 @@ class MainActivity : ModuleAppCompatActivity() {
                 BottomNavigationBar(
                     navController = navController,
                     items = items,
-                    modifier = M
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
                         .navigationBarsPadding()
                 )
             }
@@ -178,7 +177,7 @@ class MainActivity : ModuleAppCompatActivity() {
                     NavHost(
                         navController = navController,
                         startDestination = MainScreen.MainSetting.route,
-                        modifier = M.padding(paddingValues)
+                        modifier = Modifier.padding(paddingValues)
                     ) {
                         /**
                          * 主设置
@@ -203,7 +202,7 @@ class MainActivity : ModuleAppCompatActivity() {
 
                     }
                 } else {
-                    Disclaimers(modifier = M.padding(paddingValues), onAgreeClick = {
+                    Disclaimers(modifier = Modifier.padding(paddingValues), onAgreeClick = {
                         allowDisclaimers = true
                         HookEntry.optionEntity.allowDisclaimers = true
                         updateOptionEntity()
@@ -213,13 +212,13 @@ class MainActivity : ModuleAppCompatActivity() {
                 }
             } else {
                 Column(
-                    modifier = M.padding(paddingValues),
+                    modifier = Modifier.padding(paddingValues),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
                     Text(
                         "需要存储以及安装未知应用权限",
-                        modifier = M.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Bold
                     )
@@ -272,8 +271,7 @@ fun SwitchSetting(
         }), verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
-            modifier = M
-                .weight(1f)
+            modifier = Modifier.weight(1f)
                 .padding(8.dp),
         ) {
             Text(
@@ -298,7 +296,7 @@ fun SwitchSetting(
 
 
         Switch(
-            modifier = M.scale(0.7f), checked = checked.value, onCheckedChange = {
+            modifier = Modifier.scale(0.7f), checked = checked.value, onCheckedChange = {
                 checked.value = it
                 onCheckedChange(it)
                 updateOptionEntity()
@@ -321,27 +319,26 @@ fun EditTextSetting(
         modifier = modifier, verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
-            modifier = M
-                .weight(1f)
+            modifier = Modifier.weight(1f)
                 .padding(8.dp)
         ) {
             Text(
                 text = title,
                 fontWeight = FontWeight.Bold,
                 overflow = TextOverflow.Visible,
-                modifier = M.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.titleSmall,
                 textAlign = TextAlign.Start
             )
             if (subTitle.isNotEmpty()) {
 
-                Spacer(modifier = M.height(4.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
                     text = subTitle,
                     overflow = TextOverflow.Visible,
-                    modifier = M.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.bodySmall,
                     textAlign = TextAlign.Start
@@ -349,7 +346,7 @@ fun EditTextSetting(
             }
 
             TextField(
-                modifier = M.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 value = text.value,
                 onValueChange = {
                     text.value = it
@@ -403,27 +400,26 @@ fun TextSetting(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
-            modifier = M
-                .weight(1f)
+            modifier = Modifier.weight(1f)
                 .padding(8.dp)
         ) {
             Text(
                 text = title,
                 fontWeight = FontWeight.Bold,
                 overflow = TextOverflow.Visible,
-                modifier = M.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.onSurface,
                 style = if (bigTitle) MaterialTheme.typography.titleLarge else MaterialTheme.typography.titleSmall,
                 textAlign = TextAlign.Start
             )
             if (subTitle.isNotEmpty()) {
 
-                Spacer(modifier = M.height(4.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
                     text = subTitle,
                     overflow = TextOverflow.Visible,
-                    modifier = M.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.bodySmall,
                     textAlign = TextAlign.Start
@@ -435,7 +431,7 @@ fun TextSetting(
             Icon(
                 imageVector = Icons.Default.KeyboardArrowRight,
                 contentDescription = null,
-                modifier = M
+                modifier = Modifier
                     .padding(8.dp)
                     .size(20.dp)
             )
@@ -469,7 +465,7 @@ fun CustomBookShelfTopImageOption(
             bigTitle = false
         )
 
-        TextField(modifier = M.fillMaxWidth(), value = border01.value, label = {
+        TextField(modifier = Modifier.fillMaxWidth(), value = border01.value, label = {
             Text(text = "边框颜色", style = MaterialTheme.typography.bodySmall)
         }, onValueChange = {
             border01.value = it
@@ -488,7 +484,7 @@ fun CustomBookShelfTopImageOption(
             }
         })
 
-        TextField(modifier = M.fillMaxWidth(), value = font.value, label = {
+        TextField(modifier = Modifier.fillMaxWidth(), value = font.value, label = {
             Text(text = "字体颜色", style = MaterialTheme.typography.bodySmall)
         }, onValueChange = {
             font.value = it
@@ -507,7 +503,7 @@ fun CustomBookShelfTopImageOption(
             }
         })
 
-        TextField(modifier = M.fillMaxWidth(), value = fontHLight.value, label = {
+        TextField(modifier = Modifier.fillMaxWidth(), value = fontHLight.value, label = {
             Text(text = "字体高亮颜色", style = MaterialTheme.typography.bodySmall)
         }, onValueChange = {
             fontHLight.value = it
@@ -526,7 +522,7 @@ fun CustomBookShelfTopImageOption(
             }
         })
 
-        TextField(modifier = M.fillMaxWidth(), value = fontLight.value, label = {
+        TextField(modifier = Modifier.fillMaxWidth(), value = fontLight.value, label = {
             Text(text = "字体浅色颜色", style = MaterialTheme.typography.bodySmall)
         }, onValueChange = {
             fontLight.value = it
@@ -545,7 +541,7 @@ fun CustomBookShelfTopImageOption(
             }
         })
 
-        TextField(modifier = M.fillMaxWidth(), value = fontOnSurface.value, label = {
+        TextField(modifier = Modifier.fillMaxWidth(), value = fontOnSurface.value, label = {
             Text(text = "字体在表面上的颜色", style = MaterialTheme.typography.bodySmall)
         }, onValueChange = {
             fontOnSurface.value = it
@@ -564,7 +560,7 @@ fun CustomBookShelfTopImageOption(
             }
         })
 
-        TextField(modifier = M.fillMaxWidth(), value = surface01.value, label = {
+        TextField(modifier = Modifier.fillMaxWidth(), value = surface01.value, label = {
             Text(text = "表面颜色", style = MaterialTheme.typography.bodySmall)
         }, onValueChange = {
             surface01.value = it
@@ -583,7 +579,7 @@ fun CustomBookShelfTopImageOption(
             }
         })
 
-        TextField(modifier = M.fillMaxWidth(), value = surfaceIcon.value, label = {
+        TextField(modifier = Modifier.fillMaxWidth(), value = surfaceIcon.value, label = {
             Text(text = "曲面图标颜色", style = MaterialTheme.typography.bodySmall)
         }, onValueChange = {
             surfaceIcon.value = it
@@ -602,7 +598,7 @@ fun CustomBookShelfTopImageOption(
             }
         })
 
-        TextField(modifier = M.fillMaxWidth(), value = headImage.value, label = {
+        TextField(modifier = Modifier.fillMaxWidth(), value = headImage.value, label = {
             Text(
                 text = "顶部图片网络直链 ps:分辨率为 1125*504 最佳",
                 style = MaterialTheme.typography.bodySmall
@@ -646,7 +642,7 @@ fun StartImageItem(
         Box {
 
             CoilImage(
-                modifier = M.fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 imageModel = { startImageModel.preImageUrl },
                 imageOptions = ImageOptions(
                     contentScale = ContentScale.Crop, alignment = Alignment.Center
@@ -654,7 +650,7 @@ fun StartImageItem(
             )
 
             Column(
-                modifier = M
+                modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)
                     .padding(10.dp),
@@ -670,7 +666,7 @@ fun StartImageItem(
                     fontWeight = FontWeight.Bold
                 )
 
-                Spacer(modifier = M.height(10.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 TextButton(shape = RoundedCornerShape(50), colors = ButtonDefaults.textButtonColors(
                     containerColor = if (isUsed.value) Color.DarkGray else Color(255, 230, 231),
@@ -681,7 +677,7 @@ fun StartImageItem(
                     updateOptionEntity()
                 }) {
                     Text(
-                        modifier = M.wrapContentSize(),
+                        modifier = Modifier.wrapContentSize(),
                         text = if (isUsed.value) "停用" else "启用",
                         style = MaterialTheme.typography.bodySmall,
                         maxLines = 1
@@ -747,12 +743,11 @@ fun MainScreen(
     context: Context = LocalContext.current,
 ) {
     Column(
-        modifier = M.verticalScroll(rememberScrollState())
+        modifier = Modifier.verticalScroll(rememberScrollState())
     ) {
 
         Card(
-            modifier = M
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
                 .padding(8.dp),
             shape = RoundedCornerShape(8.dp),
             elevation = CardDefaults.cardElevation(4.dp)
@@ -760,7 +755,7 @@ fun MainScreen(
 
             TextSetting(title = "主设置", showRightIcon = false, bigTitle = true)
 
-            Column(modifier = M.padding(4.dp)) {
+            Column(modifier = Modifier.padding(4.dp)) {
                 SwitchSetting(
                     title = "自动签到",
                     checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableAutoSign),
@@ -901,7 +896,7 @@ fun MainScreen(
                         if (remoteHideWelfareList.value.isNotBlank()) {
                             TextSetting(
                                 title = "获取远程隐藏福利信息",
-                                modifier = M.padding(4.dp),
+                                modifier = Modifier.padding(4.dp),
                                 onClick = {
                                     context.checkHideWelfareUpdate()
                                 }
@@ -910,7 +905,7 @@ fun MainScreen(
 
                         TextSetting(
                             title = "隐藏福利显示位置列表",
-                            modifier = M.padding(4.dp),
+                            modifier = Modifier.padding(4.dp),
                             onClick = {
                                 context.multiChoiceSelector(HookEntry.optionEntity.hideBenefitsOption.configurations)
                             }
@@ -918,7 +913,7 @@ fun MainScreen(
 
                         TextSetting(
                             title = "清空隐藏福利列表",
-                            modifier = M.padding(4.dp),
+                            modifier = Modifier.padding(4.dp),
                             onClick = {
                                 HookEntry.optionEntity.hideBenefitsOption.hideWelfareList.clear()
                                 updateOptionEntity()
@@ -935,15 +930,14 @@ fun MainScreen(
         }
 
         Card(
-            modifier = M
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
                 .padding(8.dp),
             shape = RoundedCornerShape(8.dp),
             elevation = CardDefaults.cardElevation(4.dp)
         ) {
             TextSetting(title = "书架设置", showRightIcon = false, bigTitle = true)
 
-            Column(modifier = M.padding(4.dp)) {
+            Column(modifier = Modifier.padding(4.dp)) {
 
                 if (versionCode > 827) {
 
@@ -1006,15 +1000,14 @@ fun MainScreen(
         }
 
         Card(
-            modifier = M
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
                 .padding(8.dp),
             shape = RoundedCornerShape(8.dp),
             elevation = CardDefaults.cardElevation(4.dp)
         ) {
             TextSetting(title = "阅读页设置", showRightIcon = false, bigTitle = true)
 
-            Column(modifier = M.padding(4.dp)) {
+            Column(modifier = Modifier.padding(4.dp)) {
                 if (versionCode >= 868) {
                     SwitchSetting(title = "阅读页章评图片长按保存原图",
                         subTitle = "进入图片详情后长按图片",
@@ -1101,15 +1094,14 @@ fun MainScreen(
 
 
         Card(
-            modifier = M
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
                 .padding(8.dp),
             shape = RoundedCornerShape(8.dp),
             elevation = CardDefaults.cardElevation(4.dp)
         ) {
             TextSetting(title = "启动图设置", showRightIcon = false, bigTitle = true)
 
-            Column(modifier = M.padding(4.dp)) {
+            Column(modifier = Modifier.padding(4.dp)) {
 
                 val enableCustomStartImage =
                     rememberMutableStateOf(value = HookEntry.optionEntity.startImageOption.enableCustomStartImage)
@@ -1149,7 +1141,7 @@ fun MainScreen(
                             if (enableCaptureTheOfficialLaunchMapListExpand.value) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown
 
                         // 展开按钮
-                        Row(modifier = M
+                        Row(modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
                                 enableCaptureTheOfficialLaunchMapListExpand.value =
@@ -1162,20 +1154,20 @@ fun MainScreen(
 
                             Text(
                                 text = if (enableCaptureTheOfficialLaunchMapListExpand.value) "收起" else "展开",
-                                modifier = M.weight(1f),
+                                modifier = Modifier.weight(1f),
                                 textAlign = TextAlign.End,
                             )
 
                             Icon(
                                 imageVector = expandIcon,
                                 contentDescription = null,
-                                modifier = M.size(24.dp)
+                                modifier = Modifier.size(24.dp)
                             )
                         }
 
                         if (enableCaptureTheOfficialLaunchMapListExpand.value) {
                             Surface(
-                                modifier = M
+                                modifier = Modifier
                                     .animateContentSize()
                                     .padding(1.dp),
                                 color = Color.Transparent
@@ -1186,13 +1178,13 @@ fun MainScreen(
                                 val height = (listSize / 3 + if (listSize % 3 == 0) 0 else 1) * 250
 
                                 LazyColumn(
-                                    modifier = M
+                                    modifier = Modifier
                                         .fillMaxWidth()
                                         .height(height.dp)
                                 ) {
                                     items(list.windowed(3, 3, true)) { sublist ->
                                         Row(
-                                            modifier = M.fillMaxWidth(),
+                                            modifier = Modifier.fillMaxWidth(),
                                             horizontalArrangement = Arrangement.SpaceEvenly,
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
@@ -1200,7 +1192,7 @@ fun MainScreen(
                                             sublist.forEach { item ->
                                                 StartImageItem(
                                                     startImageModel = item,
-                                                    modifier = M
+                                                    modifier = Modifier
                                                         .height(250.dp)
                                                         .fillParentMaxWidth(.3f)
                                                         .padding(
@@ -1246,8 +1238,7 @@ fun MainScreen(
         }
 
         Card(
-            modifier = M
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
                 .padding(8.dp),
             shape = RoundedCornerShape(8.dp),
             elevation = CardDefaults.cardElevation(4.dp)
@@ -1255,7 +1246,7 @@ fun MainScreen(
 
             TextSetting(title = "闪屏设置", showRightIcon = false, bigTitle = true)
 
-            Column(modifier = M.padding(4.dp)) {
+            Column(modifier = Modifier.padding(4.dp)) {
 
                 val enableSplash =
                     rememberMutableStateOf(value = HookEntry.optionEntity.splashOption.enableSplash)
@@ -1330,11 +1321,10 @@ fun PurifyScreen(
 ) {
 
     Column(
-        modifier = M.verticalScroll(rememberScrollState())
+        modifier = Modifier.verticalScroll(rememberScrollState())
     ) {
         Card(
-            modifier = M
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
                 .padding(8.dp),
             shape = RoundedCornerShape(8.dp),
             elevation = CardDefaults.cardElevation(4.dp)
@@ -1342,7 +1332,7 @@ fun PurifyScreen(
 
             TextSetting(title = "广告设置", showRightIcon = false, bigTitle = true)
 
-            TextSetting(title = "广告设置列表", modifier = M.padding(4.dp), onClick = {
+            TextSetting(title = "广告设置列表", modifier = Modifier.padding(4.dp), onClick = {
                 val shieldOptionList = HookEntry.optionEntity.advOption.advOptionList
                 val checkedItems = BooleanArray(shieldOptionList.size)
                 if (HookEntry.optionEntity.advOption.advOptionSelectedList.isNotEmpty()) {
@@ -1375,8 +1365,7 @@ fun PurifyScreen(
         }
 
         Card(
-            modifier = M
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
                 .padding(8.dp),
             shape = RoundedCornerShape(8.dp),
             elevation = CardDefaults.cardElevation(4.dp)
@@ -1384,22 +1373,21 @@ fun PurifyScreen(
 
             TextSetting(title = "拦截设置", showRightIcon = false, bigTitle = true)
 
-            TextSetting(title = "拦截设置列表", modifier = M.padding(4.dp), onClick = {
+            TextSetting(title = "拦截设置列表", modifier = Modifier.padding(4.dp), onClick = {
                 context.multiChoiceSelector(HookEntry.optionEntity.interceptOption.configurations)
             })
 
         }
 
         Card(
-            modifier = M
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
                 .padding(8.dp),
             shape = RoundedCornerShape(8.dp),
             elevation = CardDefaults.cardElevation(4.dp)
         ) {
             TextSetting(title = "屏蔽设置", showRightIcon = false, bigTitle = true)
 
-            Column(modifier = M.padding(4.dp)) {
+            Column(modifier = Modifier.padding(4.dp)) {
 
                 TextSetting(title = "屏蔽选项列表", onClick = {
                     val shieldOptionList = listOf(
@@ -1518,15 +1506,14 @@ fun PurifyScreen(
         }
 
         Card(
-            modifier = M
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
                 .padding(8.dp),
             shape = RoundedCornerShape(8.dp),
             elevation = CardDefaults.cardElevation(4.dp)
         ) {
             TextSetting(title = "隐藏控件设置", showRightIcon = false, bigTitle = true)
 
-            Column(modifier = M.padding(4.dp)) {
+            Column(modifier = Modifier.padding(4.dp)) {
                 SwitchSetting(title = "启用抓取底部导航栏",
                     checked = rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.homeOption.enableCaptureBottomNavigation),
                     onCheckedChange = {
@@ -1699,15 +1686,14 @@ fun PurifyScreen(
         }
 
         Card(
-            modifier = M
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
                 .padding(8.dp),
             shape = RoundedCornerShape(8.dp),
             elevation = CardDefaults.cardElevation(4.dp)
         ) {
             TextSetting(title = "替换规则设置", showRightIcon = false, bigTitle = true)
 
-            Column(modifier = M.padding(4.dp)) {
+            Column(modifier = Modifier.padding(4.dp)) {
 
                 val enableReplace =
                     rememberMutableStateOf(value = HookEntry.optionEntity.replaceRuleOption.enableReplace)

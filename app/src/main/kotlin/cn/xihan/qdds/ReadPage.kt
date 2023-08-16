@@ -169,16 +169,6 @@ fun PackageParam.readerPageChapterReviewPictures(
 
                                 }
                             }
-
-                            val textViews2 = instance.getViews<TextView>()
-
-                            if (textViews2.isNotEmpty()) {
-                                textViews2.forEach { (s, textView) ->
-                                    "text: ${textView.text}".loge()
-                                }
-
-                            }
-
                         }
 
                     }
@@ -243,16 +233,6 @@ fun PackageParam.readerPageChapterReviewPictures(
 
                                 }
                             }
-
-                            val textViews2 = instance.getViews<TextView>()
-
-                            if (textViews2.isNotEmpty()) {
-                                textViews2.forEach { (s, textView) ->
-                                    "text: ${textView.text}".loge()
-                                }
-
-                            }
-
                         }
                     }
                 }
