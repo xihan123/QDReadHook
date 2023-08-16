@@ -1752,7 +1752,7 @@ fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
                             instance.getParam<HashMap<*, *>>("bubbleViewMap")
                         bubbleViewMap?.forEach { (_, any2) ->
                             val readTimeBubbleView = any2 as? LinearLayout
-                            readTimeBubbleView?.performClick()
+                            readTimeBubbleView?.postRandomDelay { performClick() }
                         }
                     }
                 }
@@ -1792,7 +1792,7 @@ fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
                             for (i in 0..<count) {
                                 val child = it.getChildAt(i)
                                 if (child is LinearLayout) {
-                                    child.performClick()
+                                    child.postRandomDelay { performClick() }
                                 }
                             }
                         }
@@ -1820,7 +1820,7 @@ fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
                             }.call()
 
                             if ("领取" == text) {
-                                button.post { button.performClick() }
+                                button.postRandomDelay { performClick() }
                             }
                         }
                     }
@@ -1855,7 +1855,7 @@ fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
                                 "开启新一周PK"
                             )
                             if (text in list) {
-                                button.post { button.performClick() }
+                                button.postRandomDelay { performClick() }
                             }
                         }
                     }

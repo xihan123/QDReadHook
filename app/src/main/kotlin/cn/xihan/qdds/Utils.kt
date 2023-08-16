@@ -911,3 +911,15 @@ fun ViewGroup.findViewsByType(viewClass: Class<*>): ArrayList<View> {
     return result
 }
 
+/**
+ * 随机 100至500 之间的数
+ */
+val randomTime: Long = Random().nextInt(400) + 100L
+
+/**
+ * 随机延迟运行
+ * @param [delayMillis] 延迟,毫秒
+ * @param [action] 动作
+ */
+fun View.postRandomDelay(delayMillis: Long = randomTime, action: View.() -> Unit) =
+    postDelayed({ this.action() }, delayMillis)

@@ -23,7 +23,7 @@ yukihook-ksp = { module = "com.highcapable.yukihookapi:ksp-xposed", version.ref 
 xposed-api = { module = "de.robv.android.xposed:api", version = "82" }
 htmlunit = { module = "org.htmlunit:htmlunit3-android", version = "3.3.0" }
 dexkit = { module = "org.luckypray:DexKit", version = "1.1.8" }
-compose-bom = { module = "dev.chrisbanes.compose:compose-bom", version = "2023.07.00-alpha02" }
+compose-bom = { module = "dev.chrisbanes.compose:compose-bom", version = "2023.09.00-alpha02" }
 ui = { group = "androidx.compose.ui", name = "ui" }
 ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 foundation = { group = "androidx.compose.foundation", name = "foundation" }
@@ -35,7 +35,7 @@ activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activ
 material3 = { group = "androidx.compose.material3", name = "material3" }
 com-google-accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 com-google-accompanist-themeadapter-material3 = { module = "com.google.accompanist:accompanist-themeadapter-material3", version.ref = "accompanist" }
-com-google-android-material = { module = "com.google.android.material:material", version = "1.10.0-alpha05" }
+com-google-android-material = { module = "com.google.android.material:material", version = "1.10.0-alpha06" }
 
 [plugins]
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
