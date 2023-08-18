@@ -1,4 +1,19 @@
 # Changelog
+## [2.2.8](https://github.com/xihan123/QDReadHook/compare/v2.2.7...v2.2.8) (2023-08-18)
+
+
+### Features
+
+* **拦截设置:** `970` 版本实验性功能`阅读页水印` ([72b316a](https://github.com/xihan123/QDReadHook/commit/72b316a65f668f336465f8c988f6b0abddbb3d01))
+* **阅读页设置:** `890`~`970` 版本 `配音导出`支持网络及本地地址，`884`版本移除此功能 ([600d366](https://github.com/xihan123/QDReadHook/commit/600d36630884375d6816f0e1ca49f4fda31aec24))
+* **隐藏控件设置:** `827`~`970` 版本 `隐藏底部导航栏`优化 ([9f2cfa5](https://github.com/xihan123/QDReadHook/commit/9f2cfa522ad31268845e4c704c7946a63db44353))
+
+
+### Miscellaneous
+
+* 整理代码 ([512920e](https://github.com/xihan123/QDReadHook/commit/512920ef4780a49d316ec03540d8a5ea41127698))
+* 更新依赖 ([4f41897](https://github.com/xihan123/QDReadHook/commit/4f4189705e98c193e2190968b4d9fdc156f697b8))
+
 ## [2.2.7](https://github.com/xihan123/QDReadHook/compare/v2.2.6...v2.2.7) (2023-08-16)
 
 
