@@ -541,119 +541,45 @@ fun PackageParam.hideBottomNavigation(versionCode: Int) {
         970 -> "s"
         else -> null
     }
-
-    when (versionCode) {
-        in 827..958 -> {
-            findClass("com.qidian.QDReader.ui.widget.maintab.PagerSlidingTabStrip").hook {
-                injectMember {
-                    method {
-                        name = needHookMethod!!
-                        emptyParam()
-                        returnType = UnitType
-                    }
-                    afterHook {
-                        val i = instance.getView<LinearLayout>("i")
-                        i?.let {
-                            val childCount = it.childCount
-                            for (index in 0..<childCount) {
-                                val childView = it.getChildAt(index) as? RelativeLayout
-                                childView?.let {
-                                    val childViewChildCount = childView.childCount
-                                    for (childViewIndex in 0..<childViewChildCount) {
-                                        if (childView.getChildAt(childViewIndex) is TextView) {
-                                            val textView =
-                                                childView.getChildAt(childViewIndex) as TextView
-                                            val text = textView.text
-                                            HookEntry.optionEntity.viewHideOption.homeOption.configurations.findOrPlus(
-                                                title = "主页底部导航栏$text"
-                                            ) {
-                                                val view = textView.parent as? View
-                                                view?.visibility = View.GONE
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        970 -> {
-            findClass("com.qidian.QDReader.ui.widget.maintab.PagerSlidingTabStrip").hook {
-                injectMember {
-                    method {
-                        name = needHookMethod!!
-                        emptyParam()
-                        returnType = UnitType
-                    }
-                    afterHook {
-                        val i = instance.getView<LinearLayout>("j")
-                        i?.let {
-                            val childCount = it.childCount
-                            for (index in 0..<childCount) {
-                                val childView = it.getChildAt(index) as? FrameLayout
-                                childView?.let {
-                                    val childViewChildCount = childView.childCount
-                                    for (childViewIndex in 0..<childViewChildCount) {
-                                        val name =
-                                            childView.getChildAt(childViewIndex).javaClass.name
-                                        if (name == "androidx.constraintlayout.widget.ConstraintLayout") {
-                                            val constraintLayout =
-                                                childView.getChildAt(childViewIndex) as ViewGroup
-                                            val constraintLayoutCount = constraintLayout.childCount
-                                            for (constraintLayoutIndex in 0..<constraintLayoutCount) {
-                                                val childViewChild3 = constraintLayout.getChildAt(
-                                                    constraintLayoutIndex
-                                                )
-                                                if (childViewChild3 is TextView) {
-                                                    HookEntry.optionEntity.viewHideOption.homeOption.configurations.findOrPlus(
-                                                        title = "主页底部导航栏${childViewChild3.text}"
-                                                    ) {
-                                                        val view =
-                                                            childViewChild3.parent.parent as? View
-                                                        view?.visibility = View.GONE
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    if (needHookMethod == null) {
+        "隐藏底部导航栏".printlnNotSupportVersion(versionCode)
+        return
     }
-}
 
-/**
- * 隐藏底部导航栏-发现
- */
-fun PackageParam.hideBottomNavigationFind(versionCode: Int) {
     when (versionCode) {
-        in 792..880 -> {
+        in 827..970 -> {
             findClass("com.qidian.QDReader.ui.widget.maintab.PagerSlidingTabStrip").hook {
                 injectMember {
                     method {
-                        name = "s"
+                        name = needHookMethod
                         emptyParam()
                         returnType = UnitType
                     }
                     afterHook {
-                        val i = instance.getView<LinearLayout>("i")
-                        i?.let {
-                            val view = it.getChildAt(2)
-                            view?.visibility = View.GONE
+                        val linearLayouts = instance.getViews<LinearLayout>()
+                        if (linearLayouts.isNotEmpty()) {
+                            linearLayouts.forEach {
+                                val textViews = it.findViewsByType(TextViewClass)
+                                    .filter { textView -> (textView as TextView).text.isNotBlank() }
+                                if (textViews.isNotEmpty()) {
+                                    textViews.forEach { textView ->
+                                        val text = (textView as TextView).text
+                                        HookEntry.optionEntity.viewHideOption.homeOption.configurations.findOrPlus(
+                                            title = "主页底部导航栏${text}"
+                                        ) {
+                                            val parent = textView.parent.parent as? View
+                                            parent?.visibility = View.GONE
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
         }
 
-        else -> "隐藏底部导航栏-发现".printlnNotSupportVersion(versionCode)
+        else -> "隐藏底部导航栏".printlnNotSupportVersion(versionCode)
     }
 }
 
