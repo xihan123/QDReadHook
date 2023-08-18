@@ -280,7 +280,7 @@ data class OptionEntity(
             SelectedModel("WebSocket"),
             SelectedModel("青少年模式请求"),
             SelectedModel("闪屏广告页面"),
-//            SelectedModel("部分检测设备环境"),
+            SelectedModel("阅读页水印"),
             SelectedModel("异步主GDT广告任务|com.qidian.QDReader.start.AsyncMainGDTTask"),
             SelectedModel("异步主游戏广告SDK任务|com.qidian.QDReader.start.AsyncMainGameADSDKTask"),
             SelectedModel("异步主游戏下载任务|com.qidian.QDReader.start.AsyncMainGameDownloadTask"),

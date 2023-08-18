@@ -15,24 +15,25 @@ import com.highcapable.yukihookapi.hook.type.java.UnitType
  * 拦截配置
  */
 fun PackageParam.interceptOption(
-    version: Int,
+    versionCode: Int,
     configurations: List<OptionEntity.SelectedModel>,
 ) {
     if (configurations.isEmpty()) return
     val interceptList = mutableListOf<String>()
     configurations.filter { it.selected }.forEach { selected ->
         when (selected.title) {
-            "隐私政策更新弹框" -> interceptPrivacyPolicy(version)
-            "同意隐私政策弹框" -> interceptAgreePrivacyPolicy(version)
-            "WebSocket" -> interceptWebSocket(version)
-            "青少年模式请求" -> interceptQSNModeRequest(version)
-            "闪屏广告页面" -> interceptSplashAdActivity(version)
+            "隐私政策更新弹框" -> interceptPrivacyPolicy(versionCode)
+            "同意隐私政策弹框" -> interceptAgreePrivacyPolicy(versionCode)
+            "WebSocket" -> interceptWebSocket(versionCode)
+            "青少年模式请求" -> interceptQSNModeRequest(versionCode)
+            "闪屏广告页面" -> interceptSplashAdActivity(versionCode)
+            "阅读页水印" -> interceptReadBookPageWaterMark(versionCode)
             else -> interceptList.add(selected.title)
         }
     }
 
     if (interceptList.isNotEmpty()) {
-        interceptAsyncInitTask(version, interceptList)
+        interceptAsyncInitTask(versionCode, interceptList)
     }
 }
 
@@ -188,6 +189,27 @@ fun PackageParam.interceptSplashAdActivity(version: Int) {
             replaceToFalse()
         }
     } ?: "拦截闪屏广告页面".printlnNotSupportVersion(version)
+}
+
+/**
+ * 拦截阅读页水印
+ */
+fun PackageParam.interceptReadBookPageWaterMark(versionCode: Int){
+    when(versionCode){
+        970 -> {
+            findClass("com.qidian.QDReader.ui.activity.QDReaderActivity").hook {
+                injectMember {
+                    method {
+                        name = "setWaterMark"
+                        emptyParam()
+                        returnType = UnitType
+                    }
+                    intercept()
+                }
+            }
+        }
+        else -> "拦截阅读页水印".printlnNotSupportVersion(versionCode)
+    }
 }
 
 /**
