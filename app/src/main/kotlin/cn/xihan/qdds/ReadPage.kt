@@ -2,8 +2,8 @@ package cn.xihan.qdds
 
 import android.content.Context
 import android.os.Environment
+import android.view.View
 import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.TextView
 import com.alibaba.fastjson2.parseObject
 import com.alibaba.fastjson2.toJSONString
@@ -123,9 +123,8 @@ fun PackageParam.readerPageChapterReviewPictures(
                             val rawImgUrl =
                                 args[0]?.toJSONString().parseObject().getString("imageDetail")
                             val imageViews = instance.getViews<ImageView>()
-                            val contexts = instance.getParams<Context>()
-                            if (rawImgUrl == null || imageViews.isEmpty() || contexts.isEmpty()) return@afterHook
-                            imageViews.forEach { s, imageView ->
+                            if (rawImgUrl == null || imageViews.isEmpty()) return@afterHook
+                            imageViews.forEach { imageView ->
                                 imageView.setOnLongClickListener {
                                     imageView.context.alertDialog {
                                         title = "图片地址"
@@ -149,7 +148,7 @@ fun PackageParam.readerPageChapterReviewPictures(
                                 "com.qd.ui.component.widget.textview.MessageTextView".toClass()
                             val textViews = instance.getViews(messageTextView)
                             if (textViews.isNotEmpty()) {
-                                textViews.forEach { (s, any) ->
+                                textViews.forEach { any ->
                                     val textView = any as? TextView
                                     textView?.setOnLongClickListener {
                                         textView.context.alertDialog {
@@ -187,9 +186,8 @@ fun PackageParam.readerPageChapterReviewPictures(
                             val rawImgUrl =
                                 args[0]?.toJSONString().parseObject().getString("imageDetail")
                             val imageViews = instance.getViews<ImageView>()
-                            val contexts = instance.getParams<Context>()
-                            if (rawImgUrl == null || imageViews.isEmpty() || contexts.isEmpty()) return@afterHook
-                            imageViews.forEach { s, imageView ->
+                            if (rawImgUrl == null || imageViews.isEmpty()) return@afterHook
+                            imageViews.forEach { imageView ->
                                 imageView.setOnLongClickListener {
                                     imageView.context.alertDialog {
                                         title = "图片地址"
@@ -213,7 +211,7 @@ fun PackageParam.readerPageChapterReviewPictures(
                                 "com.qd.ui.component.widget.textview.MessageTextView".toClass()
                             val textViews = instance.getViews(messageTextView)
                             if (textViews.isNotEmpty()) {
-                                textViews.forEach { (s, any) ->
+                                textViews.forEach { any ->
                                     val textView = any as? TextView
                                     textView?.setOnLongClickListener {
                                         textView.context.alertDialog {
@@ -244,33 +242,8 @@ fun PackageParam.readerPageChapterReviewPictures(
          */
     }
 
-    if (enableShowReaderPageChapterSaveAudioDialog && versionCode in 884..970) {
+    if (enableShowReaderPageChapterSaveAudioDialog && versionCode in 890..970) {
         when (versionCode) {
-            884 -> {
-                findClass("com.qidian.QDReader.ui.view.chapter_review.VoicePlayerView").hook {
-                    injectMember {
-                        method {
-                            name = "o"
-                            emptyParam()
-                            returnType = UnitType
-                        }
-                        afterHook {
-                            val g = instance.getView<RelativeLayout>("g")
-                            val l = instance.getParam<String>("l")
-                            val b = instance.getParam<Context>("b")
-                            if (l.isNullOrBlank() || b == null) {
-                                "音频文件不存在".loge()
-                                return@afterHook
-                            }
-                            g?.setOnLongClickListener {
-                                g.context.audioExportDialog(l)
-                                true
-                            }
-                        }
-                    }
-                }
-            }
-
             in 890..970 -> {
                 findClass("com.qidian.QDReader.ui.view.chapter_review.VoicePlayerView").hook {
                     injectMember {
@@ -280,17 +253,22 @@ fun PackageParam.readerPageChapterReviewPictures(
                             returnType = UnitType
                         }
                         afterHook {
-                            val g = instance.getParentView<RelativeLayout>("g")
-                            val p = instance.getParam<String>("p")
-                            val b = instance.getParentParam<Context>("b")
-                            if (p.isNullOrBlank() || b == null) {
-                                "音频文件不存在".loge()
-                                return@afterHook
+                            val relativeLayouts =
+                                instance.getViews(
+                                    "com.qd.ui.component.widget.roundwidget.QDUIRoundRelativeLayout".toClass(),
+                                    isSuperClass = true
+                                )
+                            val strings = instance.getParamList<String>().filter { it.isNotBlank() }
+
+                            if ((strings.isNotEmpty() && strings.size == 2) && relativeLayouts.isNotEmpty()) {
+                                relativeLayouts.forEach {
+                                    (it as View).setOnLongClickListener {
+                                        it.context.audioExportDialog(strings[0], strings[1])
+                                        true
+                                    }
+                                }
                             }
-                            g?.setOnLongClickListener {
-                                g.context.audioExportDialog(p)
-                                true
-                            }
+
                         }
                     }
                 }
@@ -366,42 +344,51 @@ fun PackageParam.readTimeDouble(
 /**
  * 音频文件导出对话框
  */
-fun Context.audioExportDialog(filePath: String) {
+fun Context.audioExportDialog(networkUrl: String, filePath: String) {
     val file = File(filePath)
     if (!file.exists()) {
         toast("音频文件不存在")
         return
     }
+    val linearLayout = CustomLinearLayout(context = this)
+    val textView = CustomTextView(
+        context = this,
+        mText = "音频文件网络地址: $networkUrl\n音频文件本地地址: $filePath",
+    )
     val editText = CustomEditText(
         context = this,
         mHint = "输入要保存的文件名",
         value = file.name,
     )
+    linearLayout.apply {
+        addView(editText)
+        addView(textView)
+    }
     alertDialog {
         title = "导出文件\n输入要保存的文件名"
-        customView = editText
-        okButton {
+        customView = linearLayout
+        positiveButton("本地导出") {
             val fileName = "${editText.editText.text}.m4a"
             if (fileName.isBlank()) {
                 toast("文件名不能为空")
-                return@okButton
+                return@positiveButton
             }
             val saveFile = File(
                 "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/QDReader/Audio",
                 fileName
             ).apply {
-                if (!parentFile.exists()) parentFile.mkdirs()
+                parentFile?.mkdirs()
             }
             if (saveFile.exists()) {
                 toast("文件已存在")
-                return@okButton
+                return@positiveButton
             }
             file.copyTo(saveFile)
             toast("导出成功")
             it.dismiss()
         }
-        cancelButton {
-            it.dismiss()
+        negativeButton("复制网络地址") {
+            copyToClipboard(networkUrl)
         }
         build()
         show()
