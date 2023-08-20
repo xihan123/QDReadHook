@@ -5,6 +5,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.android.ContextClass
+import com.highcapable.yukihookapi.hook.type.android.ViewClass
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
 import com.highcapable.yukihookapi.hook.type.java.ListClass
 import com.highcapable.yukihookapi.hook.type.java.StringClass
@@ -210,7 +211,7 @@ fun PackageParam.disableBookshelfFloatWindow(versionCode: Int) {
                 injectMember {
                     method {
                         name = "onViewInject"
-                        param(View::class.java)
+                        param(ViewClass)
                     }
                     afterHook {
                         val layoutImgAdIcon = instance.getView<LinearLayout>(

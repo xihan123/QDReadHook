@@ -774,6 +774,17 @@ fun MainScreen(
                     }
                 )
 
+                SwitchSetting(
+                    title = "发帖上传图片显示直链",
+                    subTitle = "图片上传完后会弹框",
+                    checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enablePostToShowImageUrl),
+                    onCheckedChange = {
+                        HookEntry.optionEntity.mainOption.enablePostToShowImageUrl =
+                            it
+                    }
+                )
+
+
                 SwitchSetting(title = "本地至尊卡",
                     subTitle = "仅美观，无任何实际作用",
                     checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableLocalCard),

@@ -17,6 +17,7 @@ import com.alibaba.fastjson2.toJSONString
 import com.google.android.material.appbar.AppBarLayout
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
+import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
@@ -569,18 +570,18 @@ class HookEntry : IYukiHookXposedInit {
                 runCatching {
                     val item = iterator.next().toJSONString()
                     val jb = item.parseObject()
-                    val bookName =
-                        jb.getString("BookName") ?: jb.getString("bookName")
-                        ?: jb.getString("itemName")
-                        ?: jb.getString("ItemName")
+                    val bookName = jb.getString("BookName") ?: jb.getString("bookName")
+                    ?: jb.getString("itemName") ?: jb.getString("ItemName")
                     val authorName = jb.getString("AuthorName") ?: jb.getString("authorName")
                     val categoryName = jb.getString("CategoryName") ?: jb.getString("categoryName")
                     val subCategoryName =
                         jb.getString("SubCategoryName") ?: jb.getString("subCategoryName")
                         ?: jb.getString("itemSubName") ?: jb.getString("ItemSubName")
                     val tagName = jb.getString("TagName") ?: jb.getString("tagName")
-                    val array = jb.getJSONArray("AuthorTags") ?: jb.getJSONArray("tags")
-                    ?: jb.getJSONArray("Tags") ?: jb.getJSONArray("tagList")
+                    val array =
+                        jb.getJSONArray("AuthorTags") ?: jb.getJSONArray("tags") ?: jb.getJSONArray(
+                            "Tags"
+                        ) ?: jb.getJSONArray("tagList")
                     val tip = jb.getString("Tip") ?: jb.getString("tip")
                     val bookTypeArray = mutableSetOf<String>()
                     if (categoryName != null) {
@@ -922,143 +923,117 @@ fun PackageParam.newOldLayout(
     enableNewStore: Boolean = false,
     enableNewBookShelfLayout: Boolean = false
 ) {
-    val needHookClass = when (versionCode) {
-        868 -> "r4.a\$a"
-        in 872..878 -> "p4.a\$a"
-        in 884..900 -> "l4.search\$search"
-        in 906..916 -> "o4.search\$search"
-        924 -> "p4.search\$search"
-        in 932..938 -> "s4.search\$search"
-        in 944..950 -> "r4.search\$search"
-        958 -> "p4.search\$search"
-        970 -> "o4.search\$search"
-        else -> null
+    val methodMap = mapOf(
+        "needHookClass" to when (versionCode) {
+            868 -> "r4.a\$a"
+            in 872..878 -> "p4.a\$a"
+            in 884..900 -> "l4.search\$search"
+            in 906..916 -> "o4.search\$search"
+            924 -> "p4.search\$search"
+            in 932..938 -> "s4.search\$search"
+            in 944..950 -> "r4.search\$search"
+            958 -> "p4.search\$search"
+            970 -> "o4.search\$search"
+            else -> null
+        },
+        "needHookNewUserAccountMethod" to when (versionCode) {
+            868 -> "n"
+            872 -> "m"
+            878 -> "o"
+            884 -> "m"
+            890 -> "n"
+            else -> null
+        },
+        "needHookBookStoreV2Method" to when (versionCode) {
+            872 -> "d"
+            878 -> "e"
+            884 -> "b"
+            in 890..900 -> "c"
+            else -> null
+        },
+        "needHookMethod" to when (versionCode) {
+            in 827..850 -> "b"
+            in 868..872 -> "c"
+            878 -> "d"
+            884 -> "a"
+            in 890..900 -> "b"
+            else -> null
+        },
+        "needHookGDTGameMethod" to when (versionCode) {
+            in 896..900 -> "U"
+            in 906..916 -> "W"
+            924 -> "Y"
+            in 932..944 -> "d0"
+            in 950..958 -> "e0"
+            970 -> "f0"
+            else -> null
+        }
+    )
+
+    infix fun String.hookTo(initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit) {
+        this.hook { injectMember(initiate = initiate) }
     }
 
-    /**
-     * NEW_USER_ACCOUNT
-     */
-    val needHookNewUserAccountMethod = when (versionCode) {
-        868 -> "n"
-        872 -> "m"
-        878 -> "o"
-        884 -> "m"
-        890 -> "n"
-        else -> null
-    }
-
-    /**
-     * BOOK_STORE_V2
-     */
-    val needHookBookStoreV2Method = when (versionCode) {
-        872 -> "d"
-        878 -> "e"
-        884 -> "b"
-        in 890..900 -> "c"
-        else -> null
-    }
-
-    /**
-     * 新版书架布局
-     * 上级调用: com.qidian.QDReader.ui.activity.MainGroupActivity.onCreate
-     * mFragmentPagerAdapter
-     * BOOK_SHELF_REBORN
-     */
-    val needHookMethod = when (versionCode) {
-        in 827..850 -> "b"
-        in 868..872 -> "c"
-        878 -> "d"
-        884 -> "a"
-        in 890..900 -> "b"
-        else -> null
-    }
-
-    /**
-     * gdt game
-     * video-redpopup-ad
-     */
-    val needHookGDTGameMethod = when (versionCode) {
-        in 896..900 -> "U"
-        in 906..916 -> "W"
-        924 -> "Y"
-        in 932..944 -> "d0"
-        in 950..958 -> "e0"
-        970 -> "f0"
-        else -> null
-    }
-
-    if (needHookClass == null) {
-        "新旧布局".printlnNotSupportVersion(versionCode)
-        return
-    }
-    needHookClass.hook {
-        if (needHookNewUserAccountMethod == null) {
+    methodMap["needHookClass"]?.hookTo {
+        if (methodMap["needHookNewUserAccountMethod"] == null) {
             if (versionCode in 868..890) {
                 "新版我的布局".printlnNotSupportVersion(versionCode)
             }
         } else {
-            injectMember {
-                method {
-                    name = needHookNewUserAccountMethod
-                    emptyParam()
-                    returnType = BooleanType
-                }
-                if (enableNewUserAccount) {
-                    replaceToTrue()
-                } else {
-                    replaceToFalse()
-                }
+            method {
+                name = methodMap["needHookNewUserAccountMethod"]!!
+                emptyParam()
+                returnType = BooleanType
+            }
+            if (enableNewUserAccount) {
+                replaceToTrue()
+            } else {
+                replaceToFalse()
             }
         }
 
-        if (needHookBookStoreV2Method == null) {
+        if (methodMap["needHookBookStoreV2Method"] == null) {
             if (versionCode in 868..900) {
                 "新旧精选布局".printlnNotSupportVersion(versionCode)
             }
         } else {
-            injectMember {
-                method {
-                    name = needHookBookStoreV2Method
-                    emptyParam()
-                    returnType = BooleanType
-                }
-                if (enableNewStore) {
-                    replaceToTrue()
-                } else {
-                    replaceToFalse()
-                }
+            method {
+                name = methodMap["needHookBookStoreV2Method"]!!
+                emptyParam()
+                returnType = BooleanType
+            }
+            if (enableNewStore) {
+                replaceToTrue()
+            } else {
+                replaceToFalse()
             }
         }
 
-        if (needHookMethod == null) {
+        if (methodMap["needHookMethod"] == null) {
             if (versionCode in 827..900) {
                 "新版书架布局".printlnNotSupportVersion(versionCode)
             }
         } else {
-            injectMember {
-                method {
-                    name = needHookMethod
-                    emptyParam()
-                    returnType = BooleanType
-                }
-                if (enableNewBookShelfLayout) {
-                    replaceToTrue()
-                } else {
-                    replaceToFalse()
-                }
-
+            method {
+                name = methodMap["needHookMethod"]!!
+                emptyParam()
+                returnType = BooleanType
             }
-        }
-
-        if (needHookGDTGameMethod != null) {
-            injectMember {
-                method {
-                    name = needHookGDTGameMethod
-                    emptyParam()
-                    returnType = BooleanType
-                }
+            if (enableNewBookShelfLayout) {
+                replaceToTrue()
+            } else {
                 replaceToFalse()
             }
+
+        }
+
+        if (methodMap["needHookGDTGameMethod"] != null) {
+            method {
+                name = methodMap["needHookGDTGameMethod"]!!
+                emptyParam()
+                returnType = BooleanType
+            }
+            replaceToFalse()
         }
     }
 }
@@ -1199,11 +1174,13 @@ fun PackageParam.unlockMemberBackground(versionCode: Int) {
                         val list = args[0] as? MutableList<*>
                         list?.forEach {
                             it?.let {
-                                if (it::class.java.name == "com.qidian.QDReader.repository.dal.store.ReaderThemeEntity") {
+                                if (it.javaClass.name == "com.qidian.QDReader.repository.dal.store.ReaderThemeEntity") {
                                     val themeType = it.getParam<Long>("themeType")
                                     if (themeType == 102L) {
-                                        XposedHelpers.setLongField(it, "themeType", 101)
-                                        XposedHelpers.setIntField(it, "haveStatus", 1)
+                                        it.setParams(
+                                            "themeType" to 101L,
+                                            "haveStatus" to 1
+                                        )
                                     }
                                 }
                             }
@@ -1463,47 +1440,52 @@ fun PackageParam.freeAdReward(versionCode: Int) {
  * IsFreeLimit
  */
 fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
-    val needHookClass = when (versionCode) {
-        in 854..878 -> "com.qidian.QDReader.component.bll.manager.e1"
-        in 884..900 -> "com.qidian.QDReader.component.bll.manager.b1"
-        906 -> "com.qidian.QDReader.component.bll.manager.y0"
-        916 -> "com.qidian.QDReader.component.bll.manager.z0"
-        924 -> "com.qidian.QDReader.component.bll.manager.a1"
-        in 932..944 -> "com.qidian.QDReader.component.bll.manager.c1"
-        950 -> "com.qidian.QDReader.component.bll.manager.b1"
-        in 958..970 -> "com.qidian.QDReader.component.bll.manager.d1"
-        else -> null
+    val classMap = mapOf(
+        "needHookClass" to when (versionCode) {
+            in 854..878 -> "com.qidian.QDReader.component.bll.manager.e1"
+            in 884..900 -> "com.qidian.QDReader.component.bll.manager.b1"
+            906 -> "com.qidian.QDReader.component.bll.manager.y0"
+            916 -> "com.qidian.QDReader.component.bll.manager.z0"
+            924 -> "com.qidian.QDReader.component.bll.manager.a1"
+            in 932..944 -> "com.qidian.QDReader.component.bll.manager.c1"
+            950 -> "com.qidian.QDReader.component.bll.manager.b1"
+            in 958..970 -> "com.qidian.QDReader.component.bll.manager.d1"
+            else -> null
+        },
+        "needHookMethod" to when (versionCode) {
+            in 854..878 -> "n0"
+            in 884..890 -> "k0"
+            in 896..924 -> "l0"
+            in 932..938 -> "p0"
+            in 944..958 -> "q0"
+            970 -> "r0"
+            else -> null
+        }
+    )
+
+    infix fun String.hookTo(initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit) {
+        this.hook { injectMember(initiate = initiate) }
     }
-    val needHookMethod = when (versionCode) {
-        in 854..878 -> "n0"
-        in 884..890 -> "k0"
-        in 896..924 -> "l0"
-        in 932..938 -> "p0"
-        in 944..958 -> "q0"
-        970 -> "r0"
-        else -> null
-    }
-    if (needHookClass == null || needHookMethod == null) {
+
+    if (classMap["needHookClass"] == null || classMap["needHookMethod"] == null) {
         "忽略限时免费批量订阅限制".printlnNotSupportVersion(versionCode)
         return
     }
-    needHookClass.hook {
-        injectMember {
-            method {
-                name = needHookMethod
-                param(
-                    "com.qidian.QDReader.framework.network.qd.QDHttpResp".toClass(),
-                    JSONObjectClass,
-                    LongType
-                )
-                returnType = IntType
-            }
-            beforeHook {
-                val jb = args[1] as? JSONObject
-                safeRun {
-                    jb?.optJSONObject("Data")?.put("IsFreeLimit", -1)
-                    args(1).set(jb)
-                }
+    classMap["needHookClass"]?.hookTo {
+        method {
+            name = classMap["needHookMethod"]!!
+            param(
+                "com.qidian.QDReader.framework.network.qd.QDHttpResp".toClass(),
+                JSONObjectClass,
+                LongType
+            )
+            returnType = IntType
+        }
+        beforeHook {
+            val jb = args[1] as? JSONObject
+            safeRun {
+                jb?.optJSONObject("Data")?.put("IsFreeLimit", -1)
+                args(1).set(jb)
             }
         }
     }

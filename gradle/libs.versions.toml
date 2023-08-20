@@ -16,13 +16,13 @@ io-coil-compose = { module = "io.coil-kt:coil-compose", version = "2.4.0" }
 #https://github.com/skydoves/landscapist#coil
 landscapist-coil = { module = "com.github.skydoves:landscapist-coil", version = "2.2.7" }
 #https://github.com/getActivity/XXPermissions
-xxpermissions = { module = "com.github.getActivity:XXPermissions", version = "18.2" }
+xxpermissions = { module = "com.github.getActivity:XXPermissions", version = "18.3" }
 #https://github.com/fankes/YukiHookAPI
 yukihook-api = { module = "com.highcapable.yukihookapi:api", version.ref = "yuki" }
 yukihook-ksp = { module = "com.highcapable.yukihookapi:ksp-xposed", version.ref = "yuki" }
 xposed-api = { module = "de.robv.android.xposed:api", version = "82" }
-htmlunit = { module = "org.htmlunit:htmlunit3-android", version = "3.3.0" }
-dexkit = { module = "org.luckypray:DexKit", version = "1.1.8" }
+#htmlunit = { module = "org.htmlunit:htmlunit3-android", version = "3.5.0" }
+#dexkit = { module = "org.luckypray:DexKit", version = "1.1.8" }
 compose-bom = { module = "dev.chrisbanes.compose:compose-bom", version = "2023.09.00-alpha02" }
 ui = { group = "androidx.compose.ui", name = "ui" }
 ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
@@ -31,7 +31,7 @@ runtime = { group = "androidx.compose.runtime", name = "runtime" }
 animation = { group = "androidx.compose.animation", name = "animation" }
 navigation-compose = { module = "androidx.navigation:navigation-compose", version = "2.7.0" }
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity" }
-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activity" }
+#activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activity" }
 material3 = { group = "androidx.compose.material3", name = "material3" }
 com-google-accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 com-google-accompanist-themeadapter-material3 = { module = "com.google.accompanist:accompanist-themeadapter-material3", version.ref = "accompanist" }

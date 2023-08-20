@@ -73,30 +73,16 @@ inline fun <reified T : View> Any.getViews(isSuperClass: Boolean = false) =
 @Throws(NoSuchFieldException::class, IllegalAccessException::class)
 fun Any.getViews(type: Class<*>, isSuperClass: Boolean = false): ArrayList<Any> {
     val results = arrayListOf<Any>()
-    if (isSuperClass) {
-        var clazz: Class<*>? = javaClass
-        while (clazz != null) {
-            val fields = clazz.declaredFields
-            for (field in fields) {
-                if (type.isAssignableFrom(field.type)) {
-                    field.isAccessible = true
-                    val value = field.get(this)
-                    if (type.isInstance(value)) {
-                        results += value as Any
-                    }
-                }
-            }
-            clazz = clazz.superclass
-        }
-    } else {
-        val fields = javaClass.declaredFields
-        for (field in fields) {
-            if (type.isAssignableFrom(field.type)) {
-                field.isAccessible = true
-                val value = field.get(this)
-                if (type.isInstance(value)) {
-                    results += value as Any
-                }
+    val classes =
+        if (isSuperClass) generateSequence(javaClass) { it.superclass }.toList() else listOf(
+            javaClass
+        )
+    for (clazz in classes) {
+        clazz.declaredFields.filter { type.isAssignableFrom(it.type) }.forEach { field ->
+            field.isAccessible = true
+            val value = field.get(this)
+            if (type.isInstance(value)) {
+                results += value as Any
             }
         }
     }
@@ -107,12 +93,11 @@ fun Any.getViews(type: Class<*>, isSuperClass: Boolean = false): ArrayList<Any> 
  * 反射获取任何类型
  */
 @Throws(NoSuchFieldException::class, IllegalAccessException::class)
-inline fun <reified T> Any.getParam(name: String, isSuperClass: Boolean = false): T? =
-    if (isSuperClass) javaClass.superclass.getDeclaredField(name).apply {
-        isAccessible = true
-    }[this] as? T else javaClass.getDeclaredField(name).apply {
-        isAccessible = true
-    }[this] as? T
+inline fun <reified T> Any.getParam(name: String, isSuperClass: Boolean = false): T? {
+    val clazz = if (isSuperClass) javaClass.superclass else javaClass
+    val field = clazz.getDeclaredField(name).apply { isAccessible = true }
+    return field[this] as? T
+}
 
 /**
  * 获取参数集合
@@ -122,36 +107,20 @@ inline fun <reified T> Any.getParam(name: String, isSuperClass: Boolean = false)
 @Throws(NoSuchFieldException::class, IllegalAccessException::class)
 inline fun <reified T> Any.getParamList(isSuperClass: Boolean = false): ArrayList<T> {
     val results = ArrayList<T>()
-    if (isSuperClass) {
-        var clazz: Class<*>? = javaClass
-        val type = T::class.java
-        while (clazz != null) {
-            val fields = clazz.declaredFields
-            for (field in fields) {
-                if (type.isAssignableFrom(field.type)) {
-                    field.isAccessible = true
-                    val value = field.get(this)
-                    if (type.isInstance(value)) {
-                        results += value as T
-                    }
-                }
-            }
-            clazz = clazz.superclass
-        }
-    } else {
-        val fields = javaClass.declaredFields
-        val type = T::class.java
-        for (field in fields) {
-            if (type.isAssignableFrom(field.type)) {
-                field.isAccessible = true
-                val value = field.get(this)
-                if (type.isInstance(value)) {
-                    results += value as T
-                }
+    val classes =
+        if (isSuperClass) generateSequence(javaClass) { it.superclass }.toList() else listOf(
+            javaClass
+        )
+    val type = T::class.java
+    for (clazz in classes) {
+        clazz.declaredFields.filter { type.isAssignableFrom(it.type) }.forEach { field ->
+            field.isAccessible = true
+            val value = field.get(this)
+            if (type.isInstance(value)) {
+                results += value as T
             }
         }
     }
-
     return results
 }
 
@@ -161,40 +130,22 @@ inline fun <reified T> Any.getParamList(isSuperClass: Boolean = false): ArrayLis
 @Throws(NoSuchFieldException::class, IllegalAccessException::class)
 inline fun <reified T> Any.getParamMap(isSuperClass: Boolean = false): Map<String, T> {
     val results = mutableMapOf<String, T>()
-    if (isSuperClass) {
-        var clazz: Class<*>? = javaClass
-        val type = T::class.java
-        while (clazz != null) {
-            val fields = clazz.declaredFields
-            for (field in fields) {
-                if (type.isAssignableFrom(field.type)) {
-                    field.isAccessible = true
-                    val value = field.get(this)
-                    if (type.isInstance(value)) {
-                        results[field.name] = value as T
-                    }
-                }
-            }
-            clazz = clazz.superclass
-        }
-    } else {
-        val fields = javaClass.declaredFields
-        val type = T::class.java
-        for (field in fields) {
-            if (type.isAssignableFrom(field.type)) {
-                field.isAccessible = true
-                val value = field.get(this)
-                if (type.isInstance(value)) {
-                    results[field.name] = value as T
-                }
+    val classes =
+        if (isSuperClass) generateSequence(javaClass) { it.superclass }.toList() else listOf(
+            javaClass
+        )
+    val type = T::class.java
+    for (clazz in classes) {
+        clazz.declaredFields.filter { type.isAssignableFrom(it.type) }.forEach { field ->
+            field.isAccessible = true
+            val value = field.get(this)
+            if (type.isInstance(value)) {
+                results[field.name] = value as T
             }
         }
     }
-
     return results
-
 }
-
 
 /**
  * Xposed 设置字段值
@@ -252,14 +203,12 @@ fun Context.getApplicationApkPath(packageName: String): String {
 /**
  * 重启当前应用
  */
-fun Activity.restartApplication() {
-    // https://stackoverflow.com/a/58530756
-    val pm = packageManager
-    val intent = pm.getLaunchIntentForPackage(packageName)
+fun Activity.restartApplication() = packageManager.getLaunchIntentForPackage(packageName)?.let {
     finishAffinity()
     startActivity(intent)
     exitProcess(0)
 }
+
 
 /**
  * 获取指定应用的版本号
@@ -766,9 +715,6 @@ fun MutableList<OptionEntity.SelectedModel>.findOrPlus(
     updateOptionEntity()
 }
 
-/**
- *
- */
 fun List<OptionEntity.SelectedModel>.isEnabled(title: String): Boolean = runCatching {
     find { it.title == title }?.selected ?: false
 }.getOrElse {
@@ -909,16 +855,9 @@ val splashPath =
  * 随机返回一个 bitmap
  */
 fun randomBitmap(): Bitmap? {
-    val files = File(splashPath)
-    if (!files.exists()) {
-        files.mkdirs()
-    }
-    val list = files.listFiles()
-    if (list.isNullOrEmpty()) {
-        return null
-    }
-    val random = Random()
-    val index = random.nextInt(list.size)
+    val files = File(splashPath).apply { if (!exists()) mkdirs() }
+    val list = files.listFiles() ?: return null
+    val index = (list.indices).random()
     return BitmapFactory.decodeFile(list[index].absolutePath)
 }
 

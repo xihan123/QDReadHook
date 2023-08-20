@@ -85,6 +85,7 @@ data class OptionEntity(
      * @param packageName 包名
      * @param enableAutoSign 启用自动签到
      * @param enableReceiveReadingCreditsAutomatically 启用自动领取阅读积分
+     * @param enablePostToShowImageUrl 启用发帖显示图片地址
      * @param enableLocalCard 启用本地至尊卡
      * @param enableFreeAdReward 启用免广告奖励
      * @param freeAdRewardAutoExitTime 免广告奖励自动退出时间
@@ -103,6 +104,7 @@ data class OptionEntity(
         @SerialName("packageName") var packageName: String = "com.qidian.QDReader",
         @SerialName("enableAutoSign") var enableAutoSign: Boolean = false,
         @SerialName("enableReceiveReadingCreditsAutomatically") var enableReceiveReadingCreditsAutomatically: Boolean = false,
+        @SerialName("enablePostToShowImageUrl") var enablePostToShowImageUrl: Boolean = false,
         @SerialName("enableLocalCard") var enableLocalCard: Boolean = false,
         @SerialName("enableFreeAdReward") var enableFreeAdReward: Boolean = false,
         @SerialName("freeAdRewardAutoExitTime") var freeAdRewardAutoExitTime: Int = 3,
@@ -281,6 +283,7 @@ data class OptionEntity(
             SelectedModel("青少年模式请求"),
             SelectedModel("闪屏广告页面"),
             SelectedModel("阅读页水印"),
+            SelectedModel("发帖图片水印"),
             SelectedModel("异步主GDT广告任务|com.qidian.QDReader.start.AsyncMainGDTTask"),
             SelectedModel("异步主游戏广告SDK任务|com.qidian.QDReader.start.AsyncMainGameADSDKTask"),
             SelectedModel("异步主游戏下载任务|com.qidian.QDReader.start.AsyncMainGameDownloadTask"),
