@@ -66,6 +66,10 @@ class HookEntry : IYukiHookXposedInit {
                 receiveReadingCreditsAutomatically(versionCode)
             }
 
+            if (optionEntity.mainOption.enablePostToShowImageUrl) {
+                postToShowImageUrl(versionCode)
+            }
+
             if (optionEntity.mainOption.enableLocalCard) {
                 enableLocalCard(versionCode)
             }
@@ -264,8 +268,7 @@ class HookEntry : IYukiHookXposedInit {
 
             /**
              * 调试-查看跳转关键词
-             */
-            /*
+             *//*
             findClass("com.qidian.QDReader.other.ActionUrlProcess").hook {
                 /*
                 injectMember {
@@ -1748,10 +1751,9 @@ fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
                         returnType = UnitType
                     }
                     afterHook {
-                        val bubbleViewMap =
-                            instance.getParam<HashMap<*, *>>("bubbleViewMap")
-                        bubbleViewMap?.forEach { (_, any2) ->
-                            val readTimeBubbleView = any2 as? LinearLayout
+                        val bubbleViewMap = instance.getParam<HashMap<*, *>>("bubbleViewMap")
+                        bubbleViewMap?.values?.forEach { view ->
+                            val readTimeBubbleView = view as? LinearLayout
                             readTimeBubbleView?.postRandomDelay { performClick() }
                         }
                     }
@@ -1851,8 +1853,7 @@ fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
                                 returnType = CharSequenceClass
                             }.call()
                             val list = listOf(
-                                "领取奖励",
-                                "开启新一周PK"
+                                "领取奖励", "开启新一周PK"
                             )
                             if (text in list) {
                                 button.postRandomDelay { performClick() }
@@ -1865,5 +1866,56 @@ fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
         }
 
         else -> "自动领取阅读积分".printlnNotSupportVersion(versionCode)
+    }
+}
+
+/**
+ * 发帖显示图片直链
+ */
+fun PackageParam.postToShowImageUrl(versionCode: Int) {
+    when (versionCode) {
+        970 -> {
+            findClass("com.qidian.QDReader.ui.dialog.h9").hook {
+                injectMember {
+                    method {
+                        name = "p"
+                        emptyParam()
+                        returnType = UnitType
+                    }
+                    afterHook {
+                        val lists = instance.getParamList<List<*>>().takeUnless { it.isEmpty() }
+                            ?.filterNot { it[0] is String }
+                        lists?.firstOrNull()?.let { urlList ->
+                            urlList.mapNotNull { it?.getParam<String>("mAccessUrl") }
+                                .let { accessUrls ->
+                                    instance.getViews<TextView>()
+                                        .firstNotNullOfOrNull { it.context }
+                                        ?.showUrlListDialog(accessUrls)
+                                }
+                        }
+                    }
+                }
+            }
+        }
+
+        else -> "发帖显示图片直链".printlnNotSupportVersion(versionCode)
+    }
+}
+
+/**
+ * 显示直链地址对话框
+ */
+fun Context.showUrlListDialog(urls: List<String>) {
+    val customEditText = CustomEditText(
+        context = this, value = urls.joinToString("\n")
+    )
+    alertDialog {
+        title = "urlList"
+        customView = customEditText
+        positiveButton("复制全部") {
+            context.copyToClipboard(urls.joinToString("\n"))
+        }
+        build()
+        show()
     }
 }
