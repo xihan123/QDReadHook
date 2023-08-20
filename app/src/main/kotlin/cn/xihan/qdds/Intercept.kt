@@ -3,7 +3,9 @@ package cn.xihan.qdds
 
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
+import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
+import java.io.File
 
 /**
  * @项目名 : QDReadHook
@@ -28,6 +30,7 @@ fun PackageParam.interceptOption(
             "青少年模式请求" -> interceptQSNModeRequest(versionCode)
             "闪屏广告页面" -> interceptSplashAdActivity(versionCode)
             "阅读页水印" -> interceptReadBookPageWaterMark(versionCode)
+            "发帖图片水印" -> interceptPostImageWatermark(versionCode)
             else -> interceptList.add(selected.title)
         }
     }
@@ -194,8 +197,8 @@ fun PackageParam.interceptSplashAdActivity(version: Int) {
 /**
  * 拦截阅读页水印
  */
-fun PackageParam.interceptReadBookPageWaterMark(versionCode: Int){
-    when(versionCode){
+fun PackageParam.interceptReadBookPageWaterMark(versionCode: Int) {
+    when (versionCode) {
         970 -> {
             findClass("com.qidian.QDReader.ui.activity.QDReaderActivity").hook {
                 injectMember {
@@ -208,7 +211,37 @@ fun PackageParam.interceptReadBookPageWaterMark(versionCode: Int){
                 }
             }
         }
+
         else -> "拦截阅读页水印".printlnNotSupportVersion(versionCode)
+    }
+}
+
+/**
+ * 发帖图片水印
+ */
+fun PackageParam.interceptPostImageWatermark(versionCode: Int) {
+    when (versionCode) {
+        970 -> {
+            findClass("com.qidian.QDReader.ui.activity.CirclePostEditActivity").hook {
+                injectMember {
+                    method {
+                        name = "addInk2BitmapFile"
+                        paramCount(2)
+                        returnType = StringClass
+                    }
+                    replaceAny {
+                        val s = args[0] as String
+                        val file = args[1] as File
+                        file.apply {
+                            File(s).takeIf { it.exists() }?.copyTo(this, true)
+                        }
+                        file.absolutePath
+                    }
+
+                }
+            }
+        }
+        else -> "发帖图片水印".printlnNotSupportVersion(versionCode)
     }
 }
 
