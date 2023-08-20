@@ -1,4 +1,17 @@
 # Changelog
+## [2.2.9](https://github.com/xihan123/QDReadHook/compare/v2.2.8...v2.2.9) (2023-08-20)
+
+
+### Features
+
+* **主设置:** `970` 版本 `发帖显示图片直链` ([e80c133](https://github.com/xihan123/QDReadHook/commit/e80c13394bd73aead61cf3c6c1d90f35d4ae6f7d))
+* **拦截设置:** `970` 版本 `发帖图片水印` ([689a350](https://github.com/xihan123/QDReadHook/commit/689a350ba1e365cd024aeaa9e6a8bf1af0ca6ff3))
+
+
+### Miscellaneous
+
+* 整理代码 ([17255f4](https://github.com/xihan123/QDReadHook/commit/17255f420a814033581a38a4d3cc0ccb94904f97))
+
 ## [2.2.8](https://github.com/xihan123/QDReadHook/compare/v2.2.7...v2.2.8) (2023-08-18)
 
 
