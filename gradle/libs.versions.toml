@@ -1,5 +1,5 @@
 [versions]
-agp = "8.1.0"
+agp = "8.1.1"
 kotlin = "1.9.0"
 ksp = "1.9.0-1.0.13"
 activity = "1.8.0-alpha06"
