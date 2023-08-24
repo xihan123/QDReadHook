@@ -48,32 +48,7 @@ fun PackageParam.homeOption(versionCode: Int, optionValueSet: List<OptionEntity.
  */
 fun PackageParam.selectedOption(versionCode: Int) {
     when (versionCode) {
-        in 868..980 -> {
-            /*
-            findClass("com.qidian.morphing.card.BaseMorphingCard").hook {
-                injectMember {
-                    method {
-                        name = "item"
-                        paramCount(1)
-                        returnType = UnitType
-                    }
-                    afterHook {
-                        args[0]?.let {
-                            val name = it.getParam<Any>("data")?.getParam<Any>("cardTitle")
-                                ?.getParam<String>("name")
-//                            "name: $name".loge()
-                            if (name.isNullOrBlank()) return@let
-                            HookEntry.optionEntity.viewHideOption.selectedOption.configurations.findOrPlus(
-                                title = name
-                            ) {
-                                instance<FrameLayout>().visibility = View.GONE
-                            }
-                        }
-                    }
-                }
-            }
-
-             */
+        in 868..999 -> {
 
             /**
              * 新方法
@@ -239,7 +214,7 @@ fun PackageParam.selectedOption(versionCode: Int) {
  */
 fun PackageParam.selectedTitleOption(versionCode: Int) {
     when (versionCode) {
-        in 872..980 -> {
+        in 872..999 -> {
             findClass("com.qidian.QDReader.ui.fragment.QDStorePagerFragment").hook {
                 injectMember {
                     method {
@@ -329,7 +304,7 @@ fun PackageParam.selectedTitleOption(versionCode: Int) {
  */
 fun PackageParam.hideMainTopBox(versionCode: Int) {
     when (versionCode) {
-        in 812..980 -> {
+        in 812..999 -> {
             findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
                 injectMember {
                     method {
@@ -351,7 +326,7 @@ fun PackageParam.hideMainTopBox(versionCode: Int) {
  */
 fun PackageParam.hideMainTopPower(versionCode: Int) {
     when (versionCode) {
-        in 878..980 -> {
+        in 878..999 -> {
             findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
                 injectMember {
                     method {
@@ -378,6 +353,7 @@ fun PackageParam.hideBookshelfDailyReading(versionCode: Int) {
         in 827..860 -> "com.qidian.QDReader.ui.adapter.i0"
         in 868..878 -> "com.qidian.QDReader.ui.adapter.j0"
         in 884..970 -> "com.qidian.QDReader.ui.adapter.g0"
+        980 -> "com.qidian.QDReader.ui.adapter.f0"
         else -> null
     }
     val listAdapterClass = when (versionCode) {
@@ -385,6 +361,7 @@ fun PackageParam.hideBookshelfDailyReading(versionCode: Int) {
         in 827..860 -> "com.qidian.QDReader.ui.adapter.k0"
         in 868..878 -> "com.qidian.QDReader.ui.adapter.l0"
         in 884..970 -> "com.qidian.QDReader.ui.adapter.i0"
+        980 -> "com.qidian.QDReader.ui.adapter.h0"
         else -> null
     }
     if (gridAdapterClass == null || listAdapterClass == null) {
@@ -432,13 +409,13 @@ fun PackageParam.hideBookshelfDailyReading(versionCode: Int) {
  */
 fun PackageParam.hideBookshelfFindBook(versionCode: Int) {
     when (versionCode) {
-        in 868..970 -> {
+        in 868..980 -> {
             /**
              * QDBookShelfBrowserRecordHolder
              */
             val needHookClass = when (versionCode) {
                 in 868..878 -> "com.qidian.QDReader.ui.viewholder.bookshelf.r"
-                in 884..970 -> "com.qidian.QDReader.ui.viewholder.bookshelf.o"
+                in 884..980 -> "com.qidian.QDReader.ui.viewholder.bookshelf.o"
                 else -> null
             }
             needHookClass?.hook {
@@ -475,7 +452,7 @@ fun PackageParam.hideBookshelfFindBook(versionCode: Int) {
  */
 fun PackageParam.hideSearchAllView(versionCode: Int) {
     when (versionCode) {
-        in 788..980 -> {
+        in 788..999 -> {
             /**
              * 搜索页面一刀切
              */
@@ -502,7 +479,7 @@ fun PackageParam.hideBottomRedDot(versionCode: Int) {
     val needHookClass = when (versionCode) {
         in 758..768 -> "com.qidian.QDReader.ui.widget.maintab.a"
         in 772..878 -> "com.qidian.QDReader.ui.widget.maintab.e"
-        in 884..970 -> "com.qidian.QDReader.ui.widget.maintab.b"
+        in 884..980 -> "com.qidian.QDReader.ui.widget.maintab.b"
         else -> null
     }
     val needHookMethod = when (versionCode) {
@@ -512,7 +489,7 @@ fun PackageParam.hideBottomRedDot(versionCode: Int) {
         906 -> "e"
         in 916..924 -> "h"
         in 932..958 -> "e"
-        970 -> "g"
+        in 970..980 -> "g"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -538,7 +515,7 @@ fun PackageParam.hideBottomNavigation(versionCode: Int) {
     val needHookMethod = when (versionCode) {
         in 872..878 -> "s"
         in 884..958 -> "p"
-        970 -> "s"
+        in 970..980 -> "s"
         else -> null
     }
     if (needHookMethod == null) {
@@ -547,7 +524,7 @@ fun PackageParam.hideBottomNavigation(versionCode: Int) {
     }
 
     when (versionCode) {
-        in 827..970 -> {
+        in 827..980 -> {
             findClass("com.qidian.QDReader.ui.widget.maintab.PagerSlidingTabStrip").hook {
                 injectMember {
                     method {
@@ -590,7 +567,7 @@ fun PackageParam.findViewHide(
     versionCode: Int,
 ) {
     when (versionCode) {
-        in 860..980 -> {
+        in 860..999 -> {
             findClass("com.qidian.QDReader.ui.fragment.FindFragmentReborn").hook {
                 injectMember {
                     method {
@@ -831,7 +808,7 @@ fun PackageParam.accountViewHide(
             }
         }
 
-        in 906..980 -> {
+        in 906..999 -> {
             findClass("com.qidian.QDReader.ui.fragment.main_group.QDUserAccountRebornFragment").hook {
                 injectMember {
                     method {
@@ -963,7 +940,7 @@ fun PackageParam.accountViewHide(
  */
 fun PackageParam.accountRightTopRedDot(versionCode: Int) {
     when (versionCode) {
-        in 812..980 -> {
+        in 812..999 -> {
             findClass("com.qidian.QDReader.component.config.QDAppConfigHelper\$Companion").hook {
                 injectMember {
                     method {
@@ -1051,6 +1028,7 @@ fun PackageParam.removeQSNYDialog(versionCode: Int) {
         in 884..900 -> "com.qidian.QDReader.bll.helper.h1"
         in 906..924 -> "com.qidian.QDReader.bll.helper.n1"
         in 932..970 -> "com.qidian.QDReader.bll.helper.m0"
+        980 -> "com.qidian.QDReader.bll.helper.l0"
         else -> null
     }
     needHookClass?.hook {
@@ -1063,33 +1041,6 @@ fun PackageParam.removeQSNYDialog(versionCode: Int) {
             intercept()
         }
     } ?: "移除青少年模式弹框".printlnNotSupportVersion(versionCode)
-
-
-    /*
-        /**
-         * 上级调用位置:com.qidian.QDReader.bll.manager.QDTeenagerManager.teenWorkDialog
-         */
-        val dialogClassName: String? = when (versionCode) {
-            in 758..768 -> "com.qidian.QDReader.bll.helper.v1"
-            772 -> "com.qidian.QDReader.bll.helper.w1"
-            in 776..800 -> "com.qidian.QDReader.bll.helper.t1"
-            else -> null
-        }
-        dialogClassName?.hook {
-            injectMember {
-                method {
-                    name = "show"
-                    superClass()
-                }
-                beforeHook {
-                    printCallStack(instance.javaClass.name)
-                }
-                //intercept()
-            }
-        } ?: "移除青少年模式弹框".printlnNotSupportVersion(versionCode)
-
-     */
-
 }
 
 /**
@@ -1271,7 +1222,7 @@ fun PackageParam.bookDetailHide(
             }
         }
 
-        in 827..970 -> {
+        in 827..980 -> {
             findClass("com.qidian.QDReader.ui.activity.QDBookDetailActivity").hook {
                 injectMember {
                     method {
@@ -1377,6 +1328,7 @@ fun PackageParam.bookDetailHide(
                                 950 -> 0x7F091A0B
                                 958 -> 0x7F091A12
                                 970 -> 0x7F091AA5
+                                980 -> 0x7F091AE5
                                 else -> null
                             }
                             if (tvCircleMarkLevelId != null) {
@@ -1401,7 +1353,7 @@ fun PackageParam.bookDetailHide(
                  */
                 val bookFansModuleNeedHookMethod = when (versionCode) {
                     in 827..878 -> "d"
-                    in 884..970 -> "a"
+                    in 884..980 -> "a"
                     else -> null
                 }
                 if (bookFansModuleNeedHookMethod == null) {
@@ -1457,7 +1409,7 @@ fun PackageParam.bookDetailHide(
  */
 fun PackageParam.hideReadPageBottom(versionCode: Int) {
     when (versionCode) {
-        in 827..980 -> {
+        in 827..999 -> {
             findClass("com.qidian.QDReader.readerengine.view.QDSuperEngineView").hook {
                 injectMember {
                     method {
@@ -1499,6 +1451,7 @@ fun PackageParam.comicHideBannerAd(versionCode: Int) {
         950 -> "pa.d"
         958 -> "ma.d"
         970 -> "la.d"
+        980 -> "fb.d"
         else -> null
     }
     needHookClass?.hook {
@@ -1526,7 +1479,7 @@ fun PackageParam.comicHideBannerAd(versionCode: Int) {
  */
 fun PackageParam.hideRedDot(versionCode: Int) {
     when (versionCode) {
-        in 868..980 -> {
+        in 868..999 -> {
             findClass("com.qidian.QDReader.framework.widget.customerview.SmallDotsView").hook {
                 injectMember {
                     method {

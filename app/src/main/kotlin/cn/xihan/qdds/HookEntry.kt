@@ -17,7 +17,6 @@ import com.alibaba.fastjson2.toJSONString
 import com.google.android.material.appbar.AppBarLayout
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
-import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
@@ -837,14 +836,13 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
             }
         }
 
-        in 842..970 -> {
+        in 842..980 -> {
             val needHookMethod = when (versionCode) {
                 in 842..878 -> "E"
-                in 884..970 -> "B"
+                in 884..980 -> "B"
                 else -> null
             }
-            val needHookVariableName1 = versionCode.QDUIButtonTextViewVariableName
-            if (needHookMethod != null && needHookVariableName1 != null) {
+            if (needHookMethod != null) {
                 /**
                  * BookShelfCheckIn
                  */
@@ -854,57 +852,51 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
                             name = needHookMethod
                         }
                         afterHook {
-                            val v = instance.getView<LinearLayout>(
-                                "v"
-                            )
-                            v?.let { qdv ->
-                                val e = qdv.getView<TextView>(needHookVariableName1)
-                                e?.let { etv ->
-                                    if (etv.text == "签到") {
-                                        v.performClick()
-                                    }
-                                }
+                            val qDUIButtons =
+                                instance.getViews("com.qd.ui.component.widget.QDUIButton".toClass())
+                            qDUIButtons.filter { button ->
+                                button.getViews<TextView>()
+                                    .any { textView -> textView.text == "签到" }
+                            }.forEach { button ->
+                                (button as View).performClick()
                             }
                         }
                     }
                 }
             }
 
-            // 需要Hook的变量名
-            val needHookVariableName = when (versionCode) {
-                in 884..890 -> "a"
-                in 896..970 -> "b"
-                else -> null
-            }
-            if (needHookVariableName != null && needHookVariableName1 != null) {
-                findClass("com.qidian.QDReader.ui.modules.bookshelf.view.BookShelfCheckInView").hook {
-                    injectMember {
-                        method {
-                            name = "updateCheckIn"
-                            paramCount(2)
-                            returnType = UnitType
+            findClass("com.qidian.QDReader.ui.modules.bookshelf.view.BookShelfCheckInView").hook {
+                injectMember {
+                    method {
+                        name = "updateCheckIn"
+                        paramCount(2)
+                        returnType = UnitType
+                    }
+                    afterHook {
+                        val binding = instance.getParam<Any>("binding") ?: return@afterHook
+                        val qDUIButtons =
+                            binding.getViews("com.qd.ui.component.widget.QDUIButton".toClass())
+                        qDUIButtons.filter { button ->
+                            button.getViews<TextView>()
+                                .any { textView -> textView.text == "签到" }
+                        }.forEach { button ->
+                            (button as View).performClick()
                         }
-                        afterHook {
-                            val binding = instance.getParam<Any>("binding")
-                            val d = binding?.getParam<LinearLayout>(needHookVariableName)
-                            val e1 = d?.getParam<TextView>(needHookVariableName1)
-                            e1?.let { tv ->
-                                if (tv.text == "签到") {
-                                    d.performClick()
-                                }
-                            }/*
-                                            // 隐藏每日导读方案2
-                                            val h = binding?.getParam<TextView>("h")
-                                            val parent = h?.parent as? ViewGroup
-                                            parent?.visibility = View.GONE
 
-                                             */
-                        }
+                        /*
+                                        // 隐藏每日导读方案2
+                                        val h = binding?.getParam<TextView>("h")
+                                        val parent = h?.parent as? ViewGroup
+                                        parent?.visibility = View.GONE
+
+                                         */
                     }
                 }
-            } else {
+            }.onHookClassNotFoundFailure {
                 "新版书架自动签到".printlnNotSupportVersion(versionCode)
             }
+
+
         }
 
         else -> "自动签到".printlnNotSupportVersion(versionCode)
@@ -934,6 +926,7 @@ fun PackageParam.newOldLayout(
             in 944..950 -> "r4.search\$search"
             958 -> "p4.search\$search"
             970 -> "o4.search\$search"
+            980 -> "com.qidian.QDReader.component.abtest.ABTestConfigHelper\$search"
             else -> null
         },
         "needHookNewUserAccountMethod" to when (versionCode) {
@@ -966,30 +959,31 @@ fun PackageParam.newOldLayout(
             in 932..944 -> "d0"
             in 950..958 -> "e0"
             970 -> "f0"
+            980 -> "i0"
             else -> null
         }
     )
 
-    infix fun String.hookTo(initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit) {
-        this.hook { injectMember(initiate = initiate) }
-    }
 
-    methodMap["needHookClass"]?.hookTo {
+    methodMap["needHookClass"]?.hook {
         if (methodMap["needHookNewUserAccountMethod"] == null) {
             if (versionCode in 868..890) {
                 "新版我的布局".printlnNotSupportVersion(versionCode)
             }
         } else {
-            method {
-                name = methodMap["needHookNewUserAccountMethod"]!!
-                emptyParam()
-                returnType = BooleanType
+            injectMember {
+                method {
+                    name = methodMap["needHookNewUserAccountMethod"]!!
+                    emptyParam()
+                    returnType = BooleanType
+                }
+                if (enableNewUserAccount) {
+                    replaceToTrue()
+                } else {
+                    replaceToFalse()
+                }
             }
-            if (enableNewUserAccount) {
-                replaceToTrue()
-            } else {
-                replaceToFalse()
-            }
+
         }
 
         if (methodMap["needHookBookStoreV2Method"] == null) {
@@ -997,15 +991,17 @@ fun PackageParam.newOldLayout(
                 "新旧精选布局".printlnNotSupportVersion(versionCode)
             }
         } else {
-            method {
-                name = methodMap["needHookBookStoreV2Method"]!!
-                emptyParam()
-                returnType = BooleanType
-            }
-            if (enableNewStore) {
-                replaceToTrue()
-            } else {
-                replaceToFalse()
+            injectMember {
+                method {
+                    name = methodMap["needHookBookStoreV2Method"]!!
+                    emptyParam()
+                    returnType = BooleanType
+                }
+                if (enableNewStore) {
+                    replaceToTrue()
+                } else {
+                    replaceToFalse()
+                }
             }
         }
 
@@ -1014,26 +1010,30 @@ fun PackageParam.newOldLayout(
                 "新版书架布局".printlnNotSupportVersion(versionCode)
             }
         } else {
-            method {
-                name = methodMap["needHookMethod"]!!
-                emptyParam()
-                returnType = BooleanType
-            }
-            if (enableNewBookShelfLayout) {
-                replaceToTrue()
-            } else {
-                replaceToFalse()
+            injectMember {
+                method {
+                    name = methodMap["needHookMethod"]!!
+                    emptyParam()
+                    returnType = BooleanType
+                }
+                if (enableNewBookShelfLayout) {
+                    replaceToTrue()
+                } else {
+                    replaceToFalse()
+                }
             }
 
         }
 
         if (methodMap["needHookGDTGameMethod"] != null) {
-            method {
-                name = methodMap["needHookGDTGameMethod"]!!
-                emptyParam()
-                returnType = BooleanType
+            injectMember {
+                method {
+                    name = methodMap["needHookGDTGameMethod"]!!
+                    emptyParam()
+                    returnType = BooleanType
+                }
+                replaceToFalse()
             }
-            replaceToFalse()
         }
     }
 }
@@ -1111,7 +1111,7 @@ fun PackageParam.enableLocalCard(versionCode: Int) {
             }
         }
 
-        in 896..980 -> {
+        in 896..999 -> {
             findClass("com.qidian.QDReader.repository.entity.user_account.Member").hook {
                 injectMember {
                     method {
@@ -1162,7 +1162,7 @@ fun PackageParam.enableLocalCard(versionCode: Int) {
  */
 fun PackageParam.unlockMemberBackground(versionCode: Int) {
     when (versionCode) {
-        in 827..980 -> {
+        in 827..999 -> {
             findClass("com.qidian.QDReader.ui.activity.QDReaderThemeDetailActivity").hook {
                 injectMember {
                     method {
@@ -1375,7 +1375,7 @@ fun PackageParam.freeAdReward(versionCode: Int) {
             }
         }
 
-        in 896..970 -> {
+        in 896..980 -> {
             /**
              * showRewardVideo
              * preloadRewardVideo
@@ -1449,7 +1449,7 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
             924 -> "com.qidian.QDReader.component.bll.manager.a1"
             in 932..944 -> "com.qidian.QDReader.component.bll.manager.c1"
             950 -> "com.qidian.QDReader.component.bll.manager.b1"
-            in 958..970 -> "com.qidian.QDReader.component.bll.manager.d1"
+            in 958..980 -> "com.qidian.QDReader.component.bll.manager.d1"
             else -> null
         },
         "needHookMethod" to when (versionCode) {
@@ -1458,34 +1458,32 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
             in 896..924 -> "l0"
             in 932..938 -> "p0"
             in 944..958 -> "q0"
-            970 -> "r0"
+            in 970..980 -> "r0"
             else -> null
         }
     )
-
-    infix fun String.hookTo(initiate: YukiMemberHookCreator.MemberHookCreator.() -> Unit) {
-        this.hook { injectMember(initiate = initiate) }
-    }
 
     if (classMap["needHookClass"] == null || classMap["needHookMethod"] == null) {
         "忽略限时免费批量订阅限制".printlnNotSupportVersion(versionCode)
         return
     }
-    classMap["needHookClass"]?.hookTo {
-        method {
-            name = classMap["needHookMethod"]!!
-            param(
-                "com.qidian.QDReader.framework.network.qd.QDHttpResp".toClass(),
-                JSONObjectClass,
-                LongType
-            )
-            returnType = IntType
-        }
-        beforeHook {
-            val jb = args[1] as? JSONObject
-            safeRun {
-                jb?.optJSONObject("Data")?.put("IsFreeLimit", -1)
-                args(1).set(jb)
+    classMap["needHookClass"]?.hook {
+        injectMember {
+            method {
+                name = classMap["needHookMethod"]!!
+                param(
+                    "com.qidian.QDReader.framework.network.qd.QDHttpResp".toClass(),
+                    JSONObjectClass,
+                    LongType
+                )
+                returnType = IntType
+            }
+            beforeHook {
+                val jb = args[1] as? JSONObject
+                safeRun {
+                    jb?.optJSONObject("Data")?.put("IsFreeLimit", -1)
+                    args(1).set(jb)
+                }
             }
         }
     }
@@ -1496,7 +1494,7 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
  */
 fun PackageParam.exportEmoji(versionCode: Int) {
     when (versionCode) {
-        in 884..970 -> {
+        in 884..980 -> {
             findClass("com.qidian.QDReader.ui.activity.QDStickersDetailActivity").hook {
                 injectMember {
                     method {
@@ -1521,7 +1519,7 @@ fun PackageParam.exportEmoji(versionCode: Int) {
                                 imageList += image
                             }
                         }
-                        val topBarViewId = when (versionCode) {
+                        val topBarId = when (versionCode) {
                             884 -> 0x7F09176F
                             890 -> 0x7F091784
                             in 896..900 -> 0x7F091789
@@ -1533,11 +1531,12 @@ fun PackageParam.exportEmoji(versionCode: Int) {
                             950 -> 0x7F0918A1
                             958 -> 0x7F0918A8
                             970 -> 0x7F091931
+                            980 -> 0x7F091970
                             else -> null
                         }
-                        if (topBarViewId != null) {
+                        if (topBarId != null) {
                             val topBar = XposedHelpers.callMethod(
-                                context, "findViewById", topBarViewId
+                                context, "findViewById", topBarId
                             ) as? RelativeLayout
                             if (topBar != null) {
                                 val layoutParams = RelativeLayout.LayoutParams(
@@ -1616,6 +1615,7 @@ fun PackageParam.forceTrialMode(versionCode: Int) {
     val needHookClass = when (versionCode) {
         in 896..900 -> "com.qidian.QDReader.util.v4"
         in 906..970 -> "com.qidian.QDReader.util.w4"
+        980 -> "com.qidian.QDReader.util.u4"
         else -> null
     }
 
@@ -1625,6 +1625,7 @@ fun PackageParam.forceTrialMode(versionCode: Int) {
      */
     val needHookMethod = when (versionCode) {
         in 896..970 -> "M"
+        980 -> "L"
         else -> null
     }
 
@@ -1646,7 +1647,7 @@ fun PackageParam.forceTrialMode(versionCode: Int) {
  */
 fun PackageParam.hideWelfare(versionCode: Int) {
     when (versionCode) {
-        in 906..980 -> {
+        in 906..999 -> {
             findClass("com.qidian.QDReader.ui.activity.QDSearchActivity").hook {
                 injectMember {
                     method {
@@ -1721,7 +1722,7 @@ fun PackageParam.hideWelfare(versionCode: Int) {
  */
 fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
     when (versionCode) {
-        970 -> {
+        in 970..980 -> {
             /**
              * 自动领取今日阅读时长积分
              */
@@ -1757,11 +1758,12 @@ fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
                         if (list.isNullOrEmpty()) {
                             return@afterHook
                         }
-                        val viewId = when (HookEntry.versionCode) {
+                        val pBarTagContainerId = when (versionCode) {
                             970 -> 0x7F091391
+                            980 -> 0x7F0913D0
                             else -> null
                         }
-                        if (viewId == null) {
+                        if (pBarTagContainerId == null) {
                             "自动领取每周阅读时长宝箱".printlnNotSupportVersion(HookEntry.versionCode)
                             return@afterHook
                         }
@@ -1769,7 +1771,7 @@ fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
                             name = "_\$_findCachedViewById"
                             paramCount(1)
                             returnType = ViewClass
-                        }.get(instance).call(viewId) as? FrameLayout
+                        }.get(instance).call(pBarTagContainerId) as? FrameLayout
 
                         view?.let {
                             val count = it.childCount
@@ -1835,7 +1837,7 @@ fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
                                 returnType = CharSequenceClass
                             }.call()
                             val list = listOf(
-                                "领取奖励", "开启新一周PK"
+                                "领取奖励", "开启新一周PK","匹配对手"
                             )
                             if (text in list) {
                                 button.postRandomDelay { performClick() }
@@ -1853,34 +1855,44 @@ fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
 
 /**
  * 发帖显示图片直链
+ * CirclePostEditActivity
+ * showUpLoadingDialog
  */
 fun PackageParam.postToShowImageUrl(versionCode: Int) {
-    when (versionCode) {
-        970 -> {
-            findClass("com.qidian.QDReader.ui.dialog.h9").hook {
-                injectMember {
-                    method {
-                        name = "p"
-                        emptyParam()
-                        returnType = UnitType
-                    }
-                    afterHook {
-                        val lists = instance.getParamList<List<*>>().takeUnless { it.isEmpty() }
-                            ?.filterNot { it[0] is String }
-                        lists?.firstOrNull()?.let { urlList ->
-                            urlList.mapNotNull { it?.getParam<String>("mAccessUrl") }
-                                .let { accessUrls ->
-                                    instance.getViews<TextView>()
-                                        .firstNotNullOfOrNull { it.context }
-                                        ?.showUrlListDialog(accessUrls)
-                                }
+    val needHookClass = when (versionCode) {
+        970 -> "com.qidian.QDReader.ui.dialog.h9"
+        980 -> "com.qidian.QDReader.ui.dialog.i9"
+        else -> null
+    }
+    val needHookMethod = when (versionCode) {
+        in 970..980 -> "p"
+        else -> null
+    }
+    if (needHookClass == null || needHookMethod == null) {
+        "发帖显示图片直链".printlnNotSupportVersion(versionCode)
+        return
+    }
+
+    needHookClass.hook {
+        injectMember {
+            method {
+                name = needHookMethod
+                emptyParam()
+                returnType = UnitType
+            }
+            afterHook {
+                val lists = instance.getParamList<List<*>>().takeUnless { it.isEmpty() }
+                    ?.filterNot { it[0] is String }
+                lists?.firstOrNull()?.let { urlList ->
+                    urlList.mapNotNull { it?.getParam<String>("mAccessUrl") }
+                        .let { accessUrls ->
+                            instance.getViews<TextView>()
+                                .firstNotNullOfOrNull { it.context }
+                                ?.showUrlListDialog(accessUrls)
                         }
-                    }
                 }
             }
         }
-
-        else -> "发帖显示图片直链".printlnNotSupportVersion(versionCode)
     }
 }
 

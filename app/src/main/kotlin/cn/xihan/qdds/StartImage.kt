@@ -23,7 +23,7 @@ import com.highcapable.yukihookapi.hook.type.java.UnitType
  */
 fun PackageParam.customStartImage(versionCode: Int) {
     when (versionCode) {
-        in 860..980 -> {
+        in 860..999 -> {
             findClass("com.qidian.QDReader.repository.entity.config.AppConfigBean").hook {
                 injectMember {
                     method {
@@ -37,14 +37,6 @@ fun PackageParam.customStartImage(versionCode: Int) {
                         bootWallPapers?.let {
                             var papers = it.getParam<MutableList<Any?>>("papers")
                             if (!papers.isNullOrEmpty()) {
-                                /*
-                                val iterator = papers.iterator()
-                                while (iterator.hasNext()) {
-                                    val item = iterator.next().toJSONString()
-                                    loggerE(msg = "paper: $item")
-                                }
-
-                                 */
                                 val copyPapers = papers
                                 papers.first()?.let { page ->
                                     if (page::class.java.name == "com.qidian.QDReader.repository.entity.config.Paper") {
@@ -104,7 +96,7 @@ fun PackageParam.customStartImage(versionCode: Int) {
  */
 fun PackageParam.captureTheOfficialLaunchMapList(versionCode: Int) {
     when (versionCode) {
-        in 860..980 -> {
+        in 860..999 -> {
             findClass("com.qidian.QDReader.ui.activity.splash_config.QDSplashConfigFragment").hook {
                 injectMember {
                     method {
@@ -119,7 +111,6 @@ fun PackageParam.captureTheOfficialLaunchMapList(versionCode: Int) {
                                 optionEntity.startImageOption.officialLaunchMapList
                             dataList?.forEach { item ->
                                 item?.let {
-//                                    val text = item.toJSONString()
                                     val imageUrl = item.getParam<String>("imageUrl")
                                     val paperId = item.getParam<Long>("paperId")
                                     val name = item.getParam<String>("name")
@@ -161,7 +152,7 @@ fun PackageParam.captureTheOfficialLaunchMapList(versionCode: Int) {
  */
 fun PackageParam.customLocalStartImage(versionCode: Int) {
     when (versionCode) {
-        in 944..970 -> {
+        in 944..980 -> {
             val list = listOf(
                 "com.qidian.QDReader.ui.activity.SplashActivity\$judian",
                 "com.qidian.QDReader.ui.activity.SplashActivity\$cihai"
