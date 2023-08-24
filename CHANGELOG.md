@@ -1,4 +1,16 @@
 # Changelog
+## [2.3.0](https://github.com/xihan123/QDReadHook/compare/v2.2.9...v2.3.0) (2023-08-24)
+
+
+### Features
+
+* 适配 `980` 版本 ([b68a2fc](https://github.com/xihan123/QDReadHook/commit/b68a2fc277b4c1986a49c2294bd472e8702210ca))
+
+
+### Miscellaneous
+
+* 整理代码 ([81852fd](https://github.com/xihan123/QDReadHook/commit/81852fdda8208a6eec61778f623eee6f12b61464))
+
 ## [2.2.9](https://github.com/xihan123/QDReadHook/compare/v2.2.8...v2.2.9) (2023-08-20)
 
 
