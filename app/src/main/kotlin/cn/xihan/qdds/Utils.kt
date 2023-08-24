@@ -766,16 +766,6 @@ fun Insert(list: MutableState<String>) {
 }
 
 /**
- * QDUIButton TextView VariableName
- */
-val Int.QDUIButtonTextViewVariableName
-    get() = when (this) {
-        in 884..890 -> "e"
-        in 896..970 -> "k"
-        else -> null
-    }
-
-/**
  * 传入类名 打印所有方法以及参数
  * @param className 类名
  * @param printCallStack 是否打印调用栈
@@ -918,14 +908,15 @@ fun ViewGroup.findViewsByType(viewClass: Class<*>): ArrayList<View> {
 }
 
 /**
- * 随机 100至500 之间的数
+ * 随机时间
+ * @return [Long]
  */
-val randomTime: Long get() = Random().nextInt(400) + 100L
+fun randomTime(): Long = Random().nextInt(500) + 50L
 
 /**
  * 随机延迟运行
  * @param [delayMillis] 延迟,毫秒
  * @param [action] 动作
  */
-fun View.postRandomDelay(delayMillis: Long = randomTime, action: View.() -> Unit) =
+fun View.postRandomDelay(delayMillis: Long = randomTime(), action: View.() -> Unit) =
     postDelayed({ this.action() }, delayMillis)
