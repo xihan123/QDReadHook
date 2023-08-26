@@ -3,12 +3,11 @@ package cn.xihan.qdds
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.os.Build.*
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,7 +54,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -81,8 +79,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import cn.xihan.qdds.HookEntry.Companion.NOT_SUPPORT_OLD_LAYOUT_VERSION_CODE
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppCompatActivity
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
@@ -106,22 +102,10 @@ class MainActivity : ModuleAppCompatActivity() {
         com.google.android.material.R.style.Theme_Material3_DayNight_NoActionBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContent {
-            Mdc3Theme {
-                val systemUiController = rememberSystemUiController()
-                val darkIcons = isSystemInDarkTheme()
-                SideEffect {
-                    systemUiController.apply {
-                        setSystemBarsColor(
-                            color = Color.Transparent, darkIcons = !darkIcons
-                        )
-                        setNavigationBarColor(
-                            color = Color.Transparent, darkIcons = !darkIcons
-                        )
-                    }
-
-                }
+            QTheme {
                 ComposeContent()
             }
         }

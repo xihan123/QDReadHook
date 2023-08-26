@@ -1,8 +1,17 @@
 package cn.xihan.qdds
 
 import android.content.Context
+import android.os.Build
 import android.os.Environment
 import androidx.annotation.Keep
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import com.alibaba.fastjson2.toJSONString
 import com.highcapable.yukihookapi.hook.log.loggerE
 import kotlinx.serialization.SerialName
@@ -17,6 +26,27 @@ import java.io.File
  * @创建时间 : 2022/11/17 12:27
  * @介绍 :
  */
+@Composable
+fun QTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    dynamicColor: Boolean = true,
+    content: @Composable () -> Unit
+) {
+    val colorScheme = when {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            val context = LocalContext.current
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        }
+
+        darkTheme -> darkColorScheme()
+        else -> lightColorScheme()
+    }
+    MaterialTheme(
+        colorScheme = colorScheme,
+        content = content
+    )
+}
+
 /**
  * 读取自定义主题文件夹
  */
