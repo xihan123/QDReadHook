@@ -58,195 +58,8 @@ class HookEntry : IYukiHookXposedInit {
 
         loadApp(name = QD_PACKAGE_NAME) {
 
-            if (optionEntity.mainOption.enableAutoSign) {
-                autoSignIn(versionCode, optionEntity.bookshelfOption.enableOldLayout)
-            }
-
-            if (optionEntity.mainOption.enableReceiveReadingCreditsAutomatically) {
-                receiveReadingCreditsAutomatically(versionCode)
-            }
-
-            if (optionEntity.mainOption.enablePostToShowImageUrl) {
-                postToShowImageUrl(versionCode)
-            }
-
-            if (optionEntity.mainOption.enableLocalCard) {
-                enableLocalCard(versionCode)
-            }
-
-            if (optionEntity.mainOption.enableUnlockMemberBackground) {
-                unlockMemberBackground(versionCode)
-            }
-
-            if (optionEntity.mainOption.enableFreeAdReward) {
-                freeAdReward(versionCode)
-            }
-
-            if (optionEntity.mainOption.enableIgnoreFreeSubscribeLimit) {
-                ignoreFreeSubscribeLimit(versionCode)
-            }
-
-            if (optionEntity.mainOption.enableExportEmoji) {
-                exportEmoji(versionCode)
-            }
-
-            if (optionEntity.mainOption.enableForceTrialMode) {
-                forceTrialMode(versionCode)
-            }
-
-            if (optionEntity.hideBenefitsOption.enableHideWelfare) {
-                hideWelfare(versionCode)
-            }
-
-            if (optionEntity.bookshelfOption.enableOldLayout && versionCode < NOT_SUPPORT_OLD_LAYOUT_VERSION_CODE) {
-                enableOldLayout(versionCode)
-            }
-
-            readerPageChapterReviewPictures(
-                versionCode = versionCode,
-                enableShowReaderPageChapterSaveRawPictures = optionEntity.readPageOption.enableShowReaderPageChapterSaveRawPicture,
-                enableShowReaderPageChapterSavePictureDialog = optionEntity.readPageOption.enableShowReaderPageChapterSavePictureDialog,
-                enableShowReaderPageChapterSaveAudioDialog = optionEntity.readPageOption.enableShowReaderPageChapterSaveAudioDialog,
-                enableCopyReaderPageChapterComment = optionEntity.readPageOption.enableCopyReaderPageChapterComment,
-            )
-
-            if (optionEntity.readPageOption.enableReadTimeDouble) {
-                readTimeDouble(
-                    versionCode = versionCode,
-                    enableVIPChapterTime = optionEntity.readPageOption.enableVIPChapterTime,
-                    doubleSpeed = optionEntity.readPageOption.doubleSpeed
-                )
-            }
-
-            if (optionEntity.readPageOption.enableCustomReaderThemePath) {
-                customReadBackgroundPath(versionCode)
-            }
-
-            if (optionEntity.advOption.advOptionSelectedList.isNotEmpty()) {
-                advOption(versionCode, optionEntity.advOption.advOptionSelectedList)
-            }
-
-            interceptOption(versionCode, optionEntity.interceptOption.configurations)
-
-            if ((optionEntity.viewHideOption.homeOption.configurations.any { it.selected })) {
-                homeOption(
-                    versionCode, optionEntity.viewHideOption.homeOption.configurations
-                )
-            }
-
-            if (optionEntity.viewHideOption.homeOption.enableCaptureBottomNavigation) {
-                hideBottomNavigation(versionCode)
-            }
-
-            if (optionEntity.viewHideOption.selectedOption.enableSelectedHide) {
-                selectedOption(versionCode)
-            }
-
-            if (optionEntity.viewHideOption.selectedOption.enableSelectedTitleHide) {
-                selectedTitleOption(versionCode)
-            }
-
-            if (optionEntity.viewHideOption.enableSearchHideAllView) {
-                hideSearchAllView(versionCode)
-            }
-
-            if (optionEntity.viewHideOption.enableDisableQSNModeDialog) {
-                removeQSNYDialog(versionCode)
-            }
-
-            if (optionEntity.viewHideOption.enableHideComicBannerAd) {
-                comicHideBannerAd(versionCode)
-            }
-
-            if (optionEntity.viewHideOption.accountOption.enableHideAccountRightTopRedDot) {
-                accountRightTopRedDot(versionCode)
-            }
-
-            if (optionEntity.viewHideOption.findOption.enableHideFindItem) {
-                findViewHide(versionCode)
-            }
-
-            if (optionEntity.viewHideOption.accountOption.enableHideAccount) {
-                accountViewHide(versionCode)
-            }
-
-            if (optionEntity.viewHideOption.enableHideRedDot) {
-                hideRedDot(versionCode)
-            }
-
-            if (versionCode >= 868) {
-                newOldLayout(
-                    versionCode = versionCode,
-                    enableNewUserAccount = optionEntity.viewHideOption.accountOption.enableNewAccountLayout,
-                    enableNewStore = optionEntity.mainOption.enableNewStore,
-                    enableNewBookShelfLayout = optionEntity.bookshelfOption.enableNewBookShelfLayout
-                )
-            }
-
-            if (optionEntity.viewHideOption.bookDetailOptions.enableHideBookDetail) {
-                bookDetailHide(versionCode)
-            }
-
-            if (optionEntity.viewHideOption.bookLastPageOptions.enableHideBookLastPage) {
-                readBookLastPage(
-                    versionCode = versionCode,
-                    shieldAlsoRead = isEnableShieldOption(16),
-                    shieldSimilarRecommend = isEnableShieldOption(17),
-                    shieldRecommendation = isEnableShieldOption(18),
-                    hideCircle = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
-                        optionEntity.viewHideOption.bookLastPageOptions.configurations[0].title
-                    ),
-                    hideAlsoRead = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
-                        optionEntity.viewHideOption.bookLastPageOptions.configurations[1].title
-                    ),
-                    hideRecommendation = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
-                        optionEntity.viewHideOption.bookLastPageOptions.configurations[2].title
-                    ),
-                    hideSimilarRecommend = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
-                        optionEntity.viewHideOption.bookLastPageOptions.configurations[3].title
-                    ),
-                    hideBookList = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
-                        optionEntity.viewHideOption.bookLastPageOptions.configurations[4].title
-                    ),
-                    hideTryRead = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
-                        optionEntity.viewHideOption.bookLastPageOptions.configurations[5].title
-                    ),
-                    hideAdView = isEnableAdvOption(16)
-                )
-            }
-
-            if (optionEntity.replaceRuleOption.enableReplace) {
-                enableReplace(versionCode)
-            }
-
-            if (optionEntity.startImageOption.enableCustomStartImage) {
-                customStartImage(versionCode)
-            }
-
-            if (optionEntity.startImageOption.enableCaptureTheOfficialLaunchMapList) {
-                captureTheOfficialLaunchMapList(versionCode)
-            }
-
-            if (optionEntity.startImageOption.enableCustomLocalStartImage) {
-                customLocalStartImage(versionCode)
-            }
-
-            if (optionEntity.bookshelfOption.enableCustomBookShelfTopImage) {
-                customBookShelfTopImage(versionCode)
-            }
-
-            splashPage(
-                versionCode = versionCode,
-                isEnableSplash = optionEntity.splashOption.enableSplash,
-                isEnableCustomSplash = optionEntity.splashOption.enableCustomSplash
-            )
-
-            if (optionEntity.shieldOption.shieldOptionValueSet.isNotEmpty()) {
-                shieldOption(versionCode, optionEntity.shieldOption.shieldOptionValueSet)
-            }
-
-            if (optionEntity.shieldOption.enableQuickShieldDialog) {
-                quickShield(versionCode)
+            if (optionEntity.allowDisclaimers) {
+                mainFunction(versionCode = versionCode)
             }
 
             /**
@@ -313,42 +126,6 @@ class HookEntry : IYukiHookXposedInit {
             }
 
              */
-
-            findClass("com.qidian.QDReader.ui.activity.MoreActivity").hook {
-                injectMember {
-                    method {
-                        name = "initWidget"
-                        emptyParam()
-                        returnType = UnitType
-                    }
-                    afterHook {
-                        safeRun {
-                            val readMoreSetting =
-                                instance.getView<RelativeLayout>("readMoreSetting")
-                            // 获取 readMoreSetting 子控件
-                            val readMoreSettingChild = readMoreSetting?.getChildAt(0) as? TextView
-                            readMoreSettingChild?.text = "阅读设置/模块设置(长按)"
-
-                            readMoreSetting?.setOnLongClickListener {
-                                instance<Activity>().apply {
-                                    startActivity(Intent(this, MainActivity::class.java))
-                                }
-                                true
-                            }
-                        }
-                    }
-                }
-
-                injectMember {
-                    method {
-                        name = "onCreate"
-                        param(BundleClass)
-                    }
-                    afterHook {
-                        instance<Activity>().registerModuleAppActivities()
-                    }
-                }
-            }
 
             /**
              * 调试-打印返回数据
@@ -461,6 +238,237 @@ class HookEntry : IYukiHookXposedInit {
 
         }
 
+    }
+
+    private fun PackageParam.mainFunction(versionCode: Int) {
+
+
+        if (optionEntity.mainOption.enableAutoSign) {
+            autoSignIn(versionCode, optionEntity.bookshelfOption.enableOldLayout)
+        }
+
+        if (optionEntity.mainOption.enableReceiveReadingCreditsAutomatically) {
+            receiveReadingCreditsAutomatically(versionCode)
+        }
+
+        if (optionEntity.mainOption.enablePostToShowImageUrl) {
+            postToShowImageUrl(versionCode)
+        }
+
+        if (optionEntity.mainOption.enableLocalCard) {
+            enableLocalCard(versionCode)
+        }
+
+        if (optionEntity.mainOption.enableUnlockMemberBackground) {
+            unlockMemberBackground(versionCode)
+        }
+
+        if (optionEntity.mainOption.enableFreeAdReward) {
+            freeAdReward(versionCode)
+        }
+
+        if (optionEntity.mainOption.enableIgnoreFreeSubscribeLimit) {
+            ignoreFreeSubscribeLimit(versionCode)
+        }
+
+        if (optionEntity.mainOption.enableExportEmoji) {
+            exportEmoji(versionCode)
+        }
+
+        if (optionEntity.mainOption.enableForceTrialMode) {
+            forceTrialMode(versionCode)
+        }
+
+        if (optionEntity.hideBenefitsOption.enableHideWelfare) {
+            hideWelfare(versionCode)
+        }
+
+        if (optionEntity.bookshelfOption.enableOldLayout && versionCode < NOT_SUPPORT_OLD_LAYOUT_VERSION_CODE) {
+            enableOldLayout(versionCode)
+        }
+
+        readerPageChapterReviewPictures(
+            versionCode = versionCode,
+            enableShowReaderPageChapterSaveRawPictures = optionEntity.readPageOption.enableShowReaderPageChapterSaveRawPicture,
+            enableShowReaderPageChapterSavePictureDialog = optionEntity.readPageOption.enableShowReaderPageChapterSavePictureDialog,
+            enableShowReaderPageChapterSaveAudioDialog = optionEntity.readPageOption.enableShowReaderPageChapterSaveAudioDialog,
+            enableCopyReaderPageChapterComment = optionEntity.readPageOption.enableCopyReaderPageChapterComment,
+        )
+
+        if (optionEntity.readPageOption.enableReadTimeDouble) {
+            readTimeDouble(
+                versionCode = versionCode,
+                enableVIPChapterTime = optionEntity.readPageOption.enableVIPChapterTime,
+                doubleSpeed = optionEntity.readPageOption.doubleSpeed
+            )
+        }
+
+        if (optionEntity.readPageOption.enableCustomReaderThemePath) {
+            customReadBackgroundPath(versionCode)
+        }
+
+        if (optionEntity.advOption.advOptionSelectedList.isNotEmpty()) {
+            advOption(versionCode, optionEntity.advOption.advOptionSelectedList)
+        }
+
+        interceptOption(versionCode, optionEntity.interceptOption.configurations)
+
+        if ((optionEntity.viewHideOption.homeOption.configurations.any { it.selected })) {
+            homeOption(
+                versionCode, optionEntity.viewHideOption.homeOption.configurations
+            )
+        }
+
+        if (optionEntity.viewHideOption.homeOption.enableCaptureBottomNavigation) {
+            hideBottomNavigation(versionCode)
+        }
+
+        if (optionEntity.viewHideOption.selectedOption.enableSelectedHide) {
+            selectedOption(versionCode)
+        }
+
+        if (optionEntity.viewHideOption.selectedOption.enableSelectedTitleHide) {
+            selectedTitleOption(versionCode)
+        }
+
+        if (optionEntity.viewHideOption.enableSearchHideAllView) {
+            hideSearchAllView(versionCode)
+        }
+
+        if (optionEntity.viewHideOption.enableDisableQSNModeDialog) {
+            removeQSNYDialog(versionCode)
+        }
+
+        if (optionEntity.viewHideOption.enableHideComicBannerAd) {
+            comicHideBannerAd(versionCode)
+        }
+
+        if (optionEntity.viewHideOption.accountOption.enableHideAccountRightTopRedDot) {
+            accountRightTopRedDot(versionCode)
+        }
+
+        if (optionEntity.viewHideOption.findOption.enableHideFindItem) {
+            findViewHide(versionCode)
+        }
+
+        if (optionEntity.viewHideOption.accountOption.enableHideAccount) {
+            accountViewHide(versionCode)
+        }
+
+        if (optionEntity.viewHideOption.enableHideRedDot) {
+            hideRedDot(versionCode)
+        }
+
+        if (versionCode >= 868) {
+            newOldLayout(
+                versionCode = versionCode,
+                enableNewUserAccount = optionEntity.viewHideOption.accountOption.enableNewAccountLayout,
+                enableNewStore = optionEntity.mainOption.enableNewStore,
+                enableNewBookShelfLayout = optionEntity.bookshelfOption.enableNewBookShelfLayout
+            )
+        }
+
+        if (optionEntity.viewHideOption.bookDetailOptions.enableHideBookDetail) {
+            bookDetailHide(versionCode)
+        }
+
+        if (optionEntity.viewHideOption.bookLastPageOptions.enableHideBookLastPage) {
+            readBookLastPage(
+                versionCode = versionCode,
+                shieldAlsoRead = isEnableShieldOption(16),
+                shieldSimilarRecommend = isEnableShieldOption(17),
+                shieldRecommendation = isEnableShieldOption(18),
+                hideCircle = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
+                    optionEntity.viewHideOption.bookLastPageOptions.configurations[0].title
+                ),
+                hideAlsoRead = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
+                    optionEntity.viewHideOption.bookLastPageOptions.configurations[1].title
+                ),
+                hideRecommendation = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
+                    optionEntity.viewHideOption.bookLastPageOptions.configurations[2].title
+                ),
+                hideSimilarRecommend = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
+                    optionEntity.viewHideOption.bookLastPageOptions.configurations[3].title
+                ),
+                hideBookList = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
+                    optionEntity.viewHideOption.bookLastPageOptions.configurations[4].title
+                ),
+                hideTryRead = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
+                    optionEntity.viewHideOption.bookLastPageOptions.configurations[5].title
+                ),
+                hideAdView = isEnableAdvOption(16)
+            )
+        }
+
+        if (optionEntity.replaceRuleOption.enableReplace) {
+            enableReplace(versionCode)
+        }
+
+        if (optionEntity.startImageOption.enableCustomStartImage) {
+            customStartImage(versionCode)
+        }
+
+        if (optionEntity.startImageOption.enableCaptureTheOfficialLaunchMapList) {
+            captureTheOfficialLaunchMapList(versionCode)
+        }
+
+        if (optionEntity.startImageOption.enableCustomLocalStartImage) {
+            customLocalStartImage(versionCode)
+        }
+
+        if (optionEntity.bookshelfOption.enableCustomBookShelfTopImage) {
+            customBookShelfTopImage(versionCode)
+        }
+
+        splashPage(
+            versionCode = versionCode,
+            isEnableSplash = optionEntity.splashOption.enableSplash,
+            isEnableCustomSplash = optionEntity.splashOption.enableCustomSplash
+        )
+
+        if (optionEntity.shieldOption.shieldOptionValueSet.isNotEmpty()) {
+            shieldOption(versionCode, optionEntity.shieldOption.shieldOptionValueSet)
+        }
+
+        if (optionEntity.shieldOption.enableQuickShieldDialog) {
+            quickShield(versionCode)
+        }
+
+        findClass("com.qidian.QDReader.ui.activity.MoreActivity").hook {
+            injectMember {
+                method {
+                    name = "initWidget"
+                    emptyParam()
+                    returnType = UnitType
+                }
+                afterHook {
+                    safeRun {
+                        val readMoreSetting =
+                            instance.getView<RelativeLayout>("readMoreSetting")
+                        // 获取 readMoreSetting 子控件
+                        val readMoreSettingChild = readMoreSetting?.getChildAt(0) as? TextView
+                        readMoreSettingChild?.text = "阅读设置/模块设置(长按)"
+
+                        readMoreSetting?.setOnLongClickListener {
+                            instance<Activity>().apply {
+                                startActivity(Intent(this, MainActivity::class.java))
+                            }
+                            true
+                        }
+                    }
+                }
+            }
+
+            injectMember {
+                method {
+                    name = "onCreate"
+                    param(BundleClass)
+                }
+                afterHook {
+                    instance<Activity>().registerModuleAppActivities()
+                }
+            }
+        }
     }
 
     companion object {
@@ -1837,7 +1845,7 @@ fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
                                 returnType = CharSequenceClass
                             }.call()
                             val list = listOf(
-                                "领取奖励", "开启新一周PK","匹配对手"
+                                "领取奖励", "开启新一周PK", "匹配对手"
                             )
                             if (text in list) {
                                 button.postRandomDelay { performClick() }

@@ -1,0 +1,24 @@
+---
+name: 新特性请求
+description: 提出建议
+labels: [enhancement]
+title: "[Feature Request] "
+body:
+  - type: textarea
+    attributes:
+      label: 你的请求是否与某个问题相关？
+      placeholder: 请清晰准确表述该问题。
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 描述你想要的解决方案
+      placeholder: 请清晰准确描述新特性的预期行为
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 其他信息
+      placeholder: 其他关于新特性的信息或者截图
+    validations:
+      required: false

@@ -5,6 +5,7 @@
 [![Latest Release](https://img.shields.io/github/release/xihan123/QDReadHook.svg)](https://github.com/xihan123/QDReadHook/releases)
 ![downloads](https://img.shields.io/github/downloads/xihan123/QDReadHook/total)
 [![Blank](https://img.shields.io/github/downloads/Xposed-Modules-Repo/cn.xihan.qdds/total?label=LSPosed%20Repo&logo=Android&style=flat&labelColor=F48FB1&logoColor=ffffff)](https://github.com/Xposed-Modules-Repo/cn.xihan.qdds/releases)
+[![license](https://img.shields.io/github/license/xihan123/QDReadHook.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
 
 ---
 
@@ -107,7 +108,7 @@
 
 * 因为修改了签名,所以快速登录无法使用,只能用手机号登录!!!所以如果可以还是使用 Xp 模式
 
-* 用 [LSPatch](https://github.com/LSPosed/LSPatch) 把 [SignHook](https://github.com/xihan123/SignHook) 打包进目标平台即可调用第三方(登录/分享)
+* 用 [LSPatch](https://github.com/LSPosed/LSPatch) 把 [SignHook](https://github.com/xihan123/SignHook) 打包进目标平台即可调用第三方(登录/分享)等
 
   * QQ
   * 微信
@@ -119,31 +120,30 @@
 
 ## 免责声明
 
-* 该Xposed模块仅供学习交流使用，使用者必须自行承担使用该模块所带来的风险和责任。
+* 本模块是基于Xposed框架开发的，使用本模块需要您的设备已经安装了Xposed框架。Xposed框架是一种修改Android系统行为的工具，它可能会导致系统不稳定、无法开机或损坏设备。您在使用本模块之前，应该了解Xposed框架的原理和风险，并自行承担后果。
 
-* 该Xposed模块可以修改系统行为，使用者应该仔细审查模块的操作并自行决定是否使用。
-* 使用该Xposed模块可能导致设备不稳定、崩溃和数据丢失等问题。作者不对任何因使用该模块而导致的问题承担责任。
+* 开发者不对本模块的功能和效果做任何保证，也不对本模块可能造成的任何损失或损害负责。您在使用本模块时，应该遵守当地的法律法规，尊重他人的合法权益，不得利用本模块进行任何违法或不道德的行为。
+
 * 开发者保留对该Xposed模块的更新、修改、暂停、终止等权利，使用者应该自行确认其使用版本的安全性和稳定性。
-* 任何人因使用该Xposed模块而导致的任何问题，作者不承担任何责任，一切后果由使用者自行承担。
-* 对于使用该Xposed模块所产生的任何问题，作者不提供任何形式的技术支持和解决方案。
 
-请在使用该Xposed模块之前认真阅读以上免责声明并自行权衡风险和利益，如有异议请勿使用。如果您使用了该Xposed模块，即代表您已经完全接受本免责声明。
+
+本模块仅供学习交流，请在下载24小时内删除。在使用该Xposed模块之前认真阅读以上免责声明并自行权衡风险和利益，如有异议请勿使用。如果您使用了该Xposed模块，即代表您已经完全接受本免责声明。
 
 ---
 
 ## 截图
 
-![image1](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/1.png)
-![image1-1](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/1-1.png)
-![image2](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/2.png)
-![image3](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/3.png)
-![image4](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/4.png)
-![image5](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/5.png)
-![image6](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/6.png)
-![image7](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/7.png)
-![image8](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/8.png)
-![image9](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/9.png)
-![image10](https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/10.png)
+<table>
+<tr>
+<td>
+<img src="https://github.com/xihan123/QDReadHook/blob/master/Screenshots/1.png?raw=true" width=270 >
+</td>
+<td>
+<img src="https://github.com/xihan123/QDReadHook/blob/master/Screenshots/2.png?raw=true" width=270 >
+</td>
+</tr>
+
+</table>
 
 ---
 
@@ -169,3 +169,7 @@
 </table>
 
 ---
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=xihan123/QDReadHook&type=Date)](https://star-history.com/#xihan123/QDReadHook&Date)

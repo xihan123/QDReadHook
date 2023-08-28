@@ -1,0 +1,55 @@
+name: 反馈 Bug
+description: 反馈错误或异常行为。
+labels: [bug]
+title: "[Bug] "
+body:
+  - type: textarea
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 预期行为
+      placeholder: 正常情况下应该发生什么
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 实际行为
+      placeholder: 实际上发生了什么
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: LSPosed 版本
+      description: 不要填用“最新版”。给出四位版本号，不然 issue 会被关闭。
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Android 版本
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: 模块 版本
+      description: 不要填用“最新版”。给出三位版本号，不然 issue 会被关闭。
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: 起点 版本
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Logs/日志
+      description: 使用问题请提供从管理器保存的日志压缩包；激活问题请提供 [bugreport](https://developer.android.google.cn/studio/debug/bug-report?hl=zh-cn) 日志。没有日志附件的问题会被关闭。
+      placeholder: 点击文本框底栏上传日志压缩包，禁止上传到其它网站或使用外链提供日志。
+    validations:
+      required: true

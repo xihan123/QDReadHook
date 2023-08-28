@@ -26,12 +26,9 @@ val androidMinSdkVersion by extra(26)
 android {
     namespace = "cn.xihan.qdds"
     compileSdk = androidTargetSdkVersion
-    compileSdkPreview = "UpsideDownCake"
 
     androidResources.additionalParameters += arrayOf(
-        "--allow-reserved-package-id",
-        "--package-id",
-        "0x64"
+        "--allow-reserved-package-id", "--package-id", "0x64"
     )
 
     signingConfigs {
@@ -170,8 +167,6 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.navigation.compose)
     implementation(libs.activity.compose)
-    implementation(libs.com.google.accompanist.systemuicontroller)
-    implementation(libs.com.google.accompanist.themeadapter.material3)
     implementation(libs.com.google.android.material)
 
     implementation(libs.yukihook.api)
@@ -187,8 +182,7 @@ val service = project.extensions.getByType<JavaToolchainService>()
 val customLauncher = service.launcherFor {
     languageVersion.set(JavaLanguageVersion.of("17"))
 }
-project.tasks.withType<org.jetbrains.kotlin.gradle.tasks.UsesKotlinJavaToolchain>()
-    .configureEach {
+project.tasks.withType<org.jetbrains.kotlin.gradle.tasks.UsesKotlinJavaToolchain>().configureEach {
         kotlinJavaToolchain.toolchain.use(customLauncher)
     }
 

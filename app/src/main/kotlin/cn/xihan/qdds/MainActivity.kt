@@ -55,6 +55,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -123,6 +125,8 @@ class MainActivity : ModuleAppCompatActivity() {
             )
         )
         var allowDisclaimers by rememberMutableStateOf(value = HookEntry.optionEntity.allowDisclaimers)
+        var currentDisclaimersVersionCode by rememberMutableStateOf(value = HookEntry.optionEntity.currentDisclaimersVersionCode)
+        val latestDisclaimersVersionCode by rememberMutableStateOf(value = HookEntry.optionEntity.latestDisclaimersVersionCode)
         val items = listOf(
             MainScreen.MainSetting, MainScreen.PurifySetting, MainScreen.About
         )
@@ -146,7 +150,7 @@ class MainActivity : ModuleAppCompatActivity() {
             }, navigationIcon = {}, scrollBehavior = null
             )
         }, bottomBar = {
-            if (permission.value && allowDisclaimers) {
+            if (permission.value && allowDisclaimers && currentDisclaimersVersionCode == latestDisclaimersVersionCode) {
                 BottomNavigationBar(
                     navController = navController,
                     items = items,
@@ -156,9 +160,8 @@ class MainActivity : ModuleAppCompatActivity() {
                 )
             }
         }) { paddingValues ->
-
             if (permission.value) {
-                if (allowDisclaimers) {
+                if (allowDisclaimers && currentDisclaimersVersionCode == latestDisclaimersVersionCode) {
                     NavHost(
                         navController = navController,
                         startDestination = MainScreen.MainSetting.route,
@@ -187,13 +190,20 @@ class MainActivity : ModuleAppCompatActivity() {
 
                     }
                 } else {
-                    Disclaimers(modifier = Modifier.padding(paddingValues), onAgreeClick = {
-                        allowDisclaimers = true
-                        HookEntry.optionEntity.allowDisclaimers = true
-                        updateOptionEntity()
-                    }, onDisagreeClick = {
-                        finish()
-                    })
+                    Disclaimers(
+                        modifier = Modifier.padding(paddingValues),
+                        onAgreeClick = {
+                            allowDisclaimers = true
+                            currentDisclaimersVersionCode = latestDisclaimersVersionCode
+                            HookEntry.optionEntity.allowDisclaimers = true
+                            HookEntry.optionEntity.currentDisclaimersVersionCode =
+                                latestDisclaimersVersionCode
+                            updateOptionEntity()
+                        },
+                        onDisagreeClick = {
+                            finish()
+                        }
+                    )
                 }
             } else {
                 Column(
@@ -202,7 +212,7 @@ class MainActivity : ModuleAppCompatActivity() {
                 ) {
 
                     Text(
-                        "需要存储以及安装未知应用权限",
+                        "需要存储以及安装未知应用权限\n存储权限:用来管理位于外部存储的配置文件\n安装未知应用权限:Android 11及以上读取其他应用版本号需要此权限",
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Bold
@@ -2109,19 +2119,17 @@ fun Disclaimers(
     onDisagreeClick: () -> Unit = {},
     displayButton: Boolean = true,
 ) {
-    var remainingTime by rememberMutableStateOf(value = 3L)
+    var remainingTime by rememberSaveable { mutableLongStateOf(value = 30L) }
     if (displayButton) {
         val isActive =
             LocalLifecycleOwner.current.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
         LaunchedEffect(isActive) {
             while (isActive && remainingTime > 0) {
                 delay(1000)
-                remainingTime -= 1
+                remainingTime.takeUnless { it == 0L }?.let { remainingTime-- }
             }
         }
     }
-
-
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -2133,7 +2141,9 @@ fun Disclaimers(
             text = stringResource(id = R.string.disclaimers_title),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 8.dp)
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .clickable { remainingTime = 0L }
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = stringResource(id = R.string.disclaimers_message))
