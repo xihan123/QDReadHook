@@ -642,17 +642,17 @@ fun MutableList<OptionEntity.SelectedModel>.updateSelectedListOptionEntity(newCo
             plusAssign(newConfig)
         }
     }
-    return this
+    return this.sortedBy { it.title }.toMutableList()
 }
 
 /**
  * 删除列表选项标题
  */
-fun MutableList<OptionEntity.SelectedModel>.deleteSelectedOption(newConfigurations: List<OptionEntity.SelectedModel>): MutableList<OptionEntity.SelectedModel> {
+fun MutableList<OptionEntity.SelectedModel>.deleteSelectedOption(newConfigurations: List<OptionEntity.SelectedModel>): List<OptionEntity.SelectedModel> {
     this.removeAll {
         it.title !in newConfigurations.map { newConfigurationItem -> newConfigurationItem.title }
     }
-    return this
+    return this.sortedBy { it.title }
 }
 
 /**
@@ -665,7 +665,7 @@ fun MutableList<String>.updateStringListOptionEntity(newConfigurations: List<Str
             plusAssign(newConfig)
         }
     }
-    return this
+    return this.sortedBy { it }
 }
 
 fun String.loge() {
@@ -823,15 +823,20 @@ fun Any?.mToString(): String = when (this) {
     is Serializable -> this.toJSONString()
     is Parcelable -> this.toJSONString()
     else -> {
-        if (this?.javaClass?.name?.contains("Entity") == true || this?.javaClass?.name?.contains("Model") == true || this?.javaClass?.name?.contains(
-                "Bean"
-            ) == true || this?.javaClass?.name?.contains("Result") == true
-        ) this.toJSONString()
-        else if (this?.javaClass?.name?.contains("QDHttpResp") == true) {
+        val list = listOf(
+            "Entity",
+            "Model",
+            "Bean",
+            "Result",
+        )
+
+        if (list.any { this?.javaClass?.name?.contains(it) == true })
+            this.toJSONString()
+        else if (this?.javaClass?.name?.contains("QDHttpResp") == true)
             this.getParamList<String>().toString()
-        } else {
+        else
             this?.toString() ?: "null"
-        }
+
     }
 }
 
