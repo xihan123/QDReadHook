@@ -298,6 +298,7 @@ data class OptionEntity(
             SelectedModel("异步子更新设备任务|com.qidian.QDReader.start.AsyncChildUpdateDeviceTask"),
             SelectedModel("异步子崩溃任务|com.qidian.QDReader.start.AsyncChildCrashTask"),
             SelectedModel("异步子点播上传任务|com.qidian.QDReader.start.AsyncChildVODUploadTask"),
+            SelectedModel("异步子青少年和网络回调任务|com.qidian.QDReader.start.AsyncChildTeenagerAndNetCallbackTask"),
             SelectedModel("同步推送任务|com.qidian.QDReader.start.SyncPushTask"),
             SelectedModel("同步Bugly-APM任务|com.qidian.QDReader.start.SyncBuglyApmTask"),
             SelectedModel("同步挂钩通道任务|com.qidian.QDReader.start.SyncHookChannelTask")
@@ -600,7 +601,7 @@ fun readOptionEntity(): OptionEntity {
                     val newConfiguration = newOptionEntity.interceptOption.configurations
 
                     if (newConfiguration.isNotEmpty() && interceptConfigurations.isNotEmpty()) {
-                        interceptConfigurations.deleteSelectedOption(newConfiguration)
+                        interceptOption.configurations = interceptConfigurations.deleteSelectedOption(newConfiguration)
                     }
                     if (interceptConfigurations.size != newConfiguration.size) {
                         interceptOption.configurations =
