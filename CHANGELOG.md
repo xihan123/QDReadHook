@@ -1,4 +1,18 @@
 # Changelog
+## [2.3.1](https://github.com/xihan123/QDReadHook/compare/v2.3.0...v2.3.1) (2023-08-29)
+
+
+### Features
+
+* **拦截设置:** 新增一处拦截选项(非`980`+版本慎开) ([ed663b6](https://github.com/xihan123/QDReadHook/commit/ed663b6601ede7d0fc664218f7020a9a286b7190))
+* 模块管理页面支持 `Android12` + 动态配色 ([408f92a](https://github.com/xihan123/QDReadHook/commit/408f92a0237a2d718771a7c1f16fd48979a0c8cc))
+
+
+### Miscellaneous
+
+* 新增或移除选项时根据标题重新排序 ([f795dc1](https://github.com/xihan123/QDReadHook/commit/f795dc145fc346feaea39e4747ea03b07bbac806))
+* 更新免责声明和预览图以及其他 ([ceaf241](https://github.com/xihan123/QDReadHook/commit/ceaf2415ff9e3fced7008178e5cb7a14b45e6d56))
+
 ## [2.3.0](https://github.com/xihan123/QDReadHook/compare/v2.2.9...v2.3.0) (2023-08-24)
 
 
