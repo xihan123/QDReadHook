@@ -278,7 +278,6 @@ data class OptionEntity(
      */
     @Keep
     @Serializable
-    @Immutable
     data class InterceptOption(
         @SerialName("configurations") var configurations: List<SelectedModel> = listOf(
             SelectedModel("隐私政策更新弹框"),
@@ -288,6 +287,7 @@ data class OptionEntity(
             SelectedModel("闪屏广告页面"),
             SelectedModel("阅读页水印"),
             SelectedModel("发帖图片水印"),
+            SelectedModel("自动跳转精选"),
             SelectedModel("异步主GDT广告任务|com.qidian.QDReader.start.AsyncMainGDTTask"),
             SelectedModel("异步主游戏广告SDK任务|com.qidian.QDReader.start.AsyncMainGameADSDKTask"),
             SelectedModel("异步主游戏下载任务|com.qidian.QDReader.start.AsyncMainGameDownloadTask"),

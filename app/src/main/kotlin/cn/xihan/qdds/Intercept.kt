@@ -2,6 +2,7 @@ package cn.xihan.qdds
 
 
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.highcapable.yukihookapi.hook.type.android.IntentClass
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
 import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
@@ -31,6 +32,7 @@ fun PackageParam.interceptOption(
             "闪屏广告页面" -> interceptSplashAdActivity(versionCode)
             "阅读页水印" -> interceptReadBookPageWaterMark(versionCode)
             "发帖图片水印" -> interceptPostImageWatermark(versionCode)
+            "自动跳转精选" -> interceptAutoJumpSelected(versionCode)
             else -> interceptList.add(selected.title)
         }
     }
@@ -244,6 +246,26 @@ fun PackageParam.interceptPostImageWatermark(versionCode: Int) {
             }
         }
         else -> "发帖图片水印".printlnNotSupportVersion(versionCode)
+    }
+}
+
+/**
+ * 拦截自动跳转精选
+ */
+fun PackageParam.interceptAutoJumpSelected(versionCode: Int){
+    when(versionCode){
+       in 980..994 -> {
+            findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
+                injectMember {
+                    method {
+                        name = "checkOpenView"
+                        param(IntentClass)
+                        returnType = UnitType
+                    }
+                    intercept()
+                }
+            }
+       }
     }
 }
 
