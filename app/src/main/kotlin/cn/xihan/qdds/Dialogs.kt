@@ -119,7 +119,9 @@ inline fun AlertBuilder<*>.singleChoiceItems(
     checkItem: CharSequence,
     crossinline onItemSelected: (DialogInterface, Int) -> Unit
 ) =
-    singleChoiceItems(items.map { it.toString() }, items.indexOfFirst { it == checkItem }) { dialog, which ->
+    singleChoiceItems(
+        items.map { it.toString() },
+        items.indexOfFirst { it == checkItem }) { dialog, which ->
         onItemSelected(dialog, which)
     }
 
@@ -128,7 +130,9 @@ inline fun <T> AlertBuilder<*>.singleChoiceItems(
     checkItem: T,
     crossinline onItemSelected: (DialogInterface, T, Int) -> Unit
 ) =
-    singleChoiceItems(items.map { it.toString() }, items.indexOfFirst { it == checkItem }) { dialog, which ->
+    singleChoiceItems(
+        items.map { it.toString() },
+        items.indexOfFirst { it == checkItem }) { dialog, which ->
         onItemSelected(dialog, items[which], which)
     }
 
@@ -219,7 +223,10 @@ interface AlertBuilder<out D : DialogInterface> {
         onClicked: (dialog: DialogInterface) -> Unit,
     )
 
-    fun items(items: List<CharSequence>, onItemSelected: (dialog: DialogInterface, index: Int) -> Unit)
+    fun items(
+        items: List<CharSequence>,
+        onItemSelected: (dialog: DialogInterface, index: Int) -> Unit
+    )
 
     fun singleChoiceItems(
         items: List<CharSequence>,
@@ -335,7 +342,11 @@ abstract class AlertDialogBuilder : AlertBuilder<AlertDialog> {
         }
     }
 
-    override fun singleChoiceItems(items: List<CharSequence>, checkedIndex: Int, onItemSelected: (DialogInterface, Int) -> Unit) {
+    override fun singleChoiceItems(
+        items: List<CharSequence>,
+        checkedIndex: Int,
+        onItemSelected: (DialogInterface, Int) -> Unit
+    ) {
         builder.setSingleChoiceItems(items.toTypedArray(), checkedIndex) { dialog, which ->
             onItemSelected(dialog, which)
         }

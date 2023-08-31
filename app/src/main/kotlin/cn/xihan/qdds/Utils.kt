@@ -37,11 +37,12 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.File
+import java.io.FilenameFilter
 import java.io.InputStreamReader
 import java.io.Serializable
 import java.net.HttpURLConnection
 import java.net.URL
-import java.security.MessageDigest
+import java.util.Locale
 import java.util.Random
 import kotlin.system.exitProcess
 
@@ -55,6 +56,10 @@ import kotlin.system.exitProcess
 @Throws(NoSuchFieldException::class, IllegalAccessException::class)
 inline fun <reified T : View> Any.getView(name: String, isSuperClass: Boolean = false): T? =
     getParam<T>(name, isSuperClass)
+
+fun Any.getViews(vararg pairs: Pair<String, Boolean> = arrayOf("name" to false)): List<View> =
+    if (pairs.isEmpty()) emptyList()
+    else pairs.mapNotNull { (name, isSuperClass) -> getParam<View>(name, isSuperClass) }
 
 /**
  * 获取控件集合
@@ -96,7 +101,7 @@ fun Any.getViews(type: Class<*>, isSuperClass: Boolean = false): ArrayList<Any> 
 inline fun <reified T> Any.getParam(name: String, isSuperClass: Boolean = false): T? {
     val clazz = if (isSuperClass) javaClass.superclass else javaClass
     val field = clazz.getDeclaredField(name).apply { isAccessible = true }
-    return field[this] as? T
+    return field[this].safeCast<T>()
 }
 
 /**
@@ -147,6 +152,18 @@ inline fun <reified T> Any.getParamMap(isSuperClass: Boolean = false): Map<Strin
     return results
 }
 
+@Throws(NoSuchFieldException::class, IllegalAccessException::class)
+inline fun <reified T : View> Any.findViewById(id: Int): T? {
+    return XposedHelpers.callMethod(this, "findViewById", id).safeCast<T>()
+}
+
+inline fun <reified T> Any?.safeCast(): T? = this as? T
+
+fun View.setVisibilityIfNotEqual(status: Int = View.GONE) {
+    this.takeIf { it.visibility != status }?.apply { visibility = status }
+}
+
+
 /**
  * Xposed 设置字段值
  */
@@ -181,7 +198,7 @@ fun getSystemContext(): Context {
     val activityThreadClass = XposedHelpers.findClass("android.app.ActivityThread", null)
     val activityThread =
         XposedHelpers.callStaticMethod(activityThreadClass, "currentActivityThread")
-    val context = XposedHelpers.callMethod(activityThread, "getSystemContext") as? Context
+    val context = XposedHelpers.callMethod(activityThread, "getSystemContext").safeCast<Context>()
     return context ?: throw Error("Failed to get system context.")
 }
 
@@ -190,9 +207,9 @@ fun getSystemContext(): Context {
  */
 fun Context.getApplicationApkPath(packageName: String): String {
     val pm = this.packageManager
-    val apkPath = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    val apkPath = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         pm.getApplicationInfo(
-            packageName, PackageManager.ApplicationInfoFlags.of(0)
+            packageName, PackageManager.GET_SIGNING_CERTIFICATES
         ).publicSourceDir
     } else {
         pm.getApplicationInfo(packageName, 0).publicSourceDir
@@ -209,16 +226,15 @@ fun Activity.restartApplication() = packageManager.getLaunchIntentForPackage(pac
     exitProcess(0)
 }
 
-
 /**
  * 获取指定应用的版本号
  */
 fun Context.getVersionCode(packageName: String): Int {
     val pm = packageManager
     return when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
             pm.getPackageInfo(
-                packageName, PackageManager.PackageInfoFlags.of(0)
+                packageName, PackageManager.GET_SIGNING_CERTIFICATES
             ).longVersionCode.toInt()
         }
 
@@ -236,9 +252,9 @@ fun Context.getVersionCode(packageName: String): Int {
 /**
  * 打印当前调用栈
  */
-fun printCallStack(className: String = "") {
+fun String.printCallStack() {
     val stringBuilder = StringBuilder()
-    stringBuilder.appendLine("----className: $className ----")
+    stringBuilder.appendLine("----className: $this ----")
     stringBuilder.appendLine("Dump Stack: ---------------start----------------")
     val ex = Throwable()
     val stackElements = ex.stackTrace
@@ -246,11 +262,11 @@ fun printCallStack(className: String = "") {
         stringBuilder.appendLine("Dump Stack: $index: $stackTraceElement")
     }
     stringBuilder.appendLine("Dump Stack: ---------------end----------------")
-    loggerE(msg = stringBuilder.toString())
+    stringBuilder.toString().loge()
 }
 
 fun Any.printCallStack() {
-    printCallStack(this.javaClass.name)
+    this.javaClass.name.printCallStack()
 }
 
 /**
@@ -262,8 +278,6 @@ inline fun safeRun(block: () -> Unit) = try {
 //    if (BuildConfig.DEBUG) {
 //        loggerE(msg = "safeRun 报错: ${e.message}", e = e)
 //    }
-} catch (_: Exception) {
-
 }
 
 fun String.writeTextFile(fileName: String = "test") {
@@ -364,7 +378,7 @@ fun Context.checkModuleUpdate() {
                 Toast.makeText(this, "检查更新失败", Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
-            loggerE(msg = "checkModuleUpdate 报错: ${e.message}")
+            "checkModuleUpdate 报错: ${e.message}".loge()
         } finally {
             connection.disconnect()
         }
@@ -428,7 +442,7 @@ fun Context.checkHideWelfareUpdate() {
                         Toast.makeText(this, "检查隐藏福利列表失败", Toast.LENGTH_SHORT).show()
                     }
                 } catch (e: Exception) {
-                    loggerE(msg = "checkModuleUpdate 报错: ${e.message}")
+                    "checkModuleUpdate 报错: ${e.message}".loge()
                 } finally {
                     connection.disconnect()
                 }
@@ -469,7 +483,7 @@ fun String.safeReplace(
             this.replace(regex, replacement)
         }
     } catch (e: Exception) {
-        loggerE(msg = "safeReplace 报错: ${e.message}")
+        "safeReplace 报错: ${e.message}".loge()
         this
     }
 }
@@ -480,14 +494,11 @@ fun String.safeReplace(
  */
 fun String.replaceByReplaceRuleList(replaceRuleList: List<OptionEntity.ReplaceRuleOption.ReplaceItem>): String =
     try {
-        var result = this
-        replaceRuleList.forEach {
-            result =
-                result.safeReplace(it.enableRegularExpressions, it.replaceRuleRegex, it.replaceWith)
+        replaceRuleList.fold(this) { acc, item ->
+            acc.safeReplace(item.enableRegularExpressions, item.replaceRuleRegex, item.replaceWith)
         }
-        result
     } catch (e: Exception) {
-        loggerE(msg = "replaceByReplaceRuleList 报错: ${e.message}")
+        "replaceByReplaceRuleList 报错: ${e.message}".loge()
         this
     }
 
@@ -630,43 +641,25 @@ fun Context.toast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).s
  * 打印不支持的版本号
  */
 fun String.printlnNotSupportVersion(versionCode: Int = 0) =
-    loggerE(msg = "${this}不支持的版本号为: $versionCode")
+    "${this}不支持的版本号为: $versionCode".loge()
 
 /**
  * 更新列表选项实体
  */
 fun MutableList<OptionEntity.SelectedModel>.updateSelectedListOptionEntity(newConfigurations: List<OptionEntity.SelectedModel>): MutableList<OptionEntity.SelectedModel> {
-    // 添加新配置
-    newConfigurations.forEach { newConfig ->
-        if (!any { it.title == newConfig.title }) {
-            plusAssign(newConfig)
-        }
-    }
+    removeIf { oldConfig -> !newConfigurations.any { it.title == oldConfig.title } }
+    addAll(newConfigurations.filter { newConfig -> !any { it.title == newConfig.title } })
     return this.sortedBy { it.title }.toMutableList()
 }
 
-/**
- * 删除列表选项标题
- */
-fun MutableList<OptionEntity.SelectedModel>.deleteSelectedOption(newConfigurations: List<OptionEntity.SelectedModel>): List<OptionEntity.SelectedModel> {
-    this.removeAll {
-        it.title !in newConfigurations.map { newConfigurationItem -> newConfigurationItem.title }
-    }
-    return this.sortedBy { it.title }
-}
+fun List<OptionEntity.SelectedModel>.isSelectedByTitle(title: String): Boolean =
+    firstOrNull { it.title == title }?.selected ?: false
 
 /**
- * 更新列表选项实体
+ * 解析关键词组
  */
-fun MutableList<String>.updateStringListOptionEntity(newConfigurations: List<String>): List<String> {
-    // 添加新配置
-    newConfigurations.forEach { newConfig ->
-        if (!any { it == newConfig }) {
-            plusAssign(newConfig)
-        }
-    }
-    return this.sortedBy { it }
-}
+fun parseKeyWordOption(it: String = ""): MutableSet<String> =
+    it.split(";").filter(String::isNotBlank).map(String::trim).toMutableSet()
 
 fun String.loge() {
     if (BuildConfig.DEBUG) {
@@ -683,15 +676,11 @@ fun MutableList<OptionEntity.SelectedModel>.findOrPlus(
     title: String,
     iterator: MutableIterator<Any?>,
 ) = safeRun {
-    find { it.title == title }?.let { config ->
+    firstOrNull { it.title == title }?.let { config ->
         if (config.selected) {
             iterator.remove()
         }
-    } ?: plusAssign(
-        OptionEntity.SelectedModel(
-            title = title
-        )
-    )
+    } ?: OptionEntity.SelectedModel(title = title).also { plusAssign(it) }
     updateOptionEntity()
 }
 
@@ -703,22 +692,12 @@ fun MutableList<OptionEntity.SelectedModel>.findOrPlus(
     title: String,
     actionUnit: () -> Unit = {},
 ) = safeRun {
-    find { it.title == title }?.let { config ->
+    firstOrNull { it.title == title }?.let { config ->
         if (config.selected) {
             actionUnit()
         }
-    } ?: plusAssign(
-        OptionEntity.SelectedModel(
-            title = title
-        )
-    )
+    } ?: OptionEntity.SelectedModel(title = title).also { plusAssign(it) }
     updateOptionEntity()
-}
-
-fun List<OptionEntity.SelectedModel>.isEnabled(title: String): Boolean = runCatching {
-    find { it.title == title }?.selected ?: false
-}.getOrElse {
-    false
 }
 
 /**
@@ -733,12 +712,7 @@ fun Context.multiChoiceSelector(
         return
     }
 
-    val checkedItems = BooleanArray(list.size)
-    list.forEachIndexed { index, selectedModel ->
-        if (selectedModel.selected) {
-            checkedItems[index] = true
-        }
-    }
+    val checkedItems = list.map { it.selected }.toBooleanArray()
     multiChoiceSelector(
         list.map { it.title }, checkedItems, "选项列表"
     ) { _, i, isChecked ->
@@ -779,19 +753,18 @@ fun PackageParam.findMethodAndPrint(
         injectMember {
             allMembers(printType)
             afterHook {
-                val stringBuilder = StringBuilder()
-                stringBuilder.append("---类名: ${instanceClass.name} 方法名: ${method.name}\n")
-                if (args.isNotEmpty()) {
-                    args.forEachIndexed { index, any ->
-                        stringBuilder.append("参数${any?.javaClass?.simpleName} ${index}: ${any.mToString()}\n")
+                val stringBuilder = StringBuilder().apply {
+                    append("---类名: ${instanceClass.name} 方法名: ${method.name}\n")
+                    if (args.isEmpty()) {
+                        append("无参数\n")
+                    } else {
+                        args.forEachIndexed { index, any ->
+                            append("参数${any?.javaClass?.simpleName} ${index}: ${any.mToString()}\n")
+                        }
                     }
-                } else {
-                    stringBuilder.append("无参数\n")
+                    result?.let { append("---返回值: ${it.mToString()}") }
                 }
-
-                stringBuilder.append("---返回值: ${result?.mToString()}")
                 stringBuilder.toString().loge()
-                // 是否打印调用栈
                 if (printCallStack) {
                     instance.printCallStack()
                 }
@@ -812,16 +785,10 @@ fun Array<Any?>.printArgs(): String {
  * Any 基础类型转为 String
  */
 fun Any?.mToString(): String = when (this) {
-    is String -> this
-    is Int -> this.toString()
-    is Long -> this.toString()
-    is Float -> this.toString()
-    is Double -> this.toString()
-    is Boolean -> this.toString()
+    is String, is Int, is Long, is Float, is Double, is Boolean -> "$this"
     is Array<*> -> this.joinToString(",")
     is ByteArray -> this.toString(Charsets.UTF_8)
-    is Serializable -> this.toJSONString()
-    is Parcelable -> this.toJSONString()
+    is Serializable, is Parcelable -> this.toJSONString()
     else -> {
         val list = listOf(
             "Entity",
@@ -829,61 +796,40 @@ fun Any?.mToString(): String = when (this) {
             "Bean",
             "Result",
         )
-
-        if (list.any { this?.javaClass?.name?.contains(it) == true })
-            this.toJSONString()
-        else if (this?.javaClass?.name?.contains("QDHttpResp") == true)
-            this.getParamList<String>().toString()
-        else
-            this?.toString() ?: "null"
-
+        if (list.any { this?.javaClass?.name?.contains(it) == true }) this.toJSONString()
+        else if (this?.javaClass?.name?.contains("QDHttpResp") == true) this.getParamList<String>()
+            .toString()
+        else this?.toString() ?: "null"
     }
 }
 
 /**
  * 重定向启动图路径
  */
-val splashPath =
-    "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/QDReader/Splash/"
+val splashPath
+    get() = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/QDReader/Splash/"
+
+/**
+ * 重定向主题路径
+ */
+val themePath get() = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/QDReader/ReaderTheme/"
 
 /**
  * 随机返回一个 bitmap
  */
 fun randomBitmap(): Bitmap? {
+    val filter = FilenameFilter { _, name ->
+        name.endsWith(".jpg", true) || name.endsWith(".png", true)
+    }
     val files = File(splashPath).apply { if (!exists()) mkdirs() }
-    val list = files.listFiles() ?: return null
+    val list = files.listFiles(filter) ?: return null
     val index = (list.indices).random()
-    return BitmapFactory.decodeFile(list[index].absolutePath)
-}
-
-/**
- * 随机IMEI码
- */
-fun randomIMEI(): String {
-    val random = Random()
-    val sb = StringBuilder()
-    for (i in 0..14) {
-        sb.append(random.nextInt(10))
+    return try {
+        BitmapFactory.decodeFile(list[index].absolutePath)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
     }
-    return sb.toString()
-}
-
-/**
- * MD5加密
- */
-fun String.md5(): String {
-    val md5 = MessageDigest.getInstance("MD5")
-    val digest = md5.digest(this.toByteArray())
-    val sb = StringBuilder()
-    for (b in digest) {
-        val i = b.toInt() and 0xff
-        var hexString = Integer.toHexString(i)
-        if (hexString.length < 2) {
-            hexString = "0$hexString"
-        }
-        sb.append(hexString)
-    }
-    return sb.toString()
 }
 
 /**
@@ -913,15 +859,39 @@ fun ViewGroup.findViewsByType(viewClass: Class<*>): ArrayList<View> {
 }
 
 /**
- * 随机时间
- * @return [Long]
+ * 生成一个随机的延迟时间。
+ * @return 一个长整型值，表示延迟的毫秒数，范围在[50, 550)之间。
  */
 fun randomTime(): Long = Random().nextInt(500) + 50L
 
 /**
- * 随机延迟运行
- * @param [delayMillis] 延迟,毫秒
- * @param [action] 动作
+ * 在一个视图上延迟执行一个动作。
+ * @param delayMillis 一个长整型值，表示延迟的毫秒数，默认为[randomTime]函数的返回值。
+ * @param action 一个视图的扩展函数，表示要执行的动作。
+ * @return 一个布尔值，表示是否成功地将动作加入到消息队列中。
  */
 fun View.postRandomDelay(delayMillis: Long = randomTime(), action: View.() -> Unit) =
     postDelayed({ this.action() }, delayMillis)
+
+/**
+ * 将一个字符串数组转换为一个由字符串和布尔值组成的对数组。
+ * @param default 一个布尔值，表示每个对的第二个元素的默认值，默认为false。
+ * @return 一个对数组，每个对的第一个元素是原数组中的一个字符串，第二个元素是default参数的值。
+ */
+fun Array<String>.toPairs(default: Boolean = false): Array<Pair<String, Boolean>> =
+    this.map { it to default }.toTypedArray()
+
+/**
+ * 将一个视图列表中的所有视图都设置为不可见。
+ * 这个函数是一个扩展函数，可以在任何视图列表上调用。
+ * 它使用了[setVisibilityIfNotEqual]函数，如果视图的可见性不等于给定的值，就设置为该值。
+ */
+fun List<View>.hideViews() = forEach { it.setVisibilityIfNotEqual() }
+
+fun com.alibaba.fastjson2.JSONObject.getStringWithFallback(key: String): String? =
+    this.getString(key)
+        ?: this.getString(key.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })
+
+fun com.alibaba.fastjson2.JSONObject.getJSONArrayWithFallback(key: String): com.alibaba.fastjson2.JSONArray? =
+    this.getJSONArray(key)
+        ?: this.getJSONArray(key.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })

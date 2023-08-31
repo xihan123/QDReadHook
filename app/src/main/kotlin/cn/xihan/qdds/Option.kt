@@ -3,7 +3,6 @@ package cn.xihan.qdds
 import android.os.Environment
 import androidx.annotation.Keep
 import androidx.compose.runtime.Immutable
-import com.highcapable.yukihookapi.hook.log.loggerE
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -55,33 +54,31 @@ data class OptionEntity(
 ) {
     /**
      * 广告配置
-     * @param advOptionList 广告配置列表
-     * @param advOptionSelectedList 广告配置选中列表
+     * @param configurations 广告配置列表
      */
     @Keep
     @Serializable
     data class AdvOption(
-        @SerialName("advOptionList") var advOptionList: List<String> = listOf(
-            "GDT(TX)广告",
-            "检查更新",
-            "主页-每日阅读广告",
-            "主页-书架活动弹框",
-            "主页-书架浮窗活动",
-            "主页-书架底部导航栏广告",
-            "我-中间广告",
-            "阅读页-浮窗广告",
-            "阅读页-打赏小剧场",
-            "阅读页-章末一刀切",
-            "阅读页-章末新人推书",
-            "阅读页-章末本章说",
-            "阅读页-章末福利",
-            "阅读页-章末广告",
-            "阅读页-章末求票",
-            "阅读页-章末底部月票打赏红包",
-            "阅读页-最后一页-中间广告",
-            "阅读页-最后一页-弹框广告",
-        ),
-        @SerialName("advOptionSelectedList") var advOptionSelectedList: MutableSet<Int> = mutableSetOf(),
+        @SerialName("configurations") var configurations: MutableList<SelectedModel> = mutableListOf(
+            SelectedModel("GDT(TX)广告"),
+            SelectedModel("检查更新"),
+            SelectedModel("主页-每日阅读广告"),
+            SelectedModel("主页-书架活动弹框"),
+            SelectedModel("主页-书架浮窗活动"),
+            SelectedModel("主页-书架底部导航栏广告"),
+            SelectedModel("我-中间广告"),
+            SelectedModel("阅读页-浮窗广告"),
+            SelectedModel("阅读页-打赏小剧场"),
+            SelectedModel("阅读页-章末一刀切"),
+            SelectedModel("阅读页-章末新人推书"),
+            SelectedModel("阅读页-章末本章说"),
+            SelectedModel("阅读页-章末福利"),
+            SelectedModel("阅读页-章末广告"),
+            SelectedModel("阅读页-章末求票"),
+            SelectedModel("阅读页-章末底部月票打赏红包"),
+            SelectedModel("阅读页-最后一页-中间广告"),
+            SelectedModel("阅读页-最后一页-弹框广告")
+        )
     )
 
     /**
@@ -126,7 +123,7 @@ data class OptionEntity(
     /**
      * 屏蔽配置
      * @param enableQuickShieldDialog 启用快速屏蔽弹窗
-     * @param shieldOptionValueSet 屏蔽配置值集合
+     * @param configurations 屏蔽配置值集合
      * @param authorList 屏蔽作者集合
      * @param bookTypeList 屏蔽书类集合
      * @param bookNameList 屏蔽书名集合
@@ -139,7 +136,28 @@ data class OptionEntity(
         @SerialName("authorList") var authorList: MutableSet<String> = mutableSetOf(),
         @SerialName("bookNameList") var bookNameList: MutableSet<String> = mutableSetOf(),
         @SerialName("bookTypeList") var bookTypeList: Set<String> = emptySet(),
-        @SerialName("shieldOptionValueSet") var shieldOptionValueSet: MutableSet<Int> = mutableSetOf(),
+        @SerialName("configurations") var configurations: MutableList<SelectedModel> = mutableListOf(
+            SelectedModel("搜索-发现(热词)"),
+            SelectedModel("搜索-热门作品榜"),
+            SelectedModel("搜索-人气标签榜"),
+            SelectedModel("搜索-为你推荐"),
+            SelectedModel("精选-主页面"),
+            SelectedModel("精选-分类"),
+            SelectedModel("精选-分类-全部作品"),
+            SelectedModel("精选-免费-免费推荐"),
+            SelectedModel("精选-免费-新书入库"),
+            SelectedModel("精选-畅销精选、主编力荐等更多"),
+            SelectedModel("精选-新书强推、三江推荐"),
+            SelectedModel("精选-排行榜"),
+            SelectedModel("精选-新书"),
+            SelectedModel("每日导读"),
+            SelectedModel("精选-漫画"),
+            SelectedModel("精选-漫画-其他"),
+            SelectedModel("阅读-最后一页-看过此书的人还看过"),
+            SelectedModel("阅读-最后一页-同类作品推荐"),
+            SelectedModel("阅读-最后一页-推荐"),
+            SelectedModel("分类-小编力荐、本周强推等更多")
+        ),
         @SerialName("enableBookTypeEnhancedBlocking") var enableBookTypeEnhancedBlocking: Boolean = false,
     )
 
@@ -279,7 +297,7 @@ data class OptionEntity(
     @Keep
     @Serializable
     data class InterceptOption(
-        @SerialName("configurations") var configurations: List<SelectedModel> = listOf(
+        @SerialName("configurations") var configurations: MutableList<SelectedModel> = mutableListOf(
             SelectedModel("隐私政策更新弹框"),
             SelectedModel("同意隐私政策弹框"),
             SelectedModel("WebSocket"),
@@ -299,9 +317,13 @@ data class OptionEntity(
             SelectedModel("异步子崩溃任务|com.qidian.QDReader.start.AsyncChildCrashTask"),
             SelectedModel("异步子点播上传任务|com.qidian.QDReader.start.AsyncChildVODUploadTask"),
             SelectedModel("异步子青少年和网络回调任务|com.qidian.QDReader.start.AsyncChildTeenagerAndNetCallbackTask"),
+            SelectedModel("异步主下载Sdk任务|com.qidian.QDReader.start.AsyncMainDownloadSdkTask"),
+            SelectedModel("异步子自动跟踪器初始化任务|com.qidian.QDReader.start.AsyncChildAutoTrackerInitTask"),
+            SelectedModel("异步子表情符号任务|com.qidian.QDReader.start.AsyncChildEmojiTask"),
             SelectedModel("同步推送任务|com.qidian.QDReader.start.SyncPushTask"),
             SelectedModel("同步Bugly-APM任务|com.qidian.QDReader.start.SyncBuglyApmTask"),
-            SelectedModel("同步挂钩通道任务|com.qidian.QDReader.start.SyncHookChannelTask")
+            SelectedModel("同步挂钩通道任务|com.qidian.QDReader.start.SyncHookChannelTask"),
+            SelectedModel("同步正确任务|com.qidian.QDReader.start.SyncRightlyTask")
         )
     )
 
@@ -336,18 +358,20 @@ data class OptionEntity(
          * 主页配置
          * @param enableCaptureBottomNavigation 启用截取底部导航栏
          * @param configurations 主页配置列表
+         * @param bottomNavigationConfigurations 底部导航栏配置
          */
         @Keep
         @Serializable
         data class HomeOption(
             @SerialName("enableCaptureBottomNavigation") var enableCaptureBottomNavigation: Boolean = false,
-            @SerialName("homeConfigurations") var configurations: MutableList<SelectedModel> = mutableListOf(
+            @SerialName("configurations") var configurations: MutableList<SelectedModel> = mutableListOf(
                 SelectedModel("主页顶部宝箱提示"),
                 SelectedModel("主页顶部战力提示"),
                 SelectedModel("书架每日导读"),
                 SelectedModel("书架去找书"),
                 SelectedModel("主页底部导航栏红点")
             ),
+            @SerialName("bottomNavigationConfigurations") var bottomNavigationConfigurations: MutableList<SelectedModel> = mutableListOf()
         )
 
         /**
@@ -419,7 +443,7 @@ data class OptionEntity(
         @Immutable
         data class BookDetailOptions(
             @SerialName("enableHideBookDetail") var enableHideBookDetail: Boolean = false,
-            @SerialName("configurations") var configurations: List<SelectedModel> = listOf(
+            @SerialName("configurations") var configurations: MutableList<SelectedModel> = mutableListOf(
                 SelectedModel(title = "出圈指数"),
                 SelectedModel(title = "荣誉标签"),
                 SelectedModel(title = "QQ群"),
@@ -547,9 +571,8 @@ data class OptionEntity(
     @Serializable
     data class HideWelfareOption(
         @SerialName("enableHideWelfare") var enableHideWelfare: Boolean = false,
-        @SerialName("configurations") var configurations: List<SelectedModel> = listOf(
-            SelectedModel("内部浏览器右上角菜单", true),
-            SelectedModel("我的", false)
+        @SerialName("configurations") var configurations: MutableList<SelectedModel> = mutableListOf(
+            SelectedModel("内部浏览器右上角菜单", true), SelectedModel("我的", false)
         ),
         @SerialName("remoteCHideWelfareList") var remoteCHideWelfareList: MutableSet<String> = mutableSetOf(
             "https://raw.githubusercontent.com/xihan123/AGE-API/master/details/HideWelfareList.json"
@@ -579,7 +602,7 @@ data class OptionEntity(
  *读取配置文件模型
  */
 fun readOptionEntity(): OptionEntity {
-    val file = readOptionFile() ?: return defaultOptionEntity()
+    val file = readOptionFile() ?: return defaultOptionEntity
     return try {
         if (file.readText().isNotEmpty()) {
             try {
@@ -589,65 +612,47 @@ fun readOptionEntity(): OptionEntity {
                 }
                 kJson.decodeFromString<OptionEntity>(file.readText()).apply {
                     val newOptionEntity = OptionEntity()
-                    val advOptionConfigurations = advOption.advOptionList.toMutableList()
-                    val newAdvOptionConfigurations = newOptionEntity.advOption.advOptionList
-                    if (advOptionConfigurations.size != newAdvOptionConfigurations.size) {
-                        advOption.advOptionList =
-                            advOptionConfigurations.updateStringListOptionEntity(
-                                newAdvOptionConfigurations
-                            )
-                    }
-                    val interceptConfigurations = interceptOption.configurations.toMutableList()
-                    val newConfiguration = newOptionEntity.interceptOption.configurations
-
-                    if (newConfiguration.isNotEmpty() && interceptConfigurations.isNotEmpty()) {
-                        interceptOption.configurations = interceptConfigurations.deleteSelectedOption(newConfiguration)
-                    }
-                    if (interceptConfigurations.size != newConfiguration.size) {
-                        interceptOption.configurations =
-                            interceptConfigurations.updateSelectedListOptionEntity(newConfiguration)
-                    }
-                    val viewHideOptionConfigurations =
-                        viewHideOption.homeOption.configurations
+                    val newAdvOptionConfigurations = newOptionEntity.advOption.configurations
+                    val newInterceptConfigurations = newOptionEntity.interceptOption.configurations
                     val newViewHideOptionConfigurations =
                         newOptionEntity.viewHideOption.homeOption.configurations
-                    if (viewHideOptionConfigurations.size != newViewHideOptionConfigurations.size) {
-                        viewHideOption.homeOption.configurations =
-                            viewHideOptionConfigurations.updateSelectedListOptionEntity(
-                                newViewHideOptionConfigurations
-                            )
-                    }
-                    val bookDetailOptionConfigurations =
-                        viewHideOption.bookDetailOptions.configurations.toMutableList()
                     val newBookDetailOptionConfigurations =
                         newOptionEntity.viewHideOption.bookDetailOptions.configurations
-                    if (bookDetailOptionConfigurations.size != newBookDetailOptionConfigurations.size) {
-                        viewHideOption.bookDetailOptions.configurations =
-                            bookDetailOptionConfigurations.updateSelectedListOptionEntity(
-                                newBookDetailOptionConfigurations
-                            )
-                    }
-                    val hideWelfareOptionConfigurations =
-                        hideBenefitsOption.configurations.toMutableList()
                     val newHideWelfareOptionConfigurations =
                         newOptionEntity.hideBenefitsOption.configurations
-                    if (hideWelfareOptionConfigurations.size != newHideWelfareOptionConfigurations.size) {
-                        hideBenefitsOption.configurations =
-                            hideWelfareOptionConfigurations.updateSelectedListOptionEntity(
-                                newHideWelfareOptionConfigurations
-                            )
-                    }
+
+                    advOption.configurations =
+                        advOption.configurations.updateSelectedListOptionEntity(
+                            newAdvOptionConfigurations
+                        )
+                    interceptOption.configurations =
+                        interceptOption.configurations.updateSelectedListOptionEntity(
+                            newInterceptConfigurations
+                        )
+
+                    viewHideOption.homeOption.configurations =
+                        viewHideOption.homeOption.configurations.updateSelectedListOptionEntity(
+                            newViewHideOptionConfigurations
+                        )
+                    viewHideOption.bookDetailOptions.configurations =
+                        viewHideOption.bookDetailOptions.configurations.updateSelectedListOptionEntity(
+                            newBookDetailOptionConfigurations
+                        )
+                    hideBenefitsOption.configurations =
+                        hideBenefitsOption.configurations.updateSelectedListOptionEntity(
+                            newHideWelfareOptionConfigurations
+                        )
                 }
             } catch (e: Exception) {
-                loggerE(msg = "readOptionFile: ${e.message}")
-                defaultOptionEntity()
+                "readOptionFile: ${e.message}".loge()
+                defaultOptionEntity
             }
         } else {
-            defaultOptionEntity()
+            defaultOptionEntity
         }
     } catch (e: Exception) {
-        loggerE(msg = "readOptionEntity: ${e.message}")
-        defaultOptionEntity()
+        "readOptionEntity: ${e.message}".loge()
+        defaultOptionEntity
     }
 }
 
@@ -673,46 +678,42 @@ fun readOptionFile(): File? = try {
     }
     if (!downloadFile.exists()) {
         downloadFile.createNewFile()
-        downloadFile.writeText(Json.encodeToString(defaultOptionEntity()))
+        downloadFile.writeText(Json.encodeToString(defaultOptionEntity))
     }
     downloadFile
 } catch (e: Throwable) {
-    loggerE(msg = "readOptionFile: ${e.message}")
+    "readOptionFile: ${e.message}".loge()
     null
 }
 
 /**
  * 写入配置文件
  */
-fun writeOptionFile(optionEntity: OptionEntity): Boolean =
-    try {
-        readOptionFile()?.writeText(Json.encodeToString(optionEntity))
-        true
-    } catch (e: Exception) {
-        loggerE(msg = "writeOptionFile: ${e.message}")
-        false
-    }
+fun writeOptionFile(optionEntity: OptionEntity): Boolean = try {
+    readOptionFile()?.writeText(Json.encodeToString(optionEntity))
+    true
+} catch (e: Exception) {
+    "writeOptionFile: ${e.message}".loge()
+    false
+}
 
 /**
  * 返回一个默认的配置模型
  */
-fun defaultOptionEntity(): OptionEntity = OptionEntity(
-    mainOption = OptionEntity.MainOption(
-        packageName = "com.qidian.QDReader",
-        enableAutoSign = true,
-        enableLocalCard = true
-    ),
-    advOption = OptionEntity.AdvOption(
-        advOptionSelectedList = mutableSetOf(1, 2, 3, 4, 5, 6, 7),
-    ),
-    viewHideOption = OptionEntity.ViewHideOption(
-        enableDisableQSNModeDialog = true,
-        accountOption = OptionEntity.ViewHideOption.AccountOption(
-            enableHideAccount = true,
-            enableHideAccountRightTopRedDot = true
+val defaultOptionEntity by lazy {
+    OptionEntity(
+        mainOption = OptionEntity.MainOption(
+            packageName = "com.qidian.QDReader", enableAutoSign = true, enableLocalCard = true
+        ), viewHideOption = OptionEntity.ViewHideOption(
+            enableDisableQSNModeDialog = true,
+            accountOption = OptionEntity.ViewHideOption.AccountOption(
+                enableHideAccount = true, enableHideAccountRightTopRedDot = true
+            )
         )
     )
-)
+}
+
+val defaultSelectedList by lazy { mutableListOf<OptionEntity.SelectedModel>() }
 
 /**
  * 更新配置

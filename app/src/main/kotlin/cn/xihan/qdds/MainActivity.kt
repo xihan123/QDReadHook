@@ -212,7 +212,7 @@ class MainActivity : ModuleAppCompatActivity() {
                 ) {
 
                     Text(
-                        "需要存储以及安装未知应用权限\n存储权限:用来管理位于外部存储的配置文件\n安装未知应用权限:Android 11及以上读取其他应用版本号需要此权限",
+                        "需要存储以及安装未知应用权限\n存储权限:用来管理位于外部存储的配置文件\n安装未知应用权限:Android 11及以上读取其他应用版本号",
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Bold
@@ -1392,7 +1392,6 @@ fun PurifyScreen(
             TextSetting(title = "拦截设置列表", modifier = Modifier.padding(4.dp), onClick = {
                 context.multiChoiceSelector(HookEntry.optionEntity.interceptOption.configurations)
             })
-
         }
 
         Card(
@@ -2021,7 +2020,7 @@ fun AboutScreen(
         TextSetting(title = "重置模块配置文件", subTitle = "", onClick = {
             writeOptionFile(OptionEntity())
             context.toast("重置成功,即将重启应用")
-            (context as? Activity)?.restartApplication()
+            context.safeCast<Activity>()?.restartApplication()
         })
 
         TextSetting(title = "打赏", subTitle = "", onClick = {

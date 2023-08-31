@@ -24,11 +24,10 @@ fun PackageParam.enableReplace(versionCode: Int) {
                         returnType = StringClass
                     }
                     afterHook {
-                        val mResult = result as? String
-                        mResult?.let {
+                        result.safeCast<String>()?.let {
                             if (HookEntry.optionEntity.replaceRuleOption.replaceRuleList.isNotEmpty()) {
                                 result =
-                                    mResult.replaceByReplaceRuleList(HookEntry.optionEntity.replaceRuleOption.replaceRuleList)
+                                    it.replaceByReplaceRuleList(HookEntry.optionEntity.replaceRuleOption.replaceRuleList)
                             }
                         }
                         //loggerE(msg = "restoreShufflingText: ${result as? String}")

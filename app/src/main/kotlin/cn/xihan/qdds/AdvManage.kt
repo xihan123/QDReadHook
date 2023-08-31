@@ -1,9 +1,7 @@
 package cn.xihan.qdds
 
 import android.view.View
-import android.widget.ImageView
 import android.widget.LinearLayout
-import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.android.ContextClass
 import com.highcapable.yukihookapi.hook.type.android.ViewClass
@@ -11,8 +9,6 @@ import com.highcapable.yukihookapi.hook.type.java.BooleanType
 import com.highcapable.yukihookapi.hook.type.java.ListClass
 import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
-import okhttp3.internal.connection.ConnectInterceptor
-import okhttp3.internal.connection.ConnectInterceptor.intercept
 
 /**
  * @项目名 : QDReadHook
@@ -23,30 +19,32 @@ import okhttp3.internal.connection.ConnectInterceptor.intercept
 /**
  * 广告相关配置
  */
-fun PackageParam.advOption(versionCode: Int, optionValueSet: Set<Int>) {
-    optionValueSet.forEach {
-        when (it) {
-            0 -> disableAd(versionCode)
-            1 -> disableUpdate(versionCode)
-            2 -> disableDailyReadAd(versionCode)
-            3 -> disableBookshelfActivityPopup(versionCode)
-            4 -> disableBookshelfFloatWindow(versionCode)
-            5 -> disableBottomNavigationCenterAd(versionCode)
-            6 -> disableAccountCenterAd(versionCode)
-            7 -> disableReadPageFloatAd(versionCode)
-            8 -> disableReadPageRewardTheater(versionCode)
-            15 -> hideReadPageBottom(versionCode)
-            17 -> disableReadPageNewestPageWindowBannerAd(versionCode)
+fun PackageParam.advOption(versionCode: Int, configurations: List<OptionEntity.SelectedModel>) {
+    if (configurations.isEmpty()) return
+    configurations.filter { it.selected }.takeIf { it.isNotEmpty() }?.forEach { selected ->
+        when (selected.title) {
+            "GDT(TX)广告" -> disableAd(versionCode)
+            "检查更新" -> disableUpdate(versionCode)
+            "主页-每日阅读广告" -> disableDailyReadAd(versionCode)
+            "主页-书架活动弹框" -> disableBookshelfActivityPopup(versionCode)
+            "主页-书架浮窗活动" -> disableBookshelfFloatWindow(versionCode)
+            "主页-书架底部导航栏广告" -> disableBottomNavigationCenterAd(versionCode)
+            "我-中间广告" -> disableAccountCenterAd(versionCode)
+            "阅读页-浮窗广告" -> disableReadPageFloatAd(versionCode)
+            "阅读页-打赏小剧场" -> disableReadPageRewardTheater(versionCode)
+            "阅读页-章末底部月票打赏红包" -> hideReadPageBottom(versionCode)
+            "阅读页-最后一页-弹框广告" -> disableReadPageNewestPageWindowBannerAd(versionCode)
         }
     }
+
     disableReadPageChapterEnd(
         versionCode,
-        disableAll = HookEntry.isEnableAdvOption(9),
-        disableBookRecommend = HookEntry.isEnableAdvOption(10),
-        disableBookComment = HookEntry.isEnableAdvOption(11),
-        disableChapterEndWelfare = HookEntry.isEnableAdvOption(12),
-        disableChapterEndRewardAd = HookEntry.isEnableAdvOption(13),
-        disableVoteTicketSpecialLine = HookEntry.isEnableAdvOption(14)
+        disableAll = configurations.isSelectedByTitle("阅读页-章末一刀切"),
+        disableBookRecommend = configurations.isSelectedByTitle("阅读页-章末新人推书"),
+        disableBookComment = configurations.isSelectedByTitle("阅读页-章末本章说"),
+        disableChapterEndWelfare = configurations.isSelectedByTitle("阅读页-章末福利"),
+        disableChapterEndRewardAd = configurations.isSelectedByTitle("阅读页-章末广告"),
+        disableVoteTicketSpecialLine = configurations.isSelectedByTitle("阅读页-章末求票")
     )
 }
 
@@ -88,9 +86,7 @@ fun PackageParam.disableBookshelfActivityPopup(versionCode: Int) {
                         returnType = ListClass
                     }
                     afterHook {
-                        val list = result as? MutableList<*>
-                        list?.clear()
-                        result = list
+                        result = result.safeCast<MutableList<*>>()?.also { it.clear() }
                     }
                 }
             }
@@ -133,19 +129,13 @@ fun PackageParam.disableBookshelfFloatWindow(versionCode: Int) {
                         param(View::class.java)
                     }
                     afterHook {
-                        val imgAdIconClose = instance.getView<ImageView>(
-                            "imgAdIconClose"
-                        )
-                        imgAdIconClose?.visibility = View.GONE
-                        val layoutImgAdIcon = instance.getView<LinearLayout>(
-                            "layoutImgAdIcon"
-                        )
-                        layoutImgAdIcon?.visibility = View.GONE
-
-                        val imgBookShelfActivityIcon = instance.getView<ImageView>(
-                            "imgBookShelfActivityIcon"
-                        )
-                        imgBookShelfActivityIcon?.visibility = View.GONE
+                        instance.getViews(
+                            *arrayOf(
+                                "imgAdIconClose",
+                                "layoutImgAdIcon",
+                                "imgBookShelfActivityIcon"
+                            ).toPairs()
+                        ).hideViews()
                     }
                 }
             }
@@ -173,10 +163,9 @@ fun PackageParam.disableBookshelfFloatWindow(versionCode: Int) {
                         param(View::class.java)
                     }
                     afterHook {
-                        val layoutImgAdIcon = instance.getView<LinearLayout>(
+                        instance.getView<LinearLayout>(
                             "layoutImgAdIcon"
-                        )
-                        layoutImgAdIcon?.visibility = View.GONE
+                        )?.setVisibilityIfNotEqual()
                     }
                 }
 
@@ -217,10 +206,9 @@ fun PackageParam.disableBookshelfFloatWindow(versionCode: Int) {
                         param(ViewClass)
                     }
                     afterHook {
-                        val layoutImgAdIcon = instance.getView<LinearLayout>(
+                        instance.getView<LinearLayout>(
                             "layoutImgAdIcon"
-                        )
-                        layoutImgAdIcon?.visibility = View.GONE
+                        )?.setVisibilityIfNotEqual()
                     }
                 }
 
@@ -613,29 +601,29 @@ fun PackageParam.disableUpdate(versionCode: Int) {
     /**
      * 也可全局搜索 "UpgradeCommon"、"checkUpdate:"
      */
-   val methodMap = mapOf(
-       "needHookClass" to when (versionCode) {
-           in 758..788 -> "com.qidian.QDReader.util.z4"
-           in 792..796 -> "com.qidian.QDReader.util.i5"
-           in 800..834 -> "com.qidian.QDReader.util.l5"
-           in 842..878 -> "com.qidian.QDReader.util.m5"
-           884 -> "com.qidian.QDReader.util.k5"
-           in 890..900 -> "com.qidian.QDReader.util.l5"
-           in 906..970 -> "com.qidian.QDReader.util.m5"
-           in 980..994 -> "com.qidian.QDReader.util.k5"
-           else -> null
-       },
-       "needHookMethod" to when (versionCode) {
-           in 758..878 -> "b"
-           in 884..994 -> "judian"
-           else -> null
-       },
-       "needHookMethod2" to when (versionCode) {
-           in 758..878 -> "a"
-           in 884..994 -> "search"
-           else -> null
-       }
-   )
+    val methodMap = mapOf(
+        "needHookClass" to when (versionCode) {
+            in 758..788 -> "com.qidian.QDReader.util.z4"
+            in 792..796 -> "com.qidian.QDReader.util.i5"
+            in 800..834 -> "com.qidian.QDReader.util.l5"
+            in 842..878 -> "com.qidian.QDReader.util.m5"
+            884 -> "com.qidian.QDReader.util.k5"
+            in 890..900 -> "com.qidian.QDReader.util.l5"
+            in 906..970 -> "com.qidian.QDReader.util.m5"
+            in 980..994 -> "com.qidian.QDReader.util.k5"
+            else -> null
+        },
+        "needHookMethod" to when (versionCode) {
+            in 758..878 -> "b"
+            in 884..994 -> "judian"
+            else -> null
+        },
+        "needHookMethod2" to when (versionCode) {
+            in 758..878 -> "a"
+            in 884..994 -> "search"
+            else -> null
+        }
+    )
 
     methodMap["needHookClass"]?.hook {
         injectMember {

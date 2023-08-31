@@ -1,10 +1,8 @@
 package cn.xihan.qdds
 
 import android.view.View
-import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import android.widget.TextView
 import com.alibaba.fastjson2.parseObject
 import com.alibaba.fastjson2.toJSONString
@@ -19,7 +17,6 @@ import com.highcapable.yukihookapi.hook.type.java.ListClass
 import com.highcapable.yukihookapi.hook.type.java.LongType
 import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
-import de.robv.android.xposed.XposedHelpers
 
 /**
  * @项目名 : QDReadHook
@@ -92,7 +89,7 @@ fun PackageParam.selectedOption(versionCode: Int) {
                                             jsonArray?.current {
                                                 val iterator = method {
                                                     name = "iterator"
-                                                }.call() as? MutableIterator<*>
+                                                }.call().safeCast<MutableIterator<*>>()
 
                                                 while (iterator?.hasNext() == true) {
                                                     val item = iterator.next()
@@ -424,10 +421,7 @@ fun PackageParam.hideBookshelfFindBook(versionCode: Int) {
                         paramCount(2)
                     }
                     afterHook {
-                        args[0]?.let {
-                            val view = it as? View
-                            view?.visibility = View.GONE
-                        }
+                        args[0]?.safeCast<View>()?.setVisibilityIfNotEqual()
                     }
                 }
             } ?: "隐藏书架-去找书".printlnNotSupportVersion(versionCode)
@@ -546,8 +540,7 @@ fun PackageParam.hideBottomNavigation(versionCode: Int) {
                                         HookEntry.optionEntity.viewHideOption.homeOption.configurations.findOrPlus(
                                             title = "主页底部导航栏${text}"
                                         ) {
-                                            val parent = textView.parent.parent as? View
-                                            parent?.visibility = View.GONE
+                                            textView.parent.parent.safeCast<View>()?.setVisibilityIfNotEqual()
                                         }
                                     }
                                 }
@@ -675,8 +668,7 @@ fun PackageParam.accountViewHide(
                                 safeRun {
                                     val iterator = list.iterator()
                                     while (iterator.hasNext()) {
-                                        val item = iterator.next() as? MutableList<*>
-                                        item?.let { list2 ->
+                                        iterator.next().safeCast<MutableList<*>>()?.let { list2 ->
                                             val iterator2 = list2.iterator()
                                             while (iterator2.hasNext()) {
                                                 val item2 =
@@ -714,8 +706,7 @@ fun PackageParam.accountViewHide(
                                 safeRun {
                                     val iterator = list.iterator()
                                     while (iterator.hasNext()) {
-                                        val item = iterator.next() as? MutableList<*>
-                                        item?.let { list2 ->
+                                        iterator.next().safeCast<MutableList<*>>()?.let { list2 ->
                                             val iterator2 = list2.iterator()
                                             while (iterator2.hasNext()) {
                                                 val item2 =
@@ -964,7 +955,7 @@ fun PackageParam.accountRightTopRedDot(versionCode: Int) {
                         }
                         afterHook {
                             val msgDotView = instance.getParam<View>("msgDotView")
-                            msgDotView?.visibility = View.VISIBLE
+                            msgDotView?.setVisibilityIfNotEqual(View.VISIBLE)
                         }
                     }
 
@@ -976,7 +967,7 @@ fun PackageParam.accountRightTopRedDot(versionCode: Int) {
                         }
                         afterHook {
                             val msgDotView = instance.getView<View>("msgDotView")
-                            msgDotView?.visibility = View.VISIBLE
+                            msgDotView?.setVisibilityIfNotEqual(View.VISIBLE)
                         }
                     }
 
@@ -1062,16 +1053,16 @@ fun PackageParam.removeQSNYDialog(versionCode: Int) {
  */
 fun PackageParam.bookDetailHide(
     versionCode: Int,
-    isNeedHideCqzs: Boolean = HookEntry.optionEntity.viewHideOption.bookDetailOptions.configurations[0].selected,
-    isNeedHideRybq: Boolean = HookEntry.optionEntity.viewHideOption.bookDetailOptions.configurations[1].selected,
-    isNeedHideQqGroups: Boolean = HookEntry.optionEntity.viewHideOption.bookDetailOptions.configurations[2].selected,
-    isNeedHideSyq: Boolean = HookEntry.optionEntity.viewHideOption.bookDetailOptions.configurations[3].selected,
-    isNeedHideSyb: Boolean = HookEntry.optionEntity.viewHideOption.bookDetailOptions.configurations[4].selected,
-    isNeedHideYpjz: Boolean = HookEntry.optionEntity.viewHideOption.bookDetailOptions.configurations[5].selected,
-    isNeedHideCenterAd: Boolean = HookEntry.optionEntity.viewHideOption.bookDetailOptions.configurations[6].selected,
-    isNeedHideFloatAd: Boolean = HookEntry.optionEntity.viewHideOption.bookDetailOptions.configurations[7].selected,
-    isNeedHideBookRecommend: Boolean = HookEntry.optionEntity.viewHideOption.bookDetailOptions.configurations[8].selected,
-    isNeedHideBookRecommend2: Boolean = HookEntry.optionEntity.viewHideOption.bookDetailOptions.configurations[9].selected,
+    isNeedHideCqzs: Boolean = false,
+    isNeedHideRybq: Boolean = false,
+    isNeedHideQqGroups: Boolean = false,
+    isNeedHideSyq: Boolean = false,
+    isNeedHideSyb: Boolean = false,
+    isNeedHideYpjz: Boolean = false,
+    isNeedHideCenterAd: Boolean = false,
+    isNeedHideFloatAd: Boolean = false,
+    isNeedHideBookRecommend: Boolean = false,
+    isNeedHideBookRecommend2: Boolean = false,
 ) {
     when (versionCode) {
         in 808..812 -> {
@@ -1170,12 +1161,8 @@ fun PackageParam.bookDetailHide(
                             returnType = UnitType
                         }
                         afterHook {
-                            val view = XposedHelpers.callMethod(
-                                instance,
-                                "findViewById",
-                                0x7F090442
-                            ) as? View
-                            view?.visibility = View.GONE
+                            val view = instance.findViewById<View>(0x7F090442)
+                            view?.setVisibilityIfNotEqual()
                         }
                     }
                 }
@@ -1199,8 +1186,7 @@ fun PackageParam.bookDetailHide(
                             returnType = UnitType
                         }
                         afterHook {
-                            val bookFansModuleView = instance as? LinearLayout
-                            bookFansModuleView?.visibility = View.GONE
+                            instance.safeCast<LinearLayout>()?.setVisibilityIfNotEqual()
                         }
                     }
                 }
@@ -1217,8 +1203,7 @@ fun PackageParam.bookDetailHide(
                             returnType = UnitType
                         }
                         afterHook {
-                            val bookCircleModuleView = instance as? LinearLayout
-                            bookCircleModuleView?.visibility = View.GONE
+                            instance.safeCast<LinearLayout>()?.setVisibilityIfNotEqual()
                         }
                     }
                 }
@@ -1336,12 +1321,8 @@ fun PackageParam.bookDetailHide(
                                 else -> null
                             }
                             if (tvCircleMarkLevelId != null) {
-                                val view = XposedHelpers.callMethod(
-                                    instance,
-                                    "findViewById",
-                                    tvCircleMarkLevelId
-                                ) as? View
-                                view?.visibility = View.GONE
+                                instance.findViewById<View>(tvCircleMarkLevelId)
+                                    ?.setVisibilityIfNotEqual()
                             } else {
                                 "隐藏出圈指数".printlnNotSupportVersion(versionCode)
                             }
@@ -1376,8 +1357,7 @@ fun PackageParam.bookDetailHide(
                                 returnType = UnitType
                             }
                             afterHook {
-                                val bookFansModuleView = instance as? LinearLayout
-                                bookFansModuleView?.visibility = View.GONE
+                                instance.safeCast<LinearLayout>()?.setVisibilityIfNotEqual()
                             }
                         }
                     }
@@ -1396,8 +1376,7 @@ fun PackageParam.bookDetailHide(
                             returnType = UnitType
                         }
                         afterHook {
-                            val bookCircleModuleView = instance as? LinearLayout
-                            bookCircleModuleView?.visibility = View.GONE
+                            instance.safeCast<LinearLayout>()?.setVisibilityIfNotEqual()
                         }
                     }
                 }
@@ -1423,7 +1402,7 @@ fun PackageParam.hideReadPageBottom(versionCode: Int) {
                     afterHook {
                         val mInteractionBarView =
                             instance.getView<LinearLayout>("mInteractionBarView")
-                        mInteractionBarView?.visibility = View.GONE
+                        mInteractionBarView?.setVisibilityIfNotEqual()
                     }
                 }
             }
@@ -1466,13 +1445,8 @@ fun PackageParam.comicHideBannerAd(versionCode: Int) {
                 returnType = UnitType
             }
             afterHook {
-                val g = instance.getView<FrameLayout>("g")
-                g?.let {
-                    // 获取 g 的父控件并隐藏
-                    val parent = g.parent as? ViewGroup
-                    parent?.visibility = View.GONE
-                }
-
+                instance.getViews("com.qd.ui.component.widget.banner.QDUIScrollBanner".toClass())
+                    .mapNotNull { it.safeCast<View>()?.parent.safeCast<View>() }.hideViews()
             }
         }
     } ?: "漫画-隐藏轮播图广告".printlnNotSupportVersion(versionCode)

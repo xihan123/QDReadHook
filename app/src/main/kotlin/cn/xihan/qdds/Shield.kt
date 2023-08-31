@@ -2,6 +2,7 @@ package cn.xihan.qdds
 
 import android.app.Activity
 import android.content.Context
+import android.widget.RelativeLayout
 import android.widget.TextView
 import cn.xihan.qdds.HookEntry.Companion.isNeedShield
 import cn.xihan.qdds.HookEntry.Companion.parseNeedShieldList
@@ -91,9 +92,8 @@ fun PackageParam.shieldDailyReading(
             }
 
             afterHook {
-                val list = result as? ArrayList<*>
-                list?.let {
-                    result = parseNeedShieldList(list)
+                result.safeCast<ArrayList<*>>()?.let {
+                    result = parseNeedShieldList(it)
                 }
             }
         }
@@ -153,8 +153,7 @@ fun PackageParam.shieldCategory(versionCode: Int) {
                         )
                     }
                     beforeHook {
-                        val list = args[3] as? MutableList<*>
-                        list?.let {
+                        args[3].safeCast<MutableList<*>>()?.let {
                             safeRun {
                                 args(3).set(parseNeedShieldList(it))
                             }
@@ -176,8 +175,7 @@ fun PackageParam.shieldCategory(versionCode: Int) {
                         )
                     }
                     beforeHook {
-                        val list = args[3] as? MutableList<*>
-                        list?.let {
+                        args[3].safeCast<MutableList<*>>()?.let {
                             safeRun {
                                 args(3).set(parseNeedShieldList(it))
                             }
@@ -197,8 +195,7 @@ fun PackageParam.shieldCategory(versionCode: Int) {
                         returnType = UnitType
                     }
                     beforeHook {
-                        val b = args[1] as? MutableList<*>
-                        b?.let {
+                        args[1].safeCast<MutableList<*>>()?.let {
                             safeRun {
                                 args(1).set(parseNeedShieldList(it))
                             }
@@ -269,10 +266,9 @@ fun PackageParam.shieldCategory(versionCode: Int) {
                         returnType = ListClass
                     }
                     afterHook {
-                        val list = result as? MutableList<*>
-                        list?.let {
+                        result.safeCast<MutableList<*>>()?.let {
                             safeRun {
-                                result = parseNeedShieldList(list)
+                                result = parseNeedShieldList(it)
                             }
                         }
                     }
@@ -453,8 +449,7 @@ fun PackageParam.shieldNewBook(versionCode: Int) {
                         returnType = ListClass
                     }
                     afterHook {
-                        val list = result as? MutableList<*>
-                        list?.let {
+                        result.safeCast<MutableList<*>>()?.let {
                             parseNeedShieldList(it)
                         }
                     }
@@ -564,8 +559,7 @@ fun PackageParam.shieldNewBook(versionCode: Int) {
                         returnType = ListClass
                     }
                     afterHook {
-                        val list = result as? MutableList<*>
-                        list?.let {
+                        result.safeCast<MutableList<*>>()?.let {
                             parseNeedShieldList(it)
                         }
                     }
@@ -692,13 +686,11 @@ fun PackageParam.shieldNewBookAndRecommend(versionCode: Int) {
                         returnType = ListClass
                     }
                     afterHook {
-                        val list = result as? MutableList<*>
-                        list?.let {
+                        result.safeCast<MutableList<*>>()?.let {
                             safeRun {
                                 val iterator = it.iterator()
                                 while (iterator.hasNext()) {
-                                    val item = iterator.next().toJSONString()
-                                    val json = item.parseObject()
+                                    val json = iterator.next().toJSONString().parseObject()
                                     val jb = json.getJSONObject("BookStoreItem")
                                     if (jb != null) {
                                         val authorName = jb.getString("AuthorName")
@@ -738,8 +730,7 @@ fun PackageParam.shieldNewBookAndRecommend(versionCode: Int) {
                         returnType = ListClass
                     }
                     afterHook {
-                        val list = result as? MutableList<*>
-                        list?.let {
+                        result.safeCast<MutableList<*>>()?.let {
                             safeRun {
                                 val iterator = it.iterator()
                                 while (iterator.hasNext()) {
@@ -808,8 +799,7 @@ fun PackageParam.shieldNewBookAndRecommend(versionCode: Int) {
                             returnType = UnitType
                         }
                         beforeHook {
-                            val list = args[0] as? MutableList<*>
-                            list?.let {
+                            args[0].safeCast<MutableList<*>>()?.let {
                                 safeRun {
                                     val iterator = it.iterator()
                                     while (iterator.hasNext()) {
@@ -927,8 +917,7 @@ fun PackageParam.shieldCategoryAllBook(versionCode: Int) {
                         returnType = UnitType
                     }
                     beforeHook {
-                        val b = args[1] as? MutableList<*>
-                        b?.let {
+                        args[1].safeCast<MutableList<*>>()?.let {
                             safeRun {
                                 args(1).set(parseNeedShieldList(it))
                             }
@@ -947,8 +936,7 @@ fun PackageParam.shieldCategoryAllBook(versionCode: Int) {
                         returnType = UnitType
                     }
                     beforeHook {
-                        val b = args[1] as? MutableList<*>
-                        b?.let {
+                        args[1].safeCast<MutableList<*>>()?.let {
                             safeRun {
                                 args(1).set(parseNeedShieldList(it))
                             }
@@ -980,9 +968,8 @@ fun PackageParam.shieldCategoryBookListReborn(versionCode: Int) {
                     returnType = ListClass
                 }
                 afterHook {
-                    val list = result as? ArrayList<*>
-                    list?.let {
-                        result = parseNeedShieldList(list)
+                    result.safeCast<ArrayList<*>>()?.let {
+                        result = parseNeedShieldList(it)
                     }
                 }
             }
@@ -1007,9 +994,7 @@ fun PackageParam.shieldSearchFind(versionCode: Int) {
                         returnType = ListClass
                     }
                     afterHook {
-                        val list = result as? MutableList<*>
-                        list?.clear()
-                        result = list
+                        result = result.safeCast<MutableList<*>>()?.clear()
                     }
                 }
             }
@@ -1068,8 +1053,7 @@ fun PackageParam.shieldSearch(
                         name = needHookMethod
                     }
                     beforeHook {
-                        val list = args[0] as? MutableList<*>
-                        list?.let {
+                        args[0].safeCast<MutableList<*>>()?.let {
                             safeRun {
                                 args(0).set(parseNeedShieldList(it))
                             }
@@ -1148,8 +1132,7 @@ fun PackageParam.shieldSearchRecommend(versionCode: Int) {
                         param(ListClass)
                     }
                     beforeHook {
-                        val list = args[0] as? MutableList<*>
-                        list?.clear()
+                        args[0].safeCast<MutableList<*>>()?.clear()
                     }
                 }
             }
@@ -1173,9 +1156,8 @@ fun PackageParam.shieldComic(versionCode: Int) {
                         returnType = ArrayListClass
                     }
                     afterHook {
-                        val list = result as? ArrayList<*>
-                        list?.let {
-                            result = HookEntry.parseNeedShieldComicList(list)
+                        result.safeCast<ArrayList<*>>()?.let {
+                            result = HookEntry.parseNeedShieldComicList(it)
                         }
                     }
                 }
@@ -1280,16 +1262,8 @@ fun PackageParam.quickShield(versionCode: Int) {
                 returnType = UnitType
             }
             afterHook {
-                val tvBookName = XposedHelpers.callMethod(
-                    instance,
-                    "findViewById",
-                    tvBookNameId
-                ) as? TextView
-                val tvAuthorName = XposedHelpers.callMethod(
-                    instance,
-                    "findViewById",
-                    tvAuthorNameId
-                ) as? TextView
+                val tvBookName = instance.findViewById<TextView>(tvBookNameId)
+                val tvAuthorName = instance.findViewById<TextView>(tvAuthorNameId)
 //                        "tvBookName: ${tvBookName?.text}\ntvAuthorName: ${tvAuthorName?.text}".loge()
                 tvBookName?.setOnLongClickListener {
                     instance<Activity>().apply {

@@ -1,10 +1,6 @@
 package cn.xihan.qdds
 
 import android.view.View
-import android.widget.Button
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.RelativeLayout
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.android.BundleClass
@@ -112,15 +108,11 @@ fun PackageParam.enableCustomSplash(
                             returnType = UnitType
                         }
                         afterHook {
-                            val btnSkip = instance.getView<Button>("btnSkip")
-                            btnSkip?.visibility = View.GONE
-                            val ivTop = instance.getView<ImageView>("ivTop")
-                            ivTop?.visibility = View.GONE
-                            val layoutShadow = instance.getParam<RelativeLayout>("layoutShadow")
-                            layoutShadow?.visibility = View.GONE
-                            val mGotoActivityShimmer =
-                                instance.getView<FrameLayout>("mGotoActivityShimmer")
-                            mGotoActivityShimmer?.visibility = View.GONE
+                            val viewNames =
+                                arrayOf("btnSkip", "ivTop", "layoutShadow", "mGotoActivityShimmer")
+                            viewNames.forEach {
+                                instance.getView<View>(it)?.setVisibilityIfNotEqual()
+                            }
                         }
                     }
                 }

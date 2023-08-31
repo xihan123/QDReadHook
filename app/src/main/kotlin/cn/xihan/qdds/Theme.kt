@@ -13,7 +13,6 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import com.alibaba.fastjson2.toJSONString
-import com.highcapable.yukihookapi.hook.log.loggerE
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -63,7 +62,7 @@ fun readCustomThemeFile(): File? = try {
     }
     file
 } catch (e: Exception) {
-    loggerE(msg = "readCustomThemeFile: ${e.message}")
+    "readCustomThemeFile: ${e.message}".loge()
     null
 }
 
@@ -80,7 +79,7 @@ fun readCustomThemeOptionModel(): ThemeModel {
             }
             kJson.decodeFromString(file.readText())
         } catch (e: Exception) {
-            loggerE(msg = "readCustomThemeOptionModel: ${e.message}")
+            "readCustomThemeOptionModel: ${e.message}".loge()
             defaultThemeModel()
         }
     } else {
@@ -96,7 +95,7 @@ fun writeCustomThemeOptionFile(themeModel: ThemeModel): Boolean =
         readCustomThemeFile()?.writeText(Json.encodeToString(themeModel))
         true
     } catch (e: Exception) {
-        loggerE(msg = "writeCustomThemeOptionFile: ${e.message}")
+        "writeCustomThemeOptionFile: ${e.message}".loge()
         false
     }
 

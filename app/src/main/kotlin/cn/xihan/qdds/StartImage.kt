@@ -2,7 +2,6 @@ package cn.xihan.qdds
 
 
 import cn.xihan.qdds.HookEntry.Companion.optionEntity
-import com.alibaba.fastjson2.toJSONString
 import com.highcapable.yukihookapi.hook.factory.constructor
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.android.BitmapClass

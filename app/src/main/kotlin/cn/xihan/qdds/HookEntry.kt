@@ -33,7 +33,6 @@ import com.highcapable.yukihookapi.hook.type.java.LongType
 import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
-import de.robv.android.xposed.XposedHelpers
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.concurrent.CopyOnWriteArrayList
@@ -236,51 +235,6 @@ class HookEntry : IYukiHookXposedInit {
 
              */
 
-//            findMethodAndPrint("kc.search")
-//
-//            findMethodAndPrint("kc.cihai")
-
-
-//            findMethodAndPrint("com.qidian.QDReader.ui.widget.maintab.PagerSlidingTabStrip", true)
-
-            /*
-            findClass("com.qidian.QDReader.ui.widget.maintab.PagerSlidingTabStrip").hook {
-                injectMember {
-                    method {
-                        name = "x"
-                        paramCount(3)
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
-
-             */
-
-            /*
-            findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
-                injectMember {
-                    method {
-                        name = "checkOpenView"
-                        param(IntentClass)
-                        returnType = UnitType
-                    }
-                    intercept()
-                    /*
-                    beforeHook {
-                        val intent = args[0] as? Intent ?: return@beforeHook
-                        val i = intent.getIntExtra("MainScreen", -1)
-                        if (i == 0 || i == -1) return@beforeHook
-                        intent.extras?.putInt("MainScreen", 0)
-                        args(0).set(intent)
-                    }
-
-                     */
-                }
-            }
-
-             */
-
         }
 
     }
@@ -352,17 +306,11 @@ class HookEntry : IYukiHookXposedInit {
             customReadBackgroundPath(versionCode)
         }
 
-        if (optionEntity.advOption.advOptionSelectedList.isNotEmpty()) {
-            advOption(versionCode, optionEntity.advOption.advOptionSelectedList)
-        }
+        advOption(versionCode, optionEntity.advOption.configurations)
 
         interceptOption(versionCode, optionEntity.interceptOption.configurations)
 
-        if ((optionEntity.viewHideOption.homeOption.configurations.any { it.selected })) {
-            homeOption(
-                versionCode, optionEntity.viewHideOption.homeOption.configurations
-            )
-        }
+        homeOption(versionCode, optionEntity.viewHideOption.homeOption.configurations)
 
         if (optionEntity.viewHideOption.homeOption.enableCaptureBottomNavigation) {
             hideBottomNavigation(versionCode)
@@ -414,34 +362,34 @@ class HookEntry : IYukiHookXposedInit {
         }
 
         if (optionEntity.viewHideOption.bookDetailOptions.enableHideBookDetail) {
-            bookDetailHide(versionCode)
+            bookDetailHide(
+                versionCode = versionCode,
+                isNeedHideCqzs = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle("出圈指数"),
+                isNeedHideRybq = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle("荣誉标签"),
+                isNeedHideQqGroups = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle("QQ群"),
+                isNeedHideSyq = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle("书友圈"),
+                isNeedHideSyb = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle("书友榜"),
+                isNeedHideYpjz = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle("月票金主"),
+                isNeedHideCenterAd = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle("本书看点|中心广告"),
+                isNeedHideFloatAd = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle("浮窗广告"),
+                isNeedHideBookRecommend = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle("同类作品推荐"),
+                isNeedHideBookRecommend2 = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle("看过此书的人还看过")
+            )
         }
 
         if (optionEntity.viewHideOption.bookLastPageOptions.enableHideBookLastPage) {
             readBookLastPage(
                 versionCode = versionCode,
-                shieldAlsoRead = isEnableShieldOption(16),
-                shieldSimilarRecommend = isEnableShieldOption(17),
-                shieldRecommendation = isEnableShieldOption(18),
-                hideCircle = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
-                    optionEntity.viewHideOption.bookLastPageOptions.configurations[0].title
-                ),
-                hideAlsoRead = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
-                    optionEntity.viewHideOption.bookLastPageOptions.configurations[1].title
-                ),
-                hideRecommendation = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
-                    optionEntity.viewHideOption.bookLastPageOptions.configurations[2].title
-                ),
-                hideSimilarRecommend = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
-                    optionEntity.viewHideOption.bookLastPageOptions.configurations[3].title
-                ),
-                hideBookList = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
-                    optionEntity.viewHideOption.bookLastPageOptions.configurations[4].title
-                ),
-                hideTryRead = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
-                    optionEntity.viewHideOption.bookLastPageOptions.configurations[5].title
-                ),
-                hideAdView = isEnableAdvOption(16)
+                shieldAlsoRead = optionEntity.shieldOption.configurations.isSelectedByTitle("阅读-最后一页-看过此书的人还看过"),
+                shieldSimilarRecommend = optionEntity.shieldOption.configurations.isSelectedByTitle("阅读-最后一页-同类作品推荐"),
+                shieldRecommendation = optionEntity.shieldOption.configurations.isSelectedByTitle("阅读-最后一页-推荐"),
+                hideCircle = optionEntity.viewHideOption.bookLastPageOptions.configurations.isSelectedByTitle("书友圈"),
+                hideAlsoRead = optionEntity.viewHideOption.bookLastPageOptions.configurations.isSelectedByTitle("看过此书的人还看过"),
+                hideRecommendation = optionEntity.viewHideOption.bookLastPageOptions.configurations.isSelectedByTitle("推荐"),
+                hideSimilarRecommend = optionEntity.viewHideOption.bookLastPageOptions.configurations.isSelectedByTitle("同类作品推荐"),
+                hideBookList = optionEntity.viewHideOption.bookLastPageOptions.configurations.isSelectedByTitle("收录此书的书单"),
+                hideTryRead = optionEntity.viewHideOption.bookLastPageOptions.configurations.isSelectedByTitle("试读"),
+                hideAdView = optionEntity.advOption.configurations.isSelectedByTitle("阅读页-最后一页-中间广告")
             )
         }
 
@@ -471,9 +419,7 @@ class HookEntry : IYukiHookXposedInit {
             isEnableCustomSplash = optionEntity.splashOption.enableCustomSplash
         )
 
-        if (optionEntity.shieldOption.shieldOptionValueSet.isNotEmpty()) {
-            shieldOption(versionCode, optionEntity.shieldOption.shieldOptionValueSet)
-        }
+        shieldOption(versionCode, optionEntity.shieldOption.configurations)
 
         if (optionEntity.shieldOption.enableQuickShieldDialog) {
             quickShield(versionCode)
@@ -488,10 +434,10 @@ class HookEntry : IYukiHookXposedInit {
                 }
                 afterHook {
                     safeRun {
-                        val readMoreSetting =
-                            instance.getView<RelativeLayout>("readMoreSetting")
+                        val readMoreSetting = instance.getView<RelativeLayout>("readMoreSetting")
                         // 获取 readMoreSetting 子控件
-                        val readMoreSettingChild = readMoreSetting?.getChildAt(0) as? TextView
+                        val readMoreSettingChild =
+                            readMoreSetting?.getChildAt(0).safeCast<TextView>()
                         readMoreSettingChild?.text = "阅读设置/模块设置(长按)"
 
                         readMoreSetting?.setOnLongClickListener {
@@ -554,64 +500,54 @@ class HookEntry : IYukiHookXposedInit {
         }
 
         /**
-         * 判断是否启用了屏蔽配置的选项
-         * @param optionValue 选项的值
-         */
-        fun isEnableShieldOption(optionValue: Int) =
-            optionValue in optionEntity.shieldOption.shieldOptionValueSet
-
-        /**
-         * 判断是否启用了广告配置的选项
-         */
-        fun isEnableAdvOption(optionValue: Int) =
-            optionValue in optionEntity.advOption.advOptionSelectedList
-
-        /**
          * 判断是否需要屏蔽
          * @param bookName 书名-可空
          * @param authorName 作者名-可空
          * @param bookType 书类型-可空
          */
         fun isNeedShield(
-            bookName: String? = null,
-            authorName: String? = null,
-            bookType: Set<String>? = null,
+            bookName: String? = null, authorName: String? = null, bookType: Set<String>? = null
         ): Boolean {/*
             if (BuildConfig.DEBUG) {
-                loggerE(msg = "bookName: $bookName\nauthorName:$authorName\nbookType:$bookType")
+                "bookName: $bookName\nauthorName:$authorName\nbookType:$bookType".loge()
             }
              */
-            if (bookNameList.isNotEmpty()) {
-                if (!bookName.isNullOrBlank() && bookNameList.any { it in bookName }) {
-                    return true
-                }
-            }
-            if (authorList.isNotEmpty()) {
-                if (!authorName.isNullOrBlank() && authorList.any { authorName == it }) {
-                    return true
-                }
-            }
-            if (bookTypeList.isNotEmpty() && !bookType.isNullOrEmpty()) {
-                if (optionEntity.shieldOption.enableBookTypeEnhancedBlocking) {
-                    if (bookType.isNotEmpty() && bookType.any { bookTypeList.any { it1 -> it1 in it } }) {
-                        return true
-                    }
-                } else {
-                    if (bookType.isNotEmpty() && bookType.any { it in bookTypeList }) {
+
+            bookNameList.takeIf { it.isNotEmpty() }?.let { bookNameList ->
+                bookName.takeUnless { it.isNullOrBlank() }?.let { bookName ->
+                    if (bookNameList.any { it in bookName }) {
                         return true
                     }
                 }
             }
+
+            authorList.takeIf { it.isNotEmpty() }?.let { list ->
+                authorName.takeUnless { it.isNullOrBlank() }?.let { authorName ->
+                    if (authorName in authorList) {
+                        return true
+                    }
+                }
+            }
+
+            bookTypeList.takeIf { it.isNotEmpty() }?.let { list ->
+                bookType.takeUnless { it.isNullOrEmpty() }?.let { type ->
+                    val bookTypes = type.filter { it.isNotBlank() || it.length > 1 }.toSet()
+                    bookTypes.takeIf { it.isNotEmpty() }?.let { types ->
+                        if (optionEntity.shieldOption.enableBookTypeEnhancedBlocking) {
+                            if (types.any { list.any { it1 -> it1 in it } }) {
+                                return true
+                            }
+                        } else {
+                            if (types.any { it in list }) {
+                                return true
+                            }
+                        }
+                    }
+                }
+            }
+
             return false
         }
-
-        /**
-         * 解析关键词组
-         * @param it 关键词组
-         */
-        fun parseKeyWordOption(it: String = ""): MutableSet<String> =
-            it.split(";").filter { it.isNotBlank() }.map { it.replace(Regex(pattern = "\\s+"), "") }
-                .toMutableSet()
 
         /**
          * 解析需要屏蔽的书籍列表
@@ -619,22 +555,19 @@ class HookEntry : IYukiHookXposedInit {
         fun parseNeedShieldList(list: MutableList<*>): List<*> {
             val iterator = list.iterator()
             while (iterator.hasNext()) {
-                runCatching {
-                    val item = iterator.next().toJSONString()
-                    val jb = item.parseObject()
-                    val bookName = jb.getString("BookName") ?: jb.getString("bookName")
-                    ?: jb.getString("itemName") ?: jb.getString("ItemName")
-                    val authorName = jb.getString("AuthorName") ?: jb.getString("authorName")
-                    val categoryName = jb.getString("CategoryName") ?: jb.getString("categoryName")
-                    val subCategoryName =
-                        jb.getString("SubCategoryName") ?: jb.getString("subCategoryName")
-                        ?: jb.getString("itemSubName") ?: jb.getString("ItemSubName")
-                    val tagName = jb.getString("TagName") ?: jb.getString("tagName")
-                    val array =
-                        jb.getJSONArray("AuthorTags") ?: jb.getJSONArray("tags") ?: jb.getJSONArray(
-                            "Tags"
-                        ) ?: jb.getJSONArray("tagList")
-                    val tip = jb.getString("Tip") ?: jb.getString("tip")
+                safeRun {
+                    val jb = iterator.next().toJSONString().parseObject()
+                    val bookName =
+                        jb.getStringWithFallback("bookName") ?: jb.getStringWithFallback("itemName")
+                    val authorName = jb.getStringWithFallback("authorName")
+                    val categoryName = jb.getStringWithFallback("categoryName")
+                    val subCategoryName = jb.getStringWithFallback("subCategoryName")
+                        ?: jb.getStringWithFallback("itemSubName")
+                    val tagName = jb.getStringWithFallback("tagName")
+                    val array = jb.getJSONArrayWithFallback("AuthorTags")
+                        ?: jb.getJSONArrayWithFallback("tags")
+                        ?: jb.getJSONArrayWithFallback("tagList")
+                    val tip = jb.getStringWithFallback("tip")
                     val bookTypeArray = mutableSetOf<String>()
                     if (categoryName != null) {
                         bookTypeArray += categoryName
@@ -652,11 +585,7 @@ class HookEntry : IYukiHookXposedInit {
                         for (i in array.indices) {
                             val tag = array.getString(i)
                             if ("{" in tag) {
-                                val tags = tag.parseObject()
-                                tags?.getString("tagName")?.let {
-                                    bookTypeArray += it
-                                }
-                                tags?.getString("TagName")?.let {
+                                tag.parseObject()?.getStringWithFallback("tagName")?.let {
                                     bookTypeArray += it
                                 }
                             } else {
@@ -680,40 +609,41 @@ class HookEntry : IYukiHookXposedInit {
         fun parseNeedShieldComicList(list: MutableList<*>): List<*> {
             val iterator = list.iterator()
             while (iterator.hasNext()) {
-                val item = iterator.next().toJSONString()
-                val jb = item.parseObject()
-                val comicName = jb.getString("ComicName") ?: jb.getString("comicName")
-                val authorName = jb.getString("AuthorName") ?: jb.getString("authorName")
-                ?: jb.getString("Author")
-                val categoryName = jb.getString("CategoryName") ?: jb.getString("categoryName")
-                val subCategoryName =
-                    jb.getString("SubCategoryName") ?: jb.getString("subCategoryName")
-                val tagName = jb.getString("TagName") ?: jb.getString("tagName")
-                val extraTag = jb.getString("ExtraTag") ?: jb.getString("extraTag")
-                val array = jb.getJSONArray("AuthorTags") ?: jb.getJSONArray("tags")
-                ?: jb.getJSONArray("Tags") ?: jb.getJSONArray("tagList")
-                val bookTypeArray = mutableSetOf<String>()
-                if (categoryName != null) {
-                    bookTypeArray += categoryName
-                }
-                if (subCategoryName != null) {
-                    bookTypeArray += subCategoryName
-                }
-                if (tagName != null) {
-                    bookTypeArray += tagName
-                }
-                if (extraTag != null) {
-                    bookTypeArray += extraTag
-                }
-                if (!array.isNullOrEmpty()) {
-                    for (i in array.indices) {
-                        array.getString(i)?.let {
-                            bookTypeArray += it
+                safeRun {
+                    val jb = iterator.next().toJSONString().parseObject()
+                    val comicName = jb.getStringWithFallback("comicName")
+                    val authorName =
+                        jb.getStringWithFallback("authorName") ?: jb.getStringWithFallback("Author")
+                    val categoryName = jb.getStringWithFallback("categoryName")
+                    val subCategoryName = jb.getStringWithFallback("subCategoryName")
+                    val tagName = jb.getStringWithFallback("tagName")
+                    val extraTag = jb.getStringWithFallback("extraTag")
+                    val array = jb.getJSONArrayWithFallback("authorTags")
+                        ?: jb.getJSONArrayWithFallback("tags")
+                        ?: jb.getJSONArrayWithFallback("tagList")
+                    val bookTypeArray = mutableSetOf<String>()
+                    if (categoryName != null) {
+                        bookTypeArray += categoryName
+                    }
+                    if (subCategoryName != null) {
+                        bookTypeArray += subCategoryName
+                    }
+                    if (tagName != null) {
+                        bookTypeArray += tagName
+                    }
+                    if (extraTag != null) {
+                        bookTypeArray += extraTag
+                    }
+                    if (!array.isNullOrEmpty()) {
+                        for (i in array.indices) {
+                            array.getString(i)?.let {
+                                bookTypeArray += it
+                            }
                         }
                     }
-                }
-                if (isNeedShield(comicName, authorName, bookTypeArray)) {
-                    iterator.remove()
+                    if (isNeedShield(comicName, authorName, bookTypeArray)) {
+                        iterator.remove()
+                    }
                 }
             }
             return list
@@ -739,7 +669,7 @@ class HookEntry : IYukiHookXposedInit {
                 optionEntity.viewHideOption.selectedOption.selectedTitleConfigurations.filter {
                     it.selected && it.title in type.values
                 }
-            return needShieldTitleList.map { type.filterValues { it1 -> it1 == it.title }.keys.first() }
+            return needShieldTitleList.mapNotNull { type.filterValues { it1 -> it1 == it.title }.keys.firstOrNull() }
         }
 
         /**
@@ -754,7 +684,6 @@ class HookEntry : IYukiHookXposedInit {
                 bookName.isNotBlank() -> {
                     optionEntity.shieldOption.bookNameList += bookName
                 }
-
                 authorName.isNotBlank() -> {
                     optionEntity.shieldOption.authorList += authorName
                 }
@@ -863,7 +792,7 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
                     afterHook {
                         result?.let {
                             val c = it.getParam<AppBarLayout>("c")
-                            c?.visibility = View.GONE
+                            c?.setVisibilityIfNotEqual()
                             val e = it.getParam<Any>("e")
                             e?.let { it1 ->
                                 val binding = it1.getParam<Any>("binding")
@@ -930,8 +859,7 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
                         val qDUIButtons =
                             binding.getViews("com.qd.ui.component.widget.QDUIButton".toClass())
                         qDUIButtons.filter { button ->
-                            button.getViews<TextView>()
-                                .any { textView -> textView.text == "签到" }
+                            button.getViews<TextView>().any { textView -> textView.text == "签到" }
                         }.forEach { button ->
                             (button as View).performClick()
                         }
@@ -979,31 +907,27 @@ fun PackageParam.newOldLayout(
             970 -> "o4.search\$search"
             980 -> "com.qidian.QDReader.component.abtest.ABTestConfigHelper\$search"
             else -> null
-        },
-        "needHookNewUserAccountMethod" to when (versionCode) {
+        }, "needHookNewUserAccountMethod" to when (versionCode) {
             868 -> "n"
             872 -> "m"
             878 -> "o"
             884 -> "m"
             890 -> "n"
             else -> null
-        },
-        "needHookBookStoreV2Method" to when (versionCode) {
+        }, "needHookBookStoreV2Method" to when (versionCode) {
             872 -> "d"
             878 -> "e"
             884 -> "b"
             in 890..900 -> "c"
             else -> null
-        },
-        "needHookMethod" to when (versionCode) {
+        }, "needHookMethod" to when (versionCode) {
             in 827..850 -> "b"
             in 868..872 -> "c"
             878 -> "d"
             884 -> "a"
             in 890..900 -> "b"
             else -> null
-        },
-        "needHookGDTGameMethod" to when (versionCode) {
+        }, "needHookGDTGameMethod" to when (versionCode) {
             in 896..900 -> "U"
             in 906..916 -> "W"
             924 -> "Y"
@@ -1222,15 +1146,14 @@ fun PackageParam.unlockMemberBackground(versionCode: Int) {
                         returnType = UnitType
                     }
                     afterHook {
-                        val list = args[0] as? MutableList<*>
+                        val list = args[0].safeCast<MutableList<*>>()
                         list?.forEach {
                             it?.let {
                                 if (it.javaClass.name == "com.qidian.QDReader.repository.dal.store.ReaderThemeEntity") {
                                     val themeType = it.getParam<Long>("themeType")
                                     if (themeType == 102L) {
                                         it.setParams(
-                                            "themeType" to 101L,
-                                            "haveStatus" to 1
+                                            "themeType" to 101L, "haveStatus" to 1
                                         )
                                     }
                                 }
@@ -1259,7 +1182,7 @@ fun PackageParam.freeAdReward(versionCode: Int) {
                         returnType = "java.lang.ClassLoader".toClass()
                     }
                     afterHook {
-                        val classLoader = result as? ClassLoader
+                        val classLoader = result.safeCast<ClassLoader>()
                         classLoader?.let {
                             /**
                              * com.qq.e.comm.plugin.tangramrewardvideo.g.K() : void
@@ -1502,8 +1425,7 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
             950 -> "com.qidian.QDReader.component.bll.manager.b1"
             in 958..994 -> "com.qidian.QDReader.component.bll.manager.d1"
             else -> null
-        },
-        "needHookMethod" to when (versionCode) {
+        }, "needHookMethod" to when (versionCode) {
             in 854..878 -> "n0"
             in 884..890 -> "k0"
             in 896..924 -> "l0"
@@ -1530,7 +1452,7 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
                 returnType = IntType
             }
             beforeHook {
-                val jb = args[1] as? JSONObject
+                val jb = args[1].safeCast<JSONObject>()
                 safeRun {
                     jb?.optJSONObject("Data")?.put("IsFreeLimit", -1)
                     args(1).set(jb)
@@ -1587,9 +1509,7 @@ fun PackageParam.exportEmoji(versionCode: Int) {
                             else -> null
                         }
                         if (topBarId != null) {
-                            val topBar = XposedHelpers.callMethod(
-                                context, "findViewById", topBarId
-                            ) as? RelativeLayout
+                            val topBar = context.findViewById<RelativeLayout>(topBarId)
                             if (topBar != null) {
                                 val layoutParams = RelativeLayout.LayoutParams(
                                     RelativeLayout.LayoutParams.WRAP_CONTENT,
@@ -1788,8 +1708,7 @@ fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
                     afterHook {
                         val bubbleViewMap = instance.getParam<HashMap<*, *>>("bubbleViewMap")
                         bubbleViewMap?.values?.forEach { view ->
-                            val readTimeBubbleView = view as? LinearLayout
-                            readTimeBubbleView?.postRandomDelay { performClick() }
+                            view.safeCast<LinearLayout>()?.postRandomDelay { performClick() }
                         }
                     }
                 }
@@ -1806,13 +1725,12 @@ fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
                         returnType = IntType
                     }
                     afterHook {
-                        val list = args[1] as? List<*>
-                        if (list.isNullOrEmpty()) {
-                            return@afterHook
-                        }
+                        args[1].safeCast<List<*>>() ?: return@afterHook
+
                         val pBarTagContainerId = when (versionCode) {
                             970 -> 0x7F091391
                             980 -> 0x7F0913D0
+                            994 -> 0x7F0913F6
                             else -> null
                         }
                         if (pBarTagContainerId == null) {
@@ -1823,7 +1741,7 @@ fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
                             name = "_\$_findCachedViewById"
                             paramCount(1)
                             returnType = ViewClass
-                        }.get(instance).call(pBarTagContainerId) as? FrameLayout
+                        }.get(instance).call(pBarTagContainerId).safeCast<FrameLayout>()
 
                         view?.let {
                             val count = it.childCount
@@ -1849,7 +1767,7 @@ fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
                         returnType = UnitType
                     }
                     afterHook {
-                        val button = args[0] as? LinearLayout ?: return@afterHook
+                        val button = args[0].safeCast<LinearLayout>() ?: return@afterHook
                         button.current {
                             val text = method {
                                 name = "getText"
@@ -1880,7 +1798,7 @@ fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
                             name = "getQdButtonBottom"
                             emptyParam()
                             returnType = "com.qd.ui.component.widget.QDUIButton".toClass()
-                        }.get(instance).call() as? LinearLayout ?: return@afterHook
+                        }.get(instance).call().safeCast<LinearLayout>() ?: return@afterHook
 
                         button.current {
                             val text = method {
@@ -1937,10 +1855,8 @@ fun PackageParam.postToShowImageUrl(versionCode: Int) {
                 val lists = instance.getParamList<List<*>>().takeUnless { it.isEmpty() }
                     ?.filterNot { it[0] is String }
                 lists?.firstOrNull()?.let { urlList ->
-                    urlList.mapNotNull { it?.getParam<String>("mAccessUrl") }
-                        .let { accessUrls ->
-                            instance.getViews<TextView>()
-                                .firstNotNullOfOrNull { it.context }
+                    urlList.mapNotNull { it?.getParam<String>("mAccessUrl") }.let { accessUrls ->
+                            instance.getViews<TextView>().firstNotNullOfOrNull { it.context }
                                 ?.showUrlListDialog(accessUrls)
                         }
                 }

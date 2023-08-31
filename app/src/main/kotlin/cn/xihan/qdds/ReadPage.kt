@@ -157,7 +157,7 @@ fun PackageParam.readerPageChapterReviewPictures(
                             val textViews = instance.getViews(messageTextView)
                             if (textViews.isNotEmpty()) {
                                 textViews.forEach { any ->
-                                    val textView = any as? TextView
+                                    val textView = any.safeCast<TextView>()
                                     textView?.setOnLongClickListener {
                                         textView.context.alertDialog {
                                             title = "评论内容"
@@ -220,7 +220,7 @@ fun PackageParam.readerPageChapterReviewPictures(
                             val textViews = instance.getViews(messageTextView)
                             if (textViews.isNotEmpty()) {
                                 textViews.forEach { any ->
-                                    val textView = any as? TextView
+                                    val textView = any.safeCast<TextView>()
                                     textView?.setOnLongClickListener {
                                         textView.context.alertDialog {
                                             title = "评论内容"
@@ -323,7 +323,7 @@ fun PackageParam.readTimeDouble(
                 paramCount(2)
             }
             afterHook {
-                val list = result as? MutableList<*>
+                val list = result.safeCast<MutableList<*>>()
                 if (list.isNullOrEmpty()) return@afterHook
                 list.forEach { item ->
                     item?.let {
