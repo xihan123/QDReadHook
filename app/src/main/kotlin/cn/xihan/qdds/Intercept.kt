@@ -84,14 +84,14 @@ fun PackageParam.interceptAgreePrivacyPolicy(version: Int) {
         884 -> "com.qidian.QDReader.util.u4"
         in 890..900 -> "com.qidian.QDReader.util.v4"
         in 906..970 -> "com.qidian.QDReader.util.w4"
-        980 -> "com.qidian.QDReader.util.u4"
+        in 980..994 -> "com.qidian.QDReader.util.u4"
         else -> null
     }
     val needHookMethod = when (version) {
         in 868..872 -> "k0"
         878 -> "l0"
         in 884..958 -> "i0"
-        in 970..980 -> "j0"
+        in 970..994 -> "j0"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -117,12 +117,12 @@ fun PackageParam.interceptAgreePrivacyPolicy(version: Int) {
 fun PackageParam.interceptWebSocket(version: Int) {
     val needHookClass = when (version) {
         in 868..878 -> "com.qidian.QDReader.component.msg.c"
-        in 884..980 -> "com.qidian.QDReader.component.msg.cihai"
+        in 884..994 -> "com.qidian.QDReader.component.msg.cihai"
         else -> null
     }
     val needHookMethod = when (version) {
         in 868..878 -> "r"
-        in 884..980 -> "o"
+        in 884..994 -> "o"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -177,11 +177,11 @@ fun PackageParam.interceptSplashAdActivity(version: Int) {
         in 944..950 -> "m6.search"
         958 -> "k6.search"
         970 -> "j6.search"
-        980 -> "d6.search"
+        in 980..994 -> "d6.search"
         else -> null
     }
     val needHookMethod = when (version) {
-        in 884..980 -> "b"
+        in 884..994 -> "b"
         else -> null
     }
 
@@ -250,7 +250,6 @@ fun PackageParam.interceptPostImageWatermark(versionCode: Int) {
 /**
  * 拦截异步初始化任务
  * @param version 版本号
- * @param substring 0:标题 1:拦截的类名
  */
 fun PackageParam.interceptAsyncInitTask(
     version: Int,

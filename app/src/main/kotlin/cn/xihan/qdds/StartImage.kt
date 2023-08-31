@@ -152,7 +152,7 @@ fun PackageParam.captureTheOfficialLaunchMapList(versionCode: Int) {
  */
 fun PackageParam.customLocalStartImage(versionCode: Int) {
     when (versionCode) {
-        in 944..980 -> {
+        in 944..994 -> {
             val list = listOf(
                 "com.qidian.QDReader.ui.activity.SplashActivity\$judian",
                 "com.qidian.QDReader.ui.activity.SplashActivity\$cihai"
