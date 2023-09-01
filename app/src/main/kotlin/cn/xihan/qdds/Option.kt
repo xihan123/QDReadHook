@@ -124,7 +124,7 @@ data class OptionEntity(
     /**
      * 屏蔽配置
      * @param enableQuickShieldDialog 启用快速屏蔽弹窗
-     * @param shieldOptionValueSet 屏蔽配置值集合
+     * @param configurations 屏蔽配置值集合
      * @param authorList 屏蔽作者集合
      * @param bookTypeList 屏蔽书类集合
      * @param bookNameList 屏蔽书名集合
@@ -137,7 +137,28 @@ data class OptionEntity(
         @SerialName("authorList") var authorList: MutableSet<String> = mutableSetOf(),
         @SerialName("bookNameList") var bookNameList: MutableSet<String> = mutableSetOf(),
         @SerialName("bookTypeList") var bookTypeList: Set<String> = emptySet(),
-        @SerialName("shieldOptionValueSet") var shieldOptionValueSet: MutableSet<Int> = mutableSetOf(),
+        @SerialName("configurations") var configurations: MutableList<SelectedModel> = mutableListOf(
+            SelectedModel("搜索-发现(热词)"),
+            SelectedModel("搜索-热门作品榜"),
+            SelectedModel("搜索-人气标签榜"),
+            SelectedModel("搜索-为你推荐"),
+            SelectedModel("精选-主页面"),
+            SelectedModel("精选-分类"),
+            SelectedModel("精选-分类-全部作品"),
+            SelectedModel("精选-免费-免费推荐"),
+            SelectedModel("精选-免费-新书入库"),
+            SelectedModel("精选-畅销精选、主编力荐等更多"),
+            SelectedModel("精选-新书强推、三江推荐"),
+            SelectedModel("精选-排行榜"),
+            SelectedModel("精选-新书"),
+            SelectedModel("每日导读"),
+            SelectedModel("精选-漫画"),
+            SelectedModel("精选-漫画-其他"),
+            SelectedModel("阅读-最后一页-看过此书的人还看过"),
+            SelectedModel("阅读-最后一页-同类作品推荐"),
+            SelectedModel("阅读-最后一页-推荐"),
+            SelectedModel("分类-小编力荐、本周强推等更多")
+        ),
         @SerialName("enableBookTypeEnhancedBlocking") var enableBookTypeEnhancedBlocking: Boolean = false,
     )
 

@@ -23,7 +23,7 @@ fun PackageParam.interceptOption(
 ) {
     if (configurations.isEmpty()) return
     val interceptList = mutableListOf<String>()
-    configurations.filter { it.selected }.forEach { selected ->
+    configurations.filter { it.selected }.takeIf { it.isNotEmpty() }?.forEach { selected ->
         when (selected.title) {
             "隐私政策更新弹框" -> interceptPrivacyPolicy(versionCode)
             "同意隐私政策弹框" -> interceptAgreePrivacyPolicy(versionCode)
@@ -33,7 +33,7 @@ fun PackageParam.interceptOption(
             "阅读页水印" -> interceptReadBookPageWaterMark(versionCode)
             "发帖图片水印" -> interceptPostImageWatermark(versionCode)
             "自动跳转精选" -> interceptAutoJumpSelected(versionCode)
-            else -> interceptList.add(selected.title)
+            else -> interceptList += selected.title
         }
     }
 
@@ -245,6 +245,7 @@ fun PackageParam.interceptPostImageWatermark(versionCode: Int) {
                 }
             }
         }
+
         else -> "发帖图片水印".printlnNotSupportVersion(versionCode)
     }
 }
@@ -252,9 +253,9 @@ fun PackageParam.interceptPostImageWatermark(versionCode: Int) {
 /**
  * 拦截自动跳转精选
  */
-fun PackageParam.interceptAutoJumpSelected(versionCode: Int){
-    when(versionCode){
-       in 980..994 -> {
+fun PackageParam.interceptAutoJumpSelected(versionCode: Int) {
+    when (versionCode) {
+        in 980..994 -> {
             findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
                 injectMember {
                     method {
@@ -265,7 +266,7 @@ fun PackageParam.interceptAutoJumpSelected(versionCode: Int){
                     intercept()
                 }
             }
-       }
+        }
     }
 }
 

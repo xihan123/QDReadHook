@@ -441,8 +441,8 @@ fun TextSetting(
 fun CustomBookShelfTopImageOption(
     title: String,
     customBookShelfTopImageModel: OptionEntity.BookshelfOption.CustomBookShelfTopImageModel,
-    onValueChange: (OptionEntity.BookshelfOption.CustomBookShelfTopImageModel) -> Unit = {},
     modifier: Modifier = Modifier,
+    onValueChange: (OptionEntity.BookshelfOption.CustomBookShelfTopImageModel) -> Unit = {}
 ) {
     val border01 = rememberMutableStateOf(value = customBookShelfTopImageModel.border01)
     val font = rememberMutableStateOf(value = customBookShelfTopImageModel.font)
@@ -755,33 +755,26 @@ fun MainScreen(
             TextSetting(title = "主设置", showRightIcon = false, bigTitle = true)
 
             Column(modifier = Modifier.padding(4.dp)) {
-                SwitchSetting(
-                    title = "自动签到",
+                SwitchSetting(title = "自动签到",
                     checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableAutoSign),
                     onCheckedChange = {
                         HookEntry.optionEntity.mainOption.enableAutoSign = it
-                    }
-                )
+                    })
 
-                SwitchSetting(
-                    title = "自动领取阅读积分",
+                SwitchSetting(title = "自动领取阅读积分",
                     subTitle = "非后台领取，需要进到阅读积分页面",
                     checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableReceiveReadingCreditsAutomatically),
                     onCheckedChange = {
                         HookEntry.optionEntity.mainOption.enableReceiveReadingCreditsAutomatically =
                             it
-                    }
-                )
+                    })
 
-                SwitchSetting(
-                    title = "发帖上传图片显示直链",
+                SwitchSetting(title = "发帖上传图片显示直链",
                     subTitle = "图片上传完后会弹框",
                     checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enablePostToShowImageUrl),
                     onCheckedChange = {
-                        HookEntry.optionEntity.mainOption.enablePostToShowImageUrl =
-                            it
-                    }
-                )
+                        HookEntry.optionEntity.mainOption.enablePostToShowImageUrl = it
+                    })
 
 
                 SwitchSetting(title = "本地至尊卡",
@@ -850,14 +843,12 @@ fun MainScreen(
                 }
 
                 if (versionCode >= 896) {
-                    SwitchSetting(
-                        title = "试用模式弹框",
+                    SwitchSetting(title = "试用模式弹框",
                         subTitle = "开启后起点会弹出隐私策略的弹框，不同意后点开始试用,完了关闭该选项即可",
                         checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableForceTrialMode),
                         onCheckedChange = {
                             HookEntry.optionEntity.mainOption.enableForceTrialMode = it
-                        }
-                    )
+                        })
 
                     /*
                     SwitchSetting(
@@ -875,14 +866,12 @@ fun MainScreen(
                 if (versionCode >= 906) {
                     val hideWelfare =
                         rememberMutableStateOf(value = HookEntry.optionEntity.hideBenefitsOption.enableHideWelfare)
-                    SwitchSetting(
-                        title = "显示全部隐藏福利",
+                    SwitchSetting(title = "显示全部隐藏福利",
                         subTitle = "开启后去搜索页面随便搜索一个内容，然后下面这个配置显示位置即可\n如果下面没有选项先去搜索一下",
                         checked = hideWelfare,
                         onCheckedChange = {
                             HookEntry.optionEntity.hideBenefitsOption.enableHideWelfare = it
-                        }
-                    )
+                        })
 
                     if (hideWelfare.value) {
 
@@ -899,37 +888,31 @@ fun MainScreen(
                             },
                             text = remoteHideWelfareList,
                             onTextChange = {
-                                HookEntry.optionEntity.hideBenefitsOption.remoteCHideWelfareList =
-                                    HookEntry.parseKeyWordOption(it)
-                            })
-
-                        if (remoteHideWelfareList.value.isNotBlank()) {
-                            TextSetting(
-                                title = "获取远程隐藏福利信息",
-                                modifier = Modifier.padding(4.dp),
-                                onClick = {
-                                    context.checkHideWelfareUpdate()
-                                }
-                            )
-                        }
-
-                        TextSetting(
-                            title = "隐藏福利显示位置列表",
-                            modifier = Modifier.padding(4.dp),
-                            onClick = {
-                                context.multiChoiceSelector(HookEntry.optionEntity.hideBenefitsOption.configurations)
+                                HookEntry.optionEntity.hideBenefitsOption.remoteCHideWelfareList = HookEntry.parseKeyWordOption(it)
                             }
                         )
 
-                        TextSetting(
-                            title = "清空隐藏福利列表",
+                        if (remoteHideWelfareList.value.isNotBlank()) {
+                            TextSetting(title = "获取远程隐藏福利信息",
+                                modifier = Modifier.padding(4.dp),
+                                onClick = {
+                                    context.checkHideWelfareUpdate()
+                                })
+                        }
+
+                        TextSetting(title = "隐藏福利显示位置列表",
+                            modifier = Modifier.padding(4.dp),
+                            onClick = {
+                                context.multiChoiceSelector(HookEntry.optionEntity.hideBenefitsOption.configurations)
+                            })
+
+                        TextSetting(title = "清空隐藏福利列表",
                             modifier = Modifier.padding(4.dp),
                             onClick = {
                                 HookEntry.optionEntity.hideBenefitsOption.hideWelfareList.clear()
                                 updateOptionEntity()
                                 hideWelfare.value = false
-                            }
-                        )
+                            })
                     }
 
                 }
@@ -1141,8 +1124,7 @@ fun MainScreen(
                         checked = rememberMutableStateOf(value = HookEntry.optionEntity.startImageOption.enableCustomLocalStartImage),
                         subTitle = "启用后会重定向下载路径为:\"$splashPath\"\n随机所存在的图片参与启动图",
                         onCheckedChange = {
-                            HookEntry.optionEntity.startImageOption.enableCustomLocalStartImage =
-                                it
+                            HookEntry.optionEntity.startImageOption.enableCustomLocalStartImage = it
                         })
 
                     if (HookEntry.optionEntity.startImageOption.officialLaunchMapList.isNotEmpty()) {
@@ -1234,16 +1216,12 @@ fun MainScreen(
                         )
                     )
 
-                    EditTextSetting(title = "填入网络图片直链",
-                        subTitle = "以\";\"分隔",
-                        right = {
-                            Insert(list = customStartImageUrlList)
-                        },
-                        text = customStartImageUrlList,
-                        onTextChange = {
-                            HookEntry.optionEntity.startImageOption.customStartImageUrlList =
-                                HookEntry.parseKeyWordOption(it)
-                        })
+                    EditTextSetting(title = "填入网络图片直链", subTitle = "以\";\"分隔", right = {
+                        Insert(list = customStartImageUrlList)
+                    }, text = customStartImageUrlList, onTextChange = {
+                        HookEntry.optionEntity.startImageOption.customStartImageUrlList =
+                            HookEntry.parseKeyWordOption(it)
+                    })
 
 
                 }
@@ -1280,7 +1258,8 @@ fun MainScreen(
                     val customSplash =
                         rememberMutableStateOf(value = HookEntry.optionEntity.splashOption.enableCustomSplash)
 
-                    SwitchSetting(title = "启用自定义闪屏页",
+                    SwitchSetting(
+                        title = "启用自定义闪屏页",
                         checked = customSplash,
                         onCheckedChange = {
                             HookEntry.optionEntity.splashOption.enableCustomSplash = it
@@ -1381,52 +1360,7 @@ fun PurifyScreen(
             Column(modifier = Modifier.padding(4.dp)) {
 
                 TextSetting(title = "屏蔽选项列表", onClick = {
-                    val shieldOptionList = listOf(
-                        "搜索-发现(热词)",
-                        "搜索-热门作品榜",
-                        "搜索-人气标签榜",
-                        "搜索-为你推荐",
-                        "精选-主页面",
-                        "精选-分类",
-                        "精选-分类-全部作品",
-                        "精选-免费-免费推荐",
-                        "精选-免费-新书入库",
-                        "精选-畅销精选、主编力荐等更多",
-                        "精选-新书强推、三江推荐",
-                        "精选-排行榜",
-                        "精选-新书",
-                        "每日导读",
-                        "精选-漫画",
-                        "精选-漫画-其他",
-                        "阅读-最后一页-看过此书的人还看过",
-                        "阅读-最后一页-同类作品推荐",
-                        "阅读-最后一页-推荐",
-                        "分类-小编力荐、本周强推等更多"
-                    )
-                    val checkedItems = BooleanArray(shieldOptionList.size)
-                    if (HookEntry.optionEntity.shieldOption.shieldOptionValueSet.isNotEmpty()) {
-                        safeRun {
-                            shieldOptionList.forEachIndexed { index, _ ->
-                                if (index in HookEntry.optionEntity.shieldOption.shieldOptionValueSet) {
-                                    checkedItems[index] = true
-                                }
-                            }
-                        }
-                    }
-                    context.multiChoiceSelector(
-                        shieldOptionList, checkedItems, "屏蔽选项列表"
-                    ) { _, i, isChecked ->
-                        checkedItems[i] = isChecked
-                    }.doOnDismiss {
-                        checkedItems.forEachIndexed { index, b ->
-                            if (b) {
-                                HookEntry.optionEntity.shieldOption.shieldOptionValueSet += index
-                            } else {
-                                HookEntry.optionEntity.shieldOption.shieldOptionValueSet -= index
-                            }
-                        }
-                        updateOptionEntity()
-                    }
+                    context.multiChoiceSelector(HookEntry.optionEntity.shieldOption.configurations)
                 })
 
                 SwitchSetting(title = "启用快速屏蔽弹窗",
@@ -1441,8 +1375,7 @@ fun PurifyScreen(
                         ";"
                     ),
                 )
-                EditTextSetting(
-                    title = "填入需要屏蔽的完整作者名称",
+                EditTextSetting(title = "填入需要屏蔽的完整作者名称",
                     text = authorList,
                     subTitle = "使用 \";\" 分隔",
                     right = {
@@ -1458,8 +1391,7 @@ fun PurifyScreen(
                         ";"
                     )
                 )
-                EditTextSetting(
-                    title = "填入需要屏蔽的书名关键词",
+                EditTextSetting(title = "填入需要屏蔽的书名关键词",
                     text = bookNameList,
                     subTitle = "注意:单字威力巨大!!!\n使用 \";\" 分隔",
                     right = {
@@ -1468,8 +1400,7 @@ fun PurifyScreen(
                     onTextChange = {
                         HookEntry.optionEntity.shieldOption.bookNameList =
                             HookEntry.parseKeyWordOption(it)
-                    }
-                )
+                    })
 
                 SwitchSetting(title = "启用书类型增强屏蔽",
                     subTitle = "解除下面的限制改为包含关键词执行屏蔽\n例如:关键词为\"仙侠\"时,类型为\"古典仙侠\"的书也会被屏蔽",
@@ -1481,8 +1412,7 @@ fun PurifyScreen(
                 val bookTypeList = rememberMutableStateOf(
                     value = HookEntry.optionEntity.shieldOption.bookTypeList.joinToString(";")
                 )
-                EditTextSetting(
-                    title = "填入需要屏蔽的书类型",
+                EditTextSetting(title = "填入需要屏蔽的书类型",
                     text = bookTypeList,
                     subTitle = "必须匹配关键词才执行屏蔽\n使用 \";\" 分隔",
                     right = {
@@ -1491,8 +1421,7 @@ fun PurifyScreen(
                     onTextChange = {
                         HookEntry.optionEntity.shieldOption.bookTypeList =
                             HookEntry.parseKeyWordOption(it)
-                    }
-                )
+                    })
             }
         }
 
@@ -1520,7 +1449,8 @@ fun PurifyScreen(
                 val enableSelectedHide =
                     rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.selectedOption.enableSelectedHide)
 
-                SwitchSetting(title = "精选-启用选项屏蔽",
+                SwitchSetting(
+                    title = "精选-启用选项屏蔽",
                     checked = enableSelectedHide,
                     onCheckedChange = {
                         HookEntry.optionEntity.viewHideOption.selectedOption.enableSelectedHide = it
@@ -1646,7 +1576,8 @@ fun PurifyScreen(
                 val hideDetail =
                     rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.bookDetailOptions.enableHideBookDetail)
 
-                SwitchSetting(title = "启用书籍详情-隐藏控件",
+                SwitchSetting(
+                    title = "启用书籍详情-隐藏控件",
                     checked = hideDetail,
                     onCheckedChange = {
                         HookEntry.optionEntity.viewHideOption.bookDetailOptions.enableHideBookDetail =
@@ -2006,7 +1937,8 @@ fun AboutScreen(
             context.joinQQGroup("JdqL9prgQ3epIUed3weaEkJwtNgNQaWa")
         })
 
-        TextSetting(title = "QD模块赞助群",
+        TextSetting(
+            title = "QD模块赞助群",
             subTitle = "575801108\n赞助后加群主好友发记录",
             onClick = {
                 context.alertDialog {
@@ -2060,14 +1992,12 @@ fun AboutScreen(
             }
         }
 
-        TextSetting(
-            title = "起点内部版本号",
+        TextSetting(title = "起点内部版本号",
             subTitle = "$versionCode",
             showRightIcon = false,
             onClick = {
 
-            }
-        )
+            })
 
         TextSetting(title = "模块版本号",
             subTitle = BuildConfig.VERSION_NAME,
@@ -2111,14 +2041,12 @@ fun Disclaimers(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(
-            text = stringResource(id = R.string.disclaimers_title),
+        Text(text = stringResource(id = R.string.disclaimers_title),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
                 .padding(bottom = 8.dp)
-                .clickable { remainingTime = 0L }
-        )
+                .clickable { remainingTime = 0L })
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = stringResource(id = R.string.disclaimers_message))
 

@@ -33,7 +33,6 @@ import com.highcapable.yukihookapi.hook.type.java.LongType
 import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
-import de.robv.android.xposed.XposedHelpers
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.concurrent.CopyOnWriteArrayList
@@ -385,26 +384,28 @@ class HookEntry : IYukiHookXposedInit {
         if (optionEntity.viewHideOption.bookLastPageOptions.enableHideBookLastPage) {
             readBookLastPage(
                 versionCode = versionCode,
-                shieldAlsoRead = isEnableShieldOption(16),
-                shieldSimilarRecommend = isEnableShieldOption(17),
-                shieldRecommendation = isEnableShieldOption(18),
-                hideCircle = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
-                    optionEntity.viewHideOption.bookLastPageOptions.configurations[0].title
+                shieldAlsoRead = optionEntity.shieldOption.configurations.isSelectedByTitle("阅读-最后一页-看过此书的人还看过"),
+                shieldSimilarRecommend = optionEntity.shieldOption.configurations.isSelectedByTitle(
+                    "阅读-最后一页-同类作品推荐"
                 ),
-                hideAlsoRead = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
-                    optionEntity.viewHideOption.bookLastPageOptions.configurations[1].title
+                shieldRecommendation = optionEntity.shieldOption.configurations.isSelectedByTitle("阅读-最后一页-推荐"),
+                hideCircle = optionEntity.viewHideOption.bookLastPageOptions.configurations.isSelectedByTitle(
+                    "书友圈"
                 ),
-                hideRecommendation = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
-                    optionEntity.viewHideOption.bookLastPageOptions.configurations[2].title
+                hideAlsoRead = optionEntity.viewHideOption.bookLastPageOptions.configurations.isSelectedByTitle(
+                    "看过此书的人还看过"
                 ),
-                hideSimilarRecommend = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
-                    optionEntity.viewHideOption.bookLastPageOptions.configurations[3].title
+                hideRecommendation = optionEntity.viewHideOption.bookLastPageOptions.configurations.isSelectedByTitle(
+                    "推荐"
                 ),
-                hideBookList = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
-                    optionEntity.viewHideOption.bookLastPageOptions.configurations[4].title
+                hideSimilarRecommend = optionEntity.viewHideOption.bookLastPageOptions.configurations.isSelectedByTitle(
+                    "同类作品推荐"
                 ),
-                hideTryRead = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
-                    optionEntity.viewHideOption.bookLastPageOptions.configurations[5].title
+                hideBookList = optionEntity.viewHideOption.bookLastPageOptions.configurations.isSelectedByTitle(
+                    "收录此书的书单"
+                ),
+                hideTryRead = optionEntity.viewHideOption.bookLastPageOptions.configurations.isSelectedByTitle(
+                    "试读"
                 ),
                 hideAdView = optionEntity.advOption.configurations.isSelectedByTitle("阅读页-最后一页-中间广告")
             )
@@ -436,9 +437,7 @@ class HookEntry : IYukiHookXposedInit {
             isEnableCustomSplash = optionEntity.splashOption.enableCustomSplash
         )
 
-        if (optionEntity.shieldOption.shieldOptionValueSet.isNotEmpty()) {
-            shieldOption(versionCode, optionEntity.shieldOption.shieldOptionValueSet)
-        }
+        shieldOption(versionCode, optionEntity.shieldOption.configurations)
 
         if (optionEntity.shieldOption.enableQuickShieldDialog) {
             quickShield(versionCode)
@@ -518,13 +517,6 @@ class HookEntry : IYukiHookXposedInit {
         }
 
         /**
-         * 判断是否启用了屏蔽配置的选项
-         * @param optionValue 选项的值
-         */
-        fun isEnableShieldOption(optionValue: Int) =
-            optionValue in optionEntity.shieldOption.shieldOptionValueSet
-
-        /**
          * 判断是否需要屏蔽
          * @param bookName 书名-可空
          * @param authorName 作者名-可空
@@ -573,14 +565,6 @@ class HookEntry : IYukiHookXposedInit {
 
             return false
         }
-
-        /**
-         * 解析关键词组
-         * @param it 关键词组
-         */
-        fun parseKeyWordOption(it: String = ""): MutableSet<String> =
-            it.split(";").filter { it.isNotBlank() }.map { it.replace(Regex(pattern = "\\s+"), "") }
-                .toMutableSet()
 
         /**
          * 解析需要屏蔽的书籍列表

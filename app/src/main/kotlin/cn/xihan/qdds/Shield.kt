@@ -2,7 +2,6 @@ package cn.xihan.qdds
 
 import android.app.Activity
 import android.content.Context
-import android.widget.RelativeLayout
 import android.widget.TextView
 import cn.xihan.qdds.HookEntry.Companion.isNeedShield
 import cn.xihan.qdds.HookEntry.Companion.parseNeedShieldList
@@ -16,7 +15,6 @@ import com.highcapable.yukihookapi.hook.type.java.IntType
 import com.highcapable.yukihookapi.hook.type.java.JSONArrayClass
 import com.highcapable.yukihookapi.hook.type.java.ListClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
-import de.robv.android.xposed.XposedHelpers
 
 /**
  * @项目名 : QDReadHook
@@ -28,30 +26,38 @@ import de.robv.android.xposed.XposedHelpers
 /**
  * 屏蔽选项
  * @param versionCode 版本号
- * @param optionValueSet 屏蔽选项值
+ * @param configurations 屏蔽选项列表
  */
-fun PackageParam.shieldOption(versionCode: Int, optionValueSet: Set<Int>) {
-    // 遍历 optionValueSet 包含的值 执行指定方法
-    optionValueSet.forEach {
-        when (it) {
-            0 -> shieldSearchFind(versionCode)
-            3 -> shieldSearchRecommend(versionCode)
-            4 -> shieldChoice(versionCode)
-            5 -> shieldCategory(versionCode)
-            6 -> shieldCategoryAllBook(versionCode)
-            7 -> shieldFreeRecommend(versionCode)
-            8 -> shieldFreeNewBook(versionCode)
-            9 -> shieldHotAndRecommend(versionCode)
-            10 -> shieldNewBookAndRecommend(versionCode)
-            11 -> shieldBookRank(versionCode)
-            12 -> shieldNewBook(versionCode)
-            13 -> shieldDailyReading(versionCode)
-            14 -> shieldComic(versionCode)
-            15 -> shieldComicOther(versionCode)
-            19 -> shieldCategoryBookListReborn(versionCode)
+fun PackageParam.shieldOption(
+    versionCode: Int,
+    configurations: List<OptionEntity.SelectedModel>
+) {
+    if (configurations.isEmpty()) return
+    configurations.filter { it.selected }.takeIf { it.isNotEmpty() }?.forEach { selected ->
+        when (selected.title) {
+            "搜索-发现(热词)" -> shieldSearchFind(versionCode)
+            "搜索-为你推荐" -> shieldSearchRecommend(versionCode)
+            "精选-主页面" -> shieldChoice(versionCode)
+            "精选-分类" -> shieldCategory(versionCode)
+            "精选-分类-全部作品" -> shieldCategoryAllBook(versionCode)
+            "精选-免费-免费推荐" -> shieldFreeRecommend(versionCode)
+            "精选-免费-新书入库" -> shieldFreeNewBook(versionCode)
+            "精选-畅销精选、主编力荐等更多" -> shieldHotAndRecommend(versionCode)
+            "精选-新书强推、三江推荐" -> shieldNewBookAndRecommend(versionCode)
+            "精选-排行榜" -> shieldBookRank(versionCode)
+            "精选-新书" -> shieldNewBook(versionCode)
+            "每日导读" -> shieldDailyReading(versionCode)
+            "精选-漫画" -> shieldComic(versionCode)
+            "精选-漫画-其他" -> shieldComicOther(versionCode)
+            "分类-小编力荐、本周强推等更多" -> shieldCategoryBookListReborn(versionCode)
         }
     }
-    shieldSearch(versionCode, HookEntry.isEnableShieldOption(1), HookEntry.isEnableShieldOption(2))
+
+    shieldSearch(
+        versionCode = versionCode,
+        isNeedShieldBookRank = configurations.isSelectedByTitle("搜索-热门作品榜"),
+        isNeedShieldTagRank = configurations.isSelectedByTitle("搜索-人气标签榜")
+    )
 }
 
 /**
@@ -1200,7 +1206,7 @@ fun PackageParam.shieldComicOther(versionCode: Int) {
             }
             afterHook {
                 val list = instance.getParamList<ArrayList<*>?>()
-                if (list.isNotEmpty()){
+                if (list.isNotEmpty()) {
                     HookEntry.parseNeedShieldComicList(list)
                 }
             }
