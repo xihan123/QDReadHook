@@ -27,14 +27,14 @@ import com.highcapable.yukihookapi.hook.type.java.UnitType
 /**
  * 主页配置列表
  */
-fun PackageParam.homeOption(versionCode: Int, optionValueSet: List<OptionEntity.SelectedModel>) {
-    optionValueSet.filter { it.selected }.forEach {
+fun PackageParam.homeOption(versionCode: Int, configurations: List<OptionEntity.SelectedModel>) {
+    if (configurations.isEmpty()) return
+    configurations.filter { it.selected }.takeIf { it.isNotEmpty() }?.forEach {
         when (it.title) {
             "主页顶部宝箱提示" -> hideMainTopBox(versionCode)
             "主页顶部战力提示" -> hideMainTopPower(versionCode)
             "书架每日导读" -> hideBookshelfDailyReading(versionCode)
             "书架去找书" -> hideBookshelfFindBook(versionCode)
-//            "主页底部导航栏发现" -> hideBottomNavigationFind(versionCode)
             "主页底部导航栏红点" -> hideBottomRedDot(versionCode)
         }
     }
@@ -537,10 +537,13 @@ fun PackageParam.hideBottomNavigation(versionCode: Int) {
                                 if (textViews.isNotEmpty()) {
                                     textViews.forEach { textView ->
                                         val text = (textView as TextView).text
-                                        HookEntry.optionEntity.viewHideOption.homeOption.configurations.findOrPlus(
-                                            title = "主页底部导航栏${text}"
-                                        ) {
-                                            textView.parent.parent.safeCast<View>()?.setVisibilityIfNotEqual()
+                                        if ("回到顶部" !in text) {
+                                            HookEntry.optionEntity.viewHideOption.homeOption.bottomNavigationConfigurations.findOrPlus(
+                                                title = "主页底部导航栏${text}"
+                                            ) {
+                                                textView.parent.parent.safeCast<View>()
+                                                    ?.setVisibilityIfNotEqual()
+                                            }
                                         }
                                     }
                                 }

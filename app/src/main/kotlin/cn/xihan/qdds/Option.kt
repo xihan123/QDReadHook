@@ -359,18 +359,20 @@ data class OptionEntity(
          * 主页配置
          * @param enableCaptureBottomNavigation 启用截取底部导航栏
          * @param configurations 主页配置列表
+         * @param bottomNavigationConfigurations 底部导航栏配置
          */
         @Keep
         @Serializable
         data class HomeOption(
             @SerialName("enableCaptureBottomNavigation") var enableCaptureBottomNavigation: Boolean = false,
-            @SerialName("homeConfigurations") var configurations: MutableList<SelectedModel> = mutableListOf(
+            @SerialName("configurations") var configurations: MutableList<SelectedModel> = mutableListOf(
                 SelectedModel("主页顶部宝箱提示"),
                 SelectedModel("主页顶部战力提示"),
                 SelectedModel("书架每日导读"),
                 SelectedModel("书架去找书"),
                 SelectedModel("主页底部导航栏红点")
             ),
+            @SerialName("bottomNavigationConfigurations") var bottomNavigationConfigurations: MutableList<SelectedModel> = mutableListOf()
         )
 
         /**
@@ -386,7 +388,8 @@ data class OptionEntity(
             @SerialName("enableSelectedHide") var enableSelectedHide: Boolean = false,
             @SerialName("enableSelectedTitleHide") var enableSelectedTitleHide: Boolean = false,
             @SerialName("selectedConfigurations") var configurations: MutableList<SelectedModel> = mutableListOf(
-                SelectedModel("轮播图"), SelectedModel("轮播消息")
+                SelectedModel("轮播图"),
+                SelectedModel("轮播消息")
             ),
             @SerialName("selectedTitleConfigurations") var selectedTitleConfigurations: MutableList<SelectedModel> = mutableListOf()
         )
@@ -600,7 +603,7 @@ data class OptionEntity(
  *读取配置文件模型
  */
 fun readOptionEntity(): OptionEntity {
-    val file = readOptionFile() ?: return defaultOptionEntity()
+    val file = readOptionFile() ?: return defaultOptionEntity
     return try {
         if (file.readText().isNotEmpty()) {
             try {
@@ -627,6 +630,7 @@ fun readOptionEntity(): OptionEntity {
                         interceptOption.configurations.updateSelectedListOptionEntity(
                             newInterceptConfigurations
                         )
+
                     viewHideOption.homeOption.configurations =
                         viewHideOption.homeOption.configurations.updateSelectedListOptionEntity(
                             newViewHideOptionConfigurations
@@ -642,14 +646,14 @@ fun readOptionEntity(): OptionEntity {
                 }
             } catch (e: Exception) {
                 loggerE(msg = "readOptionFile: ${e.message}")
-                defaultOptionEntity()
+                defaultOptionEntity
             }
         } else {
-            defaultOptionEntity()
+            defaultOptionEntity
         }
     } catch (e: Exception) {
         loggerE(msg = "readOptionEntity: ${e.message}")
-        defaultOptionEntity()
+        defaultOptionEntity
     }
 }
 
@@ -675,7 +679,7 @@ fun readOptionFile(): File? = try {
     }
     if (!downloadFile.exists()) {
         downloadFile.createNewFile()
-        downloadFile.writeText(Json.encodeToString(defaultOptionEntity()))
+        downloadFile.writeText(Json.encodeToString(defaultOptionEntity))
     }
     downloadFile
 } catch (e: Throwable) {
@@ -697,16 +701,20 @@ fun writeOptionFile(optionEntity: OptionEntity): Boolean = try {
 /**
  * 返回一个默认的配置模型
  */
-fun defaultOptionEntity(): OptionEntity = OptionEntity(
-    mainOption = OptionEntity.MainOption(
-        packageName = "com.qidian.QDReader", enableAutoSign = true, enableLocalCard = true
-    ), viewHideOption = OptionEntity.ViewHideOption(
-        enableDisableQSNModeDialog = true,
-        accountOption = OptionEntity.ViewHideOption.AccountOption(
-            enableHideAccount = true, enableHideAccountRightTopRedDot = true
+val defaultOptionEntity by lazy {
+    OptionEntity(
+        mainOption = OptionEntity.MainOption(
+            packageName = "com.qidian.QDReader", enableAutoSign = true, enableLocalCard = true
+        ), viewHideOption = OptionEntity.ViewHideOption(
+            enableDisableQSNModeDialog = true,
+            accountOption = OptionEntity.ViewHideOption.AccountOption(
+                enableHideAccount = true, enableHideAccountRightTopRedDot = true
+            )
         )
     )
-)
+}
+
+val defaultSelectedList by lazy { mutableListOf<OptionEntity.SelectedModel>() }
 
 /**
  * 更新配置

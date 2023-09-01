@@ -7,7 +7,9 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -190,20 +192,16 @@ class MainActivity : ModuleAppCompatActivity() {
 
                     }
                 } else {
-                    Disclaimers(
-                        modifier = Modifier.padding(paddingValues),
-                        onAgreeClick = {
-                            allowDisclaimers = true
-                            currentDisclaimersVersionCode = latestDisclaimersVersionCode
-                            HookEntry.optionEntity.allowDisclaimers = true
-                            HookEntry.optionEntity.currentDisclaimersVersionCode =
-                                latestDisclaimersVersionCode
-                            updateOptionEntity()
-                        },
-                        onDisagreeClick = {
-                            finish()
-                        }
-                    )
+                    Disclaimers(modifier = Modifier.padding(paddingValues), onAgreeClick = {
+                        allowDisclaimers = true
+                        currentDisclaimersVersionCode = latestDisclaimersVersionCode
+                        HookEntry.optionEntity.allowDisclaimers = true
+                        HookEntry.optionEntity.currentDisclaimersVersionCode =
+                            latestDisclaimersVersionCode
+                        updateOptionEntity()
+                    }, onDisagreeClick = {
+                        finish()
+                    })
                 }
             } else {
                 Column(
@@ -383,6 +381,7 @@ fun EditTextSetting(
  * @param showRightIcon 是否显示右侧图标
  * @param bigTitle 是否大标题
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TextSetting(
     title: String,
@@ -391,9 +390,13 @@ fun TextSetting(
     showRightIcon: Boolean = true,
     bigTitle: Boolean = false,
     onClick: () -> Unit = {},
+    onLongClick: () -> Unit = {}
 ) {
     Row(
-        modifier = modifier.clickable(onClick = onClick),
+        modifier = modifier.combinedClickable(
+            onClick = onClick,
+            onLongClick = onLongClick
+        ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
@@ -888,9 +891,9 @@ fun MainScreen(
                             },
                             text = remoteHideWelfareList,
                             onTextChange = {
-                                HookEntry.optionEntity.hideBenefitsOption.remoteCHideWelfareList = HookEntry.parseKeyWordOption(it)
-                            }
-                        )
+                                HookEntry.optionEntity.hideBenefitsOption.remoteCHideWelfareList =
+                                    parseKeyWordOption(it)
+                            })
 
                         if (remoteHideWelfareList.value.isNotBlank()) {
                             TextSetting(title = "获取远程隐藏福利信息",
@@ -1220,7 +1223,7 @@ fun MainScreen(
                         Insert(list = customStartImageUrlList)
                     }, text = customStartImageUrlList, onTextChange = {
                         HookEntry.optionEntity.startImageOption.customStartImageUrlList =
-                            HookEntry.parseKeyWordOption(it)
+                            parseKeyWordOption(it)
                     })
 
 
@@ -1258,8 +1261,7 @@ fun MainScreen(
                     val customSplash =
                         rememberMutableStateOf(value = HookEntry.optionEntity.splashOption.enableCustomSplash)
 
-                    SwitchSetting(
-                        title = "启用自定义闪屏页",
+                    SwitchSetting(title = "启用自定义闪屏页",
                         checked = customSplash,
                         onCheckedChange = {
                             HookEntry.optionEntity.splashOption.enableCustomSplash = it
@@ -1382,8 +1384,7 @@ fun PurifyScreen(
                         Insert(authorList)
                     },
                     onTextChange = {
-                        HookEntry.optionEntity.shieldOption.authorList =
-                            HookEntry.parseKeyWordOption(it)
+                        HookEntry.optionEntity.shieldOption.authorList = parseKeyWordOption(it)
                     })
 
                 val bookNameList = rememberMutableStateOf(
@@ -1398,8 +1399,7 @@ fun PurifyScreen(
                         Insert(bookNameList)
                     },
                     onTextChange = {
-                        HookEntry.optionEntity.shieldOption.bookNameList =
-                            HookEntry.parseKeyWordOption(it)
+                        HookEntry.optionEntity.shieldOption.bookNameList = parseKeyWordOption(it)
                     })
 
                 SwitchSetting(title = "启用书类型增强屏蔽",
@@ -1419,8 +1419,7 @@ fun PurifyScreen(
                         Insert(bookTypeList)
                     },
                     onTextChange = {
-                        HookEntry.optionEntity.shieldOption.bookTypeList =
-                            HookEntry.parseKeyWordOption(it)
+                        HookEntry.optionEntity.shieldOption.bookTypeList = parseKeyWordOption(it)
                     })
             }
         }
@@ -1442,15 +1441,23 @@ fun PurifyScreen(
                             it
                     })
 
+                TextSetting(title = "底部导航栏隐藏控件列表", onClick = {
+                    context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.homeOption.bottomNavigationConfigurations)
+                }, onLongClick = {
+                    HookEntry.optionEntity.viewHideOption.homeOption.bottomNavigationConfigurations =
+                        defaultSelectedList
+                    context.toast("已恢复默认")
+                })
+
                 TextSetting(title = "主页-隐藏控件列表", onClick = {
                     context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.homeOption.configurations)
                 })
 
+
                 val enableSelectedHide =
                     rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.selectedOption.enableSelectedHide)
 
-                SwitchSetting(
-                    title = "精选-启用选项屏蔽",
+                SwitchSetting(title = "精选-启用选项屏蔽",
                     checked = enableSelectedHide,
                     onCheckedChange = {
                         HookEntry.optionEntity.viewHideOption.selectedOption.enableSelectedHide = it
@@ -1458,10 +1465,16 @@ fun PurifyScreen(
 
                 if (enableSelectedHide.value) {
                     TextSetting(title = "精选-隐藏控件列表",
-                        subTitle = "如若提示没有可用选项,请先打开精选页面滑一滑重启即可",
+                        subTitle = "如若提示没有可用选项,请先打开精选页面滑一滑重启即可\n长按恢复默认,其他操作后生效\nps:不小心长按到了不做任何操作马上右上角重启或者划卡清理即可恢复",
                         onClick = {
                             context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.selectedOption.configurations)
-                        })
+                        },
+                        onLongClick = {
+                            HookEntry.optionEntity.viewHideOption.selectedOption.configurations =
+                                defaultOptionEntity.viewHideOption.selectedOption.configurations
+                            context.toast("已恢复默认")
+                        }
+                    )
                 }
 
                 val enableSelectedTitleHide =
@@ -1476,9 +1489,14 @@ fun PurifyScreen(
 
                 if (enableSelectedTitleHide.value) {
                     TextSetting(title = "精选-标题隐藏控件列表",
-                        subTitle = "如若提示没有可用选项,请先打开精选页面后重启即可",
+                        subTitle = "如若提示没有可用选项,请先打开精选页面后重启即可\n长按恢复默认,其他操作后生效\n ps:不小心长按到了不做任何操作马上右上角重启或者划卡清理即可恢复",
                         onClick = {
                             context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.selectedOption.selectedTitleConfigurations)
+                        },
+                        onLongClick = {
+                            HookEntry.optionEntity.viewHideOption.selectedOption.selectedTitleConfigurations =
+                                defaultSelectedList
+                            context.toast("已恢复默认")
                         })
                 }
 
@@ -1540,15 +1558,28 @@ fun PurifyScreen(
 
                     TextSetting(title = "发现-头部列表", onClick = {
                         context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.findOption.headItem)
+                    }, onLongClick = {
+                        HookEntry.optionEntity.viewHideOption.findOption.headItem =
+                            defaultSelectedList
+                        context.toast("已恢复默认")
                     })
 
                     TextSetting(title = "发现-广告列表", onClick = {
                         context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.findOption.advItem)
+                    }, onLongClick = {
+                        HookEntry.optionEntity.viewHideOption.findOption.advItem =
+                            defaultSelectedList
+                        context.toast("已恢复默认")
                     })
 
                     TextSetting(title = "发现-筛选列表", onClick = {
                         context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.findOption.filterConfItem)
-                    })
+                    },
+                        onLongClick = {
+                            HookEntry.optionEntity.viewHideOption.findOption.filterConfItem =
+                                defaultSelectedList
+                            context.toast("已恢复默认")
+                        })
 
                 }
 
@@ -1561,23 +1592,32 @@ fun PurifyScreen(
 
                 if (hideAccount.value) {
                     TextSetting(title = "我-隐藏控件列表",
-                        subTitle = "如提示没有可用选项，请先打开\"我\"页面,并重启起点",
+                        subTitle = "如提示没有可用选项，请先打开\"我\"页面,并重启起点\n长按恢复默认,其他操作后生效\n ps:不小心长按到了不做任何操作马上右上角重启或者划卡清理即可恢复",
                         onClick = {
                             context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.accountOption.configurations)
+                        },
+                        onLongClick = {
+                            HookEntry.optionEntity.viewHideOption.accountOption.configurations =
+                                defaultSelectedList
+                            context.toast("已恢复默认")
                         })
 
                     TextSetting(title = "我-隐藏控件列表(新)",
-                        subTitle = "如提示没有可用选项，请先打开\"我\"页面,并重启起点",
+                        subTitle = "如提示没有可用选项，请先打开\"我\"页面,并重启起点\n长按恢复默认,其他操作后生效\n ps:不小心长按到了不做任何操作马上右上角重启或者划卡清理即可恢复",
                         onClick = {
                             context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.accountOption.newConfiguration)
+                        },
+                        onLongClick = {
+                            HookEntry.optionEntity.viewHideOption.accountOption.newConfiguration =
+                                defaultSelectedList
+                            context.toast("已恢复默认")
                         })
                 }
 
                 val hideDetail =
                     rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.bookDetailOptions.enableHideBookDetail)
 
-                SwitchSetting(
-                    title = "启用书籍详情-隐藏控件",
+                SwitchSetting(title = "启用书籍详情-隐藏控件",
                     checked = hideDetail,
                     onCheckedChange = {
                         HookEntry.optionEntity.viewHideOption.bookDetailOptions.enableHideBookDetail =
@@ -1630,260 +1670,6 @@ fun PurifyScreen(
                         context.showReplaceOptionDialog()
                     })
                 }
-
-                /*
-                val enableCustomBookFansValue =
-                    rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.enableCustomBookFansValue)
-
-                SwitchSetting(title = "启用自定义书粉丝值",
-                    subTitle = "不会用可进群问\n使用此功能默认你阅读并同意免责声明\n造成的一切后果均个人行为,与模块作者无关",
-                    checked = enableCustomBookFansValue,
-                    onCheckedChange = {
-                        HookEntry.optionEntity.bookFansValueOption.enableCustomBookFansValue = it
-                    })
-
-                if (enableCustomBookFansValue.value) {
-                    EditTextSetting(title = "昵称",
-                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.nickName),
-                        onTextChange = {
-                            HookEntry.optionEntity.bookFansValueOption.nickName = it
-                        })
-
-                    EditTextSetting(title = "相差的粉丝值",
-                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.dValue.toString()),
-                        onTextChange = {
-                            HookEntry.optionEntity.bookFansValueOption.dValue = it.toLong()
-                        })
-
-                    EditTextSetting(title = "打赏描述",
-                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.daShangDesc),
-                        onTextChange = {
-                            HookEntry.optionEntity.bookFansValueOption.daShangDesc = it
-                        })
-
-                    EditTextSetting(title = "头像地址",
-                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.headImageUrl),
-                        onTextChange = {
-                            HookEntry.optionEntity.bookFansValueOption.headImageUrl = it
-                        })
-
-                    EditTextSetting(title = "联盟排名",
-                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.leagueRank.toString()),
-                        onTextChange = {
-                            HookEntry.optionEntity.bookFansValueOption.leagueRank = it.toInt()
-                        })
-
-                    EditTextSetting(title = "联盟类型",
-                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.leagueType.toString()),
-                        onTextChange = {
-                            HookEntry.optionEntity.bookFansValueOption.leagueType = it.toInt()
-                        })
-
-                    EditTextSetting(title = "排名",
-                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.rank.toString()),
-                        onTextChange = {
-                            HookEntry.optionEntity.bookFansValueOption.rank = it.toInt()
-                        })
-
-                    EditTextSetting(title = "排名名称",
-                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.rankName),
-                        onTextChange = {
-                            HookEntry.optionEntity.bookFansValueOption.rankName = it
-                        })
-
-                    EditTextSetting(title = "排名升级描述",
-                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.rankUpgradeDesc),
-                        onTextChange = {
-                            HookEntry.optionEntity.bookFansValueOption.rankUpgradeDesc = it
-                        })
-
-                    EditTextSetting(title = "排序id",
-                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.orderId.toString()),
-                        onTextChange = {
-                            HookEntry.optionEntity.bookFansValueOption.orderId = it.toInt()
-                        })
-
-                    EditTextSetting(title = "粉丝值/书友值",
-                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.amount.toString()),
-                        onTextChange = {
-                            HookEntry.optionEntity.bookFansValueOption.amount = it.toInt()
-                        })
-
-                    EditTextSetting(title = "粉丝排名",
-                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.fansRank.toString()),
-                        onTextChange = {
-                            HookEntry.optionEntity.bookFansValueOption.fansRank = it.toInt()
-                        })
-
-                    EditTextSetting(title = "标题图片地址",
-                        text = rememberMutableStateOf(value = HookEntry.optionEntity.bookFansValueOption.mTitleImage),
-                        onTextChange = {
-                            HookEntry.optionEntity.bookFansValueOption.mTitleImage = it
-                        })
-                }
-
-                 */
-
-                /*
-                if (versionCode >= 896) {
-
-                    val enableCustomDeviceInfo =
-                        rememberMutableStateOf(value = HookEntry.optionEntity.replaceRuleOption.enableCustomDeviceInfo)
-
-                    SwitchSetting(
-                        title = "启用保存原始设备信息",
-                        subTitle = "会将原始设备信息保存\n开启后获取成功一次之后最好关闭\n否则可能会卡IO线程",
-                        checked = rememberMutableStateOf(value = HookEntry.optionEntity.replaceRuleOption.enableSaveOriginalDeviceInfo),
-                        onCheckedChange = {
-                            HookEntry.optionEntity.replaceRuleOption.enableSaveOriginalDeviceInfo =
-                                it
-                        }
-                    )
-
-                    TextSetting(
-                        title = "原始设备信息"
-                    ) {
-                        context.alertDialog {
-                            title = "原始设备信息"
-                            message =
-                                "${HookEntry.optionEntity.replaceRuleOption.originalDeviceInfo}"
-                            positiveButton("复制") {
-                                context.copyToClipboard(HookEntry.optionEntity.replaceRuleOption.originalDeviceInfo.toString())
-                            }
-                            build()
-                            show()
-                        }
-                    }
-
-                    SwitchSetting(
-                        title = "启用自定义设备信息",
-                        subTitle = "带*为必填项\n不会用可进群问\n使用此功能造成的一切后果自负",
-                        checked = enableCustomDeviceInfo,
-                        onCheckedChange = {
-                            HookEntry.optionEntity.replaceRuleOption.enableCustomDeviceInfo = it
-                        }
-                    )
-
-                    if (enableCustomDeviceInfo.value) {
-                        EditTextSetting(
-                            title = "设备厂商*",
-                            subTitle = "如: OnePlus",
-                            text = rememberMutableStateOf(value = HookEntry.optionEntity.replaceRuleOption.customDeviceInfo.brand),
-                            onTextChange = {
-                                HookEntry.optionEntity.replaceRuleOption.customDeviceInfo.brand = it
-                            }
-                        )
-
-                        EditTextSetting(
-                            title = "设备型号*",
-                            subTitle = "如: GM1900",
-                            text = rememberMutableStateOf(value = HookEntry.optionEntity.replaceRuleOption.customDeviceInfo.model),
-                            onTextChange = {
-                                HookEntry.optionEntity.replaceRuleOption.customDeviceInfo.model = it
-                            }
-                        )
-
-
-                        val imei =
-                            rememberMutableStateOf(value = HookEntry.optionEntity.replaceRuleOption.customDeviceInfo.imei)
-                        EditTextSetting(
-                            title = "设备IMEI*",
-                            subTitle = "如: cc51cce4aafd4d0e0fd61031100014816b02",
-                            text = imei,
-                            right = {
-                                TextButton(onClick = {
-                                    imei.value = randomIMEI().md5()
-                                    HookEntry.optionEntity.replaceRuleOption.customDeviceInfo.imei =
-                                        imei.value
-                                    updateOptionEntity()
-                                }) {
-                                    Text(text = "随机生成")
-                                }
-                            },
-                            onTextChange = {
-                                HookEntry.optionEntity.replaceRuleOption.customDeviceInfo.imei = it
-                            }
-                        )
-
-                        val androidId =
-                            rememberMutableStateOf(value = HookEntry.optionEntity.replaceRuleOption.customDeviceInfo.androidId)
-                        EditTextSetting(
-                            title = "设备AndroidId*",
-                            text = androidId,
-                            right = {
-                                TextButton(onClick = {
-                                    androidId.value = randomIMEI().md5().substring(0, 15)
-                                    HookEntry.optionEntity.replaceRuleOption.customDeviceInfo.androidId =
-                                        androidId.value
-                                    updateOptionEntity()
-                                }) {
-                                    Text(text = "随机生成")
-                                }
-                            },
-                            onTextChange = {
-                                HookEntry.optionEntity.replaceRuleOption.customDeviceInfo.androidId =
-                                    it
-                            }
-                        )
-
-                        EditTextSetting(
-                            title = "设备Mac地址*",
-                            subTitle = "如: 02:00:00:00:00:00",
-                            text = rememberMutableStateOf(value = HookEntry.optionEntity.replaceRuleOption.customDeviceInfo.macAddress),
-                            onTextChange = {
-                                HookEntry.optionEntity.replaceRuleOption.customDeviceInfo.macAddress =
-                                    it
-                            }
-                        )
-
-                        EditTextSetting(
-                            title = "设备序列号",
-                            text = rememberMutableStateOf(value = HookEntry.optionEntity.replaceRuleOption.customDeviceInfo.serial),
-                            onTextChange = {
-                                HookEntry.optionEntity.replaceRuleOption.customDeviceInfo.serial =
-                                    it
-                            }
-                        )
-
-                        EditTextSetting(
-                            title = "设备Android版本*",
-                            subTitle = "如: 33",
-                            text = rememberMutableStateOf(value = HookEntry.optionEntity.replaceRuleOption.customDeviceInfo.androidVersion),
-                            onTextChange = {
-                                HookEntry.optionEntity.replaceRuleOption.customDeviceInfo.androidVersion =
-                                    it
-                            }
-                        )
-
-                        EditTextSetting(
-                            title = "设备屏幕高度*",
-                            subTitle = "如: 2135",
-                            text = rememberMutableStateOf(value = "${HookEntry.optionEntity.replaceRuleOption.customDeviceInfo.screenHeight}"),
-                            onTextChange = {
-                                if (it.isNotBlank() || it.isNumber()) {
-                                    HookEntry.optionEntity.replaceRuleOption.customDeviceInfo.screenHeight =
-                                        it.toInt()
-                                }
-
-                            }
-                        )
-
-                        EditTextSetting(
-                            title = "设备CPU信息*",
-                            subTitle = "如: 0000000000000000",
-                            text = rememberMutableStateOf(value = HookEntry.optionEntity.replaceRuleOption.customDeviceInfo.cpuInfo),
-                            onTextChange = {
-                                HookEntry.optionEntity.replaceRuleOption.customDeviceInfo.cpuInfo =
-                                    it
-                            }
-                        )
-
-                    }
-                }
-
-                 */
-
-
             }
         }
 
@@ -1937,8 +1723,7 @@ fun AboutScreen(
             context.joinQQGroup("JdqL9prgQ3epIUed3weaEkJwtNgNQaWa")
         })
 
-        TextSetting(
-            title = "QD模块赞助群",
+        TextSetting(title = "QD模块赞助群",
             subTitle = "575801108\n赞助后加群主好友发记录",
             onClick = {
                 context.alertDialog {
@@ -1992,7 +1777,8 @@ fun AboutScreen(
             }
         }
 
-        TextSetting(title = "起点内部版本号",
+        TextSetting(
+            title = "起点内部版本号",
             subTitle = "$versionCode",
             showRightIcon = false,
             onClick = {

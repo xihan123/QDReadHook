@@ -310,11 +310,7 @@ class HookEntry : IYukiHookXposedInit {
 
         interceptOption(versionCode, optionEntity.interceptOption.configurations)
 
-        if ((optionEntity.viewHideOption.homeOption.configurations.any { it.selected })) {
-            homeOption(
-                versionCode, optionEntity.viewHideOption.homeOption.configurations
-            )
-        }
+        homeOption(versionCode, optionEntity.viewHideOption.homeOption.configurations)
 
         if (optionEntity.viewHideOption.homeOption.enableCaptureBottomNavigation) {
             hideBottomNavigation(versionCode)
@@ -454,7 +450,8 @@ class HookEntry : IYukiHookXposedInit {
                     safeRun {
                         val readMoreSetting = instance.getView<RelativeLayout>("readMoreSetting")
                         // 获取 readMoreSetting 子控件
-                        val readMoreSettingChild = readMoreSetting?.getChildAt(0).safeCast<TextView>()
+                        val readMoreSettingChild =
+                            readMoreSetting?.getChildAt(0).safeCast<TextView>()
                         readMoreSettingChild?.text = "阅读设置/模块设置(长按)"
 
                         readMoreSetting?.setOnLongClickListener {
@@ -686,7 +683,7 @@ class HookEntry : IYukiHookXposedInit {
                 optionEntity.viewHideOption.selectedOption.selectedTitleConfigurations.filter {
                     it.selected && it.title in type.values
                 }
-            return needShieldTitleList.map { type.filterValues { it1 -> it1 == it.title }.keys.first() }
+            return needShieldTitleList.mapNotNull { type.filterValues { it1 -> it1 == it.title }.keys.firstOrNull() }
         }
 
         /**
@@ -701,7 +698,6 @@ class HookEntry : IYukiHookXposedInit {
                 bookName.isNotBlank() -> {
                     optionEntity.shieldOption.bookNameList += bookName
                 }
-
                 authorName.isNotBlank() -> {
                     optionEntity.shieldOption.authorList += authorName
                 }
