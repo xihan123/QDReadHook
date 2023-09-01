@@ -3,6 +3,7 @@ package cn.xihan.qdds
 import android.os.Environment
 import androidx.annotation.Keep
 import androidx.compose.runtime.Immutable
+import com.highcapable.yukihookapi.hook.log.loggerE
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -123,7 +124,7 @@ data class OptionEntity(
     /**
      * 屏蔽配置
      * @param enableQuickShieldDialog 启用快速屏蔽弹窗
-     * @param configurations 屏蔽配置值集合
+     * @param shieldOptionValueSet 屏蔽配置值集合
      * @param authorList 屏蔽作者集合
      * @param bookTypeList 屏蔽书类集合
      * @param bookNameList 屏蔽书名集合
@@ -136,28 +137,7 @@ data class OptionEntity(
         @SerialName("authorList") var authorList: MutableSet<String> = mutableSetOf(),
         @SerialName("bookNameList") var bookNameList: MutableSet<String> = mutableSetOf(),
         @SerialName("bookTypeList") var bookTypeList: Set<String> = emptySet(),
-        @SerialName("configurations") var configurations: MutableList<SelectedModel> = mutableListOf(
-            SelectedModel("搜索-发现(热词)"),
-            SelectedModel("搜索-热门作品榜"),
-            SelectedModel("搜索-人气标签榜"),
-            SelectedModel("搜索-为你推荐"),
-            SelectedModel("精选-主页面"),
-            SelectedModel("精选-分类"),
-            SelectedModel("精选-分类-全部作品"),
-            SelectedModel("精选-免费-免费推荐"),
-            SelectedModel("精选-免费-新书入库"),
-            SelectedModel("精选-畅销精选、主编力荐等更多"),
-            SelectedModel("精选-新书强推、三江推荐"),
-            SelectedModel("精选-排行榜"),
-            SelectedModel("精选-新书"),
-            SelectedModel("每日导读"),
-            SelectedModel("精选-漫画"),
-            SelectedModel("精选-漫画-其他"),
-            SelectedModel("阅读-最后一页-看过此书的人还看过"),
-            SelectedModel("阅读-最后一页-同类作品推荐"),
-            SelectedModel("阅读-最后一页-推荐"),
-            SelectedModel("分类-小编力荐、本周强推等更多")
-        ),
+        @SerialName("shieldOptionValueSet") var shieldOptionValueSet: MutableSet<Int> = mutableSetOf(),
         @SerialName("enableBookTypeEnhancedBlocking") var enableBookTypeEnhancedBlocking: Boolean = false,
     )
 
@@ -358,20 +338,18 @@ data class OptionEntity(
          * 主页配置
          * @param enableCaptureBottomNavigation 启用截取底部导航栏
          * @param configurations 主页配置列表
-         * @param bottomNavigationConfigurations 底部导航栏配置
          */
         @Keep
         @Serializable
         data class HomeOption(
             @SerialName("enableCaptureBottomNavigation") var enableCaptureBottomNavigation: Boolean = false,
-            @SerialName("configurations") var configurations: MutableList<SelectedModel> = mutableListOf(
+            @SerialName("homeConfigurations") var configurations: MutableList<SelectedModel> = mutableListOf(
                 SelectedModel("主页顶部宝箱提示"),
                 SelectedModel("主页顶部战力提示"),
                 SelectedModel("书架每日导读"),
                 SelectedModel("书架去找书"),
                 SelectedModel("主页底部导航栏红点")
             ),
-            @SerialName("bottomNavigationConfigurations") var bottomNavigationConfigurations: MutableList<SelectedModel> = mutableListOf()
         )
 
         /**
@@ -387,8 +365,7 @@ data class OptionEntity(
             @SerialName("enableSelectedHide") var enableSelectedHide: Boolean = false,
             @SerialName("enableSelectedTitleHide") var enableSelectedTitleHide: Boolean = false,
             @SerialName("selectedConfigurations") var configurations: MutableList<SelectedModel> = mutableListOf(
-                SelectedModel("轮播图"),
-                SelectedModel("轮播消息")
+                SelectedModel("轮播图"), SelectedModel("轮播消息")
             ),
             @SerialName("selectedTitleConfigurations") var selectedTitleConfigurations: MutableList<SelectedModel> = mutableListOf()
         )
@@ -602,7 +579,7 @@ data class OptionEntity(
  *读取配置文件模型
  */
 fun readOptionEntity(): OptionEntity {
-    val file = readOptionFile() ?: return defaultOptionEntity
+    val file = readOptionFile() ?: return defaultOptionEntity()
     return try {
         if (file.readText().isNotEmpty()) {
             try {
@@ -629,7 +606,6 @@ fun readOptionEntity(): OptionEntity {
                         interceptOption.configurations.updateSelectedListOptionEntity(
                             newInterceptConfigurations
                         )
-
                     viewHideOption.homeOption.configurations =
                         viewHideOption.homeOption.configurations.updateSelectedListOptionEntity(
                             newViewHideOptionConfigurations
@@ -644,15 +620,15 @@ fun readOptionEntity(): OptionEntity {
                         )
                 }
             } catch (e: Exception) {
-                "readOptionFile: ${e.message}".loge()
-                defaultOptionEntity
+                loggerE(msg = "readOptionFile: ${e.message}")
+                defaultOptionEntity()
             }
         } else {
-            defaultOptionEntity
+            defaultOptionEntity()
         }
     } catch (e: Exception) {
-        "readOptionEntity: ${e.message}".loge()
-        defaultOptionEntity
+        loggerE(msg = "readOptionEntity: ${e.message}")
+        defaultOptionEntity()
     }
 }
 
@@ -678,11 +654,11 @@ fun readOptionFile(): File? = try {
     }
     if (!downloadFile.exists()) {
         downloadFile.createNewFile()
-        downloadFile.writeText(Json.encodeToString(defaultOptionEntity))
+        downloadFile.writeText(Json.encodeToString(defaultOptionEntity()))
     }
     downloadFile
 } catch (e: Throwable) {
-    "readOptionFile: ${e.message}".loge()
+    loggerE(msg = "readOptionFile: ${e.message}")
     null
 }
 
@@ -693,27 +669,23 @@ fun writeOptionFile(optionEntity: OptionEntity): Boolean = try {
     readOptionFile()?.writeText(Json.encodeToString(optionEntity))
     true
 } catch (e: Exception) {
-    "writeOptionFile: ${e.message}".loge()
+    loggerE(msg = "writeOptionFile: ${e.message}")
     false
 }
 
 /**
  * 返回一个默认的配置模型
  */
-val defaultOptionEntity by lazy {
-    OptionEntity(
-        mainOption = OptionEntity.MainOption(
-            packageName = "com.qidian.QDReader", enableAutoSign = true, enableLocalCard = true
-        ), viewHideOption = OptionEntity.ViewHideOption(
-            enableDisableQSNModeDialog = true,
-            accountOption = OptionEntity.ViewHideOption.AccountOption(
-                enableHideAccount = true, enableHideAccountRightTopRedDot = true
-            )
+fun defaultOptionEntity(): OptionEntity = OptionEntity(
+    mainOption = OptionEntity.MainOption(
+        packageName = "com.qidian.QDReader", enableAutoSign = true, enableLocalCard = true
+    ), viewHideOption = OptionEntity.ViewHideOption(
+        enableDisableQSNModeDialog = true,
+        accountOption = OptionEntity.ViewHideOption.AccountOption(
+            enableHideAccount = true, enableHideAccountRightTopRedDot = true
         )
     )
-}
-
-val defaultSelectedList by lazy { mutableListOf<OptionEntity.SelectedModel>() }
+)
 
 /**
  * 更新配置

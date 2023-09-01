@@ -33,6 +33,7 @@ import com.highcapable.yukihookapi.hook.type.java.LongType
 import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
+import de.robv.android.xposed.XposedHelpers
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.concurrent.CopyOnWriteArrayList
@@ -310,7 +311,11 @@ class HookEntry : IYukiHookXposedInit {
 
         interceptOption(versionCode, optionEntity.interceptOption.configurations)
 
-        homeOption(versionCode, optionEntity.viewHideOption.homeOption.configurations)
+        if ((optionEntity.viewHideOption.homeOption.configurations.any { it.selected })) {
+            homeOption(
+                versionCode, optionEntity.viewHideOption.homeOption.configurations
+            )
+        }
 
         if (optionEntity.viewHideOption.homeOption.enableCaptureBottomNavigation) {
             hideBottomNavigation(versionCode)
@@ -380,15 +385,27 @@ class HookEntry : IYukiHookXposedInit {
         if (optionEntity.viewHideOption.bookLastPageOptions.enableHideBookLastPage) {
             readBookLastPage(
                 versionCode = versionCode,
-                shieldAlsoRead = optionEntity.shieldOption.configurations.isSelectedByTitle("阅读-最后一页-看过此书的人还看过"),
-                shieldSimilarRecommend = optionEntity.shieldOption.configurations.isSelectedByTitle("阅读-最后一页-同类作品推荐"),
-                shieldRecommendation = optionEntity.shieldOption.configurations.isSelectedByTitle("阅读-最后一页-推荐"),
-                hideCircle = optionEntity.viewHideOption.bookLastPageOptions.configurations.isSelectedByTitle("书友圈"),
-                hideAlsoRead = optionEntity.viewHideOption.bookLastPageOptions.configurations.isSelectedByTitle("看过此书的人还看过"),
-                hideRecommendation = optionEntity.viewHideOption.bookLastPageOptions.configurations.isSelectedByTitle("推荐"),
-                hideSimilarRecommend = optionEntity.viewHideOption.bookLastPageOptions.configurations.isSelectedByTitle("同类作品推荐"),
-                hideBookList = optionEntity.viewHideOption.bookLastPageOptions.configurations.isSelectedByTitle("收录此书的书单"),
-                hideTryRead = optionEntity.viewHideOption.bookLastPageOptions.configurations.isSelectedByTitle("试读"),
+                shieldAlsoRead = isEnableShieldOption(16),
+                shieldSimilarRecommend = isEnableShieldOption(17),
+                shieldRecommendation = isEnableShieldOption(18),
+                hideCircle = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
+                    optionEntity.viewHideOption.bookLastPageOptions.configurations[0].title
+                ),
+                hideAlsoRead = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
+                    optionEntity.viewHideOption.bookLastPageOptions.configurations[1].title
+                ),
+                hideRecommendation = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
+                    optionEntity.viewHideOption.bookLastPageOptions.configurations[2].title
+                ),
+                hideSimilarRecommend = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
+                    optionEntity.viewHideOption.bookLastPageOptions.configurations[3].title
+                ),
+                hideBookList = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
+                    optionEntity.viewHideOption.bookLastPageOptions.configurations[4].title
+                ),
+                hideTryRead = optionEntity.viewHideOption.bookLastPageOptions.configurations.isEnabled(
+                    optionEntity.viewHideOption.bookLastPageOptions.configurations[5].title
+                ),
                 hideAdView = optionEntity.advOption.configurations.isSelectedByTitle("阅读页-最后一页-中间广告")
             )
         }
@@ -419,7 +436,9 @@ class HookEntry : IYukiHookXposedInit {
             isEnableCustomSplash = optionEntity.splashOption.enableCustomSplash
         )
 
-        shieldOption(versionCode, optionEntity.shieldOption.configurations)
+        if (optionEntity.shieldOption.shieldOptionValueSet.isNotEmpty()) {
+            shieldOption(versionCode, optionEntity.shieldOption.shieldOptionValueSet)
+        }
 
         if (optionEntity.shieldOption.enableQuickShieldDialog) {
             quickShield(versionCode)
@@ -436,8 +455,7 @@ class HookEntry : IYukiHookXposedInit {
                     safeRun {
                         val readMoreSetting = instance.getView<RelativeLayout>("readMoreSetting")
                         // 获取 readMoreSetting 子控件
-                        val readMoreSettingChild =
-                            readMoreSetting?.getChildAt(0).safeCast<TextView>()
+                        val readMoreSettingChild = readMoreSetting?.getChildAt(0).safeCast<TextView>()
                         readMoreSettingChild?.text = "阅读设置/模块设置(长按)"
 
                         readMoreSetting?.setOnLongClickListener {
@@ -500,6 +518,13 @@ class HookEntry : IYukiHookXposedInit {
         }
 
         /**
+         * 判断是否启用了屏蔽配置的选项
+         * @param optionValue 选项的值
+         */
+        fun isEnableShieldOption(optionValue: Int) =
+            optionValue in optionEntity.shieldOption.shieldOptionValueSet
+
+        /**
          * 判断是否需要屏蔽
          * @param bookName 书名-可空
          * @param authorName 作者名-可空
@@ -548,6 +573,14 @@ class HookEntry : IYukiHookXposedInit {
 
             return false
         }
+
+        /**
+         * 解析关键词组
+         * @param it 关键词组
+         */
+        fun parseKeyWordOption(it: String = ""): MutableSet<String> =
+            it.split(";").filter { it.isNotBlank() }.map { it.replace(Regex(pattern = "\\s+"), "") }
+                .toMutableSet()
 
         /**
          * 解析需要屏蔽的书籍列表
@@ -669,7 +702,7 @@ class HookEntry : IYukiHookXposedInit {
                 optionEntity.viewHideOption.selectedOption.selectedTitleConfigurations.filter {
                     it.selected && it.title in type.values
                 }
-            return needShieldTitleList.mapNotNull { type.filterValues { it1 -> it1 == it.title }.keys.firstOrNull() }
+            return needShieldTitleList.map { type.filterValues { it1 -> it1 == it.title }.keys.first() }
         }
 
         /**
@@ -684,6 +717,7 @@ class HookEntry : IYukiHookXposedInit {
                 bookName.isNotBlank() -> {
                     optionEntity.shieldOption.bookNameList += bookName
                 }
+
                 authorName.isNotBlank() -> {
                     optionEntity.shieldOption.authorList += authorName
                 }

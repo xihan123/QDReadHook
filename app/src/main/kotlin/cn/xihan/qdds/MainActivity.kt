@@ -1348,34 +1348,9 @@ fun PurifyScreen(
             TextSetting(title = "广告设置", showRightIcon = false, bigTitle = true)
 
             TextSetting(title = "广告设置列表", modifier = Modifier.padding(4.dp), onClick = {
-                val shieldOptionList = HookEntry.optionEntity.advOption.advOptionList
-                val checkedItems = BooleanArray(shieldOptionList.size)
-                if (HookEntry.optionEntity.advOption.advOptionSelectedList.isNotEmpty()) {
-                    safeRun {
-                        shieldOptionList.forEachIndexed { index, _ ->
-                            // 对比 shieldOptionList 和 optionEntity.viewHideOption.accountOption.configurationsSelectedOptionList 有相同的元素就设置为true
-                            if (HookEntry.optionEntity.advOption.advOptionSelectedList.any { it == index }) {
-                                checkedItems[index] = true
-                            }
-                        }
-                    }
-                }
-                context.multiChoiceSelector(
-                    shieldOptionList, checkedItems, "禁用选项列表"
-                ) { _, i, isChecked ->
-                    checkedItems[i] = isChecked
-                }.doOnDismiss {
-                    checkedItems.forEachIndexed { index, b ->
-                        if (b) {
-                            HookEntry.optionEntity.advOption.advOptionSelectedList += index
-                        } else {
-                            HookEntry.optionEntity.advOption.advOptionSelectedList -= index
-                        }
-                    }
-                    updateOptionEntity()
-                }
-
+                context.multiChoiceSelector(HookEntry.optionEntity.advOption.configurations)
             })
+
 
         }
 

@@ -29,7 +29,7 @@ fun PackageParam.advOption(versionCode: Int, configurations: List<OptionEntity.S
             "主页-书架活动弹框" -> disableBookshelfActivityPopup(versionCode)
             "主页-书架浮窗活动" -> disableBookshelfFloatWindow(versionCode)
             "主页-书架底部导航栏广告" -> disableBottomNavigationCenterAd(versionCode)
-            "我-中间广告" -> disableAccountCenterAd(versionCode)
+            "我-中间广告"-> disableAccountCenterAd(versionCode)
             "阅读页-浮窗广告" -> disableReadPageFloatAd(versionCode)
             "阅读页-打赏小剧场" -> disableReadPageRewardTheater(versionCode)
             "阅读页-章末底部月票打赏红包" -> hideReadPageBottom(versionCode)
