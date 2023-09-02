@@ -1,4 +1,25 @@
 # Changelog
+## [2.3.2](https://github.com/xihan123/QDReadHook/compare/v2.3.1...v2.3.2) (2023-09-02)
+
+
+### Features
+
+* **拦截设置:** `980` + 新增拦截 `自动跳转精选` ([3429f08](https://github.com/xihan123/QDReadHook/commit/3429f08178441f11d8e35c3ee63afb285ab4625a))
+* 适配 `994` 版本 ([3f0a604](https://github.com/xihan123/QDReadHook/commit/3f0a604610488c3006b44b818531711a190f39f7))
+
+
+### Feature Improvements
+
+* 整理、格式化、排序代码 ([20768d7](https://github.com/xihan123/QDReadHook/commit/20768d76df69c026861c64ca9dcfa2e3d75926a8))
+* 重构 `屏蔽选项列表` ([9e3ec99](https://github.com/xihan123/QDReadHook/commit/9e3ec996b48d1bdc3700ee3df743c7dadd77a9fd))
+* 重构 `广告设置列表` ([c391b93](https://github.com/xihan123/QDReadHook/commit/c391b93ceb8fb6ec471bb6c44803652c73a13144))
+* 重构 `底部导航栏选项列表` ([0d2727f](https://github.com/xihan123/QDReadHook/commit/0d2727ff21806074f9aa9d226b699e518a26e481))
+
+
+### CI
+
+* release.yml ([da43342](https://github.com/xihan123/QDReadHook/commit/da43342ae9beb03e9b769e2889eff853fb2081b7))
+
 ## [2.3.1](https://github.com/xihan123/QDReadHook/compare/v2.3.0...v2.3.1) (2023-08-29)
 
 
