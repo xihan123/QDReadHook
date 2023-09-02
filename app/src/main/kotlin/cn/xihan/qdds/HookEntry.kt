@@ -61,6 +61,42 @@ class HookEntry : IYukiHookXposedInit {
                 mainFunction(versionCode = versionCode)
             }
 
+            findClass("com.qidian.QDReader.ui.activity.MoreActivity").hook {
+                injectMember {
+                    method {
+                        name = "initWidget"
+                        emptyParam()
+                        returnType = UnitType
+                    }
+                    afterHook {
+                        safeRun {
+                            val readMoreSetting = instance.getView<RelativeLayout>("readMoreSetting")
+                            // 获取 readMoreSetting 子控件
+                            val readMoreSettingChild =
+                                readMoreSetting?.getChildAt(0).safeCast<TextView>()
+                            readMoreSettingChild?.text = "阅读设置/模块设置(长按)"
+
+                            readMoreSetting?.setOnLongClickListener {
+                                instance<Activity>().apply {
+                                    startActivity(Intent(this, MainActivity::class.java))
+                                }
+                                true
+                            }
+                        }
+                    }
+                }
+
+                injectMember {
+                    method {
+                        name = "onCreate"
+                        param(BundleClass)
+                    }
+                    afterHook {
+                        instance<Activity>().registerModuleAppActivities()
+                    }
+                }
+            }
+
             /**
              * 开启OkHttp3 日志拦截器
              *//*
@@ -439,41 +475,6 @@ class HookEntry : IYukiHookXposedInit {
             quickShield(versionCode)
         }
 
-        findClass("com.qidian.QDReader.ui.activity.MoreActivity").hook {
-            injectMember {
-                method {
-                    name = "initWidget"
-                    emptyParam()
-                    returnType = UnitType
-                }
-                afterHook {
-                    safeRun {
-                        val readMoreSetting = instance.getView<RelativeLayout>("readMoreSetting")
-                        // 获取 readMoreSetting 子控件
-                        val readMoreSettingChild =
-                            readMoreSetting?.getChildAt(0).safeCast<TextView>()
-                        readMoreSettingChild?.text = "阅读设置/模块设置(长按)"
-
-                        readMoreSetting?.setOnLongClickListener {
-                            instance<Activity>().apply {
-                                startActivity(Intent(this, MainActivity::class.java))
-                            }
-                            true
-                        }
-                    }
-                }
-            }
-
-            injectMember {
-                method {
-                    name = "onCreate"
-                    param(BundleClass)
-                }
-                afterHook {
-                    instance<Activity>().registerModuleAppActivities()
-                }
-            }
-        }
     }
 
     companion object {
