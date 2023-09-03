@@ -28,7 +28,6 @@ import com.highcapable.yukihookapi.hook.type.java.UnitType
  * 主页配置列表
  */
 fun PackageParam.homeOption(versionCode: Int, configurations: List<OptionEntity.SelectedModel>) {
-    if (configurations.isEmpty()) return
     configurations.filter { it.selected }.takeIf { it.isNotEmpty() }?.forEach {
         when (it.title) {
             "主页顶部宝箱提示" -> hideMainTopBox(versionCode)

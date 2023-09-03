@@ -21,7 +21,6 @@ fun PackageParam.interceptOption(
     versionCode: Int,
     configurations: List<OptionEntity.SelectedModel>,
 ) {
-    if (configurations.isEmpty()) return
     val interceptList = mutableListOf<String>()
     configurations.filter { it.selected }.takeIf { it.isNotEmpty() }?.forEach { selected ->
         when (selected.title) {

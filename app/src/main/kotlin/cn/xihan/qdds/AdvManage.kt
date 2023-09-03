@@ -20,7 +20,6 @@ import com.highcapable.yukihookapi.hook.type.java.UnitType
  * 广告相关配置
  */
 fun PackageParam.advOption(versionCode: Int, configurations: List<OptionEntity.SelectedModel>) {
-    if (configurations.isEmpty()) return
     configurations.filter { it.selected }.takeIf { it.isNotEmpty() }?.forEach { selected ->
         when (selected.title) {
             "GDT(TX)广告" -> disableAd(versionCode)

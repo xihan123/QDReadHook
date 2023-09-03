@@ -32,7 +32,6 @@ fun PackageParam.shieldOption(
     versionCode: Int,
     configurations: List<OptionEntity.SelectedModel>
 ) {
-    if (configurations.isEmpty()) return
     configurations.filter { it.selected }.takeIf { it.isNotEmpty() }?.forEach { selected ->
         when (selected.title) {
             "搜索-发现(热词)" -> shieldSearchFind(versionCode)

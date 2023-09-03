@@ -46,10 +46,15 @@ import java.util.concurrent.CopyOnWriteArrayList
 @InjectYukiHookWithXposed//(modulePackageName = "cn.xihan.qdds", entryClassName = "HookEntryInit")
 class HookEntry : IYukiHookXposedInit {
 
-    override fun onInit() {
-        YukiHookAPI.configs {
-            YukiHookLogger.Configs.tag = "yuki"
-            YukiHookLogger.Configs.isEnable = BuildConfig.DEBUG
+    override fun onInit() = YukiHookAPI.configs {
+        YukiHookLogger.Configs.apply {
+            tag = "yuki"
+            isEnable = BuildConfig.DEBUG
+        }
+        debugLog {
+            elements(TAG, PRIORITY, PACKAGE_NAME, USER_ID)
+            isEnable = BuildConfig.DEBUG
+            isRecord  = BuildConfig.DEBUG
         }
     }
 

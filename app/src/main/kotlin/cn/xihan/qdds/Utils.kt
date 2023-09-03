@@ -163,7 +163,6 @@ fun View.setVisibilityIfNotEqual(status: Int = View.GONE) {
     this.takeIf { it.visibility != status }?.apply { visibility = status }
 }
 
-
 /**
  * Xposed 设置字段值
  */
