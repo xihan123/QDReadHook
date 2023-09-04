@@ -285,6 +285,7 @@ data class OptionEntity(
             SelectedModel("阅读页水印"),
             SelectedModel("发帖图片水印"),
             SelectedModel("自动跳转精选"),
+            SelectedModel("首次安装分析"),
             SelectedModel("异步主GDT广告任务|com.qidian.QDReader.start.AsyncMainGDTTask"),
             SelectedModel("异步主游戏广告SDK任务|com.qidian.QDReader.start.AsyncMainGameADSDKTask"),
             SelectedModel("异步主游戏下载任务|com.qidian.QDReader.start.AsyncMainGameDownloadTask"),

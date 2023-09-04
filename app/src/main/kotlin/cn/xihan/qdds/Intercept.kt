@@ -34,6 +34,7 @@ fun PackageParam.interceptOption(
             "阅读页水印" -> interceptReadBookPageWaterMark(versionCode)
             "发帖图片水印" -> interceptPostImageWatermark(versionCode)
             "自动跳转精选" -> interceptAutoJumpSelected(versionCode)
+            "首次安装分析" -> interceptFirstInstallAnalytics(versionCode)
             else -> interceptList += selected.title
         }
     }
@@ -284,6 +285,26 @@ fun PackageParam.interceptAutoJumpSelected(versionCode: Int) {
                     method {
                         name = "checkOpenView"
                         param(IntentClass)
+                        returnType = UnitType
+                    }
+                    intercept()
+                }
+            }
+        }
+    }
+}
+
+/**
+ * 拦截首次安装分析
+ */
+fun PackageParam.interceptFirstInstallAnalytics(versionCode: Int) {
+    when (versionCode) {
+        994 -> {
+            findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
+                injectMember {
+                    method {
+                        name = "firstInstallAnalytics"
+                        emptyParam()
                         returnType = UnitType
                     }
                     intercept()
