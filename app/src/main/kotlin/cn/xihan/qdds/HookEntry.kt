@@ -51,11 +51,6 @@ class HookEntry : IYukiHookXposedInit {
             tag = "yuki"
             isEnable = BuildConfig.DEBUG
         }
-        debugLog {
-            elements(TAG, PRIORITY, PACKAGE_NAME, USER_ID)
-            isEnable = BuildConfig.DEBUG
-            isRecord  = BuildConfig.DEBUG
-        }
     }
 
     override fun onHook() = YukiHookAPI.encase {
@@ -467,12 +462,6 @@ class HookEntry : IYukiHookXposedInit {
         if (optionEntity.bookshelfOption.enableCustomBookShelfTopImage) {
             customBookShelfTopImage(versionCode)
         }
-
-        splashPage(
-            versionCode = versionCode,
-            isEnableSplash = optionEntity.splashOption.enableSplash,
-            isEnableCustomSplash = optionEntity.splashOption.enableCustomSplash
-        )
 
         shieldOption(versionCode, optionEntity.shieldOption.configurations)
 

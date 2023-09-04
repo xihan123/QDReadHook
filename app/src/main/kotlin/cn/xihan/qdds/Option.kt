@@ -26,7 +26,6 @@ import java.io.File
  * @param mainOption 主配置
  * @param advOption 广告配置
  * @param shieldOption 屏蔽配置
- * @param splashOption 闪屏配置
  * @param startImageOption 启动图配置
  * @param bookshelfOption 书架配置
  * @param readPageOption 阅读页配置
@@ -44,7 +43,6 @@ data class OptionEntity(
     @SerialName("advOption") var advOption: AdvOption = AdvOption(),
     @SerialName("mainOption") var mainOption: MainOption = MainOption(),
     @SerialName("shieldOption") var shieldOption: ShieldOption = ShieldOption(),
-    @SerialName("splashOption") var splashOption: SplashOption = SplashOption(),
     @SerialName("startImageOption") var startImageOption: StartImageOption = StartImageOption(),
     @SerialName("bookshelfOption") var bookshelfOption: BookshelfOption = BookshelfOption(),
     @SerialName("readPageOption") var readPageOption: ReadPageOption = ReadPageOption(),
@@ -160,26 +158,6 @@ data class OptionEntity(
             SelectedModel("分类-小编力荐、本周强推等更多")
         ),
         @SerialName("enableBookTypeEnhancedBlocking") var enableBookTypeEnhancedBlocking: Boolean = false,
-    )
-
-    /**
-     * 闪屏页配置
-     * @param enableSplash 启用闪屏页
-     * @param enableCustomSplash 启用自定义闪屏页
-     * @param enableCustomSplashAllButton 启用自定义闪屏页全部按钮
-     * @param customBookId 自定义闪屏页书籍id
-     * @param customSplashType 自定义闪屏页类型
-     * @param customSplashImageFilePath 自定义闪屏页图片路径
-     */
-    @Keep
-    @Serializable
-    data class SplashOption(
-        @SerialName("customBookId") var customBookId: String = "",
-        @SerialName("customSplashImageFilePath") var customSplashImageFilePath: String = "",
-        @SerialName("customSplashType") var customSplashType: Int = 0,
-        @SerialName("enableCustomSplash") var enableCustomSplash: Boolean = false,
-        @SerialName("enableCustomSplashAllButton") var enableCustomSplashAllButton: Boolean = false,
-        @SerialName("enableSplash") var enableSplash: Boolean = false,
     )
 
     /**

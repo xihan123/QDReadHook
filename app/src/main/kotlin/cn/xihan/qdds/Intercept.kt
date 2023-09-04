@@ -1,7 +1,9 @@
 package cn.xihan.qdds
 
 
+import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.highcapable.yukihookapi.hook.type.android.BundleClass
 import com.highcapable.yukihookapi.hook.type.android.IntentClass
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
 import com.highcapable.yukihookapi.hook.type.java.StringClass
@@ -168,33 +170,55 @@ fun PackageParam.interceptQSNModeRequest(version: Int) {
  * 拦截闪屏广告页面
  * SplashManager
  * SettingSplashEnableGDT
+ * com.qidian.QDReader.ui.activity.MainGroupActivity.onCreate
+ * SplashManager.c().h(this.getApplicationContext());
  */
-fun PackageParam.interceptSplashAdActivity(version: Int) {
-    val needHookClass = when (version) {
-        in 884..900 -> "g6.search"
-        in 906..916 -> "j6.search"
-        924 -> "k6.search"
-        in 932..938 -> "n6.search"
-        in 944..950 -> "m6.search"
-        958 -> "k6.search"
-        970 -> "j6.search"
-        in 980..994 -> "d6.search"
-        else -> null
-    }
-    val needHookMethod = when (version) {
-        in 884..994 -> "b"
-        else -> null
-    }
+fun PackageParam.interceptSplashAdActivity(versionCode: Int) {
+    val map = mapOf(
+        "needHookClass" to when (versionCode) {
+            in 884..900 -> "g6.search"
+            in 906..916 -> "j6.search"
+            924 -> "k6.search"
+            in 932..938 -> "n6.search"
+            in 944..950 -> "m6.search"
+            958 -> "k6.search"
+            970 -> "j6.search"
+            in 980..994 -> "d6.search"
+            else -> null
+        },
+        "needHookMethod" to when (versionCode) {
+            in 884..994 -> "b"
+            else -> null
+        },
+        "needHookMethod2" to when (versionCode) {
+            in 758..878 -> "k"
+            in 884..999 -> "h"
+            else -> null
+        }
+    )
 
-    needHookClass?.hook {
+    map["needHookClass"]?.hook {
         injectMember {
             method {
-                name = needHookMethod!!
+                name = map["needHookMethod"]!!
                 returnType = BooleanType
             }
             replaceToFalse()
         }
-    } ?: "拦截闪屏广告页面".printlnNotSupportVersion(version)
+    }
+
+    map["needHookMethod2"]?.let {
+        findClass("com.qidian.QDReader.bll.splash.SplashManager").hook {
+            injectMember {
+                method {
+                    name = it
+                    paramCount(1)
+                    returnType = UnitType
+                }
+                intercept()
+            }
+        }
+    }
 }
 
 /**
