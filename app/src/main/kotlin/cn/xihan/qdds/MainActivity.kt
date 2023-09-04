@@ -765,7 +765,6 @@ fun MainScreen(
                     })
 
                 SwitchSetting(title = "自动跳过闪屏页",
-                    modifier = Modifier.padding(4.dp),
                     checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableAutoSkipSplash),
                     onCheckedChange = {
                         HookEntry.optionEntity.mainOption.enableAutoSkipSplash = it
