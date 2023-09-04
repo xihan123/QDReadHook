@@ -282,6 +282,10 @@ class HookEntry : IYukiHookXposedInit {
             autoSignIn(versionCode, optionEntity.bookshelfOption.enableOldLayout)
         }
 
+        if (optionEntity.mainOption.enableAutoSkipSplash){
+            autoSkipSplash(versionCode)
+        }
+
         if (optionEntity.mainOption.enableReceiveReadingCreditsAutomatically) {
             receiveReadingCreditsAutomatically(versionCode)
         }
@@ -400,16 +404,36 @@ class HookEntry : IYukiHookXposedInit {
         if (optionEntity.viewHideOption.bookDetailOptions.enableHideBookDetail) {
             bookDetailHide(
                 versionCode = versionCode,
-                isNeedHideCqzs = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle("出圈指数"),
-                isNeedHideRybq = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle("荣誉标签"),
-                isNeedHideQqGroups = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle("QQ群"),
-                isNeedHideSyq = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle("书友圈"),
-                isNeedHideSyb = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle("书友榜"),
-                isNeedHideYpjz = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle("月票金主"),
-                isNeedHideCenterAd = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle("本书看点|中心广告"),
-                isNeedHideFloatAd = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle("浮窗广告"),
-                isNeedHideBookRecommend = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle("同类作品推荐"),
-                isNeedHideBookRecommend2 = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle("看过此书的人还看过")
+                isNeedHideCqzs = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle(
+                    "出圈指数"
+                ),
+                isNeedHideRybq = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle(
+                    "荣誉标签"
+                ),
+                isNeedHideQqGroups = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle(
+                    "QQ群"
+                ),
+                isNeedHideSyq = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle(
+                    "书友圈"
+                ),
+                isNeedHideSyb = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle(
+                    "书友榜"
+                ),
+                isNeedHideYpjz = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle(
+                    "月票金主"
+                ),
+                isNeedHideCenterAd = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle(
+                    "本书看点|中心广告"
+                ),
+                isNeedHideFloatAd = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle(
+                    "浮窗广告"
+                ),
+                isNeedHideBookRecommend = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle(
+                    "同类作品推荐"
+                ),
+                isNeedHideBookRecommend2 = optionEntity.viewHideOption.bookDetailOptions.configurations.isSelectedByTitle(
+                    "看过此书的人还看过"
+                )
             )
         }
 
@@ -693,6 +717,7 @@ class HookEntry : IYukiHookXposedInit {
                 bookName.isNotBlank() -> {
                     optionEntity.shieldOption.bookNameList += bookName
                 }
+
                 authorName.isNotBlank() -> {
                     optionEntity.shieldOption.authorList += authorName
                 }
@@ -1865,9 +1890,9 @@ fun PackageParam.postToShowImageUrl(versionCode: Int) {
                     ?.filterNot { it[0] is String }
                 lists?.firstOrNull()?.let { urlList ->
                     urlList.mapNotNull { it?.getParam<String>("mAccessUrl") }.let { accessUrls ->
-                            instance.getViews<TextView>().firstNotNullOfOrNull { it.context }
-                                ?.showUrlListDialog(accessUrls)
-                        }
+                        instance.getViews<TextView>().firstNotNullOfOrNull { it.context }
+                            ?.showUrlListDialog(accessUrls)
+                    }
                 }
             }
         }
@@ -1889,5 +1914,40 @@ fun Context.showUrlListDialog(urls: List<String>) {
         }
         build()
         show()
+    }
+}
+
+/**
+ * 自动跳过闪屏页
+ */
+fun PackageParam.autoSkipSplash(versionCode: Int) {
+    when (versionCode) {
+        994 -> {
+            findClass("com.qidian.QDReader.ui.activity.SplashActivity").hook {
+                injectMember {
+                    method {
+                        name = "onCreate"
+                        param(BundleClass)
+                        returnType = UnitType
+                    }
+                    afterHook {
+                        instance.current {
+                            method {
+                                name = "go2Main"
+                                paramCount(1)
+                                returnType = UnitType
+                            }.call(false)
+
+                            method {
+                                name = "finish"
+                                emptyParam()
+                                returnType = UnitType
+                            }.call()
+                        }
+                    }
+                }
+            }
+        }
+        else -> "自动跳过闪屏页".printlnNotSupportVersion(versionCode)
     }
 }

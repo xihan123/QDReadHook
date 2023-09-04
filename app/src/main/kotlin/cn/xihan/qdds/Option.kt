@@ -97,6 +97,7 @@ data class OptionEntity(
      * @param enableExportEmoji 启用导出表情包
      * @param enableForceTrialMode 启用强制试用模式
      * @param enableTestFunction 启用测试功能
+     * @param enableAutoSkipSplash 启用自动跳过启动页
      */
     @Keep
     @Serializable
@@ -117,6 +118,7 @@ data class OptionEntity(
 //        @SerialName("enableImportAudio") var enableImportAudio: Boolean = false,
         @SerialName("enableForceTrialMode") var enableForceTrialMode: Boolean = false,
         @SerialName("enableTestFunction") var enableTestFunction: Boolean = false,
+        @SerialName("enableAutoSkipSplash") var enableAutoSkipSplash: Boolean = false
     )
 
     /**

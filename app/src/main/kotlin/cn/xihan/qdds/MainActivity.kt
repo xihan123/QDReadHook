@@ -764,6 +764,13 @@ fun MainScreen(
                         HookEntry.optionEntity.mainOption.enableAutoSign = it
                     })
 
+                SwitchSetting(title = "自动跳过闪屏页",
+                    modifier = Modifier.padding(4.dp),
+                    checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableAutoSkipSplash),
+                    onCheckedChange = {
+                        HookEntry.optionEntity.mainOption.enableAutoSkipSplash = it
+                    })
+
                 SwitchSetting(title = "自动领取阅读积分",
                     subTitle = "非后台领取，需要进到阅读积分页面",
                     checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableReceiveReadingCreditsAutomatically),
@@ -919,7 +926,6 @@ fun MainScreen(
                     }
 
                 }
-
 
             }
 
