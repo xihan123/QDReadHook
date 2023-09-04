@@ -1,4 +1,37 @@
 # Changelog
+## [2.3.3](https://github.com/xihan123/QDReadHook/compare/v2.3.2...v2.3.3) (2023-09-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* 移除 `自定义闪屏页`,`关闭闪屏` 合并至`拦截设置列表` -> `闪屏广告页面`
+
+### Features
+
+* **主设置:** `994` + 新增 `自动跳过闪屏页`,启用后无闪屏页直接进入主页面 ([c7a2069](https://github.com/xihan123/QDReadHook/commit/c7a2069e574a1c11ce27c3f49de74311398fa60d))
+* **拦截设置:** `994` + 新增 `拦截首次安装分析` ([9dc5148](https://github.com/xihan123/QDReadHook/commit/9dc5148e84ff19df2c4c20fcf57b1a8a58c1d0a9))
+* 移除 `自定义闪屏页`,`关闭闪屏` 合并至`拦截设置列表` -&gt; `闪屏广告页面` ([520ae38](https://github.com/xihan123/QDReadHook/commit/520ae38ec1d3af80e958a670aaff32d139efc276))
+
+
+### Bug Fixes
+
+* 内置后不显示模块设置入口 ([df19d76](https://github.com/xihan123/QDReadHook/commit/df19d761c3295cf4638f65f7dcdb5c045403940f))
+
+
+### Feature Improvements
+
+* 整理、格式化、排序代码 ([e0ff176](https://github.com/xihan123/QDReadHook/commit/e0ff17693a584cde5a1229c9c60dca5ba2a38063))
+
+
+### CI
+
+* release.yml ([c1f6366](https://github.com/xihan123/QDReadHook/commit/c1f636642c338380aee3dcd0da2d49c36c8f525a))
+
+
+### Miscellaneous
+
+* 更新依赖库 ([5ab86c5](https://github.com/xihan123/QDReadHook/commit/5ab86c584b01ad2fb1001761d5ecb651a34d2f8e))
+
 ## [2.3.2](https://github.com/xihan123/QDReadHook/compare/v2.3.1...v2.3.2) (2023-09-02)
 
 
