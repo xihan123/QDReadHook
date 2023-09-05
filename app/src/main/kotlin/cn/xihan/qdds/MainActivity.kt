@@ -10,6 +10,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -58,6 +59,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -65,13 +68,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.UrlAnnotation
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
@@ -815,6 +826,13 @@ fun MainScreen(
                     checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableIgnoreFreeSubscribeLimit),
                     onCheckedChange = {
                         HookEntry.optionEntity.mainOption.enableIgnoreFreeSubscribeLimit = it
+                    })
+
+                SwitchSetting(title = "测试页面",
+                    subTitle = "在起点关于页面，点按或者长按起点图标",
+                    checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableDebugActivity),
+                    onCheckedChange = {
+                        HookEntry.optionEntity.mainOption.enableDebugActivity = it
                     })
 
                 if (versionCode > 827) {
@@ -1693,7 +1711,7 @@ fun AboutScreen(
         )
 
         var openDialog by rememberMutableStateOf(value = false)
-        TextSetting(title = stringResource(id = R.string.disclaimers_title),
+        TextSetting(title = "免责声明",
             showRightIcon = false,
             onClick = {
                 openDialog = true
@@ -1734,6 +1752,7 @@ fun AboutScreen(
  * @param onDisagreeClick 点击不同意
  * @param displayButton 是否显示倒计时
  */
+@OptIn(ExperimentalTextApi::class)
 @Composable
 fun Disclaimers(
     modifier: Modifier = Modifier,
@@ -1742,6 +1761,7 @@ fun Disclaimers(
     displayButton: Boolean = true,
 ) {
     var remainingTime by rememberSaveable { mutableLongStateOf(value = 30L) }
+    val context = LocalContext.current
     if (displayButton) {
         val isActive =
             LocalLifecycleOwner.current.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
@@ -1759,14 +1779,67 @@ fun Disclaimers(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(text = stringResource(id = R.string.disclaimers_title),
+        Text(text = "免责声明",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
                 .padding(bottom = 8.dp)
                 .clickable { remainingTime = 0L })
+
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = stringResource(id = R.string.disclaimers_message))
+
+        val text = buildAnnotatedString {
+            appendLine("        1.本模块是基于Xposed框架开发的，使用本模块需要您的设备已经安装了Xposed框架。Xposed框架是一种修改Android系统行为的工具，它可能会导致系统不稳定、无法开机或损坏设备。您在使用本模块之前，应该了解Xposed框架的原理和风险，并自行承担后果。\n")
+            appendLine("        2.本模块的源代码是公开的，任何人都可以查看或修改它，开发者不对本模块的功能和效果做任何保证，也不对本模块可能造成的任何损失或损害负责。请在使用前确认你下载的 QDReadHook 是来自可信的渠道，并且没有被恶意篡改或添加木马等病毒。\n")
+            appendLine("        3.本模块不是为了破坏起点中文网的正常运营和作者的合法权益。请在使用本模块时，尊重作者的劳动成果，支持正版阅读，不要利用本模块进行非法活动或其他损害起点合法权益的行为。\n")
+            appendLine("        4.开发者保留对该Xposed模块的更新、修改、暂停、终止等权利，使用者应该自行确认其使用版本的安全性和稳定性。\n\n")
+            append("        本模块仅供学习交流，请在下载24小时内删除。在使用该Xposed模块之前认真审慎阅读、充分理解 ")
+
+            pushUrlAnnotation(UrlAnnotation("https://acts.qidian.com/pact/user_pact.html"))
+            withStyle(
+                style = SpanStyle(
+                    color = Color(0xFF0E9FF2),
+                    fontWeight = FontWeight.W900
+                )
+            ) {
+                append("起点读书用户服务协议")
+            }
+
+            append("以及上述 免责声明，如有异议请勿使用。如果您使用了该Xposed模块，即代表您已经完全接受本免责声明。\n\n")
+
+            append("详细信息请到 ")
+            pushUrlAnnotation(UrlAnnotation("https://github.com/xihan123/QDReadHook#%E5%85%8D%E8%B4%A3%E5%A3%B0%E6%98%8E"))
+            withStyle(
+                style = SpanStyle(
+                    color = Color(0xFF0E9FF2),
+                    fontWeight = FontWeight.W900
+                )
+            ) {
+                append("Github")
+            }
+            append(" 或者 ")
+            pushUrlAnnotation(UrlAnnotation("https://jihulab.com/xihan123/QDReadHook#%E5%85%8D%E8%B4%A3%E5%A3%B0%E6%98%8E"))
+            withStyle(
+                style = SpanStyle(
+                    color = Color(0xFF0E9FF2),
+                    fontWeight = FontWeight.W900
+                )
+            ) {
+                append("极狐GitLab")
+            }
+
+            append(" 查看")
+        }
+
+        ClickableText(
+            text = text,
+            onClick = { offset ->
+                text.getUrlAnnotations(start = offset, end = offset).map { it.item.url }
+                    .forEach { url ->
+                        url.takeUnless { url.isBlank() }?.let { context.openUrl(url) }
+                    }
+            }
+        )
 
         if (displayButton) {
             Spacer(modifier = Modifier.height(16.dp))
@@ -1774,14 +1847,14 @@ fun Disclaimers(
             if (remainingTime != 0L) {
                 Text(
                     text = String.format(
-                        stringResource(id = R.string.remaining_time), remainingTime
+                        "剩余时间: %s 秒", remainingTime
                     ), fontWeight = FontWeight.Bold, fontSize = 24.sp
                 )
             } else {
-                Button(onClick = onAgreeClick) { Text(text = stringResource(id = R.string.disclaimers_agree)) }
+                Button(onClick = onAgreeClick) { Text(text = "我已阅读并同意") }
             }
 
-            Button(onClick = onDisagreeClick) { Text(text = stringResource(id = R.string.disclaimers_disagree)) }
+            Button(onClick = onDisagreeClick) { Text(text = "拒绝并退出") }
 
         }
 
@@ -1840,4 +1913,38 @@ private sealed class MainScreen(
     object About : MainScreen("about", Icons.Filled.Info, "关于")
 
 
+}
+
+@Composable
+fun ClickableText(
+    text: AnnotatedString,
+    modifier: Modifier = Modifier,
+    style: TextStyle = TextStyle.Default,
+    softWrap: Boolean = true,
+    overflow: TextOverflow = TextOverflow.Clip,
+    maxLines: Int = Int.MAX_VALUE,
+    onTextLayout: (TextLayoutResult) -> Unit = {},
+    onClick: (Int) -> Unit
+) {
+    val layoutResult = remember { mutableStateOf<TextLayoutResult?>(null) }
+    val pressIndicator = Modifier.pointerInput(onClick) {
+        detectTapGestures { pos ->
+            layoutResult.value?.let { layoutResult ->
+                onClick(layoutResult.getOffsetForPosition(pos))
+            }
+        }
+    }
+
+    Text(
+        text = text,
+        modifier = modifier.then(pressIndicator),
+        style = style,
+        softWrap = softWrap,
+        overflow = overflow,
+        maxLines = maxLines,
+        onTextLayout = {
+            layoutResult.value = it
+            onTextLayout(it)
+        }
+    )
 }

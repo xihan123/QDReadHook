@@ -3,6 +3,7 @@ package cn.xihan.qdds
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Environment
 import android.view.View
 import android.widget.FrameLayout
@@ -316,6 +317,10 @@ class HookEntry : IYukiHookXposedInit {
 
         if (optionEntity.mainOption.enableForceTrialMode) {
             forceTrialMode(versionCode)
+        }
+
+        if (optionEntity.mainOption.enableDebugActivity){
+            debugActivity(versionCode)
         }
 
         if (optionEntity.hideBenefitsOption.enableHideWelfare) {
@@ -1949,5 +1954,71 @@ fun PackageParam.autoSkipSplash(versionCode: Int) {
             }
         }
         else -> "自动跳过闪屏页".printlnNotSupportVersion(versionCode)
+    }
+}
+
+/**
+ * 测试页面
+ */
+fun PackageParam.debugActivity(versionCode: Int){
+    when (versionCode) {
+        994 -> {
+            findClass("com.qidian.QDReader.ui.activity.AboutActivity").hook {
+                injectMember {
+                    method {
+                        name = "initWidget"
+                        emptyParam()
+                        returnType = UnitType
+                    }
+                    afterHook {
+                        instance<Activity>().apply {
+                            val context = this
+                            getView<ImageView>("appIcon")?.let { appIcon ->
+                                appIcon.setOnClickListener {
+                                    val debug = "com.qidian.QDReader.ui.activity.QDDebugSettingActivity".toClass()
+                                    startActivity(Intent(this, debug))
+                                }
+
+                                appIcon.setOnLongClickListener {
+                                    val editText = CustomEditText(
+                                        context = context,
+                                        mHint = "",
+                                        value = ""
+                                    )
+                                    context.alertDialog {
+                                        title = "ActionUrl"
+                                        customView = editText
+                                        okButton {
+                                            val aup = "com.qidian.QDReader.other.ActionUrlProcess".toClass()
+                                            aup.method {
+                                                name = "process"
+                                                paramCount(2)
+                                                returnType = IntType
+                                            }.get(aup).call(context,Uri.parse(editText.editText.text.toString()))
+                                        }
+                                        cancelButton {
+                                            it.dismiss()
+                                        }
+                                        build()
+                                        show()
+                                    }
+                                    true
+                                }
+                            }
+                        }
+                    }
+                }
+
+                injectMember {
+                    method {
+                        name = "initDebug"
+                        emptyParam()
+                        returnType = UnitType
+                    }
+                    intercept()
+                }
+            }
+        }
+        else -> "测试页面".printlnNotSupportVersion(versionCode)
     }
 }

@@ -39,7 +39,7 @@ import java.io.File
 data class OptionEntity(
     @SerialName("allowDisclaimers") var allowDisclaimers: Boolean = false,
     @SerialName("currentDisclaimersVersion") var currentDisclaimersVersionCode: Int = 0,
-    @SerialName("latestDisclaimersVersion") var latestDisclaimersVersionCode: Int = 1,
+    @SerialName("latestDisclaimersVersion") var latestDisclaimersVersionCode: Int = 2,
     @SerialName("advOption") var advOption: AdvOption = AdvOption(),
     @SerialName("mainOption") var mainOption: MainOption = MainOption(),
     @SerialName("shieldOption") var shieldOption: ShieldOption = ShieldOption(),
@@ -96,7 +96,7 @@ data class OptionEntity(
      * @param enableNewStore 启用新版精选
      * @param enableExportEmoji 启用导出表情包
      * @param enableForceTrialMode 启用强制试用模式
-     * @param enableTestFunction 启用测试功能
+     * @param enableDebugActivity 启用测试页面
      * @param enableAutoSkipSplash 启用自动跳过启动页
      */
     @Keep
@@ -117,7 +117,7 @@ data class OptionEntity(
         @SerialName("enableExportEmoji") var enableExportEmoji: Boolean = false,
 //        @SerialName("enableImportAudio") var enableImportAudio: Boolean = false,
         @SerialName("enableForceTrialMode") var enableForceTrialMode: Boolean = false,
-        @SerialName("enableTestFunction") var enableTestFunction: Boolean = false,
+        @SerialName("enableDebugActivity") var enableDebugActivity: Boolean = false,
         @SerialName("enableAutoSkipSplash") var enableAutoSkipSplash: Boolean = false
     )
 
