@@ -131,9 +131,8 @@ fun PackageParam.readerPageChapterReviewPictures(
                             val rawImgUrl =
                                 args[0]?.toJSONString().parseObject().getString("imageDetail")
                             val imageViews = instance.getViews<ImageView>()
-                            if (rawImgUrl == null || imageViews.isEmpty()) return@afterHook
-                            imageViews.forEach { imageView ->
-                                imageView.setOnLongClickListener {
+                            if (!rawImgUrl.isNullOrBlank() || imageViews.isNotEmpty()) {
+                                imageViews.filter { "app:id/image" in it.toString() }.takeIf { it.isNotEmpty() }?.first()?.setOnLongClickListener { imageView ->
                                     imageView.context.alertDialog {
                                         title = "图片地址"
                                         message = rawImgUrl
@@ -194,9 +193,8 @@ fun PackageParam.readerPageChapterReviewPictures(
                             val rawImgUrl =
                                 args[0]?.toJSONString().parseObject().getString("imageDetail")
                             val imageViews = instance.getViews<ImageView>()
-                            if (rawImgUrl == null || imageViews.isEmpty()) return@afterHook
-                            imageViews.forEach { imageView ->
-                                imageView.setOnLongClickListener {
+                            if (!rawImgUrl.isNullOrBlank() || imageViews.isNotEmpty()) {
+                                imageViews.filter { "app:id/image" in it.toString() }.takeIf { it.isNotEmpty() }?.first()?.setOnLongClickListener { imageView ->
                                     imageView.context.alertDialog {
                                         title = "图片地址"
                                         message = rawImgUrl
