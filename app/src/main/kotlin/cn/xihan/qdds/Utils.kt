@@ -99,9 +99,22 @@ fun Any.getViews(type: Class<*>, isSuperClass: Boolean = false): ArrayList<Any> 
  */
 @Throws(NoSuchFieldException::class, IllegalAccessException::class)
 inline fun <reified T> Any.getParam(name: String, isSuperClass: Boolean = false): T? {
-    val clazz = if (isSuperClass) javaClass.superclass else javaClass
-    val field = clazz.getDeclaredField(name).apply { isAccessible = true }
-    return field[this].safeCast<T>()
+    val queue = ArrayDeque<Class<*>>()
+    var clazz: Class<*>? = if (isSuperClass) javaClass.superclass else javaClass
+    while (clazz != null) {
+        queue.add(clazz)
+        clazz = clazz.superclass
+    }
+    while (queue.isNotEmpty()) {
+        val currentClass = queue.removeFirst()
+        try {
+            val field = currentClass.getDeclaredField(name).apply { isAccessible = true }
+            return field[this].safeCast<T>()
+        } catch (_: NoSuchFieldException) {
+            // Ignore and continue searching
+        }
+    }
+    return null
 }
 
 /**
