@@ -1,4 +1,27 @@
 # Changelog
+## [2.3.4](https://github.com/xihan123/QDReadHook/compare/v2.3.3...v2.3.4) (2023-09-06)
+
+
+### Features
+
+* **主设置:** `994` + 新增 `测试页面` 以及更新免责声明 ([3d049e6](https://github.com/xihan123/QDReadHook/commit/3d049e6c1bd2a675e00af2cb649dfa81052364a0))
+
+
+### Bug Fixes
+
+* [Bug] 点赞按钮异常 [[#123](https://github.com/xihan123/QDReadHook/issues/123)](https://github.com/xihan123/QDReadHook/issues/123) ([df41fc0](https://github.com/xihan123/QDReadHook/commit/df41fc094e36095f7768119571d6e090e7e5a8ff))
+* `自动跳过闪屏页` 按钮未对齐 ([1840c82](https://github.com/xihan123/QDReadHook/commit/1840c82aa61bfe382c047ec8f9b5189df681310c))
+
+
+### CI
+
+* release.yml ([963b361](https://github.com/xihan123/QDReadHook/commit/963b361cc9e00b5a93de0e0853a40b9a390c579d))
+
+
+### Miscellaneous
+
+* 反射获取父类参数使用广度优先搜索算法 ([f0dca07](https://github.com/xihan123/QDReadHook/commit/f0dca0700bbec0a5bce78b28ee522100598658c9))
+
 ## [2.3.3](https://github.com/xihan123/QDReadHook/compare/v2.3.2...v2.3.3) (2023-09-04)
 
 
