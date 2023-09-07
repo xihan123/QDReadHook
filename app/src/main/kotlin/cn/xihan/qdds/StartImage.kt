@@ -22,7 +22,7 @@ import com.highcapable.yukihookapi.hook.type.java.UnitType
  */
 fun PackageParam.customStartImage(versionCode: Int) {
     when (versionCode) {
-        in 860..999 -> {
+        in 860..1099 -> {
             findClass("com.qidian.QDReader.repository.entity.config.AppConfigBean").hook {
                 injectMember {
                     method {
@@ -95,7 +95,7 @@ fun PackageParam.customStartImage(versionCode: Int) {
  */
 fun PackageParam.captureTheOfficialLaunchMapList(versionCode: Int) {
     when (versionCode) {
-        in 860..999 -> {
+        in 860..1099 -> {
             findClass("com.qidian.QDReader.ui.activity.splash_config.QDSplashConfigFragment").hook {
                 injectMember {
                     method {
@@ -151,7 +151,7 @@ fun PackageParam.captureTheOfficialLaunchMapList(versionCode: Int) {
  */
 fun PackageParam.customLocalStartImage(versionCode: Int) {
     when (versionCode) {
-        in 944..994 -> {
+        in 944..1005 -> {
             val list = listOf(
                 "com.qidian.QDReader.ui.activity.SplashActivity\$judian",
                 "com.qidian.QDReader.ui.activity.SplashActivity\$cihai"

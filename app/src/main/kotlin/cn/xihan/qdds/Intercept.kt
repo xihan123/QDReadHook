@@ -61,7 +61,7 @@ fun PackageParam.interceptGeetest(version: Int) {
  */
 fun PackageParam.interceptPrivacyPolicy(version: Int) {
     when (version) {
-        in 868..999 -> {
+        in 868..1099 -> {
             findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
                 injectMember {
                     method {
@@ -89,13 +89,14 @@ fun PackageParam.interceptAgreePrivacyPolicy(version: Int) {
         in 890..900 -> "com.qidian.QDReader.util.v4"
         in 906..970 -> "com.qidian.QDReader.util.w4"
         in 980..994 -> "com.qidian.QDReader.util.u4"
+        1005 -> "com.qidian.QDReader.util.s4"
         else -> null
     }
     val needHookMethod = when (version) {
         in 868..872 -> "k0"
         878 -> "l0"
         in 884..958 -> "i0"
-        in 970..994 -> "j0"
+        in 970..1005 -> "j0"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -121,12 +122,12 @@ fun PackageParam.interceptAgreePrivacyPolicy(version: Int) {
 fun PackageParam.interceptWebSocket(version: Int) {
     val needHookClass = when (version) {
         in 868..878 -> "com.qidian.QDReader.component.msg.c"
-        in 884..994 -> "com.qidian.QDReader.component.msg.cihai"
+        in 884..1005 -> "com.qidian.QDReader.component.msg.cihai"
         else -> null
     }
     val needHookMethod = when (version) {
         in 868..878 -> "r"
-        in 884..994 -> "o"
+        in 884..1005 -> "o"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -150,7 +151,7 @@ fun PackageParam.interceptWebSocket(version: Int) {
  */
 fun PackageParam.interceptQSNModeRequest(version: Int) {
     when (version) {
-        in 868..999 -> {
+        in 868..1099 -> {
             findClass("com.qidian.QDReader.bll.manager.QDTeenagerManager").hook {
                 injectMember {
                     method {
@@ -184,16 +185,16 @@ fun PackageParam.interceptSplashAdActivity(versionCode: Int) {
             in 944..950 -> "m6.search"
             958 -> "k6.search"
             970 -> "j6.search"
-            in 980..994 -> "d6.search"
+            in 980..1005 -> "d6.search"
             else -> null
         },
         "needHookMethod" to when (versionCode) {
-            in 884..994 -> "b"
+            in 884..1005 -> "b"
             else -> null
         },
         "needHookMethod2" to when (versionCode) {
             in 758..878 -> "k"
-            in 884..999 -> "h"
+            in 884..1005 -> "h"
             else -> null
         }
     )
@@ -227,7 +228,7 @@ fun PackageParam.interceptSplashAdActivity(versionCode: Int) {
  */
 fun PackageParam.interceptReadBookPageWaterMark(versionCode: Int) {
     when (versionCode) {
-        in 970..999 -> {
+        in 970..1099 -> {
             findClass("com.qidian.QDReader.ui.activity.QDReaderActivity").hook {
                 injectMember {
                     method {
@@ -249,7 +250,7 @@ fun PackageParam.interceptReadBookPageWaterMark(versionCode: Int) {
  */
 fun PackageParam.interceptPostImageWatermark(versionCode: Int) {
     when (versionCode) {
-        in 970..999 -> {
+        in 970..1099 -> {
             findClass("com.qidian.QDReader.ui.activity.CirclePostEditActivity").hook {
                 injectMember {
                     method {
@@ -279,7 +280,7 @@ fun PackageParam.interceptPostImageWatermark(versionCode: Int) {
  */
 fun PackageParam.interceptAutoJumpSelected(versionCode: Int) {
     when (versionCode) {
-        in 980..994 -> {
+        in 980..1099 -> {
             findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
                 injectMember {
                     method {
@@ -299,7 +300,7 @@ fun PackageParam.interceptAutoJumpSelected(versionCode: Int) {
  */
 fun PackageParam.interceptFirstInstallAnalytics(versionCode: Int) {
     when (versionCode) {
-        994 -> {
+        in 994..1099 -> {
             findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
                 injectMember {
                     method {
@@ -323,7 +324,7 @@ fun PackageParam.interceptAsyncInitTask(
     clsNameList: List<String>
 ) {
     when (version) {
-        in 872..999 -> {
+        in 872..1099 -> {
             findClass("com.rousetime.android_startup.StartupManager").hook {
                 injectMember {
                     method {

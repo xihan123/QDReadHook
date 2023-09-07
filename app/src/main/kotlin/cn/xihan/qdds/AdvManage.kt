@@ -52,7 +52,7 @@ fun PackageParam.advOption(versionCode: Int, configurations: List<OptionEntity.S
  */
 fun PackageParam.disableDailyReadAd(versionCode: Int) {
     when (versionCode) {
-        in 812..999 -> {
+        in 812..1099 -> {
             findClass("com.qidian.QDReader.ui.activity.DailyReadingActivity").hook {
                 injectMember {
                     method {
@@ -91,7 +91,7 @@ fun PackageParam.disableBookshelfActivityPopup(versionCode: Int) {
             }
         }
 
-        in 906..999 -> {
+        in 906..1099 -> {
             findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
                 injectMember {
                     method {
@@ -171,7 +171,7 @@ fun PackageParam.disableBookshelfFloatWindow(versionCode: Int) {
             }
         }
 
-        in 827..999 -> {
+        in 827..1099 -> {
 
             findClass("com.qidian.QDReader.ui.modules.bookshelf.QDBookShelfRebornFragment").hook {
                 injectMember {
@@ -224,7 +224,7 @@ fun PackageParam.disableBookshelfFloatWindow(versionCode: Int) {
  */
 fun PackageParam.disableBottomNavigationCenterAd(versionCode: Int) {
     when (versionCode) {
-        in 758..999 -> {
+        in 758..1099 -> {
             findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
                 injectMember {
                     method {
@@ -281,7 +281,7 @@ fun PackageParam.disableAccountCenterAd(versionCode: Int) {
             }
         }
 
-        in 896..999 -> {
+        in 896..1099 -> {
             findClass("com.qidian.QDReader.ui.fragment.main_group.QDUserAccountRebornFragment").hook {
                 injectMember {
                     method {
@@ -303,7 +303,7 @@ fun PackageParam.disableAccountCenterAd(versionCode: Int) {
  */
 fun PackageParam.disableReadPageFloatAd(versionCode: Int) {
     when (versionCode) {
-        in 958..999 -> {
+        in 958..1099 -> {
             findClass("com.qidian.QDReader.readerengine.view.QDSuperEngineView").hook {
                 injectMember {
                     method {
@@ -330,6 +330,7 @@ fun PackageParam.disableReadPageFloatAd(versionCode: Int) {
         in 932..944 -> "B0"
         in 950..958 -> "t1"
         in 970..994 -> "s1"
+        1005 -> "q1"
         else -> null
     }
     hookMethodName?.let {
@@ -362,7 +363,7 @@ fun PackageParam.disableReadPageFloatAd(versionCode: Int) {
  */
 fun PackageParam.disableReadPageRewardTheater(versionCode: Int) {
     when (versionCode) {
-        in 812..999 -> {
+        in 812..1099 -> {
             findClass("com.qidian.QDReader.ui.activity.chapter.list.NewParagraphCommentListActivity").hook {
                 injectMember {
                     method {
@@ -385,7 +386,7 @@ fun PackageParam.disableReadPageRewardTheater(versionCode: Int) {
  */
 fun PackageParam.disableReadPageNewestPageWindowBannerAd(versionCode: Int) {
     when (versionCode) {
-        in 896..994 -> {
+        in 896..1005 -> {
             findClass("com.qidian.QDReader.bll.manager.QDBKTManager").hook {
                 injectMember {
                     method {
@@ -420,7 +421,7 @@ fun PackageParam.disableReadPageChapterEnd(
     disableVoteTicketSpecialLine: Boolean = false,
 ) {
     when (versionCode) {
-        in 812..999 -> {
+        in 812..1099 -> {
             findClass("com.qidian.QDReader.readerengine.manager.ChapterProvider").hook {
                 if (disableAll) {
                     /**
@@ -554,7 +555,7 @@ fun PackageParam.disableAd(versionCode: Int) {
             }
         }
 
-        in 932..999 -> {
+        in 932..1099 -> {
             findClass("com.qq.e.comm.managers.GDTADManager").hook {
                 injectMember {
                     method {
@@ -610,16 +611,17 @@ fun PackageParam.disableUpdate(versionCode: Int) {
             in 890..900 -> "com.qidian.QDReader.util.l5"
             in 906..970 -> "com.qidian.QDReader.util.m5"
             in 980..994 -> "com.qidian.QDReader.util.k5"
+            1005 -> "com.qidian.QDReader.util.i5"
             else -> null
         },
         "needHookMethod" to when (versionCode) {
             in 758..878 -> "b"
-            in 884..994 -> "judian"
+            in 884..1005 -> "judian"
             else -> null
         },
         "needHookMethod2" to when (versionCode) {
             in 758..878 -> "a"
-            in 884..994 -> "search"
+            in 884..1005 -> "search"
             else -> null
         }
     )
@@ -669,7 +671,7 @@ fun PackageParam.disableUpdate(versionCode: Int) {
 
      */
     when (versionCode) {
-        in 758..999 -> {
+        in 758..1099 -> {
 
             findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
                 injectMember {
@@ -742,6 +744,7 @@ fun PackageParam.disableUpdate(versionCode: Int) {
         970 -> "r4.d"
         980 -> "s4.f"
         994 -> "s4.d"
+        1005 -> "r4.f"
         else -> null
     }
     needHookClass2?.hook {

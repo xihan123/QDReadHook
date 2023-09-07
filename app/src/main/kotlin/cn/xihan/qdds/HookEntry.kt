@@ -857,10 +857,10 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
             }
         }
 
-        in 842..994 -> {
+        in 842..1005 -> {
             val needHookMethod = when (versionCode) {
                 in 842..878 -> "E"
-                in 884..994 -> "B"
+                in 884..1005 -> "B"
                 else -> null
             }
             if (needHookMethod != null) {
@@ -974,6 +974,7 @@ fun PackageParam.newOldLayout(
             in 950..958 -> "e0"
             970 -> "f0"
             in 980..994 -> "i0"
+            1005 -> "k0"
             else -> null
         }
     )
@@ -1125,7 +1126,7 @@ fun PackageParam.enableLocalCard(versionCode: Int) {
             }
         }
 
-        in 896..999 -> {
+        in 896..1099 -> {
             findClass("com.qidian.QDReader.repository.entity.user_account.Member").hook {
                 injectMember {
                     method {
@@ -1176,7 +1177,7 @@ fun PackageParam.enableLocalCard(versionCode: Int) {
  */
 fun PackageParam.unlockMemberBackground(versionCode: Int) {
     when (versionCode) {
-        in 827..999 -> {
+        in 827..1099 -> {
             findClass("com.qidian.QDReader.ui.activity.QDReaderThemeDetailActivity").hook {
                 injectMember {
                     method {
@@ -1388,7 +1389,7 @@ fun PackageParam.freeAdReward(versionCode: Int) {
             }
         }
 
-        in 896..994 -> {
+        in 896..1005 -> {
             /**
              * showRewardVideo
              * preloadRewardVideo
@@ -1462,7 +1463,7 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
             924 -> "com.qidian.QDReader.component.bll.manager.a1"
             in 932..944 -> "com.qidian.QDReader.component.bll.manager.c1"
             950 -> "com.qidian.QDReader.component.bll.manager.b1"
-            in 958..994 -> "com.qidian.QDReader.component.bll.manager.d1"
+            in 958..1005 -> "com.qidian.QDReader.component.bll.manager.d1"
             else -> null
         }, "needHookMethod" to when (versionCode) {
             in 854..878 -> "n0"
@@ -1470,7 +1471,7 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
             in 896..924 -> "l0"
             in 932..938 -> "p0"
             in 944..958 -> "q0"
-            in 970..994 -> "r0"
+            in 970..1005 -> "r0"
             else -> null
         }
     )
@@ -1506,7 +1507,7 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
  */
 fun PackageParam.exportEmoji(versionCode: Int) {
     when (versionCode) {
-        in 884..994 -> {
+        in 884..1005 -> {
             findClass("com.qidian.QDReader.ui.activity.QDStickersDetailActivity").hook {
                 injectMember {
                     method {
@@ -1545,6 +1546,7 @@ fun PackageParam.exportEmoji(versionCode: Int) {
                             970 -> 0x7F091931
                             980 -> 0x7F091970
                             994 -> 0x7F09199A
+                            1005 -> 0x7F0919BB
                             else -> null
                         }
                         if (topBarId != null) {
@@ -1627,6 +1629,7 @@ fun PackageParam.forceTrialMode(versionCode: Int) {
         in 896..900 -> "com.qidian.QDReader.util.v4"
         in 906..970 -> "com.qidian.QDReader.util.w4"
         in 980..994 -> "com.qidian.QDReader.util.u4"
+        1005 -> "com.qidian.QDReader.util.s4"
         else -> null
     }
 
@@ -1636,7 +1639,7 @@ fun PackageParam.forceTrialMode(versionCode: Int) {
      */
     val needHookMethod = when (versionCode) {
         in 896..970 -> "M"
-        in 980..994 -> "L"
+        in 980..1005 -> "L"
         else -> null
     }
 
@@ -1658,7 +1661,7 @@ fun PackageParam.forceTrialMode(versionCode: Int) {
  */
 fun PackageParam.hideWelfare(versionCode: Int) {
     when (versionCode) {
-        in 906..999 -> {
+        in 906..1099 -> {
             findClass("com.qidian.QDReader.ui.activity.QDSearchActivity").hook {
                 injectMember {
                     method {
@@ -1733,7 +1736,7 @@ fun PackageParam.hideWelfare(versionCode: Int) {
  */
 fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
     when (versionCode) {
-        in 970..994 -> {
+        in 970..1005 -> {
             /**
              * 自动领取今日阅读时长积分
              */
@@ -1770,6 +1773,7 @@ fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
                             970 -> 0x7F091391
                             980 -> 0x7F0913D0
                             994 -> 0x7F0913F6
+                            1005 -> 0x7F09140D
                             else -> null
                         }
                         if (pBarTagContainerId == null) {
@@ -1871,11 +1875,11 @@ fun PackageParam.postToShowImageUrl(versionCode: Int) {
     val needHookClass = when (versionCode) {
         970 -> "com.qidian.QDReader.ui.dialog.h9"
         980 -> "com.qidian.QDReader.ui.dialog.i9"
-        994 -> "com.qidian.QDReader.ui.dialog.k9"
+        in 994..1005 -> "com.qidian.QDReader.ui.dialog.k9"
         else -> null
     }
     val needHookMethod = when (versionCode) {
-        in 970..994 -> "p"
+        in 970..1005 -> "p"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -1927,7 +1931,7 @@ fun Context.showUrlListDialog(urls: List<String>) {
  */
 fun PackageParam.autoSkipSplash(versionCode: Int) {
     when (versionCode) {
-        994 -> {
+        in 994..1099 -> {
             findClass("com.qidian.QDReader.ui.activity.SplashActivity").hook {
                 injectMember {
                     method {
@@ -1962,7 +1966,7 @@ fun PackageParam.autoSkipSplash(versionCode: Int) {
  */
 fun PackageParam.debugActivity(versionCode: Int){
     when (versionCode) {
-        994 -> {
+        in 994..1099 -> {
             findClass("com.qidian.QDReader.ui.activity.AboutActivity").hook {
                 injectMember {
                     method {
