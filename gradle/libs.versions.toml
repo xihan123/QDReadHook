@@ -29,7 +29,7 @@ ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 foundation = { group = "androidx.compose.foundation", name = "foundation" }
 runtime = { group = "androidx.compose.runtime", name = "runtime" }
 animation = { group = "androidx.compose.animation", name = "animation" }
-navigation-compose = { module = "androidx.navigation:navigation-compose", version = "2.7.1" }
+navigation-compose = { module = "androidx.navigation:navigation-compose", version = "2.7.2" }
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity" }
 #activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activity" }
 material3 = { group = "androidx.compose.material3", name = "material3" }
