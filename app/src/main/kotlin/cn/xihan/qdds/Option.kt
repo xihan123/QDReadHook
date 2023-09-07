@@ -138,10 +138,6 @@ data class OptionEntity(
         @SerialName("bookNameList") var bookNameList: MutableSet<String> = mutableSetOf(),
         @SerialName("bookTypeList") var bookTypeList: Set<String> = emptySet(),
         @SerialName("configurations") var configurations: MutableList<SelectedModel> = mutableListOf(
-            SelectedModel("搜索-发现(热词)"),
-            SelectedModel("搜索-热门作品榜"),
-            SelectedModel("搜索-人气标签榜"),
-            SelectedModel("搜索-为你推荐"),
             SelectedModel("精选-主页面"),
             SelectedModel("精选-分类"),
             SelectedModel("精选-分类-全部作品"),
@@ -312,9 +308,9 @@ data class OptionEntity(
     /**
      * 控件隐藏配置
      * @param enableHideRedDot 启用隐藏红点
-     * @param enableSearchHideAllView 启用隐藏搜索全部控件
      * @param enableDisableQSNModeDialog 启用关闭青少年模式弹框
      * @param enableHideComicBannerAd 启用隐藏漫画banner广告
+     * @param searchOption 搜索配置
      * @param homeOption 首页配置
      * @param selectedOption 精选配置
      * @param findOption 发现配置
@@ -326,9 +322,9 @@ data class OptionEntity(
     @Serializable
     data class ViewHideOption(
         @SerialName("enableHideRedDot") var enableHideRedDot: Boolean = false,
-        @SerialName("enableSearchHideAllView") var enableSearchHideAllView: Boolean = false,
         @SerialName("enableDisableQSNModeDialog") var enableDisableQSNModeDialog: Boolean = false,
         @SerialName("enableHideComicBannerAd") var enableHideComicBannerAd: Boolean = false,
+        @SerialName("searchOption") var searchOption: SearchOption = SearchOption(),
         @SerialName("homeOption") var homeOption: HomeOption = HomeOption(),
         @SerialName("selectedOption") var selectedOption: SelectedOption = SelectedOption(),
         @SerialName("findOption") var findOption: FindOption = FindOption(),
@@ -336,6 +332,25 @@ data class OptionEntity(
         @SerialName("BookDetailOptions") var bookDetailOptions: BookDetailOptions = BookDetailOptions(),
         @SerialName("BookLastPageOptions") var bookLastPageOptions: BookLastPageOptions = BookLastPageOptions()
     ) {
+
+        /**
+         * 搜索配置
+         * @param enableHideSearch 启用隐藏搜索
+         * @param configurations 搜索配置列表
+         */
+        @Keep
+        @Serializable
+        data class SearchOption(
+            @SerialName("enableHideSearch") var enableHideSearch: Boolean = false,
+            @SerialName("configurations") var configurations: MutableList<SelectedModel> = mutableListOf(
+                SelectedModel("搜索历史"),
+                SelectedModel("搜索发现"),
+                SelectedModel("搜索排行榜"),
+                SelectedModel("为你推荐")
+            )
+        )
+
+
         /**
          * 主页配置
          * @param enableCaptureBottomNavigation 启用截取底部导航栏

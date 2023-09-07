@@ -1456,12 +1456,25 @@ fun PurifyScreen(
                         HookEntry.optionEntity.viewHideOption.enableHideRedDot = it
                     })
 
+                val enableHideSearch =
+                    rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.searchOption.enableHideSearch)
 
-                SwitchSetting(title = "搜索页面一刀切",
-                    checked = rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.enableSearchHideAllView),
+                SwitchSetting(title = "搜索-启用选项屏蔽",
+                    checked = enableHideSearch,
                     onCheckedChange = {
-                        HookEntry.optionEntity.viewHideOption.enableSearchHideAllView = it
+                        HookEntry.optionEntity.viewHideOption.searchOption.enableHideSearch =
+                            it
                     })
+
+                if (enableHideSearch.value) {
+                    TextSetting(title = "搜索配置列表", onClick = {
+                        context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.searchOption.configurations)
+                    }, onLongClick = {
+                        HookEntry.optionEntity.viewHideOption.searchOption.configurations =
+                            defaultSelectedList
+                        context.toast("已恢复默认")
+                    })
+                }
 
                 SwitchSetting(title = "关闭青少年模式弹框",
                     checked = rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.enableDisableQSNModeDialog),

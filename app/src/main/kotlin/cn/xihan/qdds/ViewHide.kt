@@ -40,6 +40,45 @@ fun PackageParam.homeOption(versionCode: Int, configurations: List<OptionEntity.
 }
 
 /**
+ * 搜索配置列表
+ */
+fun PackageParam.searchOption(versionCode: Int, configurations: List<OptionEntity.SelectedModel>) {
+    val (needHookClass, needHookMethod) = when (versionCode) {
+        1005 -> "ea.search" to "m"
+        else -> return "搜索配置列表".printlnNotSupportVersion(versionCode)
+    }
+
+    val map = mapOf(
+        "搜索历史" to 1,
+        "搜索发现" to 2,
+        "搜索排行榜" to 3,
+        "为你推荐" to 4
+    ).filterKeys { key -> configurations.any { it.selected && it.title == key } }
+
+    if (map.isNotEmpty()) {
+        needHookClass.hook {
+            injectMember {
+                method {
+                    name = needHookMethod
+                    param(ListClass)
+                    returnType = UnitType
+                }
+                beforeHook {
+                    val list = args[0].safeCast<MutableList<*>>() ?: return@beforeHook
+                    val iterator = list.iterator()
+                    while (iterator.hasNext()) {
+                        val type = iterator.next()?.getParam<Int>("type")
+                        if (type in map.values) {
+                            iterator.remove()
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
  * 精选-隐藏配置
  */
 fun PackageParam.selectedOption(versionCode: Int) {

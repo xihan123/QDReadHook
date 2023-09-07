@@ -272,6 +272,23 @@ class HookEntry : IYukiHookXposedInit {
 
              */
 
+
+            /*
+            findClass("com.qidian.QDReader.ui.activity.QDSearchActivity").hook {
+                injectMember {
+                    method {
+                        name = "configViewPager"
+                        emptyParam()
+                        returnType = UnitType
+                    }
+                    afterHook {
+
+                    }
+                }
+            }
+
+             */
+
         }
 
     }
@@ -283,7 +300,7 @@ class HookEntry : IYukiHookXposedInit {
             autoSignIn(versionCode, optionEntity.bookshelfOption.enableOldLayout)
         }
 
-        if (optionEntity.mainOption.enableAutoSkipSplash){
+        if (optionEntity.mainOption.enableAutoSkipSplash) {
             autoSkipSplash(versionCode)
         }
 
@@ -319,7 +336,7 @@ class HookEntry : IYukiHookXposedInit {
             forceTrialMode(versionCode)
         }
 
-        if (optionEntity.mainOption.enableDebugActivity){
+        if (optionEntity.mainOption.enableDebugActivity) {
             debugActivity(versionCode)
         }
 
@@ -369,8 +386,8 @@ class HookEntry : IYukiHookXposedInit {
             selectedTitleOption(versionCode)
         }
 
-        if (optionEntity.viewHideOption.enableSearchHideAllView) {
-            hideSearchAllView(versionCode)
+        if (optionEntity.viewHideOption.searchOption.enableHideSearch) {
+            searchOption(versionCode, optionEntity.viewHideOption.searchOption.configurations)
         }
 
         if (optionEntity.viewHideOption.enableDisableQSNModeDialog) {
@@ -1699,7 +1716,7 @@ fun PackageParam.hideWelfare(versionCode: Int) {
                 }
             }
 
-            if (optionEntity.hideBenefitsOption.configurations[0].selected) {
+            if (optionEntity.hideBenefitsOption.configurations.isSelectedByTitle("内部浏览器右上角菜单")) {
                 findClass("com.qidian.QDReader.ui.fragment.QDBrowserFragment").hook {
                     injectMember {
                         method {
@@ -1957,6 +1974,7 @@ fun PackageParam.autoSkipSplash(versionCode: Int) {
                 }
             }
         }
+
         else -> "自动跳过闪屏页".printlnNotSupportVersion(versionCode)
     }
 }
@@ -1964,7 +1982,7 @@ fun PackageParam.autoSkipSplash(versionCode: Int) {
 /**
  * 测试页面
  */
-fun PackageParam.debugActivity(versionCode: Int){
+fun PackageParam.debugActivity(versionCode: Int) {
     when (versionCode) {
         in 994..1099 -> {
             findClass("com.qidian.QDReader.ui.activity.AboutActivity").hook {
@@ -1979,7 +1997,8 @@ fun PackageParam.debugActivity(versionCode: Int){
                             val context = this
                             getView<ImageView>("appIcon")?.let { appIcon ->
                                 appIcon.setOnClickListener {
-                                    val debug = "com.qidian.QDReader.ui.activity.QDDebugSettingActivity".toClass()
+                                    val debug =
+                                        "com.qidian.QDReader.ui.activity.QDDebugSettingActivity".toClass()
                                     startActivity(Intent(this, debug))
                                 }
 
@@ -1993,12 +2012,16 @@ fun PackageParam.debugActivity(versionCode: Int){
                                         title = "ActionUrl"
                                         customView = editText
                                         okButton {
-                                            val aup = "com.qidian.QDReader.other.ActionUrlProcess".toClass()
+                                            val aup =
+                                                "com.qidian.QDReader.other.ActionUrlProcess".toClass()
                                             aup.method {
                                                 name = "process"
                                                 paramCount(2)
                                                 returnType = IntType
-                                            }.get(aup).call(context,Uri.parse(editText.editText.text.toString()))
+                                            }.get(aup).call(
+                                                context,
+                                                Uri.parse(editText.editText.text.toString())
+                                            )
                                         }
                                         cancelButton {
                                             it.dismiss()
@@ -2023,6 +2046,7 @@ fun PackageParam.debugActivity(versionCode: Int){
                 }
             }
         }
+
         else -> "测试页面".printlnNotSupportVersion(versionCode)
     }
 }

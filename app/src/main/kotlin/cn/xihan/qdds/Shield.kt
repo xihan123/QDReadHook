@@ -34,8 +34,6 @@ fun PackageParam.shieldOption(
 ) {
     configurations.filter { it.selected }.takeIf { it.isNotEmpty() }?.forEach { selected ->
         when (selected.title) {
-            "搜索-发现(热词)" -> shieldSearchFind(versionCode)
-            "搜索-为你推荐" -> shieldSearchRecommend(versionCode)
             "精选-主页面" -> shieldChoice(versionCode)
             "精选-分类" -> shieldCategory(versionCode)
             "精选-分类-全部作品" -> shieldCategoryAllBook(versionCode)
@@ -51,12 +49,6 @@ fun PackageParam.shieldOption(
             "分类-小编力荐、本周强推等更多" -> shieldCategoryBookListReborn(versionCode)
         }
     }
-
-    shieldSearch(
-        versionCode = versionCode,
-        isNeedShieldBookRank = configurations.isSelectedByTitle("搜索-热门作品榜"),
-        isNeedShieldTagRank = configurations.isSelectedByTitle("搜索-人气标签榜")
-    )
 }
 
 /**
@@ -980,171 +972,6 @@ fun PackageParam.shieldCategoryBookListReborn(versionCode: Int) {
             }
         }
     } ?: "屏蔽分类-小编力荐、本周强推等".printlnNotSupportVersion(versionCode)
-}
-
-/**
- * 屏蔽搜索发现(热词)
- */
-fun PackageParam.shieldSearchFind(versionCode: Int) {
-    when (versionCode) {
-        in 788..1099 -> {
-            /**
-             * 搜索发现(热词)
-             */
-            findClass("com.qidian.QDReader.repository.entity.search.SearchHotWordBean").hook {
-                injectMember {
-                    method {
-                        name = "getWordList"
-                        emptyParam()
-                        returnType = ListClass
-                    }
-                    afterHook {
-                        result = result.safeCast<MutableList<*>>()?.clear()
-                    }
-                }
-            }
-        }
-
-        else -> "屏蔽搜索发现(热词)".printlnNotSupportVersion(versionCode)
-    }
-}
-
-/**
- * 屏蔽搜索-热门作品榜、人气标签榜
- * @param versionCode 版本号
- * @param isNeedShieldBookRank 屏蔽热门作品榜
- * @param isNeedShieldTagRank 屏蔽人气标签榜
- */
-fun PackageParam.shieldSearch(
-    versionCode: Int,
-    isNeedShieldBookRank: Boolean,
-    isNeedShieldTagRank: Boolean,
-) {
-    if (isNeedShieldBookRank) {
-        /**
-         * 屏蔽热门作品榜更多
-         * 上级调用: com.qidian.QDReader.ui.activity.QDSearchListActivity.bindView() mAdapter
-         */
-        val needHookClass = when (versionCode) {
-            788 -> "o9.d"
-            in 792..808 -> "n9.d"
-            812 -> "l9.d"
-            827 -> "m9.d"
-            in 834..854 -> "l9.d"
-            in 858..860 -> "m9.d"
-            868 -> "n9.d"
-            in 872..878 -> "l9.d"
-            in 884..900 -> "f9.a"
-            in 906..916 -> "j9.a"
-            924 -> "k9.a"
-            in 932..938 -> "n9.a"
-            944 -> "m9.a"
-            950 -> "n9.a"
-            in 958..970 -> "l9.a"
-            in 980..1005 -> "ea.a"
-            else -> null
-        }
-        val needHookMethod = when (versionCode) {
-            in 788..878 -> "o"
-            in 884..1005 -> "l"
-            else -> null
-        }
-        if (needHookClass == null || needHookMethod == null) {
-            "屏蔽热门作品榜更多".printlnNotSupportVersion(versionCode)
-        } else {
-            needHookClass.hook {
-                injectMember {
-                    method {
-                        name = needHookMethod
-                    }
-                    beforeHook {
-                        args[0].safeCast<MutableList<*>>()?.let {
-                            safeRun {
-                                args(0).set(parseNeedShieldList(it))
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-    }
-    when (versionCode) {
-        in 788..1099 -> {
-            findClass("com.qidian.QDReader.ui.view.search.SearchHomePageRankView").hook {
-                if (isNeedShieldBookRank) {
-                    /**
-                     * 热门作品榜
-                     */
-                    injectMember {
-                        method {
-                            name = "setBookRank"
-                            param("com.qidian.QDReader.repository.entity.search.SearchBookRankBean".toClass())
-                        }
-                        beforeHook {
-                            args[0]?.let {
-                                val bookList = it.getParam<MutableList<*>>("BookList")
-                                bookList?.let {
-                                    safeRun {
-                                        parseNeedShieldList(it)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (isNeedShieldTagRank) {
-                    /**
-                     * 人气标签榜
-                     */
-                    injectMember {
-                        method {
-                            name = "setTagRank"
-                            param("com.qidian.QDReader.repository.entity.search.SearchTagRankBean".toClass())
-                        }
-                        beforeHook {
-                            args[0]?.let {
-                                val list = it.getParam<MutableList<*>>("TagList")
-                                list?.let {
-                                    safeRun {
-                                        parseNeedShieldList(it)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        else -> "屏蔽搜索-热门作品榜、人气标签榜".printlnNotSupportVersion(versionCode)
-    }
-}
-
-/**
- * 屏蔽搜索-为你推荐
- */
-fun PackageParam.shieldSearchRecommend(versionCode: Int) {
-    when (versionCode) {
-        in 788..1099 -> {
-            /**
-             * 搜索-为你推荐
-             */
-            findClass("com.qidian.QDReader.repository.entity.search.SearchHomeCombineBean").hook {
-                injectMember {
-                    constructor {
-                        param(ListClass)
-                    }
-                    beforeHook {
-                        args[0].safeCast<MutableList<*>>()?.clear()
-                    }
-                }
-            }
-        }
-
-        else -> "屏蔽搜索-为你推荐".printlnNotSupportVersion(versionCode)
-    }
 }
 
 /**
