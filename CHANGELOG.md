@@ -1,4 +1,26 @@
 # Changelog
+## [2.3.5](https://github.com/xihan123/QDReadHook/compare/v2.3.4...v2.3.5) (2023-09-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* 移除 `屏蔽设置列表` -> `搜索相关`, `1005` + 版本 新增 `隐藏控件设置` -> `搜索配置列表`
+
+### Features
+
+* 移除 `屏蔽设置列表` -&gt; `搜索相关`, `1005` + 版本 新增 `隐藏控件设置` -> `搜索配置列表` ([38309d8](https://github.com/xihan123/QDReadHook/commit/38309d89b1b0da4cec5c721f6dd485ccd6d6e60a))
+* 适配 `1005` 版本 ([bc0136c](https://github.com/xihan123/QDReadHook/commit/bc0136c244856c5b2e811ba4888c976bc65f16df))
+
+
+### CI
+
+* release.yml ([bbe3722](https://github.com/xihan123/QDReadHook/commit/bbe37222b3449bf793c60dbac216e0e3b711491d))
+
+
+### Miscellaneous
+
+* 更新依赖库 ([dfa133c](https://github.com/xihan123/QDReadHook/commit/dfa133c267b1d6161e1bfd8a2210dd8b76531981))
+
 ## [2.3.4](https://github.com/xihan123/QDReadHook/compare/v2.3.3...v2.3.4) (2023-09-06)
 
 
