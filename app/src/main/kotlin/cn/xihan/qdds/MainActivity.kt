@@ -1577,6 +1577,26 @@ fun PurifyScreen(
                         })
                 }
 
+                val enableCaptureBookReadPageView =
+                    rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.readPageOptions.enableCaptureBookReadPageView)
+
+                SwitchSetting(title = "启用阅读页抓取控件",
+                    checked = enableCaptureBookReadPageView,
+                    onCheckedChange = {
+                        HookEntry.optionEntity.viewHideOption.readPageOptions.enableCaptureBookReadPageView =
+                            it
+                    })
+
+                if (enableCaptureBookReadPageView.value) {
+                    TextSetting(title = "阅读页-隐藏控件列表", onClick = {
+                        context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.readPageOptions.configurations)
+                    },onLongClick = {
+                        HookEntry.optionEntity.viewHideOption.readPageOptions.configurations =
+                            defaultSelectedList
+                        context.toast("已恢复默认")
+                    })
+                }
+
                 val hideDetail =
                     rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.bookDetailOptions.enableHideBookDetail)
 

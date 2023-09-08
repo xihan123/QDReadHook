@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.core.view.forEach
 import com.alibaba.fastjson2.toJSONString
 import com.highcapable.yukihookapi.hook.factory.MembersType
 import com.highcapable.yukihookapi.hook.log.loggerE
@@ -173,8 +174,18 @@ inline fun <reified T : View> Any.findViewById(id: Int): T? {
 inline fun <reified T> Any?.safeCast(): T? = this as? T
 
 fun View.setVisibilityIfNotEqual(status: Int = View.GONE) {
-    this.takeIf { it.visibility != status }?.apply { visibility = status }
+    this.takeIf { it.visibility != status }?.also { visibility = status }
 }
+
+fun View.setVisibilityWithChildren(visibility: Int = View.GONE) {
+    setVisibilityIfNotEqual(visibility)
+    if (this is ViewGroup) {
+        this.forEach { child ->
+            child.setVisibilityWithChildren(visibility)
+        }
+    }
+}
+
 
 /**
  * Xposed 设置字段值
@@ -907,3 +918,8 @@ fun com.alibaba.fastjson2.JSONObject.getStringWithFallback(key: String): String?
 fun com.alibaba.fastjson2.JSONObject.getJSONArrayWithFallback(key: String): com.alibaba.fastjson2.JSONArray? =
     this.getJSONArray(key)
         ?: this.getJSONArray(key.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })
+
+/**
+ * 取 View toString() 中的app:id/ 属性
+ */
+fun View.getName() = toString().substringAfter("/").replace("}", "")

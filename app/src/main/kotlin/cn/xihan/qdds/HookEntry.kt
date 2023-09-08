@@ -472,6 +472,10 @@ class HookEntry : IYukiHookXposedInit {
             )
         }
 
+        if (optionEntity.viewHideOption.readPageOptions.enableCaptureBookReadPageView) {
+            hideReadPage(versionCode)
+        }
+
         if (optionEntity.replaceRuleOption.enableReplace) {
             enableReplace(versionCode)
         }

@@ -316,6 +316,7 @@ data class OptionEntity(
      * @param findOption 发现配置
      * @param accountOption 用户页面配置
      * @param bookDetailOptions 书籍详情配置
+     * @param readPageOptions  阅读页配置
      * @param bookLastPageOptions 阅读最后一页配置
      */
     @Keep
@@ -330,6 +331,7 @@ data class OptionEntity(
         @SerialName("findOption") var findOption: FindOption = FindOption(),
         @SerialName("AccountOption") var accountOption: AccountOption = AccountOption(),
         @SerialName("BookDetailOptions") var bookDetailOptions: BookDetailOptions = BookDetailOptions(),
+        @SerialName("readPageOptions") var readPageOptions: BookReadPageOptions = BookReadPageOptions(),
         @SerialName("BookLastPageOptions") var bookLastPageOptions: BookLastPageOptions = BookLastPageOptions()
     ) {
 
@@ -453,6 +455,18 @@ data class OptionEntity(
                 SelectedModel(title = "同类作品推荐"),
                 SelectedModel(title = "看过此书的人还看过")
             ),
+        )
+
+        /**
+         * 书籍阅读页面配置
+         * @param enableCaptureBookReadPageView 启用抓取阅读页面控件
+         * @param configurations 配置集合
+         */
+        @Keep
+        @Serializable
+        data class BookReadPageOptions(
+            @SerialName("enableCaptureBookReadPageView") var enableCaptureBookReadPageView: Boolean = false,
+            @SerialName("configurations") var configurations: MutableList<SelectedModel> = mutableListOf()
         )
 
         /**

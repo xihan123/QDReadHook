@@ -3,6 +3,7 @@ package cn.xihan.qdds
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
 import com.alibaba.fastjson2.parseObject
 import com.alibaba.fastjson2.toJSONString
@@ -1457,6 +1458,38 @@ fun PackageParam.bookDetailHide(
         }
 
         else -> "书籍详情-隐藏控件".printlnNotSupportVersion(versionCode)
+    }
+}
+
+/**
+ * 阅读页面-隐藏控件
+ * CircleNewPostLastTime
+ */
+fun PackageParam.hideReadPage(versionCode: Int) {
+    when (versionCode) {
+        1005 -> {
+            findClass("com.qidian.QDReader.readerengine.view.menu.q0").hook {
+                injectMember {
+                    method {
+                        name = "t0"
+                        emptyParam()
+                        returnType = UnitType
+                    }
+                    afterHook {
+                        instance.getParamList<View>().takeIf { it.isNotEmpty() }?.let { views ->
+                            val iterator = views.iterator()
+                            while (iterator.hasNext()) {
+                                val view = iterator.next()
+                                val name = view.getName()
+                                HookEntry.optionEntity.viewHideOption.readPageOptions.configurations.findOrPlus(name){
+                                    view.setVisibilityWithChildren()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
