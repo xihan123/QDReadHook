@@ -272,23 +272,6 @@ class HookEntry : IYukiHookXposedInit {
 
              */
 
-
-            /*
-            findClass("com.qidian.QDReader.ui.activity.QDSearchActivity").hook {
-                injectMember {
-                    method {
-                        name = "configViewPager"
-                        emptyParam()
-                        returnType = UnitType
-                    }
-                    afterHook {
-
-                    }
-                }
-            }
-
-             */
-
         }
 
     }

@@ -34,6 +34,7 @@ fun PackageParam.homeOption(versionCode: Int, configurations: List<OptionEntity.
             "主页顶部战力提示" -> hideMainTopPower(versionCode)
             "书架每日导读" -> hideBookshelfDailyReading(versionCode)
             "书架去找书" -> hideBookshelfFindBook(versionCode)
+            "书架顶部标题" -> hideBookshelfTopTitle(versionCode)
             "主页底部导航栏红点" -> hideBottomRedDot(versionCode)
         }
     }
@@ -480,6 +481,26 @@ fun PackageParam.hideBookshelfFindBook(versionCode: Int) {
 }
 
 /**
+ * 隐藏书架-顶部标题
+ */
+fun PackageParam.hideBookshelfTopTitle(versionCode: Int) {
+    when (versionCode) {
+        in 1005..1099 -> {
+            findClass("com.qidian.QDReader.ui.modules.bookshelf.adapter.BaseBooksAdapter").hook {
+                injectMember {
+                    method {
+                        name = "getHeaderItemCount"
+                        emptyParam()
+                        returnType = IntType
+                    }
+                    replaceTo(0)
+                }
+            }
+        }
+    }
+}
+
+/**
  * 搜索页面一刀切
  */
 fun PackageParam.hideSearchAllView(versionCode: Int) {
@@ -622,7 +643,8 @@ fun PackageParam.findViewHide(
                                 while (iterator.hasNext()) {
                                     val next = iterator.next().toJSONString().parseObject()
                                     val showName =
-                                        next?.getString("showName") ?: next?.getString("ShowName")
+                                        next?.getString("showName")
+                                            ?: next?.getString("ShowName")
                                     if (!showName.isNullOrBlank()) {
                                         HookEntry.optionEntity.viewHideOption.findOption.advItem.findOrPlus(
                                             showName,
@@ -646,7 +668,8 @@ fun PackageParam.findViewHide(
                                 val iterator = it.iterator()
                                 while (iterator.hasNext()) {
                                     val next = iterator.next().toJSONString().parseObject()
-                                    val name = next?.getString("desc") ?: next?.getString("Desc")
+                                    val name =
+                                        next?.getString("desc") ?: next?.getString("Desc")
                                     if (!name.isNullOrBlank()) {
                                         HookEntry.optionEntity.viewHideOption.findOption.filterConfItem.findOrPlus(
                                             name,
@@ -663,7 +686,8 @@ fun PackageParam.findViewHide(
                                 while (iterator.hasNext()) {
                                     val next = iterator.next().toJSONString().parseObject()
                                     val name =
-                                        next?.getString("showName") ?: next?.getString("ShowName")
+                                        next?.getString("showName")
+                                            ?: next?.getString("ShowName")
                                     if (!name.isNullOrBlank()) {
                                         HookEntry.optionEntity.viewHideOption.findOption.headItem.findOrPlus(
                                             name,
@@ -709,20 +733,22 @@ fun PackageParam.accountViewHide(
                                 safeRun {
                                     val iterator = list.iterator()
                                     while (iterator.hasNext()) {
-                                        iterator.next().safeCast<MutableList<*>>()?.let { list2 ->
-                                            val iterator2 = list2.iterator()
-                                            while (iterator2.hasNext()) {
-                                                val item2 =
-                                                    iterator2.next().toJSONString().parseObject()
-                                                val showName = item2?.getString("showName")
-                                                if (!showName.isNullOrBlank()) {
-                                                    HookEntry.optionEntity.viewHideOption.accountOption.configurations.findOrPlus(
-                                                        title = showName,
-                                                        iterator = iterator2
-                                                    )
+                                        iterator.next().safeCast<MutableList<*>>()
+                                            ?.let { list2 ->
+                                                val iterator2 = list2.iterator()
+                                                while (iterator2.hasNext()) {
+                                                    val item2 =
+                                                        iterator2.next().toJSONString()
+                                                            .parseObject()
+                                                    val showName = item2?.getString("showName")
+                                                    if (!showName.isNullOrBlank()) {
+                                                        HookEntry.optionEntity.viewHideOption.accountOption.configurations.findOrPlus(
+                                                            title = showName,
+                                                            iterator = iterator2
+                                                        )
+                                                    }
                                                 }
                                             }
-                                        }
                                     }
                                 }
                             }
@@ -747,20 +773,22 @@ fun PackageParam.accountViewHide(
                                 safeRun {
                                     val iterator = list.iterator()
                                     while (iterator.hasNext()) {
-                                        iterator.next().safeCast<MutableList<*>>()?.let { list2 ->
-                                            val iterator2 = list2.iterator()
-                                            while (iterator2.hasNext()) {
-                                                val item2 =
-                                                    iterator2.next().toJSONString().parseObject()
-                                                val showName = item2?.getString("showName")
-                                                if (!showName.isNullOrBlank()) {
-                                                    HookEntry.optionEntity.viewHideOption.accountOption.configurations.findOrPlus(
-                                                        title = showName,
-                                                        iterator = iterator2
-                                                    )
+                                        iterator.next().safeCast<MutableList<*>>()
+                                            ?.let { list2 ->
+                                                val iterator2 = list2.iterator()
+                                                while (iterator2.hasNext()) {
+                                                    val item2 =
+                                                        iterator2.next().toJSONString()
+                                                            .parseObject()
+                                                    val showName = item2?.getString("showName")
+                                                    if (!showName.isNullOrBlank()) {
+                                                        HookEntry.optionEntity.viewHideOption.accountOption.configurations.findOrPlus(
+                                                            title = showName,
+                                                            iterator = iterator2
+                                                        )
+                                                    }
                                                 }
                                             }
-                                        }
                                     }
                                 }
                             }
@@ -790,7 +818,8 @@ fun PackageParam.accountViewHide(
                                 val iterator = benefitButtonList.iterator()
                                 while (iterator.hasNext()) {
                                     val next = iterator.next().toJSONString().parseObject()
-                                    val name = next?.getString("name") ?: next?.getString("Name")
+                                    val name =
+                                        next?.getString("name") ?: next?.getString("Name")
                                     if (!name.isNullOrBlank()) {
                                         HookEntry.optionEntity.viewHideOption.accountOption.newConfiguration.findOrPlus(
                                             title = name,
@@ -808,7 +837,8 @@ fun PackageParam.accountViewHide(
                                 val iterator = functionButtonList.iterator()
                                 while (iterator.hasNext()) {
                                     val next = iterator.next().toJSONString().parseObject()
-                                    val name = next?.getString("name") ?: next?.getString("Name")
+                                    val name =
+                                        next?.getString("name") ?: next?.getString("Name")
                                     if (!name.isNullOrBlank()) {
                                         HookEntry.optionEntity.viewHideOption.accountOption.newConfiguration.findOrPlus(
                                             title = name,
@@ -826,7 +856,8 @@ fun PackageParam.accountViewHide(
                                 val iterator = bottomButtonList.iterator()
                                 while (iterator.hasNext()) {
                                     val next = iterator.next().toJSONString().parseObject()
-                                    val name = next?.getString("name") ?: next?.getString("Name")
+                                    val name =
+                                        next?.getString("name") ?: next?.getString("Name")
                                     if (!name.isNullOrBlank()) {
                                         HookEntry.optionEntity.viewHideOption.accountOption.newConfiguration.findOrPlus(
                                             title = name,
