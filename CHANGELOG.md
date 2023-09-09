@@ -1,4 +1,22 @@
 # Changelog
+## [2.3.6](https://github.com/xihan123/QDReadHook/compare/v2.3.5...v2.3.6) (2023-09-09)
+
+
+### Features
+
+* **隐藏控件设置:** `1005` + 版本新增 `主页-隐藏控件列表` -&gt; `书架顶部标题` ([97c67f2](https://github.com/xihan123/QDReadHook/commit/97c67f2d12ae9cbd5bed5cb39f591091781165b8))
+* **隐藏控件设置:** `1005` + 版本新增 `阅读页-隐藏控件` ([607dd59](https://github.com/xihan123/QDReadHook/commit/607dd59d14272c5374ac80894758683b7f2b88ab))
+
+
+### CI
+
+* release.yml ([cdaa591](https://github.com/xihan123/QDReadHook/commit/cdaa5910c10f0621329e0061f00d53180df2aa50))
+
+
+### Miscellaneous
+
+* 更新依赖库 ([a8dc817](https://github.com/xihan123/QDReadHook/commit/a8dc817c207a00b3c70631d3e028c5592b6c98da))
+
 ## [2.3.5](https://github.com/xihan123/QDReadHook/compare/v2.3.4...v2.3.5) (2023-09-07)
 
 
