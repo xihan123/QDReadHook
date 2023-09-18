@@ -186,7 +186,6 @@ fun View.setVisibilityWithChildren(visibility: Int = View.GONE) {
     }
 }
 
-
 /**
  * Xposed 设置字段值
  */

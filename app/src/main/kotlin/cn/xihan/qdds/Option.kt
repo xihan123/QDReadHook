@@ -33,6 +33,7 @@ import java.io.File
  * @param viewHideOption 控件隐藏配置
  * @param replaceRuleOption 替换配置
  * @param hideBenefitsOption 隐藏福利配置
+ * @param automaticReceiveOption 自动领取配置
  */
 @Keep
 @Serializable
@@ -50,6 +51,7 @@ data class OptionEntity(
     @SerialName("viewHideOption") var viewHideOption: ViewHideOption = ViewHideOption(),
     @SerialName("replaceRuleOption") var replaceRuleOption: ReplaceRuleOption = ReplaceRuleOption(),
     @SerialName("hideBenefitsOption") var hideBenefitsOption: HideWelfareOption = HideWelfareOption(),
+    @SerialName("automaticReceiveOption") var automaticReceiveOption: AutomaticReceiveOption = AutomaticReceiveOption()
 ) {
     /**
      * 广告配置
@@ -104,7 +106,6 @@ data class OptionEntity(
     data class MainOption(
         @SerialName("packageName") var packageName: String = "com.qidian.QDReader",
         @SerialName("enableAutoSign") var enableAutoSign: Boolean = false,
-        @SerialName("enableReceiveReadingCreditsAutomatically") var enableReceiveReadingCreditsAutomatically: Boolean = false,
         @SerialName("enablePostToShowImageUrl") var enablePostToShowImageUrl: Boolean = false,
         @SerialName("enableLocalCard") var enableLocalCard: Boolean = false,
         @SerialName("enableFreeAdReward") var enableFreeAdReward: Boolean = false,
@@ -607,6 +608,17 @@ data class OptionEntity(
         )
     }
 
+    /**
+     * 自动领取模型
+     * @param configurations 配置列表
+     */
+    @Keep
+    @Serializable
+    data class AutomaticReceiveOption(
+        @SerialName("configurations") var configurations: MutableList<SelectedModel> = mutableListOf(
+            SelectedModel("自动领取阅读积分", false)
+        )
+    )
 
 }
 
@@ -632,6 +644,8 @@ fun readOptionEntity(): OptionEntity {
                         newOptionEntity.viewHideOption.bookDetailOptions.configurations
                     val newHideWelfareOptionConfigurations =
                         newOptionEntity.hideBenefitsOption.configurations
+                    val newAutomaticReceiveOptionConfigurations =
+                        newOptionEntity.automaticReceiveOption.configurations
 
                     advOption.configurations =
                         advOption.configurations.updateSelectedListOptionEntity(
@@ -653,6 +667,10 @@ fun readOptionEntity(): OptionEntity {
                     hideBenefitsOption.configurations =
                         hideBenefitsOption.configurations.updateSelectedListOptionEntity(
                             newHideWelfareOptionConfigurations
+                        )
+                    automaticReceiveOption.configurations =
+                        automaticReceiveOption.configurations.updateSelectedListOptionEntity(
+                            newAutomaticReceiveOptionConfigurations
                         )
                 }
             } catch (e: Exception) {

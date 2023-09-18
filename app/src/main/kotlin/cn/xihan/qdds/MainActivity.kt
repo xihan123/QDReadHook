@@ -781,14 +781,6 @@ fun MainScreen(
                         HookEntry.optionEntity.mainOption.enableAutoSkipSplash = it
                     })
 
-                SwitchSetting(title = "自动领取阅读积分",
-                    subTitle = "非后台领取，需要进到阅读积分页面",
-                    checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableReceiveReadingCreditsAutomatically),
-                    onCheckedChange = {
-                        HookEntry.optionEntity.mainOption.enableReceiveReadingCreditsAutomatically =
-                            it
-                    })
-
                 SwitchSetting(title = "发帖上传图片显示直链",
                     subTitle = "图片上传完后会弹框",
                     checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enablePostToShowImageUrl),
@@ -955,6 +947,20 @@ fun MainScreen(
             shape = RoundedCornerShape(8.dp),
             elevation = CardDefaults.cardElevation(4.dp)
         ) {
+            TextSetting(title = "自动领取设置", showRightIcon = false, bigTitle = true)
+
+            TextSetting(title = "自动领取设置列表", modifier = Modifier.padding(4.dp), onClick = {
+                context.multiChoiceSelector(HookEntry.optionEntity.automaticReceiveOption.configurations)
+            })
+        }
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            shape = RoundedCornerShape(8.dp),
+            elevation = CardDefaults.cardElevation(4.dp)
+        ) {
             TextSetting(title = "书架设置", showRightIcon = false, bigTitle = true)
 
             Column(modifier = Modifier.padding(4.dp)) {
@@ -1112,7 +1118,6 @@ fun MainScreen(
 
             }
         }
-
 
         Card(
             modifier = Modifier
