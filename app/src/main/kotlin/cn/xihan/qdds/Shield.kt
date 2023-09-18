@@ -67,13 +67,13 @@ fun PackageParam.shieldDailyReading(
         in 860..878 -> "com.qidian.QDReader.component.api.k1"
         in 884..890 -> "com.qidian.QDReader.component.api.h1"
         in 896..970 -> "com.qidian.QDReader.component.api.i1"
-        in 980..1005 -> "com.qidian.QDReader.component.api.j1"
+        in 980..1020 -> "com.qidian.QDReader.component.api.j1"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 788..812 -> "j"
         in 827..878 -> "k"
-        in 884..1005 -> "h"
+        in 884..1020 -> "h"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -202,7 +202,7 @@ fun PackageParam.shieldCategory(versionCode: Int) {
             }
         }
 
-        in 827..1005 -> {
+        in 827..1020 -> {
             val needHookClass = when (versionCode) {
                 827 -> "com.qidian.QDReader.ui.adapter.x6"
                 834 -> "com.qidian.QDReader.ui.adapter.y6"
@@ -212,12 +212,12 @@ fun PackageParam.shieldCategory(versionCode: Int) {
                 in 896..924 -> "com.qidian.QDReader.ui.adapter.v6"
                 in 932..958 -> "com.qidian.QDReader.ui.adapter.x6"
                 970 -> "com.qidian.QDReader.ui.adapter.a7"
-                in 980..1005 -> "com.qidian.QDReader.ui.adapter.z6"
+                in 980..1020 -> "com.qidian.QDReader.ui.adapter.z6"
                 else -> null
             }
             val needHookMethod = when (versionCode) {
                 in 827..878 -> "r"
-                in 884..1005 -> "o"
+                in 884..1020 -> "o"
                 else -> null
             }
             if (needHookClass == null || needHookMethod == null) {
@@ -304,12 +304,12 @@ fun PackageParam.shieldFreeRecommend(versionCode: Int) {
         950 -> "ma.search"
         958 -> "ja.search"
         970 -> "ia.search"
-        in 980..1005 -> "cb.search"
+        in 980..1020 -> "cb.search"
         else -> null
     }
     val freeRecommendHookMethod = when (versionCode) {
         in 788..878 -> "n"
-        in 884..1005 -> "k"
+        in 884..1020 -> "k"
         else -> null
     }
     if (freeRecommendHookClass == null || freeRecommendHookMethod == null) {
@@ -646,7 +646,7 @@ fun PackageParam.shieldHotAndRecommend(versionCode: Int) {
         in 842..860 -> "com.qidian.QDReader.ui.adapter.t"
         in 868..878 -> "com.qidian.QDReader.ui.adapter.u"
         in 884..970 -> "com.qidian.QDReader.ui.adapter.r"
-        in 980..1005 -> "com.qidian.QDReader.ui.adapter.q"
+        in 980..1020 -> "com.qidian.QDReader.ui.adapter.q"
         else -> null
     }
     needHookClass?.hook {
@@ -763,7 +763,7 @@ fun PackageParam.shieldNewBookAndRecommend(versionCode: Int) {
             }
         }
 
-        in 804..1005 -> {
+        in 804..1020 -> {
             /**
              *上级调用:com.qidian.QDReader.ui.fragment.SanJiangPagerFragment mAdapter
              */
@@ -777,12 +777,12 @@ fun PackageParam.shieldNewBookAndRecommend(versionCode: Int) {
                 in 896..924 -> "com.qidian.QDReader.ui.adapter.mb"
                 in 932..958 -> "com.qidian.QDReader.ui.adapter.rb"
                 970 -> "com.qidian.QDReader.ui.adapter.ub"
-                in 980..1005 -> "com.qidian.QDReader.ui.adapter.tb"
+                in 980..1020 -> "com.qidian.QDReader.ui.adapter.tb"
                 else -> null
             }
             val needHookMethod = when (versionCode) {
                 in 804..878 -> "q"
-                in 884..1005 -> "n"
+                in 884..1020 -> "n"
                 else -> null
             }
             if (needHookClass == null || needHookMethod == null) {
@@ -843,7 +843,7 @@ fun PackageParam.shieldNewBookAndRecommend(versionCode: Int) {
 fun PackageParam.shieldBookRank(versionCode: Int) {
     val needHookMethod = when (versionCode) {
         in 808..994 -> "lambda\$loadBookList\$4"
-        1005 -> "lambda\$loadBookList\$5"
+        in 1005..1020 -> "lambda\$loadBookList\$5"
         else -> null
     }
     needHookMethod?.let {
@@ -953,7 +953,7 @@ fun PackageParam.shieldCategoryAllBook(versionCode: Int) {
 fun PackageParam.shieldCategoryBookListReborn(versionCode: Int) {
     val needHookMethodName = when (versionCode) {
         in 950..958 -> "o0"
-        in 970..1005 -> "n0"
+        in 970..1020 -> "n0"
         else -> null
     }
     needHookMethodName?.let {
@@ -1011,12 +1011,12 @@ fun PackageParam.shieldComicOther(versionCode: Int) {
         in 842..860 -> "com.qidian.QDReader.ui.adapter.d2"
         in 868..878 -> "com.qidian.QDReader.ui.adapter.e2"
         in 884..970 -> "com.qidian.QDReader.ui.adapter.b2"
-        in 980..1005 -> "com.qidian.QDReader.ui.adapter.a2"
+        in 980..1020 -> "com.qidian.QDReader.ui.adapter.a2"
         else -> null
     }
     val needHookMethod = when (versionCode) {
         in 812..878 -> "q"
-        in 884..1005 -> "n"
+        in 884..1020 -> "n"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -1061,6 +1061,7 @@ fun PackageParam.quickShield(versionCode: Int) {
         980 -> 0x7F091A6E
         994 -> 0x7F091A9A
         1005 -> 0x7F091ABF
+        1020 -> 0x7F091AC0
         else -> null
     }
 
@@ -1081,6 +1082,7 @@ fun PackageParam.quickShield(versionCode: Int) {
         980 -> 0x7F091A23
         994 -> 0x7F091A4E
         1005 -> 0x7F091A73
+        1020 -> 0x7F091A74
         else -> null
     }
     if (tvBookNameId == null || tvAuthorNameId == null) {

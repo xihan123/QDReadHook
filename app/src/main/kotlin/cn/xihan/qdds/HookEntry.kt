@@ -862,10 +862,10 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
             }
         }
 
-        in 842..1005 -> {
+        in 842..1020 -> {
             val needHookMethod = when (versionCode) {
                 in 842..878 -> "E"
-                in 884..1005 -> "B"
+                in 884..1020 -> "B"
                 else -> null
             }
             if (needHookMethod != null) {
@@ -979,7 +979,7 @@ fun PackageParam.newOldLayout(
             in 950..958 -> "e0"
             970 -> "f0"
             in 980..994 -> "i0"
-            1005 -> "k0"
+            in 1005..1020 -> "k0"
             else -> null
         }
     )
@@ -1394,7 +1394,7 @@ fun PackageParam.freeAdReward(versionCode: Int) {
             }
         }
 
-        in 896..1005 -> {
+        in 896..1020 -> {
             /**
              * showRewardVideo
              * preloadRewardVideo
@@ -1468,7 +1468,7 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
             924 -> "com.qidian.QDReader.component.bll.manager.a1"
             in 932..944 -> "com.qidian.QDReader.component.bll.manager.c1"
             950 -> "com.qidian.QDReader.component.bll.manager.b1"
-            in 958..1005 -> "com.qidian.QDReader.component.bll.manager.d1"
+            in 958..1020 -> "com.qidian.QDReader.component.bll.manager.d1"
             else -> null
         }, "needHookMethod" to when (versionCode) {
             in 854..878 -> "n0"
@@ -1476,7 +1476,7 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
             in 896..924 -> "l0"
             in 932..938 -> "p0"
             in 944..958 -> "q0"
-            in 970..1005 -> "r0"
+            in 970..1020 -> "r0"
             else -> null
         }
     )
@@ -1512,7 +1512,7 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
  */
 fun PackageParam.exportEmoji(versionCode: Int) {
     when (versionCode) {
-        in 884..1005 -> {
+        in 884..1020 -> {
             findClass("com.qidian.QDReader.ui.activity.QDStickersDetailActivity").hook {
                 injectMember {
                     method {
@@ -1552,6 +1552,7 @@ fun PackageParam.exportEmoji(versionCode: Int) {
                             980 -> 0x7F091970
                             994 -> 0x7F09199A
                             1005 -> 0x7F0919BB
+                            1020 -> 0x7F0919BC
                             else -> null
                         }
                         if (topBarId != null) {
@@ -1634,7 +1635,7 @@ fun PackageParam.forceTrialMode(versionCode: Int) {
         in 896..900 -> "com.qidian.QDReader.util.v4"
         in 906..970 -> "com.qidian.QDReader.util.w4"
         in 980..994 -> "com.qidian.QDReader.util.u4"
-        1005 -> "com.qidian.QDReader.util.s4"
+        in 1005..1020 -> "com.qidian.QDReader.util.s4"
         else -> null
     }
 
@@ -1644,7 +1645,7 @@ fun PackageParam.forceTrialMode(versionCode: Int) {
      */
     val needHookMethod = when (versionCode) {
         in 896..970 -> "M"
-        in 980..1005 -> "L"
+        in 980..1020 -> "L"
         else -> null
     }
 
@@ -1736,8 +1737,6 @@ fun PackageParam.hideWelfare(versionCode: Int) {
     }
 }
 
-
-
 /**
  * 发帖显示图片直链
  * CirclePostEditActivity
@@ -1747,11 +1746,11 @@ fun PackageParam.postToShowImageUrl(versionCode: Int) {
     val needHookClass = when (versionCode) {
         970 -> "com.qidian.QDReader.ui.dialog.h9"
         980 -> "com.qidian.QDReader.ui.dialog.i9"
-        in 994..1005 -> "com.qidian.QDReader.ui.dialog.k9"
+        in 994..1020 -> "com.qidian.QDReader.ui.dialog.k9"
         else -> null
     }
     val needHookMethod = when (versionCode) {
-        in 970..1005 -> "p"
+        in 970..1020 -> "p"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {

@@ -32,7 +32,7 @@ fun PackageParam.automaticReceiveOptionOption(
  */
 fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
     when (versionCode) {
-        in 970..1005 -> {
+        in 970..1020 -> {
             /**
              * 自动领取今日阅读时长积分
              */
@@ -70,6 +70,7 @@ fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
                             980 -> 0x7F0913D0
                             994 -> 0x7F0913F6
                             1005 -> 0x7F09140D
+                            1020 -> 0x7F09140D
                             else -> null
                         }
                         if (pBarTagContainerId == null) {

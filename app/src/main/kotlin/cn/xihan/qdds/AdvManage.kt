@@ -331,6 +331,7 @@ fun PackageParam.disableReadPageFloatAd(versionCode: Int) {
         in 950..958 -> "t1"
         in 970..994 -> "s1"
         1005 -> "q1"
+        1020 -> "r1"
         else -> null
     }
     hookMethodName?.let {
@@ -386,7 +387,7 @@ fun PackageParam.disableReadPageRewardTheater(versionCode: Int) {
  */
 fun PackageParam.disableReadPageNewestPageWindowBannerAd(versionCode: Int) {
     when (versionCode) {
-        in 896..1005 -> {
+        in 896..1020 -> {
             findClass("com.qidian.QDReader.bll.manager.QDBKTManager").hook {
                 injectMember {
                     method {
@@ -611,17 +612,17 @@ fun PackageParam.disableUpdate(versionCode: Int) {
             in 890..900 -> "com.qidian.QDReader.util.l5"
             in 906..970 -> "com.qidian.QDReader.util.m5"
             in 980..994 -> "com.qidian.QDReader.util.k5"
-            1005 -> "com.qidian.QDReader.util.i5"
+            in 1005..1020 -> "com.qidian.QDReader.util.i5"
             else -> null
         },
         "needHookMethod" to when (versionCode) {
             in 758..878 -> "b"
-            in 884..1005 -> "judian"
+            in 884..1020 -> "judian"
             else -> null
         },
         "needHookMethod2" to when (versionCode) {
             in 758..878 -> "a"
-            in 884..1005 -> "search"
+            in 884..1020 -> "search"
             else -> null
         }
     )
@@ -745,6 +746,7 @@ fun PackageParam.disableUpdate(versionCode: Int) {
         980 -> "s4.f"
         994 -> "s4.d"
         1005 -> "r4.f"
+        1020 -> "r4.d"
         else -> null
     }
     needHookClass2?.hook {
