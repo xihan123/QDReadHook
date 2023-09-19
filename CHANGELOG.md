@@ -1,4 +1,27 @@
 # Changelog
+## [2.3.7](https://github.com/xihan123/QDReadHook/compare/v2.3.6...v2.3.7) (2023-09-19)
+
+
+### Features
+
+* 优化自动领取功能 ([d4be397](https://github.com/xihan123/QDReadHook/commit/d4be397ff2c7d1aececff392464b1315b63c8860))
+* 适配 `1020` 版本 ([8c42f6d](https://github.com/xihan123/QDReadHook/commit/8c42f6d4f7f436f0ee6c47e66bed6e6221c51142))
+
+
+### Feature Improvements
+
+* 整理、格式化、排序代码 ([9a559e2](https://github.com/xihan123/QDReadHook/commit/9a559e29f75eac5851be3c20df158c9cd334eafe))
+
+
+### CI
+
+* release.yml ([9850930](https://github.com/xihan123/QDReadHook/commit/9850930874910990a0555359493aa4beb39fb92a))
+
+
+### Miscellaneous
+
+* 更新依赖库 ([587ef02](https://github.com/xihan123/QDReadHook/commit/587ef02f9722b3d07aeba0f8d648e04bf46226fc))
+
 ## [2.3.6](https://github.com/xihan123/QDReadHook/compare/v2.3.5...v2.3.6) (2023-09-09)
 
 
