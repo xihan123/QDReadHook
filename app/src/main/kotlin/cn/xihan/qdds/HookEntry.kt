@@ -6,7 +6,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Environment
 import android.view.View
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
@@ -24,9 +23,7 @@ import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
 import com.highcapable.yukihookapi.hook.log.YukiHookLogger
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.android.BundleClass
-import com.highcapable.yukihookapi.hook.type.android.ViewClass
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
-import com.highcapable.yukihookapi.hook.type.java.CharSequenceClass
 import com.highcapable.yukihookapi.hook.type.java.IntType
 import com.highcapable.yukihookapi.hook.type.java.JSONObjectClass
 import com.highcapable.yukihookapi.hook.type.java.ListClass
@@ -71,7 +68,8 @@ class HookEntry : IYukiHookXposedInit {
                     }
                     afterHook {
                         safeRun {
-                            val readMoreSetting = instance.getView<RelativeLayout>("readMoreSetting")
+                            val readMoreSetting =
+                                instance.getView<RelativeLayout>("readMoreSetting")
                             // 获取 readMoreSetting 子控件
                             val readMoreSettingChild =
                                 readMoreSetting?.getChildAt(0).safeCast<TextView>()
@@ -1522,6 +1520,8 @@ fun PackageParam.exportEmoji(versionCode: Int) {
                     }
                     afterHook {
                         val stickersBean = args[1] ?: return@afterHook
+                        val viewMap = args[0]?.getParam<Map<*, View>>("_\$_findViewCache")
+                            ?: return@afterHook
                         val faceList = stickersBean.getParam<MutableList<*>>("mFaceList")
                         val yWImageLoader =
                             "com.yuewen.component.imageloader.YWImageLoader".toClassOrNull()
@@ -1537,49 +1537,29 @@ fun PackageParam.exportEmoji(versionCode: Int) {
                                 imageList += image
                             }
                         }
-                        val topBarId = when (versionCode) {
-                            884 -> 0x7F09176F
-                            890 -> 0x7F091784
-                            in 896..900 -> 0x7F091789
-                            in 906..916 -> 0x7F0917F5
-                            924 -> 0x7F0917F6
-                            932 -> 0x7F09184E
-                            938 -> 0x7F091863
-                            944 -> 0x7F091876
-                            950 -> 0x7F0918A1
-                            958 -> 0x7F0918A8
-                            970 -> 0x7F091931
-                            980 -> 0x7F091970
-                            994 -> 0x7F09199A
-                            1005 -> 0x7F0919BB
-                            1020 -> 0x7F0919BC
-                            else -> null
-                        }
-                        if (topBarId != null) {
-                            val topBar = context.findViewById<RelativeLayout>(topBarId)
-                            if (topBar != null) {
-                                val layoutParams = RelativeLayout.LayoutParams(
-                                    RelativeLayout.LayoutParams.WRAP_CONTENT,
-                                    RelativeLayout.LayoutParams.WRAP_CONTENT
-                                ).apply {
-                                    addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
-                                    addRule(RelativeLayout.CENTER_VERTICAL)
-                                    // padding right
-                                    setMargins(0, 0, 20, 0)
-                                }
-                                val textView = TextView(topBar.context).apply {
-                                    text = "导出"
-                                    setOnClickListener {
-                                        topBar.context.exportEmojiDialog(
-                                            context = context,
-                                            imageList = imageList,
-                                            yWImageLoader = yWImageLoader
-                                        )
-                                    }
-                                }
-                                textView.layoutParams = layoutParams
-                                topBar.addView(textView)
+                        val topBar = viewMap.values.firstOrNull { "topBar" == it.getName() }
+                            .safeCast<RelativeLayout>()
+                        if (topBar != null) {
+                            val layoutParams = RelativeLayout.LayoutParams(
+                                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                                RelativeLayout.LayoutParams.WRAP_CONTENT
+                            ).apply {
+                                addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+                                addRule(RelativeLayout.CENTER_VERTICAL)
+                                setMargins(0, 0, 20, 0)
                             }
+                            val textView = TextView(topBar.context).apply {
+                                text = "导出"
+                                setOnClickListener {
+                                    topBar.context.exportEmojiDialog(
+                                        context = context,
+                                        imageList = imageList,
+                                        yWImageLoader = yWImageLoader
+                                    )
+                                }
+                            }
+                            textView.layoutParams = layoutParams
+                            topBar.addView(textView)
                         } else {
                             "一键导出表情包".printlnNotSupportVersion(versionCode)
                         }

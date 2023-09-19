@@ -1,7 +1,7 @@
 package cn.xihan.qdds
 
-import android.app.Activity
 import android.content.Context
+import android.view.View
 import android.widget.TextView
 import cn.xihan.qdds.HookEntry.Companion.isNeedShield
 import cn.xihan.qdds.HookEntry.Companion.parseNeedShieldList
@@ -1044,81 +1044,42 @@ fun PackageParam.shieldComicOther(versionCode: Int) {
  * 书籍详情-快速屏蔽
  */
 fun PackageParam.quickShield(versionCode: Int) {
-    val tvBookNameId = when (versionCode) {
-        872 -> 2131302368
-        878 -> 2131302454
-        884 -> 0x7F09185A
-        890 -> 0x7F091870
-        in 896..900 -> 0x7F091874
-        in 906..916 -> 0x7F0918E3
-        924 -> 0x7F0918E5
-        932 -> 0x7F091943
-        938 -> 0x7F091958
-        944 -> 0x7F09196D
-        950 -> 0x7F091998
-        958 -> 0x7F09199F
-        970 -> 0x7F091A30
-        980 -> 0x7F091A6E
-        994 -> 0x7F091A9A
-        1005 -> 0x7F091ABF
-        1020 -> 0x7F091AC0
-        else -> null
-    }
-
-    val tvAuthorNameId = when (versionCode) {
-        872 -> 2131302306
-        878 -> 2131302390
-        884 -> 0x7F091818
-        890 -> 0x7F09182D
-        in 896..900 -> 0x7F091831
-        in 906..916 -> 0x7F09189E
-        924 -> 0x7F09189F
-        932 -> 0x7F0918F9
-        938 -> 0x7F09190E
-        944 -> 0x7F091923
-        950 -> 0x7F09194E
-        958 -> 0x7F091955
-        970 -> 0x7F0919E5
-        980 -> 0x7F091A23
-        994 -> 0x7F091A4E
-        1005 -> 0x7F091A73
-        1020 -> 0x7F091A74
-        else -> null
-    }
-    if (tvBookNameId == null || tvAuthorNameId == null) {
-        "书籍详情-快速屏蔽".printlnNotSupportVersion(versionCode)
-        return
-    }
-
-    findClass("com.qidian.QDReader.ui.activity.QDBookDetailActivity").hook {
-        injectMember {
-            method {
-                name = "notifyData"
-                paramCount(1)
-                returnType = UnitType
-            }
-            afterHook {
-                val tvBookName = instance.findViewById<TextView>(tvBookNameId)
-                val tvAuthorName = instance.findViewById<TextView>(tvAuthorNameId)
-//                        "tvBookName: ${tvBookName?.text}\ntvAuthorName: ${tvAuthorName?.text}".loge()
-                tvBookName?.setOnLongClickListener {
-                    instance<Activity>().apply {
-                        showQuickShieldDialog(
-                            name = tvBookName.text.toString()
-                        )
+    when (versionCode) {
+        in 1005..1020 -> {
+            findClass("com.qidian.QDReader.ui.activity.QDBookDetailActivity").hook {
+                injectMember {
+                    method {
+                        name = "mergeBookDetail\$lambda-6"
+                        paramCount(3)
+                        returnType = UnitType
                     }
-                    true
-                }
-                tvAuthorName?.setOnLongClickListener {
-                    instance<Activity>().apply {
-                        showQuickShieldDialog(
-                            author = tvAuthorName.text.toString()
-                        )
+                    afterHook {
+                        val viewMap =
+                            args[0]?.getParam<Map<*, View>>("_\$_findViewCache") ?: return@afterHook
+                        val ids = listOf("tvBookName", "tvAuthorName")
+                        val textViews =
+                            viewMap.values.filterIsInstance<TextView>()
+                                .filter { it.getName() in ids }
+                        val tvBookName = textViews.first { it.getName() == "tvBookName" }
+                        val tvAuthorName = textViews.first { it.getName() == "tvAuthorName" }
+                        tvBookName.setOnLongClickListener {
+                            it.context.showQuickShieldDialog(
+                                name = tvBookName.text.toString()
+                            )
+                            true
+                        }
+                        tvAuthorName.setOnLongClickListener {
+                            it.context.showQuickShieldDialog(
+                                author = tvAuthorName.text.toString()
+                            )
+                            true
+                        }
                     }
-                    true
                 }
             }
         }
+
+        else -> "书籍详情-快速屏蔽".printlnNotSupportVersion(versionCode)
     }
 }
 

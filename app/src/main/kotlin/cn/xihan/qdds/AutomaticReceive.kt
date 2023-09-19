@@ -5,7 +5,7 @@ import android.widget.LinearLayout
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.type.android.ViewClass
+import com.highcapable.yukihookapi.hook.type.android.LinearLayoutClass
 import com.highcapable.yukihookapi.hook.type.java.CharSequenceClass
 import com.highcapable.yukihookapi.hook.type.java.IntType
 import com.highcapable.yukihookapi.hook.type.java.UnitType
@@ -64,33 +64,14 @@ fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
                     }
                     afterHook {
                         args[1].safeCast<List<*>>() ?: return@afterHook
-
-                        val pBarTagContainerId = when (versionCode) {
-                            970 -> 0x7F091391
-                            980 -> 0x7F0913D0
-                            994 -> 0x7F0913F6
-                            1005 -> 0x7F09140D
-                            1020 -> 0x7F09140D
-                            else -> null
-                        }
-                        if (pBarTagContainerId == null) {
-                            "自动领取每周阅读时长宝箱".printlnNotSupportVersion(HookEntry.versionCode)
-                            return@afterHook
-                        }
-                        val view = instanceClass.method {
-                            name = "_\$_findCachedViewById"
-                            paramCount(1)
-                            returnType = ViewClass
-                        }.get(instance).call(pBarTagContainerId).safeCast<FrameLayout>()
-
-                        view?.let {
-                            val count = it.childCount
-                            for (i in 0..<count) {
-                                val child = it.getChildAt(i)
-                                if (child is LinearLayout) {
-                                    child.postRandomDelay { performClick() }
-                                }
-                            }
+                        val viewMap =
+                            instance.getParam<Map<*, *>>("_\$_findViewCache") ?: return@afterHook
+                        val frameLayouts = viewMap.values.filterIsInstance<FrameLayout>()
+                        val linearLayout =
+                            frameLayouts.flatMap { it.findViewsByType(LinearLayoutClass) }
+                                .filterIsInstance<LinearLayout>()
+                        linearLayout.forEach {
+                            it.postRandomDelay { performClick() }
                         }
                     }
                 }

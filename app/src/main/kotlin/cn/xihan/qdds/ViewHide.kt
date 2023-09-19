@@ -3,7 +3,6 @@ package cn.xihan.qdds
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import android.widget.TextView
 import com.alibaba.fastjson2.parseObject
 import com.alibaba.fastjson2.toJSONString
@@ -18,6 +17,7 @@ import com.highcapable.yukihookapi.hook.type.java.ListClass
 import com.highcapable.yukihookapi.hook.type.java.LongType
 import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
+import de.robv.android.xposed.XposedHelpers
 
 /**
  * @项目名 : QDReadHook
@@ -1234,7 +1234,7 @@ fun PackageParam.bookDetailHide(
                             returnType = UnitType
                         }
                         afterHook {
-                            val view = instance.findViewById<View>(0x7F090442)
+                            val view = XposedHelpers.callMethod(this, "findViewById", 0x7F090442).safeCast<View>()
                             view?.setVisibilityIfNotEqual()
                         }
                     }
@@ -1381,26 +1381,12 @@ fun PackageParam.bookDetailHide(
                             returnType = UnitType
                         }
                         afterHook {
-                            val tvCircleMarkLevelId = when (versionCode) {
-                                in 827..924 -> 0x7F090442
-                                932 -> 0x7F0904A8
-                                938 -> 0x7F0919CA
-                                944 -> 0x7F0919DF
-                                950 -> 0x7F091A0B
-                                958 -> 0x7F091A12
-                                970 -> 0x7F091AA5
-                                980 -> 0x7F091AE5
-                                994 -> 0x7F091B11
-                                1005 -> 0x7F091B37
-                                1020 -> 0x7F091B38
-                                else -> null
-                            }
-                            if (tvCircleMarkLevelId != null) {
-                                instance.findViewById<View>(tvCircleMarkLevelId)
-                                    ?.setVisibilityIfNotEqual()
-                            } else {
-                                "隐藏出圈指数".printlnNotSupportVersion(versionCode)
-                            }
+                            val viewMap = instance.getParam<Map<*, View>>("_\$_findViewCache")
+                                ?: return@afterHook
+                            viewMap.values.filterIsInstance<TextView>()
+                                .firstOrNull { "tvCircleMarkLevel" == it.getName() }
+                                ?.setVisibilityIfNotEqual()
+                                ?: "隐藏出圈指数".printlnNotSupportVersion(versionCode)
                         }
                     }
                 }
@@ -1482,7 +1468,9 @@ fun PackageParam.hideReadPage(versionCode: Int) {
                             while (iterator.hasNext()) {
                                 val view = iterator.next()
                                 val name = view.getName()
-                                HookEntry.optionEntity.viewHideOption.readPageOptions.configurations.findOrPlus(name){
+                                HookEntry.optionEntity.viewHideOption.readPageOptions.configurations.findOrPlus(
+                                    name
+                                ) {
                                     view.setVisibilityWithChildren()
                                 }
                             }
