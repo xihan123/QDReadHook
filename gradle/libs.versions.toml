@@ -1,10 +1,10 @@
 [versions]
 agp = "8.1.1"
-kotlin = "1.9.10"
-ksp = "1.9.10-1.0.13"
+kotlin = "1.9.20-Beta"
+ksp = "1.9.20-Beta-1.0.13"
 activity = "1.8.0-beta01"
 yuki = "1.1.11"
-compose-compiler = "1.5.3-dev-k1.9.10-593b4c95fce"
+compose-compiler = "1.5.4-dev-k1.9.20-Beta-692cbee7ddd"
 
 [libraries]
 junit = { group = "junit", name = "junit", version = "4.13.2" }
