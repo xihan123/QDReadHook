@@ -23,7 +23,7 @@ yukihook-ksp = { module = "com.highcapable.yukihookapi:ksp-xposed", version.ref 
 xposed-api = { module = "de.robv.android.xposed:api", version = "82" }
 #htmlunit = { module = "org.htmlunit:htmlunit3-android", version = "3.5.0" }
 #dexkit = { module = "org.luckypray:DexKit", version = "1.1.8" }
-compose-bom = { module = "dev.chrisbanes.compose:compose-bom", version = "2023.10.00-alpha01" }
+compose-bom = { module = "dev.chrisbanes.compose:compose-bom", version = "2023.10.00-alpha02" }
 ui = { group = "androidx.compose.ui", name = "ui" }
 ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 foundation = { group = "androidx.compose.foundation", name = "foundation" }
