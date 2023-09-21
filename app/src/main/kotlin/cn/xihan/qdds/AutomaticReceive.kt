@@ -32,7 +32,7 @@ fun PackageParam.automaticReceiveOptionOption(
  */
 fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
     when (versionCode) {
-        in 970..1020 -> {
+        in 970..1099 -> {
             /**
              * 自动领取今日阅读时长积分
              */

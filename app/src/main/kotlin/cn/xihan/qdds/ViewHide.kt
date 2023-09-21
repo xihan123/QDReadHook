@@ -48,7 +48,7 @@ fun PackageParam.homeOption(versionCode: Int, configurations: List<OptionEntity.
  */
 fun PackageParam.searchOption(versionCode: Int, configurations: List<OptionEntity.SelectedModel>) {
     val (needHookClass, needHookMethod) = when (versionCode) {
-        in 1005..1020 -> "ea.search" to "m"
+        in 1005..1030 -> "ea.search" to "m"
         else -> return "搜索配置列表".printlnNotSupportVersion(versionCode)
     }
 
@@ -128,19 +128,19 @@ fun PackageParam.selectedOption(versionCode: Int) {
                                             }.call("Items")
 
                                             jsonArray?.current {
-                                                val iterator = method {
+                                                val iterator2 = method {
                                                     name = "iterator"
                                                 }.call().safeCast<MutableIterator<*>>()
 
-                                                while (iterator?.hasNext() == true) {
-                                                    val item = iterator.next()
+                                                while (iterator2?.hasNext() == true) {
+                                                    val item = iterator2.next()
                                                     item?.current {
-                                                        val title = method {
+                                                        val title2 = method {
                                                             name = "get"
                                                         }.call("Text")
                                                         HookEntry.optionEntity.viewHideOption.selectedOption.configurations.findOrPlus(
-                                                            title = "$title".replace("\"", ""),
-                                                            iterator = iterator
+                                                            title = "$title2".replace("\"", ""),
+                                                            iterator = iterator2
                                                         )
                                                     }
                                                 }
@@ -155,8 +155,6 @@ fun PackageParam.selectedOption(versionCode: Int) {
                                     iterator = iterator
                                 )
                             }
-
-
                         }
                     }
                 }
@@ -195,15 +193,15 @@ fun PackageParam.selectedOption(versionCode: Int) {
                                 val multiIterator = multiData.iterator()
                                 while (multiIterator.hasNext()) {
                                     val item = multiIterator.next() ?: continue
-                                    val columnName =
+                                    val columnName2 =
                                         item.getParam<Any>("extension")
                                             ?.getParam<String>("columnName")
-                                    var title =
+                                    var title2 =
                                         item.getParam<Any>("cardTitle")?.getParam<String>("name")
-                                    if (!columnName.isNullOrBlank() && title.isNullOrBlank()) {
-                                        when (columnName) {
+                                    if (!columnName2.isNullOrBlank() && title2.isNullOrBlank()) {
+                                        when (columnName2) {
                                             "broadcast" -> {
-                                                title = "轮播消息"
+                                                title2 = "轮播消息"
                                             }
 
                                             "icon" -> {
@@ -226,16 +224,14 @@ fun PackageParam.selectedOption(versionCode: Int) {
                                             }
                                         }
                                     }
-                                    if (!title.isNullOrBlank()) {
+                                    if (!title2.isNullOrBlank()) {
                                         HookEntry.optionEntity.viewHideOption.selectedOption.configurations.findOrPlus(
-                                            title = title!!,
+                                            title = title2,
                                             iterator = multiIterator
                                         )
                                     }
                                 }
                             }
-
-
                         }
                     }
                 }
@@ -305,12 +301,14 @@ fun PackageParam.selectedTitleOption(versionCode: Int) {
                             }
                         }
 
-                        instance.current {
-                            method {
-                                name = "calculateSize"
-                                emptyParam()
-                                returnType = BooleanType
-                            }.call()
+                        if (versionCode in 872..1020){
+                            instance.current {
+                                method {
+                                    name = "calculateSize"
+                                    emptyParam()
+                                    returnType = BooleanType
+                                }.call()
+                            }
                         }
 
                         val textViews = mTabLayout.findViewsByType(TextViewClass)
@@ -390,7 +388,7 @@ fun PackageParam.hideBookshelfDailyReading(versionCode: Int) {
         in 827..860 -> "com.qidian.QDReader.ui.adapter.i0"
         in 868..878 -> "com.qidian.QDReader.ui.adapter.j0"
         in 884..970 -> "com.qidian.QDReader.ui.adapter.g0"
-        in 980..1020 -> "com.qidian.QDReader.ui.adapter.f0"
+        in 980..1030 -> "com.qidian.QDReader.ui.adapter.f0"
         else -> null
     }
     val listAdapterClass = when (versionCode) {
@@ -398,7 +396,7 @@ fun PackageParam.hideBookshelfDailyReading(versionCode: Int) {
         in 827..860 -> "com.qidian.QDReader.ui.adapter.k0"
         in 868..878 -> "com.qidian.QDReader.ui.adapter.l0"
         in 884..970 -> "com.qidian.QDReader.ui.adapter.i0"
-        in 980..1020 -> "com.qidian.QDReader.ui.adapter.h0"
+        in 980..1030 -> "com.qidian.QDReader.ui.adapter.h0"
         else -> null
     }
     if (gridAdapterClass == null || listAdapterClass == null) {
@@ -446,13 +444,13 @@ fun PackageParam.hideBookshelfDailyReading(versionCode: Int) {
  */
 fun PackageParam.hideBookshelfFindBook(versionCode: Int) {
     when (versionCode) {
-        in 868..1020 -> {
+        in 868..1030 -> {
             /**
              * QDBookShelfBrowserRecordHolder
              */
             val needHookClass = when (versionCode) {
                 in 868..878 -> "com.qidian.QDReader.ui.viewholder.bookshelf.r"
-                in 884..1020 -> "com.qidian.QDReader.ui.viewholder.bookshelf.o"
+                in 884..1030 -> "com.qidian.QDReader.ui.viewholder.bookshelf.o"
                 else -> null
             }
             needHookClass?.hook {
@@ -533,7 +531,7 @@ fun PackageParam.hideBottomRedDot(versionCode: Int) {
     val needHookClass = when (versionCode) {
         in 758..768 -> "com.qidian.QDReader.ui.widget.maintab.a"
         in 772..878 -> "com.qidian.QDReader.ui.widget.maintab.e"
-        in 884..1020 -> "com.qidian.QDReader.ui.widget.maintab.b"
+        in 884..1030 -> "com.qidian.QDReader.ui.widget.maintab.b"
         else -> null
     }
     val needHookMethod = when (versionCode) {
@@ -544,7 +542,7 @@ fun PackageParam.hideBottomRedDot(versionCode: Int) {
         in 916..924 -> "h"
         in 932..958 -> "e"
         in 970..980 -> "g"
-        in 994..1020 -> "h"
+        in 994..1030 -> "h"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -571,7 +569,7 @@ fun PackageParam.hideBottomNavigation(versionCode: Int) {
         in 872..878 -> "s"
         in 884..958 -> "p"
         in 970..980 -> "s"
-        in 994..1020 -> "t"
+        in 994..1030 -> "t"
         else -> null
     }
     if (needHookMethod == null) {
@@ -580,7 +578,7 @@ fun PackageParam.hideBottomNavigation(versionCode: Int) {
     }
 
     when (versionCode) {
-        in 827..1020 -> {
+        in 827..1030 -> {
             findClass("com.qidian.QDReader.ui.widget.maintab.PagerSlidingTabStrip").hook {
                 injectMember {
                     method {
@@ -1095,7 +1093,7 @@ fun PackageParam.removeQSNYDialog(versionCode: Int) {
         in 906..924 -> "com.qidian.QDReader.bll.helper.n1"
         in 932..970 -> "com.qidian.QDReader.bll.helper.m0"
         980 -> "com.qidian.QDReader.bll.helper.l0"
-        in 994..1020 -> "com.qidian.QDReader.bll.helper.n0"
+        in 994..1030 -> "com.qidian.QDReader.bll.helper.n0"
         else -> null
     }
     needHookClass?.hook {
@@ -1234,7 +1232,8 @@ fun PackageParam.bookDetailHide(
                             returnType = UnitType
                         }
                         afterHook {
-                            val view = XposedHelpers.callMethod(this, "findViewById", 0x7F090442).safeCast<View>()
+                            val view = XposedHelpers.callMethod(this, "findViewById", 0x7F090442)
+                                .safeCast<View>()
                             view?.setVisibilityIfNotEqual()
                         }
                     }
@@ -1283,7 +1282,7 @@ fun PackageParam.bookDetailHide(
             }
         }
 
-        in 827..1020 -> {
+        in 827..1030 -> {
             findClass("com.qidian.QDReader.ui.activity.QDBookDetailActivity").hook {
                 injectMember {
                     method {
@@ -1399,7 +1398,7 @@ fun PackageParam.bookDetailHide(
                  */
                 val bookFansModuleNeedHookMethod = when (versionCode) {
                     in 827..878 -> "d"
-                    in 884..1020 -> "a"
+                    in 884..1030 -> "a"
                     else -> null
                 }
                 if (bookFansModuleNeedHookMethod == null) {
@@ -1453,33 +1452,38 @@ fun PackageParam.bookDetailHide(
  * CircleNewPostLastTime
  */
 fun PackageParam.hideReadPage(versionCode: Int) {
-    when (versionCode) {
-        in 1005..1020 -> {
-            findClass("com.qidian.QDReader.readerengine.view.menu.q0").hook {
-                injectMember {
-                    method {
-                        name = "t0"
-                        emptyParam()
-                        returnType = UnitType
-                    }
-                    afterHook {
-                        instance.getParamList<View>().takeIf { it.isNotEmpty() }?.let { views ->
-                            val iterator = views.iterator()
-                            while (iterator.hasNext()) {
-                                val view = iterator.next()
-                                val name = view.getName()
-                                HookEntry.optionEntity.viewHideOption.readPageOptions.configurations.findOrPlus(
-                                    name
-                                ) {
-                                    view.setVisibilityWithChildren()
-                                }
-                            }
+    val needHookClass = when (versionCode) {
+        in 1005..1030 -> "com.qidian.QDReader.readerengine.view.menu.q0"
+        else -> null
+    }
+    val needHookMethod = when (versionCode) {
+        in 1005..1020 -> "t0"
+        1030 -> "u0"
+        else -> null
+    }
+    needHookClass?.hook {
+        injectMember {
+            method {
+                name = needHookMethod!!
+                emptyParam()
+                returnType = UnitType
+            }
+            afterHook {
+                instance.getParamList<View>().takeIf { it.isNotEmpty() }?.let { views ->
+                    val iterator = views.iterator()
+                    while (iterator.hasNext()) {
+                        val view = iterator.next()
+                        val name = view.getName()
+                        HookEntry.optionEntity.viewHideOption.readPageOptions.configurations.findOrPlus(
+                            name
+                        ) {
+                            view.setVisibilityWithChildren()
                         }
                     }
                 }
             }
         }
-    }
+    } ?: "阅读页面-隐藏控件".printlnNotSupportVersion(versionCode)
 }
 
 /**
@@ -1530,6 +1534,7 @@ fun PackageParam.comicHideBannerAd(versionCode: Int) {
         958 -> "ma.d"
         970 -> "la.d"
         in 980..1020 -> "fb.d"
+        1030 -> "ib.d"
         else -> null
     }
     needHookClass?.hook {

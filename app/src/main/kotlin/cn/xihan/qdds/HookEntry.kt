@@ -497,8 +497,7 @@ class HookEntry : IYukiHookXposedInit {
         }
 
         automaticReceiveOptionOption(
-            versionCode,
-            optionEntity.automaticReceiveOption.configurations
+            versionCode, optionEntity.automaticReceiveOption.configurations
         )
 
     }
@@ -860,10 +859,10 @@ fun PackageParam.newAutoSignIn(versionCode: Int) {
             }
         }
 
-        in 842..1020 -> {
+        in 842..1030 -> {
             val needHookMethod = when (versionCode) {
                 in 842..878 -> "E"
-                in 884..1020 -> "B"
+                in 884..1030 -> "B"
                 else -> null
             }
             if (needHookMethod != null) {
@@ -947,7 +946,7 @@ fun PackageParam.newOldLayout(
             in 944..950 -> "r4.search\$search"
             958 -> "p4.search\$search"
             970 -> "o4.search\$search"
-            980 -> "com.qidian.QDReader.component.abtest.ABTestConfigHelper\$search"
+            in 980..1030 -> "com.qidian.QDReader.component.abtest.ABTestConfigHelper\$search"
             else -> null
         }, "needHookNewUserAccountMethod" to when (versionCode) {
             868 -> "n"
@@ -969,7 +968,9 @@ fun PackageParam.newOldLayout(
             884 -> "a"
             in 890..900 -> "b"
             else -> null
-        }, "needHookGDTGameMethod" to when (versionCode) {
+        },
+        // videolast-ad
+        "needHookGDTGameMethod" to when (versionCode) {
             in 896..900 -> "U"
             in 906..916 -> "W"
             924 -> "Y"
@@ -978,6 +979,7 @@ fun PackageParam.newOldLayout(
             970 -> "f0"
             in 980..994 -> "i0"
             in 1005..1020 -> "k0"
+            1030 -> "l0"
             else -> null
         }
     )
@@ -1392,7 +1394,7 @@ fun PackageParam.freeAdReward(versionCode: Int) {
             }
         }
 
-        in 896..1020 -> {
+        in 896..1030 -> {
             /**
              * showRewardVideo
              * preloadRewardVideo
@@ -1466,7 +1468,7 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
             924 -> "com.qidian.QDReader.component.bll.manager.a1"
             in 932..944 -> "com.qidian.QDReader.component.bll.manager.c1"
             950 -> "com.qidian.QDReader.component.bll.manager.b1"
-            in 958..1020 -> "com.qidian.QDReader.component.bll.manager.d1"
+            in 958..1030 -> "com.qidian.QDReader.component.bll.manager.d1"
             else -> null
         }, "needHookMethod" to when (versionCode) {
             in 854..878 -> "n0"
@@ -1474,7 +1476,7 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
             in 896..924 -> "l0"
             in 932..938 -> "p0"
             in 944..958 -> "q0"
-            in 970..1020 -> "r0"
+            in 970..1030 -> "r0"
             else -> null
         }
     )
@@ -1510,7 +1512,7 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
  */
 fun PackageParam.exportEmoji(versionCode: Int) {
     when (versionCode) {
-        in 884..1020 -> {
+        in 884..1099 -> {
             findClass("com.qidian.QDReader.ui.activity.QDStickersDetailActivity").hook {
                 injectMember {
                     method {
@@ -1520,8 +1522,8 @@ fun PackageParam.exportEmoji(versionCode: Int) {
                     }
                     afterHook {
                         val stickersBean = args[1] ?: return@afterHook
-                        val viewMap = args[0]?.getParam<Map<*, View>>("_\$_findViewCache")
-                            ?: return@afterHook
+                        val viewMap =
+                            args[0]?.getParam<Map<*, View>>("_\$_findViewCache") ?: return@afterHook
                         val faceList = stickersBean.getParam<MutableList<*>>("mFaceList")
                         val yWImageLoader =
                             "com.yuewen.component.imageloader.YWImageLoader".toClassOrNull()
@@ -1616,6 +1618,7 @@ fun PackageParam.forceTrialMode(versionCode: Int) {
         in 906..970 -> "com.qidian.QDReader.util.w4"
         in 980..994 -> "com.qidian.QDReader.util.u4"
         in 1005..1020 -> "com.qidian.QDReader.util.s4"
+        1030 -> "com.qidian.QDReader.util.t4"
         else -> null
     }
 
@@ -1625,7 +1628,7 @@ fun PackageParam.forceTrialMode(versionCode: Int) {
      */
     val needHookMethod = when (versionCode) {
         in 896..970 -> "M"
-        in 980..1020 -> "L"
+        in 980..1030 -> "L"
         else -> null
     }
 
@@ -1726,11 +1729,11 @@ fun PackageParam.postToShowImageUrl(versionCode: Int) {
     val needHookClass = when (versionCode) {
         970 -> "com.qidian.QDReader.ui.dialog.h9"
         980 -> "com.qidian.QDReader.ui.dialog.i9"
-        in 994..1020 -> "com.qidian.QDReader.ui.dialog.k9"
+        in 994..1030 -> "com.qidian.QDReader.ui.dialog.k9"
         else -> null
     }
     val needHookMethod = when (versionCode) {
-        in 970..1020 -> "p"
+        in 970..1030 -> "p"
         else -> null
     }
     if (needHookClass == null || needHookMethod == null) {
@@ -1838,9 +1841,7 @@ fun PackageParam.debugActivity(versionCode: Int) {
 
                                 appIcon.setOnLongClickListener {
                                     val editText = CustomEditText(
-                                        context = context,
-                                        mHint = "",
-                                        value = ""
+                                        context = context, mHint = "", value = ""
                                     )
                                     context.alertDialog {
                                         title = "ActionUrl"

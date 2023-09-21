@@ -29,13 +29,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AlertDialog
@@ -157,7 +157,7 @@ class MainActivity : ModuleAppCompatActivity() {
                     IconButton(onClick = {
                         finish()
                     }) {
-                        Icon(Icons.Filled.ExitToApp, null)
+                        Icon(Icons.AutoMirrored.Filled.ExitToApp, null)
                     }
                 }
             }, navigationIcon = {}, scrollBehavior = null
@@ -405,10 +405,8 @@ fun TextSetting(
 ) {
     Row(
         modifier = modifier.combinedClickable(
-            onClick = onClick,
-            onLongClick = onLongClick
-        ),
-        verticalAlignment = Alignment.CenterVertically
+            onClick = onClick, onLongClick = onLongClick
+        ), verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
             modifier = Modifier
@@ -441,7 +439,7 @@ fun TextSetting(
 
         if (showRightIcon) {
             Icon(
-                imageVector = Icons.Default.KeyboardArrowRight,
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
                 modifier = Modifier
                     .padding(8.dp)
@@ -1412,7 +1410,8 @@ fun PurifyScreen(
                 val enableSelectedHide =
                     rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.selectedOption.enableSelectedHide)
 
-                SwitchSetting(title = "精选-启用选项屏蔽",
+                SwitchSetting(
+                    title = "精选-启用选项屏蔽",
                     checked = enableSelectedHide,
                     onCheckedChange = {
                         HookEntry.optionEntity.viewHideOption.selectedOption.enableSelectedHide = it
@@ -1428,8 +1427,7 @@ fun PurifyScreen(
                             HookEntry.optionEntity.viewHideOption.selectedOption.configurations =
                                 defaultOptionEntity.viewHideOption.selectedOption.configurations
                             context.toast("已恢复默认")
-                        }
-                    )
+                        })
                 }
 
                 val enableSelectedTitleHide =
@@ -1464,11 +1462,11 @@ fun PurifyScreen(
                 val enableHideSearch =
                     rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.searchOption.enableHideSearch)
 
-                SwitchSetting(title = "搜索-启用选项屏蔽",
+                SwitchSetting(
+                    title = "搜索-启用选项屏蔽",
                     checked = enableHideSearch,
                     onCheckedChange = {
-                        HookEntry.optionEntity.viewHideOption.searchOption.enableHideSearch =
-                            it
+                        HookEntry.optionEntity.viewHideOption.searchOption.enableHideSearch = it
                     })
 
                 if (enableHideSearch.value) {
@@ -1542,12 +1540,11 @@ fun PurifyScreen(
 
                     TextSetting(title = "发现-筛选列表", onClick = {
                         context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.findOption.filterConfItem)
-                    },
-                        onLongClick = {
-                            HookEntry.optionEntity.viewHideOption.findOption.filterConfItem =
-                                defaultSelectedList
-                            context.toast("已恢复默认")
-                        })
+                    }, onLongClick = {
+                        HookEntry.optionEntity.viewHideOption.findOption.filterConfItem =
+                            defaultSelectedList
+                        context.toast("已恢复默认")
+                    })
 
                 }
 
@@ -1595,7 +1592,7 @@ fun PurifyScreen(
                 if (enableCaptureBookReadPageView.value) {
                     TextSetting(title = "阅读页-隐藏控件列表", onClick = {
                         context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.readPageOptions.configurations)
-                    },onLongClick = {
+                    }, onLongClick = {
                         HookEntry.optionEntity.viewHideOption.readPageOptions.configurations =
                             defaultSelectedList
                         context.toast("已恢复默认")
@@ -1605,7 +1602,8 @@ fun PurifyScreen(
                 val hideDetail =
                     rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.bookDetailOptions.enableHideBookDetail)
 
-                SwitchSetting(title = "启用书籍详情-隐藏控件",
+                SwitchSetting(
+                    title = "启用书籍详情-隐藏控件",
                     checked = hideDetail,
                     onCheckedChange = {
                         HookEntry.optionEntity.viewHideOption.bookDetailOptions.enableHideBookDetail =
@@ -1711,7 +1709,8 @@ fun AboutScreen(
             context.joinQQGroup("JdqL9prgQ3epIUed3weaEkJwtNgNQaWa")
         })
 
-        TextSetting(title = "QD模块赞助群",
+        TextSetting(
+            title = "QD模块赞助群",
             subTitle = "575801108\n赞助后加群主好友发记录",
             onClick = {
                 context.alertDialog {
@@ -1749,11 +1748,9 @@ fun AboutScreen(
         )
 
         var openDialog by rememberMutableStateOf(value = false)
-        TextSetting(title = "免责声明",
-            showRightIcon = false,
-            onClick = {
-                openDialog = true
-            })
+        TextSetting(title = "免责声明", showRightIcon = false, onClick = {
+            openDialog = true
+        })
 
         if (openDialog) {
             AlertDialog(onDismissRequest = { openDialog = false }) {
@@ -1765,8 +1762,7 @@ fun AboutScreen(
             }
         }
 
-        TextSetting(
-            title = "起点内部版本号",
+        TextSetting(title = "起点内部版本号",
             subTitle = "$versionCode",
             showRightIcon = false,
             onClick = {
@@ -1836,8 +1832,7 @@ fun Disclaimers(
             pushUrlAnnotation(UrlAnnotation("https://acts.qidian.com/pact/user_pact.html"))
             withStyle(
                 style = SpanStyle(
-                    color = Color(0xFF0E9FF2),
-                    fontWeight = FontWeight.W900
+                    color = Color(0xFF0E9FF2), fontWeight = FontWeight.W900
                 )
             ) {
                 append("起点读书用户服务协议")
@@ -1849,8 +1844,7 @@ fun Disclaimers(
             pushUrlAnnotation(UrlAnnotation("https://github.com/xihan123/QDReadHook#%E5%85%8D%E8%B4%A3%E5%A3%B0%E6%98%8E"))
             withStyle(
                 style = SpanStyle(
-                    color = Color(0xFF0E9FF2),
-                    fontWeight = FontWeight.W900
+                    color = Color(0xFF0E9FF2), fontWeight = FontWeight.W900
                 )
             ) {
                 append("Github")
@@ -1859,8 +1853,7 @@ fun Disclaimers(
             pushUrlAnnotation(UrlAnnotation("https://jihulab.com/xihan123/QDReadHook#%E5%85%8D%E8%B4%A3%E5%A3%B0%E6%98%8E"))
             withStyle(
                 style = SpanStyle(
-                    color = Color(0xFF0E9FF2),
-                    fontWeight = FontWeight.W900
+                    color = Color(0xFF0E9FF2), fontWeight = FontWeight.W900
                 )
             ) {
                 append("极狐GitLab")
@@ -1869,15 +1862,12 @@ fun Disclaimers(
             append(" 查看")
         }
 
-        ClickableText(
-            text = text,
-            onClick = { offset ->
-                text.getUrlAnnotations(start = offset, end = offset).map { it.item.url }
-                    .forEach { url ->
-                        url.takeUnless { url.isBlank() }?.let { context.openUrl(url) }
-                    }
-            }
-        )
+        ClickableText(text = text, onClick = { offset ->
+            text.getUrlAnnotations(start = offset, end = offset).map { it.item.url }
+                .forEach { url ->
+                    url.takeUnless { url.isBlank() }?.let { context.openUrl(url) }
+                }
+        })
 
         if (displayButton) {
             Spacer(modifier = Modifier.height(16.dp))
@@ -1973,8 +1963,7 @@ fun ClickableText(
         }
     }
 
-    Text(
-        text = text,
+    Text(text = text,
         modifier = modifier.then(pressIndicator),
         style = style,
         softWrap = softWrap,
@@ -1983,6 +1972,5 @@ fun ClickableText(
         onTextLayout = {
             layoutResult.value = it
             onTextLayout(it)
-        }
-    )
+        })
 }
