@@ -1,4 +1,21 @@
 # Changelog
+## [2.3.8](https://github.com/xihan123/QDReadHook/compare/v2.3.7...v2.3.8) (2023-09-22)
+
+
+### Features
+
+* 适配 `1030` 版本 ([42bbd91](https://github.com/xihan123/QDReadHook/commit/42bbd91b4b31b5e7629ae0920410c7e3e90fbe8a))
+
+
+### CI
+
+* release.yml ([e71140d](https://github.com/xihan123/QDReadHook/commit/e71140d27c16673a8cb69c68567d8a20d6a5302b))
+
+
+### Miscellaneous
+
+* 更新依赖库 ([c05dfa7](https://github.com/xihan123/QDReadHook/commit/c05dfa7446b0d2752218e5421c0fd49eabcb74ed))
+
 ## [2.3.7](https://github.com/xihan123/QDReadHook/compare/v2.3.6...v2.3.7) (2023-09-19)
 
 
