@@ -51,7 +51,6 @@
 # JSR 305 annotations are for embedding nullability information.
 -dontwarn javax.annotation.**
 
-
 # With R8 full mode generic signatures are stripped for classes that are not
 # kept. Suspend functions are wrapped in continuations where the type argument
 # is used.
@@ -69,14 +68,11 @@ public *** getLocalContext(...);
 public *** getLocalOverscrollConfiguration(...);
 }
 #---------------------------------序列化指令区---------------------------------
--dontnote kotlinx.serialization.SerializersKt
 -keep,includedescriptorclasses class cn.xihan.qdds.**$$serializer { *; }
 -keepclassmembers class cn.xihan.qdds.** {
     *** Companion;
 }
--keepclasseswithmembers class cn.xihan.qdds.** {
-    kotlinx.serialization.KSerializer serializer(...);
-}
+
 
 -dontwarn java.lang.ClassValue
 -dontwarn org.bouncycastle.jsse.BCSSLParameters
@@ -88,3 +84,4 @@ public *** getLocalOverscrollConfiguration(...);
 -dontwarn org.openjsse.javax.net.ssl.SSLParameters
 -dontwarn org.openjsse.javax.net.ssl.SSLSocket
 -dontwarn org.openjsse.net.ssl.OpenJSSE
+-dontwarn javax.lang.model.element.Modifier

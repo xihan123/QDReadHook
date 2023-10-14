@@ -1,4 +1,17 @@
+import com.android.tools.build.apkzlib.sign.SigningExtension
+import com.android.tools.build.apkzlib.sign.SigningOptions
+import com.android.tools.build.apkzlib.zfile.ZFiles
+import com.android.tools.build.apkzlib.zip.AlignmentRules
+import com.android.tools.build.apkzlib.zip.CompressionMethod
+import com.android.tools.build.apkzlib.zip.ZFile
+import com.android.tools.build.apkzlib.zip.ZFileOptions
+import org.jetbrains.dokka.DokkaConfiguration.Visibility
+import org.jetbrains.dokka.gradle.DokkaTask
+import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
+import java.net.URL
+import java.security.KeyStore
+import java.security.cert.X509Certificate
 import java.util.Properties
 
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
@@ -8,6 +21,7 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.jgit)
+    alias(libs.plugins.dokka)
 }
 
 val keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -16,7 +30,7 @@ keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
 val repo = jgit.repo()
 val commitCount = (repo?.commitCount("refs/remotes/origin/master") ?: 1) + 23
-val latestTag = repo?.latestTag?.removePrefix("v") ?: "2.x.x-SNAPSHOT"
+val latestTag = repo?.latestTag?.removePrefix("v") ?: "3.x.x-SNAPSHOT"
 
 val verCode by extra(commitCount)
 val verName by extra(latestTag)
@@ -48,6 +62,8 @@ android {
         versionCode = verCode
         versionName = verName
 
+//        ndk.abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
+
         resourceConfigurations.addAll(listOf("zh"))
 
         buildConfigField("long", "BUILD_TIMESTAMP", "${System.currentTimeMillis()}L")
@@ -68,52 +84,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
 
-            applicationVariants.all {
-                outputs.all {
-                    this as com.android.build.gradle.internal.api.ApkVariantOutputImpl
-                    if (buildType.name != "debug" && outputFileName.endsWith(".apk")) {
-                        val apkName = "QDReadHook-release_${verName}_$verCode.apk"
-                        outputFileName = apkName
-                    }
-                }
-                tasks.configureEach {
-                    var maybeNeedCopy = false
-                    if (name.startsWith("assembleRelease")) {
-                        maybeNeedCopy = true
-                    }
-                    if (maybeNeedCopy) {
-                        doLast {
-                            this@all.outputs.all {
-                                this as com.android.build.gradle.internal.api.ApkVariantOutputImpl
-                                if (buildType.name != "debug" && outputFileName.endsWith(".apk")) {
-                                    if (outputFile != null && outputFileName.endsWith(".apk")) {
-                                        val targetDir =
-                                            rootProject.file("归档/v${verName}-${verCode}")
-                                        val targetDir2 = rootProject.file("release")
-                                        targetDir.mkdirs()
-                                        targetDir2.mkdirs()
-                                        println("path: ${outputFile.absolutePath}")
-                                        copy {
-                                            from(outputFile)
-                                            into(targetDir)
-                                        }
-                                        copy {
-                                            from(outputFile)
-                                            into(targetDir2)
-                                        }
-                                        copy {
-                                            from(rootProject.file("app/build/outputs/mapping/release/mapping.txt"))
-                                            into(targetDir)
-                                        }
-                                    }
-                                }
-                            }
-
-                        }
-                    }
-
-                }
-            }
         }
     }
 
@@ -124,18 +94,20 @@ android {
 
     kotlinOptions.jvmTarget = "17"
 
-    buildFeatures.compose = true
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
 
     composeOptions.kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
 
     packagingOptions.apply {
         resources.excludes += mutableSetOf(
-            "META-INF/*******",
-            "**/*.txt",
-            "**/*.xml",
+            "META-INF/**",
             "**/*.properties",
-            "DebugProbesKt.bin",
-            "java-tooling-metadata.json",
+            "okhttp3/**",
+            "schema/**",
+            "**.bin",
             "kotlin-tooling-metadata.json"
         )
         dex.useLegacyPackaging = true
@@ -147,56 +119,194 @@ android {
 dependencies {
 
     implementation(libs.core.ktx)
-    implementation(libs.appcompat)
-    implementation(libs.kotlin.json)
     implementation(libs.fast.json)
-    implementation(libs.landscapist.coil) {
-        exclude(group = "io.coil-kt")
-    }
-    implementation(libs.xxpermissions) {
-        exclude(group = "com.android.support")
-    }
-    implementation(libs.io.coil.compose)
-
+    implementation(libs.android.material)
+    implementation(libs.compose.coil)
     implementation(platform(libs.compose.bom))
-    implementation(libs.ui)
-    implementation(libs.ui.graphics)
-    implementation(libs.foundation)
-    implementation(libs.runtime)
-    implementation(libs.animation)
-    implementation(libs.material3)
-    implementation(libs.navigation.compose)
-    implementation(libs.activity.compose)
-    implementation(libs.com.google.android.material)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.runtime)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.activity)
+    implementation(libs.compose.lottie)
+    implementation(libs.compose.navigation)
+    implementation(libs.kotlin.reflect)
+    implementation(libs.dexkit)
+    implementation(libs.xxpermissions)
 
     implementation(libs.yukihook.api)
     ksp(libs.yukihook.ksp)
 
     compileOnly(libs.xposed.api)
-//    debugImplementation(libs.dexkit)
-
-    testImplementation(libs.junit)
 }
 
-val service = project.extensions.getByType<JavaToolchainService>()
-val customLauncher = service.launcherFor {
-    languageVersion.set(JavaLanguageVersion.of("17"))
+tasks.dokkaHtml {
+    outputDirectory.set(layout.buildDirectory.dir("documentation/html"))
 }
-project.tasks.withType<org.jetbrains.kotlin.gradle.tasks.UsesKotlinJavaToolchain>().configureEach {
-        kotlinJavaToolchain.toolchain.use(customLauncher)
-    }
 
-kotlin {
-    compilerOptions {
-        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_1_9)
-        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_1_9)
-    }
-    sourceSets.all {
-        languageSettings.apply {
-            languageVersion = "2.0"
+tasks.dokkaGfm {
+    outputDirectory.set(layout.buildDirectory.dir("documentation/markdown"))
+}
+
+tasks.withType<DokkaTask>().configureEach {
+    moduleName.set(project.name)
+    moduleVersion.set(project.version.toString())
+    failOnWarning.set(false)
+    suppressObviousFunctions.set(true)
+    suppressInheritedMembers.set(false)
+    offlineMode.set(false)
+    dokkaSourceSets.configureEach {
+        documentedVisibilities.set(setOf(Visibility.PUBLIC))
+        suppress.set(false)
+        displayName.set(name)
+        includeNonPublic.set(false)
+        skipEmptyPackages.set(true)
+        skipDeprecated.set(false)
+        reportUndocumented.set(true)
+        suppressGeneratedFiles.set(true)
+        jdkVersion.set(17)
+//        includes.from(project.files(), "packages.md", "extra.md")
+        noStdlibLink.set(true)
+        noJdkLink.set(false)
+        noAndroidSdkLink.set(true)
+        platform.set(org.jetbrains.dokka.Platform.DEFAULT)
+        sourceLink {
+            localDirectory.set(projectDir.resolve("src"))
+            remoteUrl.set(URL("https://github.com/xihan123/QDReadHook/tree/master/app/src"))
+            remoteLineSuffix.set("#L")
         }
     }
+
 }
 
+tasks.register("stopQiDian") {
+    exec {
+        commandLine("adb", "shell", "am", "force-stop", "com.qidian.QDReader")
+    }
+}
 
+tasks.register("startQiDian") {
+    exec {
+        commandLine(
+            "adb",
+            "shell",
+            "am",
+            "start",
+            "-n",
+            "com.qidian.QDReader/com.qidian.QDReader.ui.activity.SplashActivity"
+        )
+    }
+}
 
+fun execAndGetOutput(vararg args: String): String {
+    val outputStream = ByteArrayOutputStream()
+    exec {
+        commandLine(*args)
+        standardOutput = outputStream
+    }
+    return outputStream.toString().trim()
+}
+
+val synthesizeDistReleaseApksCI by tasks.registering {
+    group = "build"
+    dependsOn(":app:packageRelease")
+    inputs.files(tasks.named("packageRelease").get().outputs.files)
+    val srcApkDir =
+        File(project.buildDir, "outputs" + File.separator + "apk" + File.separator + "release")
+    if (srcApkDir !in tasks.named("packageRelease").get().outputs.files) {
+        val msg = "srcApkDir should be in packageRelease outputs, srcApkDir: $srcApkDir, " +
+                "packageRelease outputs: ${tasks.named("packageRelease").get().outputs.files.files}"
+        logger.error(msg)
+    }
+    val outputAbiVariants = mapOf(
+        "arm32" to arrayOf("armeabi-v7a"),
+        "arm64" to arrayOf("arm64-v8a"),
+        "armAll" to arrayOf("armeabi-v7a", "arm64-v8a"),
+        "universal" to arrayOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+    )
+    val versionName = android.defaultConfig.versionName
+    val versionCode = android.defaultConfig.versionCode
+    val outputDir = File(project.buildDir, "outputs" + File.separator + "ci")
+    outputAbiVariants.forEach { (variant, _) ->
+        val outputName = "QDReadHook-v${versionName}-${versionCode}-${variant}.apk"
+        outputs.file(File(outputDir, outputName))
+    }
+    val signConfig = android.signingConfigs.findByName("xihantest")
+    val minSdk = android.defaultConfig.minSdk!!
+    doLast {
+        if (signConfig == null) {
+            logger.error("Task :app:synthesizeDistReleaseApksCI: No release signing config found, skip signing")
+        }
+        val requiredAbiList = listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+        outputDir.mkdir()
+        val options = ZFileOptions().apply {
+            alignmentRule = AlignmentRules.constantForSuffix(".so", 4096)
+            noTimestamps = true
+            autoSortFiles = true
+        }
+        require(srcApkDir.exists()) { "srcApkDir not found: $srcApkDir" }
+        // srcApkDir should have one apk file
+        val srcApkFiles =
+            srcApkDir.listFiles()?.filter { it.isFile && it.name.endsWith(".apk") } ?: emptyList()
+        require(srcApkFiles.size == 1) { "input apk should have one apk file, but found ${srcApkFiles.size}" }
+        val inputApk = srcApkFiles.single()
+        val startTime = System.currentTimeMillis()
+        ZFile.openReadOnly(inputApk).use { srcApk ->
+            // check whether all required abis are in the apk
+            requiredAbiList.forEach { abi ->
+                val path = "lib/$abi/libdexkit.so"
+                require(srcApk.get(path) != null) { "input apk should contain $path, but not found" }
+            }
+            outputAbiVariants.forEach { (variant, abis) ->
+                val outputApk =
+                    File(outputDir, "QDReadHook-v${versionName}-${versionCode}-${variant}.apk")
+                if (outputApk.exists()) {
+                    outputApk.delete()
+                }
+                ZFiles.apk(outputApk, options).use { dstApk ->
+                    if (signConfig != null) {
+                        val keyStore =
+                            KeyStore.getInstance(signConfig.storeType ?: KeyStore.getDefaultType())
+                        FileInputStream(signConfig.storeFile!!).use {
+                            keyStore.load(it, signConfig.storePassword!!.toCharArray())
+                        }
+                        val protParam =
+                            KeyStore.PasswordProtection(signConfig.keyPassword!!.toCharArray())
+                        val keyEntry = keyStore.getEntry(signConfig.keyAlias!!, protParam)
+                        val privateKey = keyEntry as KeyStore.PrivateKeyEntry
+                        val signingOptions = SigningOptions.builder()
+                            .setMinSdkVersion(minSdk)
+                            .setV1SigningEnabled(minSdk < 24)
+                            .setV2SigningEnabled(true)
+                            .setKey(privateKey.privateKey)
+                            .setCertificates(privateKey.certificate as X509Certificate)
+                            .setValidation(SigningOptions.Validation.ASSUME_INVALID)
+                            .build()
+                        SigningExtension(signingOptions).register(dstApk)
+                    }
+                    // add input apk to the output apk
+                    srcApk.entries().forEach { entry ->
+                        val cdh = entry.centralDirectoryHeader
+                        val name = cdh.name
+                        val isCompressed =
+                            cdh.compressionInfoWithWait.method != CompressionMethod.STORE
+                        if (name.startsWith("lib/")) {
+                            val abi = name.substring(4).split('/').first()
+                            if (abis.contains(abi)) {
+                                dstApk.add(name, entry.open(), isCompressed)
+                            }
+                        } else if (name.startsWith("META-INF/com/android/")) {
+                            // drop gradle version
+                        } else {
+                            // add all other entries to the output apk
+                            dstApk.add(name, entry.open(), isCompressed)
+                        }
+                    }
+                    dstApk.update()
+                }
+            }
+        }
+        val endTime = System.currentTimeMillis()
+        logger.info("Task :app:synthesizeDistReleaseApksCI: completed in ${endTime - startTime}ms")
+    }
+}
