@@ -1,9 +1,7 @@
 $dokka.format:html-v1
 $dokka.linkExtension:html
 $dokka.location:cn.xihan.qdds////PointingToDeclaration/app/cn.xihan.qdds/index.html
-$dokka.location:cn.xihan.qdds//AboutScreen/#kotlin.Int#androidx.compose.foundation.layout.PaddingValues#androidx.compose.ui.Modifier#android.content.Context/PointingToDeclaration/app/cn.xihan.qdds/-about-screen.html
 $dokka.location:cn.xihan.qdds//ItemWithEditText/#kotlin.String#androidx.compose.runtime.MutableState[kotlin.String]#kotlin.Function0[kotlin.Unit]#kotlin.Function1[kotlin.String,kotlin.Unit]/PointingToDeclaration/app/cn.xihan.qdds/-item-with-edit-text.html
-$dokka.location:cn.xihan.qdds//PurifyScreen/#kotlin.Int#androidx.compose.foundation.layout.PaddingValues#android.content.Context/PointingToDeclaration/app/cn.xihan.qdds/-purify-screen.html
 $dokka.location:cn.xihan.qdds//accountRightTopRedDot/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/account-right-top-red-dot.html
 $dokka.location:cn.xihan.qdds//accountViewHide/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/account-view-hide.html
 $dokka.location:cn.xihan.qdds//advOption/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int#kotlin.collections.List[cn.xihan.qdds.SelectedModel]/PointingToDeclaration/app/cn.xihan.qdds/adv-option.html
@@ -39,7 +37,7 @@ $dokka.location:cn.xihan.qdds//hideRedDot/com.highcapable.yukihookapi.hook.param
 $dokka.location:cn.xihan.qdds//homeOption/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int#kotlin.collections.List[cn.xihan.qdds.SelectedModel]/PointingToDeclaration/app/cn.xihan.qdds/home-option.html
 $dokka.location:cn.xihan.qdds//ignoreFreeSubscribeLimit/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/ignore-free-subscribe-limit.html
 $dokka.location:cn.xihan.qdds//interceptAgreePrivacyPolicy/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/intercept-agree-privacy-policy.html
-$dokka.location:cn.xihan.qdds//interceptAsyncInitTask/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/intercept-async-init-task.html
+$dokka.location:cn.xihan.qdds//interceptAsyncInitTask/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int#kotlin.collections.List[kotlin.String]/PointingToDeclaration/app/cn.xihan.qdds/intercept-async-init-task.html
 $dokka.location:cn.xihan.qdds//interceptAutoJumpSelected/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/intercept-auto-jump-selected.html
 $dokka.location:cn.xihan.qdds//interceptCheckUpdate/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/intercept-check-update.html
 $dokka.location:cn.xihan.qdds//interceptFirstInstallAnalytics/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/intercept-first-install-analytics.html
@@ -50,6 +48,7 @@ $dokka.location:cn.xihan.qdds//interceptQSNModeRequest/com.highcapable.yukihooka
 $dokka.location:cn.xihan.qdds//interceptQSNYDialog/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/intercept-q-s-n-y-dialog.html
 $dokka.location:cn.xihan.qdds//interceptReaderBookPageWaterMark/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/intercept-reader-book-page-water-mark.html
 $dokka.location:cn.xihan.qdds//interceptWebSocket/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/intercept-web-socket.html
+$dokka.location:cn.xihan.qdds//oldDailyRead/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/old-daily-read.html
 $dokka.location:cn.xihan.qdds//postToShowImageUrl/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/post-to-show-image-url.html
 $dokka.location:cn.xihan.qdds//quickShield/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/quick-shield.html
 $dokka.location:cn.xihan.qdds//readBookLastPage/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean/PointingToDeclaration/app/cn.xihan.qdds/read-book-last-page.html
