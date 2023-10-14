@@ -652,27 +652,9 @@ private fun PurifyScreen(
         }
 
         PrimaryCard("拦截设置") {
-            val enableInterceptStartTasks =
-                rememberMutableStateOf(value = HookEntry.optionEntity.interceptOption.enableInterceptStartTasks)
-            ItemWithSwitch(text = "启用抓取启动任务",
-                modifier = itemModifier,
-                checked = enableInterceptStartTasks,
-                onCheckedChange = {
-                    HookEntry.optionEntity.interceptOption.enableInterceptStartTasks = it
-                })
-
-            if (enableInterceptStartTasks.value) {
-                ItemWithNewPage(text = "启动任务列表", modifier = itemModifier, onClick = {
-                    context.multiChoiceSelector(HookEntry.optionEntity.interceptOption.startTaskConfigurations)
-                }, onLongClick = {
-                    HookEntry.optionEntity.interceptOption.startTaskConfigurations =
-                        defaultEmptyList
-                    context.toast("已恢复默认")
-                })
-            }
 
             ItemWithNewPage(text = "拦截设置列表", modifier = itemModifier, onClick = {
-                context.multiChoiceSelector(HookEntry.optionEntity.interceptOption.configurations)
+                context.multiChoiceSelector(HookEntry.optionEntity.interceptOption)
             })
         }
 
@@ -733,6 +715,14 @@ private fun PurifyScreen(
         }
 
         PrimaryCard("隐藏控件设置") {
+
+            ItemWithSwitch(text = "隐藏部分小红点",
+                modifier = itemModifier,
+                checked = rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.enableHideRedDot),
+                onCheckedChange = {
+                    HookEntry.optionEntity.viewHideOption.enableHideRedDot = it
+                })
+
             ItemWithNewPage(text = "主页隐藏选项列表", modifier = itemModifier, onClick = {
                 context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.homeOption.configurations)
             })
@@ -799,13 +789,6 @@ private fun PurifyScreen(
                     context.toast("已恢复默认")
                 })
             }
-
-            ItemWithSwitch(text = "隐藏部分小红点",
-                modifier = itemModifier,
-                checked = rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.enableHideRedDot),
-                onCheckedChange = {
-                    HookEntry.optionEntity.viewHideOption.enableHideRedDot = it
-                })
 
             ItemWithNewPage(text = "搜索配置列表", modifier = itemModifier, onClick = {
                 context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.searchOption)

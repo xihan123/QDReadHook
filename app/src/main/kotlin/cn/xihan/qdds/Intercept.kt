@@ -276,10 +276,10 @@ fun PackageParam.interceptFirstInstallAnalytics(versionCode: Int) {
  * 拦截异步初始化任务
  * @since 7.9.306-1030 ~ 1099
  */
-fun PackageParam.interceptAsyncInitTask(versionCode: Int, clsNameList: List<String>) {
-    when (versionCode) {
+fun PackageParam.interceptAsyncInitTask(versionCode: Int,clsNameList: List<String>) {
+    when(versionCode){
         in 1030..1099 -> {
-            "com.rousetime.android_startup.StartupManager".toClass().method {
+            "com.rousetime.android_startup.StartupManager".toClass(). method {
                 name = "start"
                 emptyParam()
             }.hook().before {
