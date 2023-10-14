@@ -16,8 +16,16 @@ jobs:
         os: [ ubuntu-latest ]
 
     steps:
+      - name: Check Commit Message [skip CI]
+        env:
+          COMMIT_FILTER: "[skip ci]"
+        if: contains(github.event.head_commit.message, '[skip ci]')
+        run: |
+          echo "no 'skip ci' in commit message"
+          exit 2
+
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: 'recursive'
           fetch-depth: 0
@@ -49,18 +57,17 @@ jobs:
       - name: Build with Gradle
         run: |
           [ $(du -s ~/.gradle/wrapper | awk '{ print $1 }') -gt 250000 ] && rm -rf ~/.gradle/wrapper/* || true
-          echo 'org.gradle.caching=true' >> gradle.properties
-          echo 'org.gradle.parallel=true' >> gradle.properties
-          echo 'org.gradle.vfs.watch=true' >> gradle.properties
-          echo 'org.gradle.jvmargs=-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8 -XX:+UseParallelGC -XX:MaxMetaspaceSize=1g' >> gradle.properties
-          echo 'android.native.buildOutput=verbose' >> gradle.properties
           chmod +x gradlew
-          ./gradlew assembleRelease -Pkotlin.experimental.tryK2=true
+          ./gradlew :app:synthesizeDistReleaseApksCI
+          echo "APK_FILE_ARM32=$(find app/build/outputs/ci -name '*arm32.apk')" >> $GITHUB_ENV
+          echo "APK_FILE_ARM64=$(find app/build/outputs/ci -name '*arm64.apk')" >> $GITHUB_ENV
+          echo "APK_FILE_ARMALL=$(find app/build/outputs/ci -name '*armAll.apk')" >> $GITHUB_ENV
+          echo "APK_FILE_UNIVERSAL=$(find app/build/outputs/ci -name '*universal.apk')" >> $GITHUB_ENV
 
       - name: Upload assets to a Release
         uses: meeDamian/github-release@v2.0.3
         with:
-          files: app/build/outputs/apk/release/*.apk
+          files: app/build/outputs/ci/*.apk
           token: ${{ secrets.RELEASE_TOKEN }}
           allow_override: true
           gzip: false
@@ -80,8 +87,25 @@ jobs:
           description: ${{ steps.get_latest_release.outputs.description }}
         run: |
           if [ ! -z "${{ secrets.BOT_TOKEN }}" ]; then
-            OUTPUT="app/build/outputs/apk/release/"
-            export apkRelease=$(find $OUTPUT -name "*.apk")
+            OUTPUT="app/build/outputs/ci/"
+            export arm32=$(find $OUTPUT -name "*arm32.apk")
+            export arm64=$(find $OUTPUT -name "*arm64.apk")
+            export armAll=$(find $OUTPUT -name "*armAll.apk")
+            export universal=$(find $OUTPUT -name "*universal.apk")
             ESCAPED=`python3 -c '''import requests,os;body = os.environ["description"]; r = requests.get("https://api.github.com/repos/${{github.repository}}/releases/latest"); tag_name = r.json()["tag_name"]; html_url = r.json()["html_url"]; change_log = "# 完整更新日志 " + "[" + tag_name + "](" + html_url + ")"; print(body + "\n\n" + change_log if len(body) <= 1024 else change_log)'''`
-            curl -v "https://api.telegram.org/bot${BOT_TOKEN}/sendDocument?chat_id=${CHANNEL_ID}" -F document="@$apkRelease" -F caption="${ESCAPED}"
+            curl -v "https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup?chat_id=${CHANNEL_ID}&media=%5B%7B%22type%22%3A%22document%22%2C%20%22media%22%3A%22attach%3A%2F%2Farm64%22%7D%2C%7B%22type%22%3A%22document%22%2C%20%22media%22%3A%22attach%3A%2F%2Farm32%22%7D%2C%7B%22type%22%3A%22document%22%2C%20%22media%22%3A%22attach%3A%2F%2FarmAll%22%7D%2C%7B%22type%22%3A%22document%22%2C%20%22media%22%3A%22attach%3A%2F%2Funiversal%22%2C%22parse_mode%22%3A%22MarkdownV2%22%2C%22caption%22:${ESCAPED}%7D%5D" \
+           -F arm32="@$arm32" \
+           -F arm64="@$arm64" \
+           -F armAll="@$armAll" \
+           -F universal="@$universal"
           fi
+
+      - name: Generate Documentation
+        run: |
+          chmod +x gradlew
+          ./gradlew dokkaHtml
+
+      - name: Publish GitHub Page
+        uses: uibcdf/action-html-dir-to-gh-pages@v1.0.0
+        with:
+          html_dir: app/build/documentation/html
