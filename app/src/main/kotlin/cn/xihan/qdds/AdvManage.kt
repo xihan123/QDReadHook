@@ -1,37 +1,32 @@
 package cn.xihan.qdds
 
-import android.view.View
 import android.widget.LinearLayout
+import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.type.android.ContextClass
-import com.highcapable.yukihookapi.hook.type.android.ViewClass
-import com.highcapable.yukihookapi.hook.type.java.BooleanType
-import com.highcapable.yukihookapi.hook.type.java.ListClass
-import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
+import okhttp3.internal.connection.ConnectInterceptor.intercept
+import org.luckypray.dexkit.DexKitBridge
+import java.lang.reflect.Modifier
 
 /**
- * @项目名 : QDReadHook
- * @作者 : MissYang
- * @创建时间 : 2022/8/28 16:15
- * @介绍 :
+ * 广告相关功能
+ * @since 7.9.306-1030
+ * @param [versionCode] 版本代码
+ * @param [configurations] 配置
  */
-/**
- * 广告相关配置
- */
-fun PackageParam.advOption(versionCode: Int, configurations: List<OptionEntity.SelectedModel>) {
+fun PackageParam.advOption(versionCode: Int, configurations: List<SelectedModel>) {
     configurations.filter { it.selected }.takeIf { it.isNotEmpty() }?.forEach { selected ->
         when (selected.title) {
-            "GDT(TX)广告" -> disableAd(versionCode)
-            "检查更新" -> disableUpdate(versionCode)
+            "闪屏广告" -> disableSplashAd(versionCode)
+            "GDT广告" -> disableGDTAD(versionCode)
             "主页-每日阅读广告" -> disableDailyReadAd(versionCode)
             "主页-书架活动弹框" -> disableBookshelfActivityPopup(versionCode)
             "主页-书架浮窗活动" -> disableBookshelfFloatWindow(versionCode)
             "主页-书架底部导航栏广告" -> disableBottomNavigationCenterAd(versionCode)
-            "我-中间广告"-> disableAccountCenterAd(versionCode)
-            "阅读页-浮窗广告" -> disableReadPageFloatAd(versionCode)
+            "我-中间广告" -> disableAccountCenterAd(versionCode)
+            "阅读页-浮窗广告" -> disableReaderPageFloatAd(versionCode)
             "阅读页-打赏小剧场" -> disableReadPageRewardTheater(versionCode)
-            "阅读页-章末底部月票打赏红包" -> hideReadPageBottom(versionCode)
+            "阅读页-章末底部月票打赏红包" -> disableReaderPageBottom(versionCode)
             "阅读页-最后一页-弹框广告" -> disableReadPageNewestPageWindowBannerAd(versionCode)
         }
     }
@@ -49,20 +44,17 @@ fun PackageParam.advOption(versionCode: Int, configurations: List<OptionEntity.S
 
 /**
  * 禁用每日导读广告
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本号
  */
 fun PackageParam.disableDailyReadAd(versionCode: Int) {
     when (versionCode) {
-        in 812..1099 -> {
-            findClass("com.qidian.QDReader.ui.activity.DailyReadingActivity").hook {
-                injectMember {
-                    method {
-                        name = "getADInfo"
-                        emptyParam()
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
+        in 1030..1099 -> {
+            "com.qidian.QDReader.ui.activity.DailyReadingActivity".toClass().method {
+                name = "getADInfo"
+                emptyParam()
+                returnType = UnitType
+            }.hook().intercept()
         }
 
         else -> "禁用每日导读广告".printlnNotSupportVersion(versionCode)
@@ -70,312 +62,149 @@ fun PackageParam.disableDailyReadAd(versionCode: Int) {
 }
 
 /**
- * 禁用书架活动弹框
- * 上级调用:com.qidian.QDReader.component.config.QDAppConfigHelper$Companion.getBKTData
- * activityPopupBean.getData()
+ * 禁用书架活动弹出窗口
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.disableBookshelfActivityPopup(versionCode: Int) {
     when (versionCode) {
-        in 804..900 -> {
-            findClass("com.qidian.QDReader.repository.entity.config.ActivityPopupBean").hook {
-                injectMember {
-                    method {
-                        name = "getData"
-                        emptyParam()
-                        returnType = ListClass
-                    }
-                    afterHook {
-                        result = result.safeCast<MutableList<*>>()?.also { it.clear() }
-                    }
-                }
-            }
+        in 1030..1099 -> {
+            "com.qidian.QDReader.ui.activity.MainGroupActivity".toClass().method {
+                name = "doBKTAction"
+                paramCount(1)
+                returnType = UnitType
+            }.hook().intercept()
         }
 
-        in 906..1099 -> {
-            findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
-                injectMember {
-                    method {
-                        name = "doBKTAction"
-                        paramCount(1)
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
-        }
-
-        else -> "移除书架活动弹框".printlnNotSupportVersion(versionCode)
+        else -> "禁用书架活动弹框".printlnNotSupportVersion(versionCode)
     }
 }
 
 /**
- * 禁用书架右下角浮窗
- */
-fun PackageParam.disableBookshelfFloatWindow(versionCode: Int) {
-    when (versionCode) {
-        in 758..768 -> {
-            findClass("com.qidian.QDReader.ui.fragment.QDBookShelfPagerFragment").hook {
-                injectMember {
-                    method {
-                        name = "loadBookShelfAd"
-                    }
-                    intercept()
-                }
-
-                injectMember {
-                    method {
-                        name = "onViewInject"
-                        param(View::class.java)
-                    }
-                    afterHook {
-                        instance.getViews(
-                            *arrayOf(
-                                "imgAdIconClose",
-                                "layoutImgAdIcon",
-                                "imgBookShelfActivityIcon"
-                            ).toPairs()
-                        ).hideViews()
-                    }
-                }
-            }
-        }
-
-        in 772..812 -> {
-            findClass("com.qidian.QDReader.ui.fragment.QDBookShelfPagerFragment").hook {
-                injectMember {
-                    method {
-                        name = "loadBookShelfAd"
-                    }
-                    intercept()
-                }
-
-                injectMember {
-                    method {
-                        name = "showBookShelfHoverAd"
-                    }
-                    intercept()
-                }
-
-                injectMember {
-                    method {
-                        name = "onViewInject"
-                        param(View::class.java)
-                    }
-                    afterHook {
-                        instance.getView<LinearLayout>(
-                            "layoutImgAdIcon"
-                        )?.setVisibilityIfNotEqual()
-                    }
-                }
-
-            }
-        }
-
-        in 827..1099 -> {
-
-            findClass("com.qidian.QDReader.ui.modules.bookshelf.QDBookShelfRebornFragment").hook {
-                injectMember {
-                    method {
-                        name = "updateFloatingAd"
-                        emptyParam()
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
-
-            findClass("com.qidian.QDReader.ui.fragment.QDBookShelfPagerFragment").hook {
-                injectMember {
-                    method {
-                        name = "loadBookShelfAd"
-                    }
-                    intercept()
-                }
-
-                injectMember {
-                    method {
-                        name = "showBookShelfHoverAd"
-                    }
-                    intercept()
-                }
-
-                injectMember {
-                    method {
-                        name = "onViewInject"
-                        param(ViewClass)
-                    }
-                    afterHook {
-                        instance.getView<LinearLayout>(
-                            "layoutImgAdIcon"
-                        )?.setVisibilityIfNotEqual()
-                    }
-                }
-
-            }
-        }
-
-        else -> "移除书架右下角浮窗".printlnNotSupportVersion(versionCode)
-    }
-}
-
-/**
- * 移除底部导航栏中心广告
- * 上级调用位置:com.qidian.QDReader.ui.activity.MainGroupActivity.checkAdTab()
+ * 禁用底部导航中心广告
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.disableBottomNavigationCenterAd(versionCode: Int) {
     when (versionCode) {
-        in 758..1099 -> {
-            findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
-                injectMember {
-                    method {
-                        name = "checkAdTab"
-                        emptyParam()
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
+        in 1030..1099 -> {
+            "com.qidian.QDReader.ui.activity.MainGroupActivity".toClass().method {
+                name = "checkAdTab"
+                emptyParam()
+                returnType = UnitType
+            }.hook().intercept()
         }
 
-        else -> "移除底部导航栏中心广告".printlnNotSupportVersion(versionCode)
+        else -> "禁用底部导航栏中心广告".printlnNotSupportVersion(versionCode)
     }
 }
 
 /**
- * 移除我-中心广告
+ *  禁用书架右下角浮窗
+ * @param [versionCode] 版本代码
+ */
+fun PackageParam.disableBookshelfFloatWindow(versionCode: Int) {
+    when (versionCode) {
+        in 1030..1099 -> {
+            "com.qidian.QDReader.ui.modules.bookshelf.QDBookShelfRebornFragment".toClass().method {
+                name = "updateFloatingAd"
+                emptyParam()
+                returnType = UnitType
+            }.hook().intercept()
+        }
+
+        else -> "禁用书架右下角浮窗".printlnNotSupportVersion(versionCode)
+    }
+}
+
+/**
+ * 禁用我-中心广告
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.disableAccountCenterAd(versionCode: Int) {
     when (versionCode) {
-        in 758..896 -> {
-            findClass("com.qidian.QDReader.ui.fragment.QDAccountFragment").hook {
-                injectMember {
-                    method {
-                        name = "loadADData"
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
-
-            findClass("com.qidian.QDReader.ui.fragment.QDUserAccountFragment").hook {
-                injectMember {
-                    method {
-                        name = "loadADData"
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
-
-            if (versionCode >= 868) {
-                findClass("com.qidian.QDReader.ui.fragment.main_group.QDUserAccountRebornFragment").hook {
-                    injectMember {
-                        method {
-                            name = "loadADData"
-                            paramCount(1)
-                        }
-                        intercept()
-                    }
-
-                }
-            }
+        in 1030..1099 -> {
+            "com.qidian.QDReader.ui.fragment.main_group.QDUserAccountRebornFragment".toClass()
+                .method {
+                    name = "loadADData"
+                    paramCount(1)
+                }.hook().intercept()
         }
 
-        in 896..1099 -> {
-            findClass("com.qidian.QDReader.ui.fragment.main_group.QDUserAccountRebornFragment").hook {
-                injectMember {
-                    method {
-                        name = "loadADData"
-                        paramCount(1)
-                    }
-                    intercept()
-                }
-
-            }
-        }
-
-        else -> "移除我-中心广告".printlnNotSupportVersion(versionCode)
+        else -> "禁用我-中心广告".printlnNotSupportVersion(versionCode)
     }
 }
 
 /**
- * 禁用阅读页-浮窗广告
+ * 禁用阅读页面浮动广告
+ * @since 7.9.306-1030
+ * @param [versionCode] 版本代码
  */
-fun PackageParam.disableReadPageFloatAd(versionCode: Int) {
+fun PackageParam.disableReaderPageFloatAd(versionCode: Int) {
     when (versionCode) {
-        in 958..1099 -> {
-            findClass("com.qidian.QDReader.readerengine.view.QDSuperEngineView").hook {
-                injectMember {
-                    method {
-                        name = "setReadMenuData"
-                        paramCount(1)
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
-        }
-    }
+        in 1030..1099 -> {
+            "com.qidian.QDReader.readerengine.view.QDSuperEngineView".toClass().method {
+                name = "setReadMenuData"
+                paramCount(1)
+                returnType = UnitType
+            }.hook().intercept()
 
-    val hookMethodName = when (versionCode) {
-        812 -> "O0"
-        in 827..834 -> "K"
-        in 842..843 -> "M"
-        in 850..868 -> "I"
-        872 -> "G"
-        878 -> "j1"
-        in 884..890 -> "g1"
-        in 896..906 -> "c1"
-        in 916..924 -> "h1"
-        in 932..944 -> "B0"
-        in 950..958 -> "t1"
-        in 970..994 -> "s1"
-        1005 -> "q1"
-        1020 -> "r1"
-        1030 -> "U"
-        else -> null
-    }
-    hookMethodName?.let {
-        findClass("com.qidian.QDReader.ui.activity.QDReaderActivity").hook {
-            injectMember {
+            "com.qidian.QDReader.ui.activity.QDReaderActivity".toClass().apply {
                 method {
-                    name = it
                     param(
                         "com.qidian.QDReader.ui.activity.QDReaderActivity".toClass(),
                         "com.qidian.QDReader.repository.entity.ReadMenuData".toClass()
                     )
-                }
-                intercept()
-            }
+                    returnType = UnitType
+                }.hook().intercept()
 
-            injectMember {
                 method {
                     name = "getReadMenuData"
                     emptyParam()
                     returnType = UnitType
-                }
-                intercept()
+                }.hook().intercept()
             }
         }
-    } ?: "移除阅读页-浮窗广告".printlnNotSupportVersion(versionCode)
+
+        else -> "禁用阅读页面浮动广告".printlnNotSupportVersion(versionCode)
+    }
 }
 
 /**
- * 禁用阅读页-打赏小剧场
+ * 禁用阅读页面底部月票打赏红包
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
+ */
+fun PackageParam.disableReaderPageBottom(versionCode: Int) {
+    when (versionCode) {
+        in 1030..1099 -> {
+            "com.qidian.QDReader.readerengine.view.QDSuperEngineView".toClass().method {
+                name = "initInteractionBarView"
+                returnType = UnitType
+            }.hook().after {
+                val mInteractionBarView =
+                    instance.getView<LinearLayout>("mInteractionBarView")
+                mInteractionBarView?.setVisibilityIfNotEqual()
+            }
+        }
+    }
+}
+
+/**
+ * 禁用阅读页面打赏剧场
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.disableReadPageRewardTheater(versionCode: Int) {
     when (versionCode) {
-        in 812..1099 -> {
-            findClass("com.qidian.QDReader.ui.activity.chapter.list.NewParagraphCommentListActivity").hook {
-                injectMember {
-                    method {
-                        name = "getParagraphTip"
-                        emptyParam()
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
+        in 1030..1099 -> {
+            "com.qidian.QDReader.ui.activity.chapter.list.NewParagraphCommentListActivity".toClass()
+                .method {
+                    name = "getParagraphTip"
+                    emptyParam()
+                    returnType = UnitType
+                }.hook().intercept()
         }
 
         else -> "移除阅读页-打赏小剧场".printlnNotSupportVersion(versionCode)
@@ -383,35 +212,31 @@ fun PackageParam.disableReadPageRewardTheater(versionCode: Int) {
 }
 
 /**
- * 禁用阅读页-最新页面弹框广告
- * positionMask
+ * 禁用阅读页面最新页面窗口横幅广告
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.disableReadPageNewestPageWindowBannerAd(versionCode: Int) {
     when (versionCode) {
-        in 896..1030 -> {
-            findClass("com.qidian.QDReader.bll.manager.QDBKTManager").hook {
-                injectMember {
-                    method {
-                        name = "c"
-                        paramCount(5)
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
+        in 1030..1099 -> {
+            "com.qidian.QDReader.bll.manager.QDBKTManager".toClass().method {
+                paramCount(5)
+                returnType = UnitType
+            }.hook().intercept()
         }
     }
 }
 
 /**
- * 禁用阅读页-章末相关
- * @param versionCode 版本号
- * @param disableAll 一刀切
- * @param disableBookRecommend 禁用推荐书籍
- * @param disableBookComment 禁用本章说
- * @param disableChapterEndWelfare 禁用章末福利
- * @param disableChapterEndRewardAd 禁用章末广告
- * @param disableVoteTicketSpecialLine 禁用章末求票
+ * 禁用阅读页-章末相关广告
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
+ * @param [disableAll] 一刀切
+ * @param [disableBookRecommend] 禁用推荐书籍
+ * @param [disableBookComment] 禁用本章说
+ * @param [disableChapterEndWelfare] 禁用章末福利
+ * @param [disableChapterEndRewardAd] 禁用章末广告
+ * @param [disableVoteTicketSpecialLine] 禁用章末求票
  */
 fun PackageParam.disableReadPageChapterEnd(
     versionCode: Int,
@@ -420,83 +245,67 @@ fun PackageParam.disableReadPageChapterEnd(
     disableBookComment: Boolean = false,
     disableChapterEndWelfare: Boolean = false,
     disableChapterEndRewardAd: Boolean = false,
-    disableVoteTicketSpecialLine: Boolean = false,
+    disableVoteTicketSpecialLine: Boolean = false
 ) {
     when (versionCode) {
-        in 812..1099 -> {
-            findClass("com.qidian.QDReader.readerengine.manager.ChapterProvider").hook {
+        in 1030..1099 -> {
+            "com.qidian.QDReader.readerengine.manager.ChapterProvider".toClass().apply {
+
                 if (disableAll) {
                     /**
                      * 一刀切 insertChapterEndSpecialLine
                      */
-                    injectMember {
-                        method {
-                            name = "insertChapterEndSpecialLine"
-                            returnType = UnitType
-                        }
-                        intercept()
-                    }
+                    method {
+                        name = "insertChapterEndSpecialLine"
+                        returnType = UnitType
+                    }.hook().intercept()
                 }
                 if (disableBookRecommend) {
                     /**
                      * 新人推书 insertBookRecommend
                      */
-                    injectMember {
-                        method {
-                            name = "insertBookRecommend"
-                            returnType = UnitType
-                        }
-                        intercept()
-                    }
+                    method {
+                        name = "insertBookRecommend"
+                        returnType = UnitType
+                    }.hook().intercept()
                 }
                 if (disableBookComment) {
                     /**
                      * 本章说 insertChapterComment
                      */
-                    injectMember {
-                        method {
-                            name = "insertChapterComment"
-                            returnType = UnitType
-                        }
-                        intercept()
-                    }
+                    method {
+                        name = "insertChapterComment"
+                        returnType = UnitType
+                    }.hook().intercept()
                 }
                 if (disableChapterEndWelfare) {
                     /**
                      * 章末福利 insertChapterEndWelfare
                      */
-                    injectMember {
-                        method {
-                            name = "insertChapterEndWelfare"
-                            returnType = UnitType
-                        }
-                        intercept()
-                    }
+                    method {
+                        name = "insertChapterEndWelfare"
+                        returnType = UnitType
+                    }.hook().intercept()
                 }
                 if (disableChapterEndRewardAd) {
                     /**
                      * 章末广告 insertRewardAd
                      */
-                    injectMember {
-                        method {
-                            name = "insertRewardAd"
-                            returnType = UnitType
-                        }
-                        intercept()
-                    }
+                    method {
+                        name = "insertRewardAd"
+                        returnType = UnitType
+                    }.hook().intercept()
                 }
                 if (disableVoteTicketSpecialLine) {
                     /**
                      * 章末求票 insertVoteTicketSpecialLine
                      */
-                    injectMember {
-                        method {
-                            name = "insertVoteTicketSpecialLine"
-                            returnType = UnitType
-                        }
-                        intercept()
-                    }
+                    method {
+                        name = "insertVoteTicketSpecialLine"
+                        returnType = UnitType
+                    }.hook().intercept()
                 }
+
             }
         }
 
@@ -505,262 +314,134 @@ fun PackageParam.disableReadPageChapterEnd(
 }
 
 /**
- * Hook 禁用广告
+ * 禁用闪屏广告
+ * @since 7.9.306-1030
+ * @param [versionCode] 版本代码
  */
-fun PackageParam.disableAd(versionCode: Int) {
+fun PackageParam.disableSplashAd(versionCode: Int) {
     when (versionCode) {
-        in 758..924 -> {
-            findClass("com.qq.e.comm.constants.CustomPkgConstants").hook {
-                injectMember {
-                    method {
-                        name = "getAssetPluginName"
-                        emptyParam()
-                        returnType = StringClass
+        in 1030..1099 -> {
+            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
+                bridge.apply {
+                    findClass {
+                        searchPackages = listOf("com.qidian.QDReader.bll.splash")
+                        matcher {
+                            usingStrings = listOf("localLabels=")
+                        }
+                    }.firstNotNullOfOrNull { classData ->
+                        classData.getMethods().findMethod {
+                            matcher {
+                                modifiers = Modifier.PUBLIC
+                                paramTypes = listOf("android.content.Context")
+                                returnType = "void"
+                                usingStrings = listOf("localLabels=")
+                            }
+                        }.firstNotNullOfOrNull { methodData ->
+                            methodData.className.toClass().method {
+                                name = methodData.methodName
+                                paramCount(1)
+                                returnType = UnitType
+                            }.hook().intercept()
+                        }
                     }
-                    replaceTo("")
-                }
-            }
 
-            findClass("com.qq.e.comm.b").hook {
-                injectMember {
-                    method {
-                        name = "a"
-                        param(ContextClass)
-                        returnType = BooleanType
+                    findClass {
+                        excludePackages = listOf("com")
+                        matcher {
+                            usingStrings = listOf(
+                                "SettingSplashEnableGDT",
+                                "SettingSplashGDTShowMaxCountOnDay",
+                                "SettingSplashGDTShowBeginTime",
+                                "SettingSplashGDTShowEndTime"
+                            )
+                        }
+                    }.firstNotNullOfOrNull { classData ->
+                        classData.getMethods().filter { it.isMethod }.forEach { methodData ->
+                            if ("boolean" == methodData.returnTypeName) {
+                                returnFalse(methodData.className, methodData.methodName)
+                            } else if ("void" == methodData.returnTypeName) {
+                                intercept(
+                                    methodData.className,
+                                    methodData.methodName,
+                                    methodData.paramTypeNames.size
+                                )
+                            }
+                        }
                     }
-                    replaceToFalse()
-                }
-            }
-
-            /*
-            findClass("com.qidian.QDReader.component.api.a").hook {
-                injectMember {
-                    method {
-                        name = "b"
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
-
-             */
-
-            findClass("com.qidian.QDReader.bll.helper.QDInternalAdHelper").hook {
-                injectMember {
-                    method {
-                        name = "analyzeAdInfo"
-                        emptyParam()
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
-        }
-
-        in 932..1099 -> {
-            findClass("com.qq.e.comm.managers.GDTADManager").hook {
-                injectMember {
-                    method {
-                        name = "initPlugin"
-                        emptyParam()
-                        returnType = UnitType
-                    }
-                    intercept()
                 }
 
-                injectMember {
-                    method {
-                        name = "initWith"
-                        paramCount(2)
-                    }
-                    replaceAny {
-                        true
-                    }
-                }
-            }
-
-            findClass("com.qidian.QDReader.bll.helper.QDInternalAdHelper").hook {
-                injectMember {
-                    method {
-                        name = "analyzeAdInfo"
-                        emptyParam()
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
             }
         }
 
-        else -> "禁用广告".printlnNotSupportVersion(versionCode)
+        else -> "禁用闪屏广告活动".printlnNotSupportVersion(versionCode)
     }
 }
 
 /**
- * 禁用检查更新
- * 上级调用:com.qidian.QDReader.ui.activity.MainGroupActivity.onCreate(android.os.Bundle)
+ * 禁用GDT广告
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode]
  */
-fun PackageParam.disableUpdate(versionCode: Int) {
-    /**
-     * 也可全局搜索 "UpgradeCommon"、"checkUpdate:"
-     */
-    val methodMap = mapOf(
-        "needHookClass" to when (versionCode) {
-            in 758..788 -> "com.qidian.QDReader.util.z4"
-            in 792..796 -> "com.qidian.QDReader.util.i5"
-            in 800..834 -> "com.qidian.QDReader.util.l5"
-            in 842..878 -> "com.qidian.QDReader.util.m5"
-            884 -> "com.qidian.QDReader.util.k5"
-            in 890..900 -> "com.qidian.QDReader.util.l5"
-            in 906..970 -> "com.qidian.QDReader.util.m5"
-            in 980..994 -> "com.qidian.QDReader.util.k5"
-            in 1005..1020 -> "com.qidian.QDReader.util.i5"
-            1030 -> "com.qidian.QDReader.util.j5"
-            else -> null
-        },
-        "needHookMethod" to when (versionCode) {
-            in 758..878 -> "b"
-            in 884..1030 -> "judian"
-            else -> null
-        },
-        "needHookMethod2" to when (versionCode) {
-            in 758..878 -> "a"
-            in 884..1030 -> "search"
-            else -> null
-        }
-    )
-
-    methodMap["needHookClass"]?.hook {
-        injectMember {
-            method {
-                name = methodMap["needHookMethod"]!!
-                returnType = UnitType
-            }
-            intercept()
-        }
-
-        injectMember {
-            method {
-                name = methodMap["needHookMethod2"]!!
-                returnType = UnitType
-            }
-            intercept()
-        }
-
-    }
-
-
-    /*
-    /**
-     * 上级调用:com.qidian.QDReader.ui.activity.MainGroupActivity.checkUpdate()
-     */
-    val neddHookClass2 = when (versionCode) {
-        in 758..808 -> "w4.h"
-        812 -> "t4.h"
-        827 -> "v4.h"
-        in 834..843 -> "t4.h"
-        in 850..868 -> "u4.h"
-        872 -> "s4.h"
-        else -> null
-    }
-    neddHookClass2?.hook {
-        injectMember {
-            method {
-                name = "l"
-                returnType = UnitType
-            }
-            intercept()
-        }
-    }
-
-     */
+fun PackageParam.disableGDTAD(versionCode: Int) {
     when (versionCode) {
-        in 758..1099 -> {
-
-            findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
-                injectMember {
-                    method {
-                        name = "checkUpdate"
-                        returnType = UnitType
+        in 1030..1099 -> {
+            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
+                bridge.findClass {
+                    searchPackages = listOf("com.qidian.QDReader.component.abtest")
+                    matcher {
+                        methods {
+                            add {
+                                modifiers = Modifier.PUBLIC
+                                returnType = "boolean"
+                            }
+                        }
+                        usingStrings = listOf("videolast-ad", "video-redpopup-ad")
                     }
-                    intercept()
+                }.firstNotNullOfOrNull { classData ->
+                    classData.getMethods().apply {
+                        findMethod {
+                            matcher {
+                                returnType = "boolean"
+                                usingStrings = listOf("videolast-ad")
+                            }
+                        }.firstNotNullOfOrNull {
+                            returnFalse(it.className, it.methodName)
+                        }
+
+                        findMethod {
+                            matcher {
+                                returnType = "boolean"
+                                usingStrings = listOf("video-redpopup-ad")
+                            }
+                        }.firstNotNullOfOrNull {
+                            returnFalse(it.className, it.methodName)
+                        }
+                    }
                 }
             }
 
-            findClass("com.qidian.QDReader.ui.fragment.QDFeedListPagerFragment").hook {
-                injectMember {
-                    method {
-                        name = "checkAppUpdate"
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
+            intercept(
+                className = "com.qq.e.tg.tangram.TangramAdManager",
+                methodName = "init",
+                paramCount = 3
+            )
 
-            findClass("com.tencent.upgrade.core.UpdateCheckProcessor").hook {
-                injectMember {
-                    method {
-                        name = "checkAppUpgrade"
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
+            "com.qq.e.comm.managers.GDTADManager".toClass().apply {
+                method {
+                    name = "initPlugin"
+                    emptyParam()
+                    returnType = UnitType
+                }.hook().intercept()
 
-            findClass("com.tencent.upgrade.core.UpgradeManager").hook {
-                injectMember {
-                    method {
-                        name = "init"
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
-
-            findClass("com.qidian.QDReader.ui.activity.AboutActivity").hook {
-                injectMember {
-                    method {
-                        name = "updateVersion"
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-
-                injectMember {
-                    method {
-                        name = "getVersionNew"
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-
+                method {
+                    name = "initWith"
+                    paramCount(2)
+                }.hook().replaceAny { true }
 
             }
         }
 
-        else -> "禁用检查更新".printlnNotSupportVersion(versionCode)
+        else -> "禁用GDT广告".printlnNotSupportVersion(versionCode)
     }
-
-    /**
-     * SettingUpdateVersionNotifyTime
-     */
-    val needHookClass2 = when (versionCode) {
-        970 -> "r4.d"
-        980 -> "s4.f"
-        994 -> "s4.d"
-        1005 -> "r4.f"
-        1020 -> "r4.d"
-        1030 -> "s4.d"
-        else -> null
-    }
-    needHookClass2?.hook {
-        injectMember {
-            method {
-                name = "run"
-                emptyParam()
-                returnType = UnitType
-            }
-            intercept()
-        }
-    } ?: "禁用检查更新弹框".printlnNotSupportVersion(versionCode)
 
 }
