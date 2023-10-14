@@ -1,4 +1,35 @@
 # Changelog
+## [3.0.0](https://github.com/xihan123/QDReadHook/compare/v2.3.8...v3.0.0) (2023-10-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* 移除替换规则相关
+* 迁移新API,后续版本理论上自动适配,仅支持起点 `7.9.306-1030` 及以上版本
+* 提高最低支持Xposed版本为 90
+
+### Features
+
+* **广告配置:** 合并闪屏广告、增强GDT广告 ([eb82d4a](https://github.com/xihan123/QDReadHook/commit/eb82d4a5b94604ec8063aadcca44544bed20665f))
+* **拦截设置:** 合并青少年模式弹框、检查更新 ([23970d9](https://github.com/xihan123/QDReadHook/commit/23970d91733db920e7f7869bf0c562846f5824a8))
+* 提高最低支持Xposed版本为 90 ([2b93f7c](https://github.com/xihan123/QDReadHook/commit/2b93f7c2c419becda8dd954a244e6c2693a7e4cc))
+* 新增启动强制检查存储权限、`1050` + 启用旧版每日导读、移除新版不支持的功能 ([48e2a6d](https://github.com/xihan123/QDReadHook/commit/48e2a6ddee76c9dda7fccc0480e64722ac3a8e0c))
+* 移除替换规则相关 ([806f8aa](https://github.com/xihan123/QDReadHook/commit/806f8aa46295b268c1c9a1705c7e5b03f358b6de))
+* **自动化设置:** `1030` + 合并自动签到、自动领积分、自动点击章末红包 ([ecc7217](https://github.com/xihan123/QDReadHook/commit/ecc7217fb96384b4afaa1318cc5faadcae6fa10c))
+* 迁移新API,后续版本理论上自动适配,仅支持起点 `7.9.306-1030` 及以上版本 ([4b6049d](https://github.com/xihan123/QDReadHook/commit/4b6049df6a9a31a6159df744f860a27a2be5422e))
+
+
+### CI
+
+* build.yml ([0ab6f6d](https://github.com/xihan123/QDReadHook/commit/0ab6f6d4c2d9f0656748d9a5bbad2d5e5b0bcd95))
+* release.yml ([19b4e37](https://github.com/xihan123/QDReadHook/commit/19b4e372185d5dc71e812f216efeb3a083c036f2))
+
+
+### Miscellaneous
+
+* 更新依赖 ([99575e0](https://github.com/xihan123/QDReadHook/commit/99575e0d2a4452c0457c3608291c098fc6ad9471))
+* 更新资源 ([06a8e77](https://github.com/xihan123/QDReadHook/commit/06a8e77a988f227c3c24b1ba566bf8cb4957280a))
+
 ## [2.3.8](https://github.com/xihan123/QDReadHook/compare/v2.3.7...v2.3.8) (2023-09-22)
 
 
