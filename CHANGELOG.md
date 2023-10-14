@@ -1,4 +1,11 @@
 # Changelog
+## [3.0.0](https://github.com/xihan123/QDReadHook/compare/v3.0.0...v3.0.0) (2023-10-14)
+
+
+### Miscellaneous
+
+* 更新依赖 ([17d6b69](https://github.com/xihan123/QDReadHook/commit/17d6b69e859d46d6c0d504ad05fce26da0d01715))
+
 ## [3.0.0](https://github.com/xihan123/QDReadHook/compare/v2.3.8...v3.0.0) (2023-10-14)
 
 
