@@ -85,7 +85,36 @@ data class OptionEntity(
     var startImageOption: StartImageOption = StartImageOption(),
     var bookshelfOption: BookshelfOption = BookshelfOption(),
     var readPageOption: ReadPageOption = ReadPageOption(),
-    var interceptOption: InterceptOption = InterceptOption(),
+    var interceptOption: List<SelectedModel> = listOf(
+        SelectedModel("检测更新"),
+        SelectedModel("隐私政策更新弹框"),
+        SelectedModel("同意隐私政策弹框"),
+        SelectedModel("WebSocket"),
+        SelectedModel("青少年模式请求"),
+        SelectedModel("青少年模式弹框"),
+        SelectedModel("阅读页水印"),
+        SelectedModel("发帖图片水印"),
+        SelectedModel("自动跳转精选"),
+        SelectedModel("首次安装分析"),
+        SelectedModel("异步主GDT广告任务|com.qidian.QDReader.start.AsyncMainGDTTask"),
+        SelectedModel("异步主游戏广告SDK任务|com.qidian.QDReader.start.AsyncMainGameADSDKTask"),
+        SelectedModel("异步主游戏下载任务|com.qidian.QDReader.start.AsyncMainGameDownloadTask"),
+        SelectedModel("异步子屏幕截图任务|com.qidian.QDReader.start.AsyncChildScreenShotTask"),
+        SelectedModel("异步主用户操作任务|com.qidian.QDReader.start.AsyncMainUserActionTask"),
+        SelectedModel("异步有赞-SDK任务|com.qidian.QDReader.start.AsyncChildYouZanTask"),
+        SelectedModel("异步初始化KNOBS-SDK任务|com.qidian.QDReader.start.AsyncInitKnobsTask"),
+        SelectedModel("异步子更新设备任务|com.qidian.QDReader.start.AsyncChildUpdateDeviceTask"),
+        SelectedModel("异步子崩溃任务|com.qidian.QDReader.start.AsyncChildCrashTask"),
+        SelectedModel("异步子点播上传任务|com.qidian.QDReader.start.AsyncChildVODUploadTask"),
+        SelectedModel("异步子青少年和网络回调任务|com.qidian.QDReader.start.AsyncChildTeenagerAndNetCallbackTask"),
+        SelectedModel("异步主下载Sdk任务|com.qidian.QDReader.start.AsyncMainDownloadSdkTask"),
+        SelectedModel("异步子自动跟踪器初始化任务|com.qidian.QDReader.start.AsyncChildAutoTrackerInitTask"),
+        SelectedModel("异步子表情符号任务|com.qidian.QDReader.start.AsyncChildEmojiTask"),
+        SelectedModel("同步推送任务|com.qidian.QDReader.start.SyncPushTask"),
+        SelectedModel("同步Bugly-APM任务|com.qidian.QDReader.start.SyncBuglyApmTask"),
+        SelectedModel("同步挂钩通道任务|com.qidian.QDReader.start.SyncHookChannelTask"),
+        SelectedModel("同步正确任务|com.qidian.QDReader.start.SyncRightlyTask")
+    ),
     var viewHideOption: ViewHideOption = ViewHideOption(),
     var automatizationOption: List<SelectedModel> = listOf(
         SelectedModel("自动签到"),
@@ -204,32 +233,6 @@ data class OptionEntity(
         var enableCopyReaderPageChapterComment: Boolean = false,
         var enableReadTimeFactor: Boolean = false,
         var speedFactor: Int = 5
-    )
-
-    /**
-     * 拦截选项
-     * 创建[InterceptOption]
-     * @param [enableInterceptStartTasks] 启用拦截启动任务
-     * @param [configurations] 配置
-     * @param [startTaskConfigurations] 启动任务选项
-     * @suppress Generate Documentation
-     */
-    @Keep
-    data class InterceptOption(
-        var enableInterceptStartTasks: Boolean = false,
-        var startTaskConfigurations: MutableList<SelectedModel> = mutableListOf(),
-        var configurations: List<SelectedModel> = listOf(
-            SelectedModel("检测更新"),
-            SelectedModel("隐私政策更新弹框"),
-            SelectedModel("同意隐私政策弹框"),
-            SelectedModel("WebSocket"),
-            SelectedModel("青少年模式请求"),
-            SelectedModel("青少年模式弹框"),
-            SelectedModel("阅读页水印"),
-            SelectedModel("发帖图片水印"),
-            SelectedModel("自动跳转精选"),
-            SelectedModel("首次安装分析")
-        ),
     )
 
     /**
@@ -426,7 +429,7 @@ fun readOptionEntity(): OptionEntity {
     return try {
         file.readText().parseObject<OptionEntity>().apply {
             val newAdvOptionConfigurations = defaultOptionEntity.advOption
-            val newInterceptConfigurations = defaultOptionEntity.interceptOption.configurations
+            val newInterceptConfigurations = defaultOptionEntity.interceptOption
             val newViewHideOptionConfigurations =
                 defaultOptionEntity.viewHideOption.homeOption.configurations
             val newBookDetailOptionConfigurations =
@@ -435,7 +438,7 @@ fun readOptionEntity(): OptionEntity {
             advOption = advOption.merge(
                 newAdvOptionConfigurations
             )
-            interceptOption.configurations = interceptOption.configurations.merge(
+            interceptOption = interceptOption.merge(
                 newInterceptConfigurations
             )
 

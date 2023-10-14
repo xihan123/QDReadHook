@@ -1,77 +1,103 @@
 package cn.xihan.qdds
 
-
-import com.highcapable.yukihookapi.hook.factory.current
+import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.type.android.BundleClass
-import com.highcapable.yukihookapi.hook.type.android.IntentClass
-import com.highcapable.yukihookapi.hook.type.java.BooleanType
 import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
+import org.luckypray.dexkit.DexKitBridge
 import java.io.File
+import java.lang.reflect.Modifier
 
 /**
- * @项目名 : QDReadHook
- * @作者 : MissYang
- * @创建时间 : 2023/2/6 16:45
- * @介绍 :
- */
-/**
- * 拦截配置
+ * 拦截选项
+ * @since 7.9.306-1030
+ * @param [versionCode] 版本代码
+ * @param [configurations] 配置
  */
 fun PackageParam.interceptOption(
     versionCode: Int,
-    configurations: List<OptionEntity.SelectedModel>,
+    configurations: List<SelectedModel>,
 ) {
     val interceptList = mutableListOf<String>()
     configurations.filter { it.selected }.takeIf { it.isNotEmpty() }?.forEach { selected ->
         when (selected.title) {
+            "检测更新" -> interceptCheckUpdate(versionCode)
             "隐私政策更新弹框" -> interceptPrivacyPolicy(versionCode)
             "同意隐私政策弹框" -> interceptAgreePrivacyPolicy(versionCode)
             "WebSocket" -> interceptWebSocket(versionCode)
             "青少年模式请求" -> interceptQSNModeRequest(versionCode)
-            "闪屏广告页面" -> interceptSplashAdActivity(versionCode)
-            "阅读页水印" -> interceptReadBookPageWaterMark(versionCode)
+            "青少年模式弹框" -> interceptQSNYDialog(versionCode)
+            "阅读页水印" -> interceptReaderBookPageWaterMark(versionCode)
             "发帖图片水印" -> interceptPostImageWatermark(versionCode)
             "自动跳转精选" -> interceptAutoJumpSelected(versionCode)
             "首次安装分析" -> interceptFirstInstallAnalytics(versionCode)
             else -> interceptList += selected.title
         }
     }
-
-    if (interceptList.isNotEmpty()) {
+    if (interceptList.isNotEmpty()){
         interceptAsyncInitTask(versionCode, interceptList)
     }
 }
 
 /**
- * 拦截 Geetest 初始化
+ * 拦截检测更新
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
-fun PackageParam.interceptGeetest(version: Int) {
-    when (version) {
-        868 -> {
+fun PackageParam.interceptCheckUpdate(versionCode: Int) {
+    when (versionCode) {
+        in 1030..1099 -> {
+            intercept("com.qidian.QDReader.ui.activity.MainGroupActivity", "checkUpdate")
 
+            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
+                bridge.findClass {
+                    excludePackages = listOf("com")
+                    matcher {
+                        methods {
+                            add {
+                                modifiers = Modifier.PUBLIC
+                                returnType = "void"
+                                paramCount = 5
+                            }
+                        }
+                        usingStrings = listOf("SettingUpdateVersionNotifyTime", "0")
+                    }
+                }.firstNotNullOfOrNull { classData ->
+                    classData.getMethods().findMethod {
+                        matcher {
+                            returnType = "void"
+                            paramTypes = listOf(
+                                "android.app.Activity",
+                                null,
+                                "android.os.Handler",
+                                "boolean",
+                                "boolean"
+                            )
+                        }
+                    }.firstNotNullOfOrNull { methodData ->
+                        intercept(
+                            methodData.className,
+                            methodData.methodName,
+                            methodData.paramTypeNames.size
+                        )
+                    }
+                }
+            }
         }
-    }
 
+        else -> "拦截检测更新".printlnNotSupportVersion(versionCode)
+    }
 }
 
 /**
- * 拦截隐私政策更新弹框
+ * 拦截隐私策略
+ * @since 7.9.306-1030 ~ 1099
+ * @param [version] 版本
  */
 fun PackageParam.interceptPrivacyPolicy(version: Int) {
     when (version) {
-        in 868..1099 -> {
-            findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
-                injectMember {
-                    method {
-                        name = "checkPrivacyVersion"
-                        emptyParam()
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
+        in 1030..1099 -> {
+            intercept("com.qidian.QDReader.ui.activity.MainGroupActivity", "checkPrivacyVersion")
         }
 
         else -> "拦截隐私政策更新弹框".printlnNotSupportVersion(version)
@@ -80,89 +106,88 @@ fun PackageParam.interceptPrivacyPolicy(version: Int) {
 
 /**
  * 拦截同意隐私政策弹框
- * btnAgree
+ * @since 7.9.306-1030 ~ 1099
+ * @param [version] 版本
  */
 fun PackageParam.interceptAgreePrivacyPolicy(version: Int) {
-    val needHookClass = when (version) {
-        in 868..878 -> "com.qidian.QDReader.util.w4"
-        884 -> "com.qidian.QDReader.util.u4"
-        in 890..900 -> "com.qidian.QDReader.util.v4"
-        in 906..970 -> "com.qidian.QDReader.util.w4"
-        in 980..994 -> "com.qidian.QDReader.util.u4"
-        in 1005..1020 -> "com.qidian.QDReader.util.s4"
-        1030 -> "com.qidian.QDReader.util.t4"
-        else -> null
-    }
-    val needHookMethod = when (version) {
-        in 868..872 -> "k0"
-        878 -> "l0"
-        in 884..958 -> "i0"
-        in 970..1030 -> "j0"
-        else -> null
-    }
-    if (needHookClass == null || needHookMethod == null) {
-        "拦截同意隐私政策弹框".printlnNotSupportVersion(version)
-        return
-    }
-    needHookClass.hook {
-        injectMember {
-            method {
-                name = needHookMethod
-                paramCount(4)
-                returnType = UnitType
+    when (version) {
+        in 1030..1099 -> {
+            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
+                bridge.findClass {
+                    searchPackages = listOf("com.qidian.QDReader.util")
+                    matcher {
+                        usingStrings = listOf(
+                            "first_install_app_for_privacy",
+                            "https://acts.qidian.com/pact/qd_pact.html"
+                        )
+                    }
+                }.firstNotNullOfOrNull { classData ->
+                    classData.getMethods().findMethod {
+                        matcher {
+                            modifiers = Modifier.PUBLIC
+                            returnType = "void"
+                            paramTypes = listOf(
+                                "android.app.Activity", "boolean", "java.lang.String", null
+                            )
+                        }
+                    }.firstNotNullOfOrNull { methodData ->
+                        intercept(
+                            methodData.className,
+                            methodData.methodName,
+                            methodData.paramTypeNames.size
+                        )
+                    }
+                }
             }
-            intercept()
         }
+
+        else -> "拦截同意隐私政策弹框".printlnNotSupportVersion(version)
     }
 }
 
 /**
  * 拦截WebSocket
- * "handleOpen WebSocket isOpen"
+ * @since 7.9.306-1030
+ * @param [version] 版本
  */
 fun PackageParam.interceptWebSocket(version: Int) {
-    val needHookClass = when (version) {
-        in 868..878 -> "com.qidian.QDReader.component.msg.c"
-        in 884..1030 -> "com.qidian.QDReader.component.msg.cihai"
-        else -> null
-    }
-    val needHookMethod = when (version) {
-        in 868..878 -> "r"
-        in 884..1030 -> "o"
-        else -> null
-    }
-    if (needHookClass == null || needHookMethod == null) {
-        "拦截WebSocket".printlnNotSupportVersion(version)
-        return
-    }
-    needHookClass.hook {
-        injectMember {
-            method {
-                name = needHookMethod
-                emptyParam()
-                returnType = UnitType
+    when (version) {
+        in 1030..1099 -> {
+            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
+                bridge.findClass {
+                    searchPackages = listOf("com.qidian.QDReader.component.msg")
+                    matcher {
+                        usingStrings = listOf("handleOpen WebSocket isOpen")
+                    }
+                }.firstNotNullOfOrNull { classData ->
+                    classData.getMethods().findMethod {
+                        matcher {
+                            modifiers = Modifier.PRIVATE
+                            returnType = "void"
+                            usingStrings = listOf("handleOpen WebSocket isOpen")
+                        }
+                    }.firstNotNullOfOrNull { methodData ->
+                        intercept(methodData.className, methodData.methodName)
+                    }
+                }
             }
-            intercept()
         }
     }
 }
 
 /**
  * 拦截青少年模式请求
+ * @since 7.9.306-1030 ~ 1099
+ * @param [version] 版本
  */
 fun PackageParam.interceptQSNModeRequest(version: Int) {
     when (version) {
-        in 868..1099 -> {
-            findClass("com.qidian.QDReader.bll.manager.QDTeenagerManager").hook {
-                injectMember {
-                    method {
-                        name = "init"
-                        paramCount(1)
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
+        in 1030..1099 -> {
+            "com.qidian.QDReader.bll.manager.QDTeenagerManager".toClass().method {
+                name = "init"
+                paramCount(1)
+                returnType = UnitType
+            }.hook().intercept()
         }
 
         else -> "拦截青少年模式初始化".printlnNotSupportVersion(version)
@@ -170,76 +195,14 @@ fun PackageParam.interceptQSNModeRequest(version: Int) {
 }
 
 /**
- * 拦截闪屏广告页面
- * SplashManager
- * SettingSplashEnableGDT
- * com.qidian.QDReader.ui.activity.MainGroupActivity.onCreate
- * SplashManager.c().h(this.getApplicationContext());
- */
-fun PackageParam.interceptSplashAdActivity(versionCode: Int) {
-    val map = mapOf(
-        "needHookClass" to when (versionCode) {
-            in 884..900 -> "g6.search"
-            in 906..916 -> "j6.search"
-            924 -> "k6.search"
-            in 932..938 -> "n6.search"
-            in 944..950 -> "m6.search"
-            958 -> "k6.search"
-            970 -> "j6.search"
-            in 980..1030 -> "d6.search"
-            else -> null
-        },
-        "needHookMethod" to when (versionCode) {
-            in 884..1030 -> "b"
-            else -> null
-        },
-        "needHookMethod2" to when (versionCode) {
-            in 758..878 -> "k"
-            in 884..1030 -> "h"
-            else -> null
-        }
-    )
-
-    map["needHookClass"]?.hook {
-        injectMember {
-            method {
-                name = map["needHookMethod"]!!
-                returnType = BooleanType
-            }
-            replaceToFalse()
-        }
-    }
-
-    map["needHookMethod2"]?.let {
-        findClass("com.qidian.QDReader.bll.splash.SplashManager").hook {
-            injectMember {
-                method {
-                    name = it
-                    paramCount(1)
-                    returnType = UnitType
-                }
-                intercept()
-            }
-        }
-    }
-}
-
-/**
  * 拦截阅读页水印
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
-fun PackageParam.interceptReadBookPageWaterMark(versionCode: Int) {
+fun PackageParam.interceptReaderBookPageWaterMark(versionCode: Int) {
     when (versionCode) {
-        in 970..1099 -> {
-            findClass("com.qidian.QDReader.ui.activity.QDReaderActivity").hook {
-                injectMember {
-                    method {
-                        name = "setWaterMark"
-                        emptyParam()
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
+        in 1030..1099 -> {
+            intercept("com.qidian.QDReader.ui.activity.QDReaderActivity", "setWaterMark")
         }
 
         else -> "拦截阅读页水印".printlnNotSupportVersion(versionCode)
@@ -247,106 +210,131 @@ fun PackageParam.interceptReadBookPageWaterMark(versionCode: Int) {
 }
 
 /**
- * 发帖图片水印
+ * 拦截发帖图片水印
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.interceptPostImageWatermark(versionCode: Int) {
     when (versionCode) {
-        in 970..1099 -> {
-            findClass("com.qidian.QDReader.ui.activity.CirclePostEditActivity").hook {
-                injectMember {
-                    method {
-                        name = "addInk2BitmapFile"
-                        paramCount(2)
-                        returnType = StringClass
-                    }
-                    replaceAny {
-                        val s = args[0] as String
-                        val file = args[1] as File
-                        file.apply {
-                            File(s).takeIf { it.exists() }?.copyTo(this, true)
-                        }
-                        file.absolutePath
-                    }
-
+        in 1030..1099 -> {
+            "com.qidian.QDReader.ui.activity.CirclePostEditActivity".toClass().method {
+                name = "addInk2BitmapFile"
+                paramCount(2)
+                returnType = StringClass
+            }.hook().replaceAny {
+                val s = args[0] as String
+                val file = args[1] as File
+                file.apply {
+                    File(s).takeIf { it.exists() }?.copyTo(this, true)
                 }
+                file.absolutePath
             }
         }
 
-        else -> "发帖图片水印".printlnNotSupportVersion(versionCode)
+        else -> "拦截发帖图片水印".printlnNotSupportVersion(versionCode)
     }
 }
 
 /**
  * 拦截自动跳转精选
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.interceptAutoJumpSelected(versionCode: Int) {
     when (versionCode) {
-        in 980..1099 -> {
-            findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
-                injectMember {
-                    method {
-                        name = "checkOpenView"
-                        param(IntentClass)
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
+        in 1030..1099 -> {
+            intercept(
+                className = "com.qidian.QDReader.ui.activity.MainGroupActivity",
+                methodName = "checkOpenView",
+                paramCount = 1
+            )
         }
+
+        else -> "拦截自动跳转精选".printlnNotSupportVersion(versionCode)
     }
 }
 
 /**
  * 拦截首次安装分析
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.interceptFirstInstallAnalytics(versionCode: Int) {
     when (versionCode) {
-        in 994..1099 -> {
-            findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
-                injectMember {
-                    method {
-                        name = "firstInstallAnalytics"
-                        emptyParam()
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
+        in 1030..1099 -> {
+            intercept(
+                className = "com.qidian.QDReader.ui.activity.MainGroupActivity",
+                methodName = "firstInstallAnalytics"
+            )
         }
+
+        else -> "拦截首次安装分析".printlnNotSupportVersion(versionCode)
     }
 }
 
 /**
  * 拦截异步初始化任务
- * @param version 版本号
+ * @since 7.9.306-1030 ~ 1099
  */
-fun PackageParam.interceptAsyncInitTask(
-    version: Int,
-    clsNameList: List<String>
-) {
-    when (version) {
-        in 872..1099 -> {
-            findClass("com.rousetime.android_startup.StartupManager").hook {
-                injectMember {
-                    method {
-                        name = "start"
-                        emptyParam()
-                    }
-                    beforeHook {
-                        val startupList =
-                            instance.getParam<MutableList<*>>("startupList") ?: return@beforeHook
-                        val iterator = startupList.iterator()
-                        while (iterator.hasNext()) {
-                            val clsName = iterator.next()?.javaClass?.name
-                            if (clsNameList.any { it == clsName }) {
-                                iterator.remove()
-                            }
-                        }
+fun PackageParam.interceptAsyncInitTask(versionCode: Int, clsNameList: List<String>) {
+    when (versionCode) {
+        in 1030..1099 -> {
+            "com.rousetime.android_startup.StartupManager".toClass().method {
+                name = "start"
+                emptyParam()
+            }.hook().before {
+                val startupList =
+                    instance.getParam<MutableList<*>>("startupList") ?: return@before
+                val iterator = startupList.iterator()
+                while (iterator.hasNext()) {
+                    val clsName = iterator.next()?.javaClass?.name
+                    if (clsNameList.any { it == clsName }) {
+                        iterator.remove()
                     }
                 }
             }
         }
+        else -> "拦截异步初始化任务".printlnNotSupportVersion(versionCode)
+    }
+}
 
-        else -> "拦截初始化任务".printlnNotSupportVersion(version)
+/**
+ * 拦截青少年模式弹框
+ * @since 7.9.306-1030
+ * @param [versionCode] 版本代码
+ */
+fun PackageParam.interceptQSNYDialog(versionCode: Int) {
+    when (versionCode) {
+        in 1030..1099 -> {
+            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
+                bridge.findClass {
+                    searchPackages = listOf("com.qidian.QDReader.bll.helper")
+                    matcher {
+                        usingStrings = listOf(
+                            "SettingTeenagerModeOpen",
+                            "TeenagerMode",
+                            "teenagerUnopenedDesc"
+                        )
+                    }
+                }.firstNotNullOfOrNull { classData ->
+                    classData.getMethods().findMethod {
+                        matcher {
+                            modifiers = Modifier.PRIVATE
+                            paramTypes = listOf("com.qidian.QDReader.ui.activity.BaseActivity")
+                            returnType = "void"
+                        }
+                    }.firstNotNullOfOrNull { methodData ->
+                        intercept(
+                            methodData.className,
+                            methodData.methodName,
+                            methodData.paramTypeNames.size
+                        )
+                    }
+
+                }
+            }
+        }
+
+        else -> "拦截青少年模式弹框".printlnNotSupportVersion(versionCode)
     }
 }

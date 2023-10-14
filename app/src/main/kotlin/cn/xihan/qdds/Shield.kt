@@ -4,36 +4,32 @@ import android.content.Context
 import android.view.View
 import android.widget.TextView
 import cn.xihan.qdds.HookEntry.Companion.isNeedShield
+import cn.xihan.qdds.HookEntry.Companion.parseNeedShieldComicList
 import cn.xihan.qdds.HookEntry.Companion.parseNeedShieldList
 import com.alibaba.fastjson2.parseObject
 import com.alibaba.fastjson2.toJSONString
+import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.type.android.ContextClass
 import com.highcapable.yukihookapi.hook.type.java.ArrayListClass
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
-import com.highcapable.yukihookapi.hook.type.java.IntType
 import com.highcapable.yukihookapi.hook.type.java.JSONArrayClass
 import com.highcapable.yukihookapi.hook.type.java.ListClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
-
-/**
- * @项目名 : QDReadHook
- * @作者 : MissYang
- * @创建时间 : 2022/8/28 16:11
- * @介绍 :
- */
+import org.luckypray.dexkit.DexKitBridge
+import java.lang.reflect.Modifier
 
 /**
  * 屏蔽选项
- * @param versionCode 版本号
- * @param configurations 屏蔽选项列表
+ * @since 7.9.306-1030
+ * @param [versionCode] 版本代码
+ * @param [configurations] 配置
  */
 fun PackageParam.shieldOption(
-    versionCode: Int, configurations: List<OptionEntity.SelectedModel>
+    versionCode: Int, configurations: List<SelectedModel>
 ) {
     configurations.filter { it.selected }.takeIf { it.isNotEmpty() }?.forEach { selected ->
         when (selected.title) {
-            "精选-主页面" -> shieldChoice(versionCode)
+            "精选-主页面" -> shieldMainPage(versionCode)
             "精选-分类" -> shieldCategory(versionCode)
             "精选-分类-全部作品" -> shieldCategoryAllBook(versionCode)
             "精选-免费-免费推荐" -> shieldFreeRecommend(versionCode)
@@ -43,84 +39,111 @@ fun PackageParam.shieldOption(
             "精选-排行榜" -> shieldBookRank(versionCode)
             "精选-新书" -> shieldNewBook(versionCode)
             "每日导读" -> shieldDailyReading(versionCode)
+            "分类-小编力荐、本周强推等更多" -> shieldCategoryBookListReborn(versionCode)
             "精选-漫画" -> shieldComic(versionCode)
             "精选-漫画-其他" -> shieldComicOther(versionCode)
-            "分类-小编力荐、本周强推等更多" -> shieldCategoryBookListReborn(versionCode)
         }
     }
 }
 
 /**
- * 屏蔽每日导读指定的书籍
+ * 屏蔽每日导读
+ * @since 7.9.306-1030
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.shieldDailyReading(
-    versionCode: Int,
+    versionCode: Int
 ) {
-    /**
-     * 上级调用:com.qidian.QDReader.ui.activity.DailyReadingActivity.onCreate bindView()
-     */
-    val needHookClass = when (versionCode) {
-        in 788..800 -> "com.qidian.QDReader.component.api.b1"
-        in 804..812 -> "com.qidian.QDReader.component.api.f1"
-        in 827..860 -> "com.qidian.QDReader.component.api.h1"
-        in 860..878 -> "com.qidian.QDReader.component.api.k1"
-        in 884..890 -> "com.qidian.QDReader.component.api.h1"
-        in 896..970 -> "com.qidian.QDReader.component.api.i1"
-        in 980..1030 -> "com.qidian.QDReader.component.api.j1"
-        else -> null
-    }
-    val needHookMethod = when (versionCode) {
-        in 788..812 -> "j"
-        in 827..878 -> "k"
-        in 884..1030 -> "h"
-        else -> null
-    }
-    if (needHookClass == null || needHookMethod == null) {
-        "屏蔽每日导读".printlnNotSupportVersion(versionCode)
-        return
-    }
-    needHookClass.hook {
-        injectMember {
-            method {
-                name = needHookMethod
-                emptyParam()
-                returnType = ArrayListClass
-            }
+    when (versionCode) {
+        in 1030..1099 -> {
+            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
+                bridge.apply {
+                    findClass {
+                        searchPackages = listOf("com.qidian.QDReader.ui.adapter")
+                        matcher {
+                            usingStrings = listOf(
+                                "DailyReadingClosedAd", "PositionMark"
+                            )
+                        }
+                    }.firstNotNullOfOrNull { classData ->
+                        classData.getMethods().findMethod {
+                            matcher {
+                                modifiers = Modifier.PUBLIC
+                                paramTypes = listOf("java.util.ArrayList")
+                                returnType = "void"
+                            }
+                        }.firstNotNullOfOrNull { methodData ->
+                            shieldUnit(
+                                className = methodData.className,
+                                methodName = methodData.methodName,
+                                paramCount = methodData.paramTypeNames.size
+                            )
+                        }
+                    }
 
-            afterHook {
-                result.safeCast<ArrayList<*>>()?.let {
-                    result = parseNeedShieldList(it)
+                    /*
+                    findClass {
+                        searchPackages = listOf("com.qidian.QDReader.flutter")
+                        matcher {
+
+                            addMethod {
+                                name = "onSuccess"
+                                paramTypes = listOf(
+                                    "java.util.ArrayList"
+                                )
+                                returnType = "void"
+                                usingStrings = listOf(
+                                    "dailyReadingDataCacheChange"
+                                )
+                            }
+
+                            usingStrings = listOf(
+                                "dailyReadingDataCacheChange"
+                            )
+                        }
+                    }.firstNotNullOfOrNull { classData ->
+                        "classData: $classData".loge()
+                        classData.getMethods().findMethod {
+                            matcher {
+                                name = "onSuccess"
+                                paramTypes = listOf(
+                                    "java.util.ArrayList"
+                                )
+                                returnType = "void"
+                                usingStrings = listOf(
+                                    "dailyReadingDataCacheChange"
+                                )
+                            }
+                        }.firstNotNullOfOrNull { methodData ->
+                            shieldUnit(
+                                className = methodData.className,
+                                methodName = methodData.methodName,
+                                paramCount = methodData.paramTypeNames.size
+                            )
+                        }
+                    }
+
+                     */
                 }
             }
         }
+
+        else -> "屏蔽每日导读".printlnNotSupportVersion(versionCode)
     }
 }
 
 /**
  * 屏蔽精选主页面
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
-fun PackageParam.shieldChoice(versionCode: Int) {
+fun PackageParam.shieldMainPage(versionCode: Int) {
     when (versionCode) {
-        in 788..1099 -> {
-            /**
-             * 精选主页面
-             */
-            findClass("com.qidian.QDReader.repository.entity.BookListData").hook {
-                injectMember {
-                    method {
-                        name = "getItems"
-                        returnType = ListClass
-                    }
-                    beforeHook {
-                        val list = instance.getParam<MutableList<*>>("items")
-                        list?.let {
-                            safeRun {
-                                result = parseNeedShieldList(it)
-                            }
-                        }
-                    }
-                }
-            }
+        in 1030..1099 -> {
+            shieldResult(
+                className = "com.qidian.QDReader.repository.entity.BookListData",
+                methodName = "getItems"
+            )
         }
 
         else -> "屏蔽精选主页面".printlnNotSupportVersion(versionCode)
@@ -129,428 +152,229 @@ fun PackageParam.shieldChoice(versionCode: Int) {
 
 /**
  * 屏蔽精选-分类
- * 上级调用:com.qidian.QDReader.ui.activity.QDBookCategoryActivity  mRightAdapter
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.shieldCategory(versionCode: Int) {
     when (versionCode) {
-        in 788..808 -> {
-            /**
-             * 分类
-             * 上级调用:com.qidian.QDReader.ui.adapter.x6.onBindContentItemViewHolder if(v1 == 2)
-             */
-            findClass("com.qidian.QDReader.ui.adapter.x6\$a").hook {
-                injectMember {
-                    constructor {
-                        param(
-                            "com.qidian.QDReader.ui.adapter.x6".toClass(),
-                            ContextClass,
-                            IntType,
-                            ListClass
+        in 1030..1099 -> {
+            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
+                bridge.findClass {
+                    searchPackages = listOf("com.qidian.QDReader.ui.adapter")
+                    matcher {
+                        usingStrings = listOf(
+                            "QDBookCategoryActivity", "fenleicategory"
                         )
                     }
-                    beforeHook {
-                        args[3].safeCast<MutableList<*>>()?.let {
-                            safeRun {
-                                args(3).set(parseNeedShieldList(it))
-                            }
+                }.firstNotNullOfOrNull { classData ->
+                    classData.getMethods().findMethod {
+                        matcher {
+                            modifiers = Modifier.PUBLIC
+                            paramTypes = listOf("int", "java.util.List")
+                            returnType = "void"
                         }
-                    }
-                }
-            }
-        }
-
-        812 -> {
-            findClass("com.qidian.QDReader.ui.adapter.x6\$a").hook {
-                injectMember {
-                    constructor {
-                        param(
-                            "com.qidian.QDReader.ui.adapter.x6".toClass(),
-                            ContextClass,
-                            IntType,
-                            ListClass
-                        )
-                    }
-                    beforeHook {
-                        args[3].safeCast<MutableList<*>>()?.let {
-                            safeRun {
-                                args(3).set(parseNeedShieldList(it))
-                            }
-                        }
-                    }
-                }
-            }
-
-            /**
-             * 上级调用:com.qidian.QDReader.ui.fragment.LibraryFragment.loadData(boolean) : void
-             */
-            findClass("com.qidian.QDReader.ui.fragment.LibraryFragment\$a").hook {
-                injectMember {
-                    method {
-                        name = "a"
-                        param(IntType, ArrayListClass)
-                        returnType = UnitType
-                    }
-                    beforeHook {
-                        args[1].safeCast<MutableList<*>>()?.let {
-                            safeRun {
-                                args(1).set(parseNeedShieldList(it))
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        in 827..1030 -> {
-            val needHookClass = when (versionCode) {
-                827 -> "com.qidian.QDReader.ui.adapter.x6"
-                834 -> "com.qidian.QDReader.ui.adapter.y6"
-                in 842..860 -> "com.qidian.QDReader.ui.adapter.z6"
-                in 868..878 -> "com.qidian.QDReader.ui.adapter.a7"
-                in 884..890 -> "com.qidian.QDReader.ui.adapter.z6"
-                in 896..924 -> "com.qidian.QDReader.ui.adapter.v6"
-                in 932..958 -> "com.qidian.QDReader.ui.adapter.x6"
-                970 -> "com.qidian.QDReader.ui.adapter.a7"
-                in 980..1020 -> "com.qidian.QDReader.ui.adapter.z6"
-                1030 -> "com.qidian.QDReader.ui.adapter.e7"
-                else -> null
-            }
-            val needHookMethod = when (versionCode) {
-                in 827..878 -> "r"
-                in 884..1030 -> "o"
-                else -> null
-            }
-            if (needHookClass == null || needHookMethod == null) {
-                "屏蔽精选-分类".printlnNotSupportVersion(versionCode)
-            } else {
-                needHookClass.hook {
-                    injectMember {
-                        method {
-                            name = needHookMethod
-                            param(IntType, ListClass)
+                    }.firstNotNullOfOrNull { methodData ->
+                        methodData.className.toClass().method {
+                            name = methodData.methodName
+                            paramCount(methodData.paramTypeNames.size)
                             returnType = UnitType
-                        }
-                        afterHook {
-                            val b = instance.getParam<List<*>>("b")
-                            b?.let {
-                                safeRun {
-                                    val bIterator = b.iterator()
-                                    while (bIterator.hasNext()) {
-                                        val next = bIterator.next()
-                                        next?.let {
-                                            val categoryItems =
-                                                it.getParam<MutableList<*>>("categoryItems")
-                                            categoryItems?.let {
-                                                args(1).set(parseNeedShieldList(categoryItems))
-                                            }
+                        }.hook().before {
+                            val list = args[0].safeCast<List<*>>() ?: return@before
+                            val iterator = list.iterator()
+                            while (iterator.hasNext()) {
+                                runAndCatch {
+                                    iterator.next()?.getParam<MutableList<*>>("categoryItems")
+                                        ?.let {
+                                            parseNeedShieldList(it)
                                         }
-                                    }
                                 }
                             }
+                            args(0).set(list)
                         }
+
                     }
                 }
             }
 
-            /**
-             * 上级调用: com.qidian.morphing.MorphingAdapter.getItem -> MorphingCard -> MorphingWidgetData -> list
-             */
-            findClass("com.qidian.morphing.MorphingWidgetData").hook {
-                injectMember {
-                    method {
-                        name = "getList"
-                        emptyParam()
-                        returnType = ListClass
-                    }
-                    afterHook {
-                        result.safeCast<MutableList<*>>()?.let {
-                            safeRun {
-                                result = parseNeedShieldList(it)
-                            }
-                        }
-                    }
-                }
-            }
-
+            shieldResult(
+                className = "com.qidian.morphing.MorphingWidgetData", methodName = "getList"
+            )
         }
 
-        else -> "屏蔽分类".printlnNotSupportVersion(versionCode)
+        else -> "屏蔽精选-分类".printlnNotSupportVersion(versionCode)
+    }
+}
+
+/**
+ * 屏蔽精选-分类-全部作品
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
+ */
+fun PackageParam.shieldCategoryAllBook(versionCode: Int) {
+    when (versionCode) {
+        in 1030..1099 -> {
+            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
+                bridge.findClass {
+                    searchPackages = listOf("com.qidian.QDReader.ui.fragment")
+                    matcher {
+                        methods {
+                            add {
+                                modifiers = Modifier.PUBLIC
+                                paramTypes = listOf("int", "java.util.ArrayList")
+                                returnType = "void"
+                            }
+                        }
+                        usingStrings = listOf(
+                            "errorMessage", "serverBookList"
+                        )
+                    }
+                }.firstNotNullOfOrNull { classData ->
+                    classData.getMethods().findMethod {
+                        matcher {
+                            modifiers = Modifier.PUBLIC
+                            paramTypes = listOf("int", "java.util.ArrayList")
+                            returnType = "void"
+                            usingStrings = listOf("serverBookList")
+                        }
+                    }.firstNotNullOfOrNull { methodData ->
+                        shieldUnit(
+                            className = methodData.className,
+                            methodName = methodData.methodName,
+                            paramCount = methodData.paramTypeNames.size,
+                            index = 1
+                        )
+                    }
+                }
+            }
+        }
+
+        else -> "屏蔽精选-分类-全部作品".printlnNotSupportVersion(versionCode)
     }
 }
 
 /**
  * 屏蔽精选-免费-免费推荐
- * 上级调用:com.qidian.QDReader.ui.fragment.QDBookStoreFragment.onViewInject
- * mAdapter
- * onBindContentItemViewHolder
- * if(this.getContentItemViewType(arg8) != 8)
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.shieldFreeRecommend(versionCode: Int) {
-    val freeRecommendHookClass = when (versionCode) {
-        788 -> "la.a"
-        in 792..808 -> "ka.a"
-        812 -> "ia.a"
-        827 -> "la.a"
-        in 834..860 -> "ka.a"
-        868 -> "ma.a"
-        872 -> "ka.a"
-        878 -> "ja.a"
-        in 884..890 -> "ca.search"
-        in 896..900 -> "da.search"
-        in 906..916 -> "ha.search"
-        924 -> "ia.search"
-        in 932..938 -> "la.search"
-        944 -> "ka.search"
-        950 -> "ma.search"
-        958 -> "ja.search"
-        970 -> "ia.search"
-        in 980..1020 -> "cb.search"
-        1030 -> "fb.search"
-        else -> null
-    }
-    val freeRecommendHookMethod = when (versionCode) {
-        in 788..878 -> "n"
-        in 884..1030 -> "k"
-        else -> null
-    }
-    if (freeRecommendHookClass == null || freeRecommendHookMethod == null) {
-        "屏蔽免费-免费推荐".printlnNotSupportVersion(versionCode)
-        return
-    }
-    freeRecommendHookClass.hook {
-        injectMember {
-            method {
-                name = freeRecommendHookMethod
-                param(
-                    "com.qidian.QDReader.repository.entity.BookStoreDynamicItem".toClass(),
-                    IntType,
-                    IntType
-                )
-            }
-            beforeHook {
-                val item = args[0]?.getParam<ArrayList<*>>("BookList")
-                item?.let {
-                    safeRun {
-                        parseNeedShieldList(it)
+    when (versionCode) {
+        in 1030..1099 -> {
+            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
+                bridge.findClass {
+                    excludePackages = listOf("com")
+                    matcher {
+                        methods {
+                            add {
+                                modifiers = Modifier.PUBLIC
+                                paramTypes = listOf(
+                                    "com.qidian.QDReader.repository.entity.BookStoreDynamicItem",
+                                    "int",
+                                    "int"
+                                )
+                                returnType = "void"
+                            }
+                        }
+                    }
+                }.firstNotNullOfOrNull { classData ->
+                    classData.getMethods().findMethod {
+                        matcher {
+                            modifiers = Modifier.PUBLIC
+                            paramTypes = listOf(
+                                "com.qidian.QDReader.repository.entity.BookStoreDynamicItem",
+                                "int",
+                                "int"
+                            )
+                            returnType = "void"
+                        }
+                    }.firstNotNullOfOrNull { methodData ->
+                        methodData.className.toClass().method {
+                            name = methodData.methodName
+                            paramCount(methodData.paramTypeNames.size)
+                            returnType = UnitType
+                        }.hook().before {
+                            args[0]?.getParam<ArrayList<*>>("BookList")?.let {
+                                parseNeedShieldList(it)
+                            }
+                        }
                     }
                 }
-
             }
         }
+
+        else -> "屏蔽精选-免费-免费推荐".printlnNotSupportVersion(versionCode)
     }
 }
 
 /**
  * 屏蔽精选-新书
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.shieldNewBook(versionCode: Int) {
     when (versionCode) {
-        in 792..843 -> {
-            /**
-             * 精选-新书
-             */
-            findClass("com.qidian.QDReader.repository.entity.newbook.NewBookCard").hook {
-                injectMember {
-                    method {
-                        name = "buildData"
-                        returnType = UnitType
-                    }
-                    afterHook {
-                        safeRun {
-                            val goldRecBean = instance.getParam<Any>("goldRecBean")
-                            goldRecBean?.let {
-                                val items = goldRecBean.getParam<MutableList<*>>("items")
-                                items?.let {
-                                    parseNeedShieldList(items)
-                                }
+        in 1030..1099 -> {
+            "com.qidian.QDReader.ui.adapter.newbook.BookTagViewHolder".toClass().method {
+                name = "updateUI"
+                param("com.qidian.QDReader.repository.entity.newbook.NewBookCard".toClass())
+                returnType = UnitType
+            }.hook().before {
+                args[0]?.let {
+                    runAndCatch {
+                        val goldRecBean = it.getParam<Any>("goldRecBean")
+                        goldRecBean?.let {
+                            val items = goldRecBean.getParam<MutableList<*>>("items")
+                            items?.let {
+                                parseNeedShieldList(items)
                             }
-                            val bookShortageBean = instance.getParam<Any>("bookShortageBean")
-                            bookShortageBean?.let {
-                                val items = bookShortageBean.getParam<MutableList<*>>("items")
-                                items?.let {
-                                    parseNeedShieldList(items)
-                                }
-                            }
-
-                            val monthBannerListBean = instance.getParam<Any>("monthBannerListBean")
-                            monthBannerListBean?.let {
-                                val items = monthBannerListBean.getParam<MutableList<*>>("items")
-                                items?.let {
-                                    parseNeedShieldList(items)
-                                }
-                            }
-                            val newBookAIRecommendBean =
-                                instance.getParam<Any>("newBookAIRecommendBean")
-                            newBookAIRecommendBean?.let {
-                                val items = newBookAIRecommendBean.getParam<MutableList<*>>("items")
-                                items?.let {
-                                    parseNeedShieldList(items)
-                                }
-                            }
-                            val newBookRankBean = instance.getParam<Any>("newBookRankBean")
-                            newBookRankBean?.let {
-                                val items = newBookRankBean.getParam<MutableList<*>>("items")
-                                items?.let {
-                                    parseNeedShieldList(items)
-                                }
-                            }/*
-                            val newBookRecommendBean =
-                                instance.getParam<Any>("newBookRecommendBean")
-
-                            newBookRecommendBean?.let {
-                                val items =
-                                    getParam<MutableList<*>>(newBookRecommendBean, "items")
-                                items?.let {
-                                    val iterator = it.iterator()
-                                    while (iterator.hasNext()) {
-                                        val item = iterator.next().toJSONString()
-                                        val jb = item.parseObject()
-                                        val recData = jb.getJSONObject("recData")
-                                        if (recData != null){
-                                            val items = recData.getJSONArray("items") as? MutableList<*>
-                                            items?.let {
-                                                parseNeedShieldList(items)
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                             */
-                            val newBookTagBean = instance.getParam<Any>("newBookTagBean")
-                            newBookTagBean?.let {
-                                val items = newBookTagBean.getParam<MutableList<*>>("items")
-                                items?.let {
-                                    parseNeedShieldList(items)
-                                }
-                            }
-
                         }
+                        val bookShortageBean = it.getParam<Any>("bookShortageBean")
+                        bookShortageBean?.let {
+                            val items = bookShortageBean.getParam<MutableList<*>>("items")
+                            items?.let {
+                                parseNeedShieldList(items)
+                            }
+                        }
+
+                        val monthBannerListBean = it.getParam<Any>("monthBannerListBean")
+                        monthBannerListBean?.let {
+                            val items = monthBannerListBean.getParam<MutableList<*>>("items")
+                            items?.let {
+                                parseNeedShieldList(items)
+                            }
+                        }
+                        val newBookAIRecommendBean = it.getParam<Any>("newBookAIRecommendBean")
+                        newBookAIRecommendBean?.let {
+                            val items = newBookAIRecommendBean.getParam<MutableList<*>>("items")
+                            items?.let {
+                                parseNeedShieldList(items)
+                            }
+                        }
+                        val newBookRankBean = it.getParam<Any>("newBookRankBean")
+                        newBookRankBean?.let {
+                            val items = newBookRankBean.getParam<MutableList<*>>("items")
+                            items?.let {
+                                parseNeedShieldList(items)
+                            }
+                        }
+
+                        val newBookTagBean = it.getParam<Any>("newBookTagBean")
+                        newBookTagBean?.let {
+                            val items = newBookTagBean.getParam<MutableList<*>>("items")
+                            items?.let {
+                                parseNeedShieldList(items)
+                            }
+                        }
+
                     }
                 }
             }
 
-            /**
-             * 精选-新书-新书入库/新书强推
-             */
-            findClass("com.qidian.QDReader.repository.entity.newbook.RecPageData").hook {
-                injectMember {
-                    method {
-                        name = "getItems"
-                        returnType = ListClass
-                    }
-                    afterHook {
-                        result.safeCast<MutableList<*>>()?.let {
-                            parseNeedShieldList(it)
-                        }
-                    }
-                }
-            }
-        }
+            shieldResult(
+                className = "com.qidian.QDReader.repository.entity.newbook.RecPageData",
+                methodName = "getItems"
+            )
 
-        in 850..1099 -> {
-            findClass("com.qidian.QDReader.ui.adapter.newbook.BookTagViewHolder").hook {
-                injectMember {
-                    method {
-                        name = "updateUI"
-                        param("com.qidian.QDReader.repository.entity.newbook.NewBookCard".toClass())
-                        returnType = UnitType
-                    }
-                    beforeHook {
-                        args[0]?.let {
-                            safeRun {
-                                val goldRecBean = it.getParam<Any>("goldRecBean")
-                                goldRecBean?.let {
-                                    val items = goldRecBean.getParam<MutableList<*>>("items")
-                                    items?.let {
-                                        parseNeedShieldList(items)
-                                    }
-                                }
-                                val bookShortageBean = it.getParam<Any>("bookShortageBean")
-                                bookShortageBean?.let {
-                                    val items = bookShortageBean.getParam<MutableList<*>>("items")
-                                    items?.let {
-                                        parseNeedShieldList(items)
-                                    }
-                                }
-
-                                val monthBannerListBean = it.getParam<Any>("monthBannerListBean")
-                                monthBannerListBean?.let {
-                                    val items =
-                                        monthBannerListBean.getParam<MutableList<*>>("items")
-                                    items?.let {
-                                        parseNeedShieldList(items)
-                                    }
-                                }
-                                val newBookAIRecommendBean =
-                                    it.getParam<Any>("newBookAIRecommendBean")
-                                newBookAIRecommendBean?.let {
-                                    val items =
-                                        newBookAIRecommendBean.getParam<MutableList<*>>("items")
-                                    items?.let {
-                                        parseNeedShieldList(items)
-                                    }
-                                }
-                                val newBookRankBean = it.getParam<Any>("newBookRankBean")
-                                newBookRankBean?.let {
-                                    val items = newBookRankBean.getParam<MutableList<*>>("items")
-                                    items?.let {
-                                        parseNeedShieldList(items)
-                                    }
-                                }/*
-                                val newBookRecommendBean =
-                                    instance.getParam<Any>("newBookRecommendBean")
-
-                                newBookRecommendBean?.let {
-                                    val items =
-                                        getParam<MutableList<*>>(newBookRecommendBean, "items")
-                                    items?.let {
-                                        val iterator = it.iterator()
-                                        while (iterator.hasNext()) {
-                                            val item = iterator.next().toJSONString()
-                                            val jb = item.parseObject()
-                                            val recData = jb.getJSONObject("recData")
-                                            if (recData != null){
-                                                val items = recData.getJSONArray("items") as? MutableList<*>
-                                                items?.let {
-                                                    parseNeedShieldList(items)
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-
-                                 */
-                                val newBookTagBean = it.getParam<Any>("newBookTagBean")
-                                newBookTagBean?.let {
-                                    val items = newBookTagBean.getParam<MutableList<*>>("items")
-                                    items?.let {
-                                        parseNeedShieldList(items)
-                                    }
-                                }
-
-                            }
-                        }
-                    }
-                }
-            }
-
-            /**
-             * 精选-新书-新书入库/新书强推
-             */
-            findClass("com.qidian.QDReader.repository.entity.newbook.RecPageData").hook {
-                injectMember {
-                    method {
-                        name = "getItems"
-                        returnType = ListClass
-                    }
-                    afterHook {
-                        result.safeCast<MutableList<*>>()?.let {
-                            parseNeedShieldList(it)
-                        }
-                    }
-                }
-            }
         }
 
         else -> "屏蔽精选-新书".printlnNotSupportVersion(versionCode)
@@ -559,275 +383,167 @@ fun PackageParam.shieldNewBook(versionCode: Int) {
 
 /**
  * 屏蔽免费-新书入库
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.shieldFreeNewBook(versionCode: Int) {
-    val needHookMethod = when (versionCode) {
-        in 788..1030 -> "loadData\$lambda-6"
-        else -> null
-    }
-    val needHookMethod2 = when (versionCode) {
-        in 788..1020 -> "loadData\$lambda-6"
-        1030 -> "loadData\$lambda-7"
-        else -> null
-    }
-    if (needHookMethod == null || needHookMethod2 == null) {
-        "屏蔽免费-新书入库".printlnNotSupportVersion(versionCode)
-        return
-    }
-    findClass("com.qidian.QDReader.ui.fragment.QDNewBookInStoreFragment").hook {
-        injectMember {
-            method {
-                name = needHookMethod
-                param(
-                    "com.qidian.QDReader.ui.fragment.QDNewBookInStoreFragment".toClass(),
-                    "com.qidian.QDReader.repository.entity.NewBookInStore".toClass()
-                )
-            }
-            beforeHook {
-                args[1]?.let {
-                    val categoryIdList = it.getParam<MutableList<*>>("CategoryIdList")
-                    val itemList = it.getParam<MutableList<*>>("ItemList")
-                    categoryIdList?.let { list ->
-                        safeRun {
+    when (versionCode) {
+        in 1030..1099 -> {
+            val list = listOf(
+                "com.qidian.QDReader.ui.fragment.QDNewBookInStoreFragment",
+                "com.qidian.QDReader.ui.activity.QDNewBookInStoreActivity"
+            )
+            list.forEach { className ->
+                className.toClass().method {
+                    param(
+                        className.toClass(),
+                        "com.qidian.QDReader.repository.entity.NewBookInStore".toClass()
+                    )
+                    returnType = UnitType
+                }.hook().before {
+                    args[1]?.let {
+                        val categoryIdList = it.getParam<MutableList<*>>("CategoryIdList")
+                        val itemList = it.getParam<MutableList<*>>("ItemList")
+                        categoryIdList?.let { list ->
                             parseNeedShieldList(list)
                         }
-                    }
-                    itemList?.let { list ->
-                        safeRun {
+                        itemList?.let { list ->
                             parseNeedShieldList(list)
                         }
                     }
                 }
             }
+
         }
+
+        else -> "屏蔽免费-新书入库".printlnNotSupportVersion(versionCode)
     }
 
-    findClass("com.qidian.QDReader.ui.activity.QDNewBookInStoreActivity").hook {
-        injectMember {
-            method {
-                name = needHookMethod2
-                param(
-                    "com.qidian.QDReader.ui.activity.QDNewBookInStoreActivity".toClass(),
-                    "com.qidian.QDReader.repository.entity.NewBookInStore".toClass()
-                )
-            }
-            beforeHook {
-                args[1]?.let {
-                    val categoryIdList = it.getParam<MutableList<*>>("CategoryIdList")
-                    val itemList = it.getParam<MutableList<*>>("ItemList")
-                    categoryIdList?.let { list ->
-                        safeRun {
-                            parseNeedShieldList(list)
-                        }
-                    }
-                    itemList?.let { list ->
-                        safeRun {
-                            parseNeedShieldList(list)
-                        }
-                    }
-                }
-            }
-        }
-    }
 }
 
 /**
  * 屏蔽畅销精选、主编力荐等更多
- * 上级调用:com.qidian.QDReader.ui.activity.QDNewBookInStoreActivity.initView() 在刷新前修改List数据
- * getMAdapter
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.shieldHotAndRecommend(versionCode: Int) {
-    val needHookClass = when (versionCode) {
-        in 788..834 -> "com.qidian.QDReader.ui.adapter.s"
-        in 842..860 -> "com.qidian.QDReader.ui.adapter.t"
-        in 868..878 -> "com.qidian.QDReader.ui.adapter.u"
-        in 884..970 -> "com.qidian.QDReader.ui.adapter.r"
-        in 980..1030 -> "com.qidian.QDReader.ui.adapter.q"
-        else -> null
-    }
-    needHookClass?.hook {
-        injectMember {
-            method {
-                name = "setList"
-                param(ListClass)
-                returnType = UnitType
-            }
-            afterHook {
-                val list = instance.getParam<MutableList<*>>("b")
-                list?.let {
-                    safeRun {
-                        parseNeedShieldList(it)
+    when (versionCode) {
+        in 1030..1099 -> {
+            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
+                bridge.findClass {
+                    searchPackages = listOf("com.qidian.QDReader.ui.adapter")
+                    matcher {
+                        usingStrings = listOf(
+                            "BookLastPageBookShortageActivity", "morebooklist", "booklist"
+                        )
+                    }
+                }.firstNotNullOfOrNull { classData ->
+                    classData.getMethods().findMethod {
+                        matcher {
+                            modifiers = Modifier.PUBLIC
+                            paramTypes = listOf(
+                                "java.util.List"
+                            )
+                            returnType = "void"
+                        }
+                    }.firstNotNullOfOrNull { methodData ->
+                        shieldUnit(
+                            className = methodData.className,
+                            methodName = methodData.methodName,
+                            paramCount = methodData.paramTypeNames.size
+                        )
                     }
                 }
-
             }
         }
-    } ?: "屏蔽畅销精选、主编力荐等更多".printlnNotSupportVersion(versionCode)
+
+        else -> "屏蔽畅销精选、主编力荐等更多".printlnNotSupportVersion(versionCode)
+    }
 }
 
 /**
  * 屏蔽新书强推、三江推荐
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.shieldNewBookAndRecommend(versionCode: Int) {
     when (versionCode) {
-        788 -> {
-            findClass("com.qidian.QDReader.ui.fragment.SanJiangPagerFragment").hook {
-                injectMember {
-                    method {
-                        name = "r"
-                        param("com.qidian.QDReader.ui.fragment.SanJiangPagerFragment".toClass())
-                        returnType = ListClass
-                    }
-                    afterHook {
-                        result.safeCast<MutableList<*>>()?.let {
-                            safeRun {
-                                val iterator = it.iterator()
-                                while (iterator.hasNext()) {
-                                    val json = iterator.next().toJSONString().parseObject()
-                                    val jb = json.getJSONObject("BookStoreItem")
-                                    if (jb != null) {
-                                        val authorName = jb.getString("AuthorName")
-                                        val bookName = jb.getString("BookName")
-                                        val categoryName = jb.getString("CategoryName")
-                                        val array = jb.getJSONArray("tagList")
-                                        val bookTypeArray = mutableSetOf(categoryName)
-                                        if (!array.isNullOrEmpty()) {
-                                            for (i in array.indices) {
-                                                array += array.getString(i)
-                                            }
-                                        }
-                                        val isNeedShield = isNeedShield(
-                                            bookName = bookName,
-                                            authorName = authorName,
-                                            bookType = bookTypeArray
-                                        )
-                                        if (isNeedShield) {
-                                            iterator.remove()
-                                        }
-                                    }
-                                }
-                                result = it
+        in 1030..1099 -> {
+            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
+                bridge.findClass {
+                    searchPackages = listOf("com.qidian.QDReader.ui.adapter")
+                    matcher {
+                        methods {
+                            add {
+                                modifiers = Modifier.PUBLIC
+                                name = "getItem"
+                                paramTypes = listOf("int")
+                                returnType = "com.qidian.QDReader.repository.entity.BookStoreItem"
                             }
                         }
+                        usingStrings = listOf(" (", "-", ")")
                     }
-                }
-            }
-        }
-
-        in 792..800 -> {
-            findClass("com.qidian.QDReader.ui.fragment.SanJiangPagerFragment").hook {
-                injectMember {
-                    method {
-                        name = "s"
-                        param("com.qidian.QDReader.ui.fragment.SanJiangPagerFragment".toClass())
-                        returnType = ListClass
-                    }
-                    afterHook {
-                        result.safeCast<MutableList<*>>()?.let {
-                            safeRun {
-                                val iterator = it.iterator()
-                                while (iterator.hasNext()) {
-                                    val item = iterator.next().toJSONString()
-                                    val json = item.parseObject()
-                                    val jb = json.getJSONObject("BookStoreItem")
-                                    if (jb != null) {
-                                        val authorName = jb.getString("AuthorName")
-                                        val bookName = jb.getString("BookName")
-                                        val categoryName = jb.getString("CategoryName")
-                                        val array = jb.getJSONArray("tagList")
-                                        val bookTypeArray = mutableSetOf(categoryName)
-                                        if (!array.isNullOrEmpty()) {
-                                            for (i in array.indices) {
-                                                array += array.getString(i)
-                                            }
-                                        }
-                                        val isNeedShield = isNeedShield(
-                                            bookName = bookName,
-                                            authorName = authorName,
-                                            bookType = bookTypeArray
-                                        )
-                                        if (isNeedShield) {
-                                            iterator.remove()
-                                        }
-                                    }
-                                }
-                                result = it
+                }.filter { "QDTeenagerBookStoreAdapter" !in it.name }
+                    .firstNotNullOfOrNull { classData ->
+                        classData.getMethods().findMethod {
+                            matcher {
+                                modifiers = Modifier.PUBLIC
+                                paramTypes = listOf(
+                                    "java.util.List"
+                                )
+                                returnType = "void"
                             }
-                        }
-                    }
-                }
-            }
-        }
-
-        in 804..1030 -> {
-            /**
-             *上级调用:com.qidian.QDReader.ui.fragment.SanJiangPagerFragment mAdapter
-             */
-            val needHookClass = when (versionCode) {
-                in 804..812 -> "com.qidian.QDReader.ui.adapter.lb"
-                827 -> "com.qidian.QDReader.ui.adapter.nb"
-                834 -> "com.qidian.QDReader.ui.adapter.ob"
-                in 842..860 -> "com.qidian.QDReader.ui.adapter.pb"
-                in 868..878 -> "com.qidian.QDReader.ui.adapter.rb"
-                in 884..890 -> "com.qidian.QDReader.ui.adapter.qb"
-                in 896..924 -> "com.qidian.QDReader.ui.adapter.mb"
-                in 932..958 -> "com.qidian.QDReader.ui.adapter.rb"
-                970 -> "com.qidian.QDReader.ui.adapter.ub"
-                in 980..1020 -> "com.qidian.QDReader.ui.adapter.tb"
-                1030 -> "com.qidian.QDReader.ui.adapter.xb"
-                else -> null
-            }
-            val needHookMethod = when (versionCode) {
-                in 804..878 -> "q"
-                in 884..1030 -> "n"
-                else -> null
-            }
-            if (needHookClass == null || needHookMethod == null) {
-                "屏蔽新书强推、三江推荐".printlnNotSupportVersion(versionCode)
-            } else {
-                needHookClass.hook {
-                    injectMember {
-                        method {
-                            name = needHookMethod
-                            param(ListClass)
-                            returnType = UnitType
-                        }
-                        beforeHook {
-                            args[0].safeCast<MutableList<*>>()?.let {
-                                safeRun {
-                                    val iterator = it.iterator()
-                                    while (iterator.hasNext()) {
-                                        val item = iterator.next().toJSONString()
-                                        val json = item.parseObject()
-                                        val jb = json.getJSONObject("BookStoreItem")
-                                        if (jb != null) {
-                                            val authorName = jb.getString("AuthorName")
-                                            val bookName = jb.getString("BookName")
-                                            val categoryName = jb.getString("CategoryName")
-                                            val array = jb.getJSONArray("tagList")
-                                            val bookTypeArray = mutableSetOf(categoryName)
-                                            if (!array.isNullOrEmpty()) {
-                                                for (i in array.indices) {
-                                                    array += array.getString(i)
+                        }.filter { "setHeaderData" != it.className }
+                            .firstNotNullOfOrNull { methodData ->
+                                methodData.className.toClass().method {
+                                    name = methodData.methodName
+                                    paramCount = methodData.paramTypeNames.size
+                                    returnType = UnitType
+                                }.hook().before {
+                                    args[0].safeCast<MutableList<*>>()?.let {
+                                        runAndCatch {
+                                            val iterator = it.iterator()
+                                            while (iterator.hasNext()) {
+                                                val item = iterator.next().toJSONString()
+                                                val json = item.parseObject()
+                                                val jb = json.getJSONObject("BookStoreItem")
+                                                if (jb != null) {
+                                                    val authorName =
+                                                        jb.getStringWithFallback("authorName")
+                                                    val bookName =
+                                                        jb.getStringWithFallback("bookName")
+                                                    val categoryName =
+                                                        jb.getStringWithFallback("categoryName")
+                                                    val array =
+                                                        jb.getJSONArrayWithFallback("tagList")
+                                                    val bookTypeArray = mutableSetOf("")
+                                                    if (!categoryName.isNullOrBlank()) {
+                                                        bookTypeArray += categoryName
+                                                    }
+                                                    if (!array.isNullOrEmpty()) {
+                                                        for (i in array.indices) {
+                                                            array += array.getString(i)
+                                                        }
+                                                    }
+                                                    val isNeedShield = isNeedShield(
+                                                        bookName = bookName,
+                                                        authorName = authorName,
+                                                        bookType = bookTypeArray
+                                                    )
+                                                    if (isNeedShield) {
+                                                        iterator.remove()
+                                                    }
                                                 }
                                             }
-                                            val isNeedShield = isNeedShield(
-                                                bookName = bookName,
-                                                authorName = authorName,
-                                                bookType = bookTypeArray
-                                            )
-                                            if (isNeedShield) {
-                                                iterator.remove()
-                                            }
+                                            args(0).set(it)
                                         }
                                     }
-                                    args(0).set(it)
                                 }
+
                             }
-                        }
                     }
-                }
             }
+
         }
 
         else -> "屏蔽新书强推、三江推荐".printlnNotSupportVersion(versionCode)
@@ -836,183 +552,59 @@ fun PackageParam.shieldNewBookAndRecommend(versionCode: Int) {
 
 /**
  * 屏蔽精选-排行榜
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.shieldBookRank(versionCode: Int) {
     when (versionCode) {
-        in 808..1020 -> {
-            val needHookMethod = when (versionCode) {
-                in 808..994 -> "lambda\$loadBookList\$4"
-                in 1005..1020 -> "lambda\$loadBookList\$5"
-                else -> null
-            }
-            needHookMethod?.let {
-                findClass("com.qidian.QDReader.ui.fragment.RankingFragment").hook {
-                    injectMember {
-                        method {
-                            name = it
-                            param(
-                                BooleanType,
-                                BooleanType,
-                                IntType,
-                                "com.qidian.QDReader.repository.entity.RankListData".toClass()
-                            )
-                            returnType = UnitType
-                        }
-                        beforeHook {
-                            args[3]?.let {
-                                val rankBookList = it.getParam<MutableList<*>>("rankBookList")
-                                rankBookList?.let {
-                                    parseNeedShieldList(rankBookList)
-                                }
-                            }
-                        }
-                    }
-                }
-            } ?: "屏蔽排行榜".printlnNotSupportVersion(versionCode)
+        in 1030..1099 -> {
+            shieldResult(
+                className = "com.qidian.QDReader.repository.entity.RankListData",
+                methodName = "getRankBookList"
+            )
         }
 
-        1030 -> {
-            findClass("com.qidian.QDReader.repository.entity.RankListData").hook {
-                injectMember {
-                    method {
-                        name = "getRankBookList"
-                        emptyParam()
-                        returnType = ListClass
-                    }
-                    afterHook {
-                        result.safeCast<MutableList<*>>()?.let {
-                            safeRun {
-                                result =  parseNeedShieldList(it)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        else -> "屏蔽排行榜".printlnNotSupportVersion(versionCode)
-    }
-}
-
-/**
- * 屏蔽分类-全部作品
- */
-fun PackageParam.shieldCategoryAllBook(versionCode: Int) {
-    when (versionCode) {
-        in 788..812 -> {
-            /**
-             * 分类-全部作品
-             */
-            findClass("com.qidian.QDReader.ui.activity.BookLibraryActivity").hook {
-                injectMember {
-                    method {
-                        name = "M"
-                        param("com.qidian.QDReader.ui.activity.BookLibraryActivity".toClass())
-                        returnType = ArrayListClass
-                    }
-                    beforeHook {
-                        args[0]?.let {
-                            val list = it.getParam<ArrayList<*>>("mBookList")
-                            list?.let {
-                                safeRun {
-                                    parseNeedShieldList(it)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        in 827..878 -> {
-            /**
-             * 上级调用:com.qidian.QDReader.ui.fragment.LibraryFragment.loadData(boolean) : void
-             */
-            findClass("com.qidian.QDReader.ui.fragment.LibraryFragment\$a").hook {
-                injectMember {
-                    method {
-                        name = "a"
-                        param(IntType, ArrayListClass)
-                        returnType = UnitType
-                    }
-                    beforeHook {
-                        args[1].safeCast<MutableList<*>>()?.let {
-                            safeRun {
-                                args(1).set(parseNeedShieldList(it))
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        in 884..1099 -> {
-            findClass("com.qidian.QDReader.ui.fragment.LibraryFragment\$search").hook {
-                injectMember {
-                    method {
-                        name = "search"
-                        param(IntType, ArrayListClass)
-                        returnType = UnitType
-                    }
-                    beforeHook {
-                        args[1].safeCast<MutableList<*>>()?.let {
-                            safeRun {
-                                args(1).set(parseNeedShieldList(it))
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        else -> "屏蔽分类-全部作品".printlnNotSupportVersion(versionCode)
+        else -> "屏蔽精选-排行榜".printlnNotSupportVersion(versionCode)
     }
 }
 
 /**
  * 屏蔽分类-小编力荐、本周强推等
+ * @since 7.9.306-1030 ~ 1099
+ *  @param [versionCode] 版本代码
  */
 fun PackageParam.shieldCategoryBookListReborn(versionCode: Int) {
-    val needHookMethodName = when (versionCode) {
-        in 950..958 -> "o0"
-        in 970..1030 -> "n0"
-        else -> null
-    }
-    needHookMethodName?.let {
-        findClass("com.qidian.QDReader.ui.view.BookItemView").hook {
-            injectMember {
-                method {
-                    name = needHookMethodName
-                    param(JSONArrayClass)
-                    returnType = ListClass
-                }
-                afterHook {
-                    result.safeCast<ArrayList<*>>()?.let {
-                        result = parseNeedShieldList(it)
-                    }
+    when (versionCode) {
+        in 1030..1099 -> {
+            "com.qidian.QDReader.ui.view.BookItemView".toClass().method {
+                param(JSONArrayClass)
+                returnType = ListClass
+            }.hook().after {
+                result.safeCast<ArrayList<*>>()?.let {
+                    result = parseNeedShieldList(it)
                 }
             }
         }
-    } ?: "屏蔽分类-小编力荐、本周强推等".printlnNotSupportVersion(versionCode)
+
+        else -> "屏蔽分类-小编力荐、本周强推等".printlnNotSupportVersion(versionCode)
+    }
 }
 
 /**
  * 屏蔽-漫画
+ *  @since 7.9.306-1030 ~ 1099
+ *  @param [versionCode] 版本代码
  */
 fun PackageParam.shieldComic(versionCode: Int) {
     when (versionCode) {
-        in 812..1099 -> {
-            findClass("com.qidian.QDReader.repository.entity.ComicSquareItem").hook {
-                injectMember {
-                    method {
-                        name = "getComicSqureRecmdItems"
-                        emptyParam()
-                        returnType = ArrayListClass
-                    }
-                    afterHook {
-                        result.safeCast<ArrayList<*>>()?.let {
-                            result = HookEntry.parseNeedShieldComicList(it)
-                        }
-                    }
+        in 1030..1099 -> {
+            "com.qidian.QDReader.repository.entity.ComicSquareItem".toClass().method {
+                name = "getComicSqureRecmdItems"
+                emptyParam()
+                returnType = ArrayListClass
+            }.hook().after {
+                result.safeCast<ArrayList<*>>()?.let {
+                    result = HookEntry.parseNeedShieldComicList(it)
                 }
             }
         }
@@ -1023,78 +615,87 @@ fun PackageParam.shieldComic(versionCode: Int) {
 
 /**
  * 屏蔽-漫画-其他
- * 上级调用: com.qidian.QDReader.ui.activity.QDComicSquareItemDetailActivity.loadData
- * mAdapter
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.shieldComicOther(versionCode: Int) {
-    val needHookClass = when (versionCode) {
-        in 812..834 -> "com.qidian.QDReader.ui.adapter.c2"
-        in 842..860 -> "com.qidian.QDReader.ui.adapter.d2"
-        in 868..878 -> "com.qidian.QDReader.ui.adapter.e2"
-        in 884..970 -> "com.qidian.QDReader.ui.adapter.b2"
-        in 980..1030 -> "com.qidian.QDReader.ui.adapter.a2"
-        else -> null
-    }
-    val needHookMethod = when (versionCode) {
-        in 812..878 -> "q"
-        in 884..1030 -> "n"
-        else -> null
-    }
-    if (needHookClass == null || needHookMethod == null) {
-        "屏蔽-漫画-其他".printlnNotSupportVersion(versionCode)
-        return
-    }
-    needHookClass.hook {
-        injectMember {
-            method {
-                name = needHookMethod
-                param(ArrayListClass)
-                returnType = UnitType
-            }
-            afterHook {
-                val list = instance.getParamList<ArrayList<*>?>()
-                if (list.isNotEmpty()) {
-                    HookEntry.parseNeedShieldComicList(list)
+    when (versionCode) {
+        in 1030..1099 -> {
+            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
+                bridge.findClass {
+                    searchPackages = listOf("com.qidian.QDReader.ui.adapter")
+                    matcher {
+                        methods {
+                            add {
+                                modifiers = Modifier.PUBLIC
+                                paramTypes = listOf("int")
+                                returnType = "com.qidian.QDReader.repository.entity.ComicBookItem"
+                            }
+                        }
+                    }
+                }.firstNotNullOfOrNull { classData ->
+                    classData.getMethods().findMethod {
+                        matcher {
+                            modifiers = Modifier.PUBLIC
+                            paramTypes = listOf(
+                                "java.util.ArrayList"
+                            )
+                            returnType = "void"
+                        }
+                    }.firstNotNullOfOrNull { methodData ->
+                        methodData.className.toClass().method {
+                            name = methodData.methodName
+                            paramCount = methodData.paramTypeNames.size
+                            returnType = UnitType
+                        }.hook().before {
+                            args[0].safeCast<MutableList<*>>()?.let {
+                                args(0).set(parseNeedShieldComicList(it))
+                            }
+                        }
+                    }
                 }
             }
         }
+
+        else -> "屏蔽-漫画-其他".printlnNotSupportVersion(versionCode)
     }
+
 }
 
 /**
- * 书籍详情-快速屏蔽
+ *  书籍详情-快速屏蔽
+ *  @since 7.9.306-1030 ~ 1099
+ *  @param [versionCode] 版本代码
  */
 fun PackageParam.quickShield(versionCode: Int) {
     when (versionCode) {
-        in 1005..1099 -> {
-            findClass("com.qidian.QDReader.ui.activity.QDBookDetailActivity").hook {
-                injectMember {
-                    method {
-                        name = "mergeBookDetail\$lambda-6"
-                        paramCount(3)
-                        returnType = UnitType
-                    }
-                    afterHook {
-                        val viewMap =
-                            args[0]?.getParam<Map<*, View>>("_\$_findViewCache") ?: return@afterHook
-                        val ids = listOf("tvBookName", "tvAuthorName")
-                        val textViews = viewMap.values.filterIsInstance<TextView>()
-                            .filter { it.getName() in ids }
-                        val tvBookName = textViews.first { it.getName() == "tvBookName" }
-                        val tvAuthorName = textViews.first { it.getName() == "tvAuthorName" }
-                        tvBookName.setOnLongClickListener {
-                            it.context.showQuickShieldDialog(
-                                name = tvBookName.text.toString()
-                            )
-                            true
-                        }
-                        tvAuthorName.setOnLongClickListener {
-                            it.context.showQuickShieldDialog(
-                                author = tvAuthorName.text.toString()
-                            )
-                            true
-                        }
-                    }
+        in 1030..1099 -> {
+            "com.qidian.QDReader.ui.activity.QDBookDetailActivity".toClass().method {
+                param(
+                    "com.qidian.QDReader.ui.activity.QDBookDetailActivity".toClass(),
+                    BooleanType,
+                    "com.qidian.QDReader.repository.entity.BookDetail".toClass()
+                )
+                returnType = UnitType
+            }.hook().after {
+                val viewMap =
+                    args[0]?.getParam<Map<*, View>>("_\$_findViewCache") ?: return@after
+                val ids = listOf("tvBookName", "tvAuthorName")
+                val textViews =
+                    viewMap.values.filterIsInstance<TextView>().filter { it.getName() in ids }
+                val tvBookName = textViews.first { it.getName() == "tvBookName" }
+                val tvAuthorName = textViews.first { it.getName() == "tvAuthorName" }
+                tvBookName.setOnLongClickListener {
+                    it.context.showQuickShieldDialog(
+                        name = tvBookName.text.toString()
+                    )
+                    true
+                }
+                tvAuthorName.setOnLongClickListener {
+                    it.context.showQuickShieldDialog(
+                        author = tvAuthorName.text.toString()
+                    )
+                    true
                 }
             }
         }
@@ -1104,16 +705,17 @@ fun PackageParam.quickShield(versionCode: Int) {
 }
 
 /**
- * 书籍详情-快速屏蔽弹框
- * @param name 书名
- * @param author 作者
+ * 显示快速屏蔽对话框
+ * @since 7.9.306-1030
+ * @param [name] 名称
+ * @param [author] 著者
  */
 fun Context.showQuickShieldDialog(
     name: String = "", author: String = ""
 ) {
     if (name.isNotBlank()) {
         val editText = CustomEditText(
-            context = this, mHint = "输入书名关键词", value = name
+            context = this, hint = "输入书名关键词", value = name
         )
         alertDialog {
             title = "编辑需要屏蔽的书名关键词?"

@@ -1,356 +1,217 @@
 package cn.xihan.qdds
 
 import android.content.Context
-import android.os.Environment
-import android.view.View
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.TextView
 import com.alibaba.fastjson2.parseObject
 import com.alibaba.fastjson2.toJSONString
+import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.highcapable.yukihookapi.hook.type.java.ListClass
 import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
+import org.luckypray.dexkit.DexKitBridge
 import java.io.File
+import java.lang.reflect.Modifier
 
 /**
- * @项目名 : QDReadHook
- * @作者 : MissYang
- * @创建时间 : 2023/2/11 13:55
- * @介绍 :
+ * 重定向阅读页背景路径
+ * 重定向至: /storage/emulated/0/Download/QDReader/ReaderTheme
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
-
-/**
- * 自定义阅读页背景路径
- * 上级调用: ReaderTheme
- */
-fun PackageParam.customReadBackgroundPath(versionCode: Int) {
-    val needHookClass = when (versionCode) {
-        827 -> "d6.f"
-        in 834..868 -> "b6.f"
-        in 872..878 -> "z5.f"
-        in 884..900 -> "u5.c"
-        in 906..916 -> "x5.c"
-        924 -> "y5.c"
-        in 932..938 -> "b6.c"
-        in 944..950 -> "a6.c"
-        958 -> "y5.c"
-        970 -> "w5.c"
-        in 980..1020 -> "kc.a"
-        1030 -> "nc.a"
-        else -> null
-    }
-    val needHookMethod = when (versionCode) {
-        in 827..878 -> "G"
-        in 884..1030 -> "C"
-        else -> null
-    }
-    if (needHookClass == null || needHookMethod == null) {
-        "自定义阅读页背景路径".printlnNotSupportVersion(versionCode)
-        return
-    }
-
-    needHookClass.hook {
-        injectMember {
-            method {
-                name = needHookMethod
-                paramCount(1)
-                returnType = StringClass
+fun PackageParam.redirectReadingPageBackgroundPath(versionCode: Int) {
+    when (versionCode) {
+        in 1030..1099 -> {
+            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
+                bridge.findClass {
+                    excludePackages = listOf("com")
+                    matcher {
+                        usingStrings =
+                            listOf("QDReaderAndroidUpdateNew.xml", "QDReader.apk", "ReaderTheme")
+                    }
+                }.firstNotNullOfOrNull { classData ->
+                    classData.getMethods().findMethod {
+                        matcher {
+                            returnType = "java.lang.String"
+                            paramTypes = listOf("long")
+                            usingStrings = listOf("ReaderTheme")
+                        }
+                    }.firstNotNullOfOrNull { methodData ->
+                        methodData.className.toClass().method {
+                            name = methodData.methodName
+                            paramCount(methodData.paramTypeNames.size)
+                            returnType = StringClass
+                        }.hook().replaceTo(redirectThemePath)
+                    }
+                }
             }
-            replaceTo(themePath)
         }
+
+        else -> "重定向阅读页背景路径".printlnNotSupportVersion(versionCode)
     }
 }
 
 /**
- * 阅读页-章评相关
+ * 阅读页面章节相关
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
+ * @param [enableShowReaderPageChapterSaveRawPictures] 启用显示阅读器页面章节保存原始图片
+ * @param [enableShowReaderPageChapterSavePictureDialog] 启用显示阅读器页面章节保存图片对话框
+ * @param [enableShowReaderPageChapterSaveAudioDialog] 启用“显示阅读器页面”章节“保存音频”对话框
+ * @param [enableCopyReaderPageChapterComment] 启用副本阅读器页面章节注释
  */
-fun PackageParam.readerPageChapterReviewPictures(
+fun PackageParam.readingPageChapterCorrelation(
     versionCode: Int,
     enableShowReaderPageChapterSaveRawPictures: Boolean = false,
     enableShowReaderPageChapterSavePictureDialog: Boolean = false,
     enableShowReaderPageChapterSaveAudioDialog: Boolean = false,
-    enableCopyReaderPageChapterComment: Boolean = false,
+    enableCopyReaderPageChapterComment: Boolean = false
 ) {
-    if (enableShowReaderPageChapterSaveRawPictures && versionCode in 868..1099) {
-        findClass("com.qd.ui.component.modules.imagepreivew.QDUIGalleryActivity").hook {
-            injectMember {
-                method {
+    when (versionCode) {
+        in 1030..1099 -> {
+            if (enableShowReaderPageChapterSaveRawPictures) {
+                "com.qd.ui.component.modules.imagepreivew.QDUIGalleryActivity".toClass().method {
                     name = "initView"
                     emptyParam()
                     returnType = UnitType
-                }
-                afterHook {
+                }.hook().after {
                     instance.setParam("mMoreIconStyle", 1)
                 }
             }
-        }
-    }
 
-    if (enableShowReaderPageChapterSavePictureDialog || enableCopyReaderPageChapterComment) {
-        /**
-         * com.qidian.QDReader.ui.adapter.reader.ChapterParagraphCommentAdapter.onBindContentItemViewHolder
-         * b00.A(newParagraphCommentListBean$DataListBean0, this.getMBookInfo());
-         */
-        val needHookClass = when (versionCode) {
-            in 868..878 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.b0"
-            884 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.y"
-            in 890..944 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.e0"
-            950 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.m0"
-            in 958..980 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.e0"
-            in 994..1030 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.l0"
-            else -> null
-        }
-        val needHookMethod = when (versionCode) {
-            in 868..878 -> "A"
-            884 -> "x"
-            in 890..980 -> "z"
-            in 994..1030 -> "K"
-            else -> null
-        }
-        val needHookClass2 = when (versionCode) {
-            in 970..980 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.m0"
-            in 994..1030 -> "com.qidian.QDReader.ui.viewholder.chaptercomment.list.t0"
-            else -> null
-        }
-        val needHookMethod2 = when (versionCode) {
-            in 970..980 -> "z"
-            in 994..1030 -> "I"
-            else -> null
-        }
-        if (needHookClass == null || needHookMethod == null) {
-            "阅读页-章评相关复制".printlnNotSupportVersion(versionCode)
-        } else {
-            needHookClass.hook {
-                injectMember {
-                    method {
-                        name = needHookMethod
-                        paramCount(2)
-                        returnType = UnitType
-                    }
-                    afterHook {
-                        if (enableShowReaderPageChapterSavePictureDialog) {
-                            val rawImgUrl =
-                                args[0]?.toJSONString().parseObject().getString("imageDetail")
-                            val imageViews = instance.getViews<ImageView>()
-                            if (!rawImgUrl.isNullOrBlank() || imageViews.isNotEmpty()) {
-                                imageViews.filter { "app:id/image" in it.toString() }.takeIf { it.isNotEmpty() }?.first()?.setOnLongClickListener { imageView ->
-                                    imageView.context.alertDialog {
-                                        title = "图片地址"
-                                        message = rawImgUrl
-                                        positiveButton("复制") {
-                                            imageView.context.copyToClipboard(rawImgUrl)
-                                        }
-                                        negativeButton("取消") {
-                                            it.dismiss()
-                                        }
-                                        build()
-                                        show()
-                                    }
-                                    true
-                                }
-                            }
+            if (enableShowReaderPageChapterSavePictureDialog || enableCopyReaderPageChapterComment) {
+                DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
+                    bridge.findClass {
+                        searchPackages = listOf("com.qidian.QDReader.ui.viewholder.chaptercomment")
+                        matcher {
+                            usingStrings = listOf("%s楼 · %s")
                         }
-
-                        if (enableCopyReaderPageChapterComment) {
-                            val messageTextView =
-                                "com.qd.ui.component.widget.textview.MessageTextView".toClass()
-                            val textViews = instance.getViews(messageTextView)
-                            if (textViews.isNotEmpty()) {
-                                textViews.forEach { any ->
-                                    val textView = any.safeCast<TextView>()
-                                    textView?.setOnLongClickListener {
-                                        textView.context.alertDialog {
-                                            title = "评论内容"
-                                            message = textView.text.toString()
-                                            positiveButton("复制") {
-                                                textView.context.copyToClipboard(textView.text.toString())
-                                            }
-                                            negativeButton("取消") {
-                                                it.dismiss()
-                                            }
-                                            build()
-                                            show()
-                                        }
-                                        true
-                                    }
-
-                                }
-                            }
-                        }
-
-                    }
-                }
-            }
-
-            needHookClass2?.hook {
-                injectMember {
-                    method {
-                        name = needHookMethod2!!
-                        paramCount(2)
-                        returnType = UnitType
-                    }
-                    afterHook {
-                        if (enableShowReaderPageChapterSavePictureDialog) {
-                            val rawImgUrl =
-                                args[0]?.toJSONString().parseObject().getString("imageDetail")
-                            val imageViews = instance.getViews<ImageView>()
-                            if (!rawImgUrl.isNullOrBlank() || imageViews.isNotEmpty()) {
-                                imageViews.filter { "app:id/image" in it.toString() }.takeIf { it.isNotEmpty() }?.first()?.setOnLongClickListener { imageView ->
-                                    imageView.context.alertDialog {
-                                        title = "图片地址"
-                                        message = rawImgUrl
-                                        positiveButton("复制") {
-                                            imageView.context.copyToClipboard(rawImgUrl)
-                                        }
-                                        negativeButton("取消") {
-                                            it.dismiss()
-                                        }
-                                        build()
-                                        show()
-                                    }
-                                    true
-                                }
-                            }
-                        }
-
-                        if (enableCopyReaderPageChapterComment) {
-                            val messageTextView =
-                                "com.qd.ui.component.widget.textview.MessageTextView".toClass()
-                            val textViews = instance.getViews(messageTextView)
-                            if (textViews.isNotEmpty()) {
-                                textViews.forEach { any ->
-                                    val textView = any.safeCast<TextView>()
-                                    textView?.setOnLongClickListener {
-                                        textView.context.alertDialog {
-                                            title = "评论内容"
-                                            message = textView.text.toString()
-                                            positiveButton("复制") {
-                                                textView.context.copyToClipboard(textView.text.toString())
-                                            }
-                                            negativeButton("取消") {
-                                                it.dismiss()
-                                            }
-                                            build()
-                                            show()
-                                        }
-                                        true
-                                    }
-
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    if (enableShowReaderPageChapterSaveAudioDialog && versionCode in 890..1099) {
-        when (versionCode) {
-            in 890..1099 -> {
-                findClass("com.qidian.QDReader.ui.view.chapter_review.VoicePlayerView").hook {
-                    injectMember {
-                        method {
-                            name = "p"
-                            emptyParam()
-                            returnType = UnitType
-                        }
-                        afterHook {
-                            val relativeLayouts =
-                                instance.getViews(
-                                    "com.qd.ui.component.widget.roundwidget.QDUIRoundRelativeLayout".toClass(),
-                                    isSuperClass = true
+                    }.forEach { classData ->
+                        classData.getMethods().findMethod {
+                            matcher {
+                                returnType = "void"
+                                paramTypes = listOf(
+                                    "com.qidian.QDReader.repository.entity.chaptercomment.NewParagraphCommentListBean\$DataListBean",
+                                    "com.qidian.QDReader.repository.entity.chaptercomment.NewParagraphCommentListBean\$BookInfoBean"
                                 )
-                            val strings = instance.getParamList<String>().filter { it.isNotBlank() }
+                                usingStrings = listOf(" · %s")
+                            }
+                        }.firstNotNullOfOrNull { methodData ->
+                            methodData.className.toClass().method {
+                                name = methodData.methodName
+                                paramCount(methodData.paramTypeNames.size)
+                                returnType = UnitType
+                            }.hook().after {
+                                if (enableShowReaderPageChapterSavePictureDialog) {
+                                    val rawImgUrl = args[0]?.toJSONString().parseObject()
+                                        .getString("imageDetail")
+                                    val imageViews = instance.getViews<ImageView>()
+                                    if (!rawImgUrl.isNullOrBlank() || imageViews.isNotEmpty()) {
+                                        imageViews.filter { "app:id/image" in it.toString() }
+                                            .takeIf { it.isNotEmpty() }?.first()
+                                            ?.setOnLongClickListener { imageView ->
+                                                imageView.context.alertDialog {
+                                                    title = "图片地址"
+                                                    message = rawImgUrl
+                                                    positiveButton("复制") {
+                                                        imageView.context.copyToClipboard(rawImgUrl)
+                                                    }
+                                                    negativeButton("取消") {
+                                                        it.dismiss()
+                                                    }
+                                                    build()
+                                                    show()
+                                                }
+                                                true
+                                            }
+                                    }
+                                }
 
-                            if ((strings.isNotEmpty() && strings.size == 2) && relativeLayouts.isNotEmpty()) {
-                                relativeLayouts.forEach {
-                                    (it as View).setOnLongClickListener { view ->
+                                if (enableCopyReaderPageChapterComment) {
+                                    val messageTextView =
+                                        "com.qd.ui.component.widget.textview.MessageTextView".toClass()
+                                    val textViews = instance.getViews(messageTextView)
+                                    if (textViews.isNotEmpty()) {
+                                        textViews.forEach { any ->
+                                            val textView = any.safeCast<TextView>()
+                                            textView?.setOnLongClickListener {
+                                                textView.context.alertDialog {
+                                                    title = "评论内容"
+                                                    message = textView.text.toString()
+                                                    positiveButton("复制") {
+                                                        textView.context.copyToClipboard(textView.text.toString())
+                                                    }
+                                                    negativeButton("取消") {
+                                                        it.dismiss()
+                                                    }
+                                                    build()
+                                                    show()
+                                                }
+                                                true
+                                            }
+
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            if (enableShowReaderPageChapterSaveAudioDialog) {
+                DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
+                    bridge.findClass {
+                        searchPackages = listOf("com.qidian.QDReader.ui.view.chapter_review")
+                        matcher {
+                            usingStrings = listOf("temp_audio", "temp", "audio")
+                        }
+                    }.firstNotNullOfOrNull { classData ->
+                        classData.getMethods().findMethod {
+                            matcher {
+                                modifiers = Modifier.PUBLIC
+                                paramCount = 6
+                                returnType = "void"
+                                usingStrings = listOf("temp")
+                            }
+                        }.firstNotNullOfOrNull { methodData ->
+                            methodData.className.toClass().method {
+                                name = methodData.methodName
+                                paramCount(methodData.paramTypeNames.size)
+                                returnType = UnitType
+                            }.hook().after {
+                                val relativeLayouts = instance.getViews(
+                                    "com.qd.ui.component.widget.roundwidget.QDUIRoundRelativeLayout".toClass(),
+                                    true
+                                ).filterIsInstance<RelativeLayout>()
+                                val strings =
+                                    instance.getParamList<String>().filter { it.isNotBlank() }
+                                relativeLayouts.forEach { relativeLayout ->
+                                    relativeLayout.setOnLongClickListener { view ->
                                         view.context.audioExportDialog(strings[0], strings[1])
                                         true
                                     }
                                 }
+
                             }
-
                         }
                     }
                 }
             }
-
-            else -> "音频导出".printlnNotSupportVersion(versionCode)
         }
-    }
-}
 
-/**
- * 阅读时间加倍
- * user_book_read_time
- */
-fun PackageParam.readTimeDouble(
-    versionCode: Int,
-    enableVIPChapterTime: Boolean = false,
-    doubleSpeed: Int = 5,
-) {
-    val needHookClass = when (versionCode) {
-        868 -> "sf.a"
-        in 872..872 -> "qf.a"
-        878 -> "pf.a"
-        in 884..890 -> "jf.search"
-        in 896..900 -> "kf.search"
-        in 906..924 -> "pf.search"
-        in 932..944 -> "sf.search"
-        950 -> "uf.search"
-        958 -> "rf.search"
-        970 -> "tf.search"
-        980 -> "xg.search"
-        in 994..1020 -> "yg.search"
-        1030 -> "bh.search"
-        else -> null
+        else -> "阅读页面章节相关".printlnNotSupportVersion(versionCode)
     }
-    val needHookMethod = when (versionCode) {
-        in 868..878 -> "d"
-        in 884..1030 -> "a"
-        else -> null
-    }
-    if (needHookClass == null || needHookMethod == null) {
-        "阅读时间加倍".printlnNotSupportVersion(versionCode)
-        return
-    }
-    needHookClass.hook {
-        injectMember {
-            method {
-                name = needHookMethod
-                paramCount(2)
-            }
-            afterHook {
-                val list = result.safeCast<MutableList<*>>()
-                if (list.isNullOrEmpty()) return@afterHook
-                list.forEach { item ->
-                    item?.let {
-                        val totalTime = it.getParam<Long>("totalTime")
-                        val currentTime = System.currentTimeMillis()
-                        val startTime2 = currentTime - ((totalTime ?: 1000) * doubleSpeed)
-                        it.setParams(
-                            "startTime" to startTime2,
-                            "endTime" to currentTime,
-                            "totalTime" to (currentTime - startTime2),
-                        )
-                        if (enableVIPChapterTime) {
-                            it.setParam("chapterVIP", 1)
-                        }
-                    }
-                }
-
-            }
-        }
-    }
-
 }
 
 /**
  * 音频文件导出对话框
  */
-fun Context.audioExportDialog(networkUrl: String, filePath: String) {
+private fun Context.audioExportDialog(networkUrl: String, filePath: String) {
     val file = File(filePath)
     if (!file.exists()) {
         toast("音频文件不存在")
@@ -359,11 +220,11 @@ fun Context.audioExportDialog(networkUrl: String, filePath: String) {
     val linearLayout = CustomLinearLayout(context = this)
     val textView = CustomTextView(
         context = this,
-        mText = "音频文件网络地址: $networkUrl\n音频文件本地地址: $filePath",
+        text = "音频文件网络地址: $networkUrl\n音频文件本地地址: $filePath",
     )
     val editText = CustomEditText(
         context = this,
-        mHint = "输入要保存的文件名",
+        hint = "输入要保存的文件名",
         value = file.name,
     )
     linearLayout.apply {
@@ -380,8 +241,7 @@ fun Context.audioExportDialog(networkUrl: String, filePath: String) {
                 return@positiveButton
             }
             val saveFile = File(
-                "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/QDReader/Audio",
-                fileName
+                audioPath, fileName
             ).apply {
                 parentFile?.mkdirs()
             }
@@ -403,18 +263,79 @@ fun Context.audioExportDialog(networkUrl: String, filePath: String) {
 }
 
 /**
+ * 阅读时间加倍
+ * 随缘生效
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
+ * @param [speedFactor] 速度系数
+ */
+fun PackageParam.readingTimeSpeedFactor(
+    versionCode: Int,
+    speedFactor: Int = 5
+) {
+    when (versionCode) {
+        in 1030..1099 -> {
+            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
+                bridge.findClass {
+                    excludePackages = listOf("com")
+                    matcher {
+                        usingStrings =
+                            listOf("xys", "自动保存后重新开始新的Session", "user_book_read_time")
+                    }
+                }.firstNotNullOfOrNull { classData ->
+                    classData.getMethods().findMethod {
+                        matcher {
+                            returnType = "java.util.List"
+                            paramCount = 2
+                            usingStrings = listOf("user_book_read_time")
+                        }
+                    }.firstNotNullOfOrNull { methodData ->
+                        methodData.className.toClass().method {
+                            name = methodData.methodName
+                            paramCount(methodData.paramTypeNames.size)
+                            returnType = ListClass
+                        }.hook().after {
+                            val list = result.safeCast<MutableList<*>>()
+                            if (list.isNullOrEmpty()) return@after
+                            list.forEach { item ->
+                                item?.let {
+                                    val totalTime = it.getParam<Long>("totalTime")
+                                    val currentTime = System.currentTimeMillis()
+                                    val startTime2 =
+                                        currentTime - ((totalTime ?: 10000) * speedFactor)
+                                    it.setParams(
+                                        "startTime" to startTime2,
+                                        "endTime" to currentTime,
+                                        "totalTime" to (currentTime - startTime2),
+                                        "chapterVIP" to 1
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        else -> "阅读时间加倍".printlnNotSupportVersion(versionCode)
+    }
+
+}
+
+/**
  * 阅读页最后一页
- * @param versionCode 版本号
- * @param shieldAlsoRead 是否屏蔽推荐
- * @param shieldRecommendation 是否屏蔽推荐
- * @param shieldSimilarRecommend 是否屏蔽相似推荐
- * @param hideAlsoRead 是否隐藏读过的书
- * @param hideRecommendation 是否隐藏推荐
- * @param hideBookList 是否隐藏书单
- * @param hideSimilarRecommend 是否隐藏相似推荐
- * @param hideTryRead 是否隐藏试读
- * @param hideCircle 是否隐藏圈子
- * @param hideAdView 是否隐藏广告
+ * @since 7.9.306-1030
+ * @param [versionCode] 版本代码
+ * @param [shieldAlsoRead] 屏蔽推荐
+ * @param [shieldRecommendation] 屏蔽推荐
+ * @param [shieldSimilarRecommend] 屏蔽相似推荐
+ * @param [hideAlsoRead] 隐藏读过的书
+ * @param [hideRecommendation] 隐藏推荐
+ * @param [hideBookList] 隐藏书单
+ * @param [hideSimilarRecommend] 隐藏相似推荐
+ * @param [hideTryRead] 隐藏试读
+ * @param [hideCircle] 隐藏圈子
+ * @param [hideAdView] 隐藏广告
  */
 fun PackageParam.readBookLastPage(
     versionCode: Int,
@@ -429,122 +350,73 @@ fun PackageParam.readBookLastPage(
     hideCircle: Boolean = false,
     hideAdView: Boolean = false
 ) {
-    val needHookClass = when (versionCode) {
-        in 896..1030 -> "com.qidian.QDReader.ui.view.lastpage.LastPageRoleView"
-        else -> null
-    }
-    val needHookMethod = when (versionCode) {
-        in 896..1030 -> "l"
-        else -> null
-    }
-    needHookClass?.hook {
-        injectMember {
-            method {
-                name = needHookMethod!!
-                param("com.qidian.QDReader.repository.entity.BookLastPage".toClass())
-                returnType = UnitType
-            }
-            afterHook {
-                setBookLastPage(
-                    obj = args[0],
-                    shieldAlsoRead = shieldAlsoRead,
-                    shieldRecommendation = shieldRecommendation,
-                    shieldSimilarRecommend = shieldSimilarRecommend,
-                    hideAlsoRead = hideAlsoRead,
-                    hideRecommendation = hideRecommendation,
-                    hideBookList = hideBookList,
-                    hideSimilarRecommend = hideSimilarRecommend,
-                    hideTryRead = hideTryRead,
-                    hideCircle = hideCircle
-                )
-            }
-        }
-    }
-
-    val needHookClass2 = when (versionCode) {
-        in 896..1030 -> "com.qidian.QDReader.ui.view.lastpage.LastPageCircleView"
-        else -> null
-    }
-    val needHookMethod2 = when (versionCode) {
-        in 896..900 -> "f"
-        in 906..1030 -> "g"
-        else -> null
-    }
-
-    needHookClass2?.hook {
-        injectMember {
-            method {
-                name = needHookMethod2!!
-                param("com.qidian.QDReader.repository.entity.BookLastPage".toClass())
-                returnType = UnitType
-            }
-            afterHook {
-                setBookLastPage(
-                    obj = args[0],
-                    shieldAlsoRead = shieldAlsoRead,
-                    shieldRecommendation = shieldRecommendation,
-                    shieldSimilarRecommend = shieldSimilarRecommend,
-                    hideAlsoRead = hideAlsoRead,
-                    hideRecommendation = hideRecommendation,
-                    hideBookList = hideBookList,
-                    hideSimilarRecommend = hideSimilarRecommend,
-                    hideTryRead = hideTryRead,
-                    hideCircle = hideCircle
-                )
-            }
-        }
-    }
-
-    val needHookClass3 = when (versionCode) {
-        in 896..1030 -> "com.qidian.QDReader.ui.view.lastpage.LastPageTryReadViewWrap"
-        else -> null
-    }
-    val needHookMethod3 = when (versionCode) {
-        in 896..1030 -> "bind"
-        else -> null
-    }
-    needHookClass3?.hook {
-        injectMember {
-            method {
-                name = needHookMethod3!!
-                param("com.qidian.QDReader.repository.entity.BookLastPage".toClass())
-                returnType = UnitType
-            }
-            afterHook {
-                setBookLastPage(
-                    obj = args[0],
-                    shieldAlsoRead = shieldAlsoRead,
-                    shieldRecommendation = shieldRecommendation,
-                    shieldSimilarRecommend = shieldSimilarRecommend,
-                    hideAlsoRead = hideAlsoRead,
-                    hideRecommendation = hideRecommendation,
-                    hideBookList = hideBookList,
-                    hideSimilarRecommend = hideSimilarRecommend,
-                    hideTryRead = hideTryRead,
-                    hideCircle = hideCircle
-                )
-            }
-        }
-    }
     when (versionCode) {
-        in 896..1099 -> {
+        in 1030..1099 -> {
+            "com.qidian.QDReader.ui.view.lastpage.LastPageRoleView".toClass().method {
+                param("com.qidian.QDReader.repository.entity.BookLastPage".toClass())
+                returnType = UnitType
+            }.hook().after {
+                setBookLastPage(
+                    obj = args[0],
+                    shieldAlsoRead = shieldAlsoRead,
+                    shieldRecommendation = shieldRecommendation,
+                    shieldSimilarRecommend = shieldSimilarRecommend,
+                    hideAlsoRead = hideAlsoRead,
+                    hideRecommendation = hideRecommendation,
+                    hideBookList = hideBookList,
+                    hideSimilarRecommend = hideSimilarRecommend,
+                    hideTryRead = hideTryRead,
+                    hideCircle = hideCircle
+                )
+            }
+
+            "com.qidian.QDReader.ui.view.lastpage.LastPageCircleView".toClass().method {
+                param("com.qidian.QDReader.repository.entity.BookLastPage".toClass())
+                returnType = UnitType
+            }.hook().after {
+                setBookLastPage(
+                    obj = args[0],
+                    shieldAlsoRead = shieldAlsoRead,
+                    shieldRecommendation = shieldRecommendation,
+                    shieldSimilarRecommend = shieldSimilarRecommend,
+                    hideAlsoRead = hideAlsoRead,
+                    hideRecommendation = hideRecommendation,
+                    hideBookList = hideBookList,
+                    hideSimilarRecommend = hideSimilarRecommend,
+                    hideTryRead = hideTryRead,
+                    hideCircle = hideCircle
+                )
+            }
+
+            "com.qidian.QDReader.ui.view.lastpage.LastPageTryReadViewWrap".toClass().method {
+                param("com.qidian.QDReader.repository.entity.BookLastPage".toClass())
+                returnType = UnitType
+            }.hook().after {
+                setBookLastPage(
+                    obj = args[0],
+                    shieldAlsoRead = shieldAlsoRead,
+                    shieldRecommendation = shieldRecommendation,
+                    shieldSimilarRecommend = shieldSimilarRecommend,
+                    hideAlsoRead = hideAlsoRead,
+                    hideRecommendation = hideRecommendation,
+                    hideBookList = hideBookList,
+                    hideSimilarRecommend = hideSimilarRecommend,
+                    hideTryRead = hideTryRead,
+                    hideCircle = hideCircle
+                )
+            }
+
             if (hideAdView) {
-                findClass("com.qidian.QDReader.ui.activity.BookLastPageNewActivity").hook {
-                    injectMember {
-                        method {
-                            name = "updateADView"
-                            paramCount(1)
-                            returnType = UnitType
-                        }
-                        intercept()
-                    }
-                }
+                intercept(
+                    className = "com.qidian.QDReader.ui.activity.BookLastPageNewActivity",
+                    methodName = "updateADView",
+                    paramCount = 1
+                )
             }
         }
 
         else -> "阅读页最后一页".printlnNotSupportVersion(versionCode)
     }
-
 }
 
 /**
@@ -614,4 +486,3 @@ private fun setBookLastPage(
 
 
 }
-

@@ -1,48 +1,39 @@
 package cn.xihan.qdds
 
+import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.param.PackageParam
 
 /**
- * @项目名 : QDReadHook
- * @作者 : MissYang
- * @创建时间 : 2023/2/11 13:56
- * @介绍 :
- */
-/**
  * 自定义书架顶部图片
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.customBookShelfTopImage(versionCode: Int) {
     when (versionCode) {
-        in 860..1099 -> {
-            findClass("com.qidian.QDReader.repository.entity.config.BookshelfConfig").hook {
-                injectMember {
-                    method {
-                        name = "getLightMode"
-                        emptyParam()
-                        returnType =
-                            "com.qidian.QDReader.repository.entity.config.ConfigColors".toClass()
-                    }
-                    afterHook {
+        in 1030..1099 -> {
+            "com.qidian.QDReader.repository.entity.config.BookshelfConfig".toClass().apply {
+
+                method {
+                    name = "getLightMode"
+                    emptyParam()
+                    returnType =
+                        "com.qidian.QDReader.repository.entity.config.ConfigColors".toClass()
+                }.hook().after {
+                    result?.setDayMode(HookEntry.optionEntity)
+                }
+
+                method {
+                    name = "getDarkMode"
+                    emptyParam()
+                    returnType =
+                        "com.qidian.QDReader.repository.entity.config.ConfigColors".toClass()
+                }.hook().after {
+                    if (HookEntry.optionEntity.bookshelfOption.enableSameNightAndDay) {
                         result?.setDayMode(HookEntry.optionEntity)
+                    } else {
+                        result?.setDarkMode(HookEntry.optionEntity)
                     }
                 }
-
-                injectMember {
-                    method {
-                        name = "getDarkMode"
-                        emptyParam()
-                        returnType =
-                            "com.qidian.QDReader.repository.entity.config.ConfigColors".toClass()
-                    }
-                    afterHook {
-                        if (HookEntry.optionEntity.bookshelfOption.enableSameNightAndDay) {
-                            result?.setDayMode(HookEntry.optionEntity)
-                        } else {
-                            result?.setDarkMode(HookEntry.optionEntity)
-                        }
-                    }
-                }
-
             }
         }
 
@@ -51,28 +42,8 @@ fun PackageParam.customBookShelfTopImage(versionCode: Int) {
 }
 
 /**
- * Hook 启用旧版布局
- */
-@Deprecated("启用旧版布局")
-fun PackageParam.enableOldLayout(versionCode: Int) {
-    when (versionCode) {
-        in 758..799 -> {
-            findClass("com.qidian.QDReader.component.config.QDAppConfigHelper\$Companion").hook {
-                injectMember {
-                    method {
-                        name = "getBookShelfNewStyle"
-                    }
-                    replaceToFalse()
-                }
-            }
-        }
-
-        else -> "启用旧版布局".printlnNotSupportVersion(versionCode)
-    }
-}
-
-/**
  * 设置白天模式参数
+ * @suppress Generate Documentation
  */
 private fun Any.setDayMode(optionEntity: OptionEntity) {
     setParams(
@@ -121,6 +92,7 @@ private fun Any.setDayMode(optionEntity: OptionEntity) {
 
 /**
  * 设置夜间模式参数
+ * @suppress Generate Documentation
  */
 private fun Any.setDarkMode(optionEntity: OptionEntity) {
     setParams(

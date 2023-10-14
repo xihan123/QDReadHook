@@ -8,6 +8,8 @@ import com.alibaba.fastjson2.parseObject
 import com.alibaba.fastjson2.toJSONString
 import com.highcapable.yukihookapi.hook.factory.constructor
 import com.highcapable.yukihookapi.hook.factory.current
+import com.highcapable.yukihookapi.hook.factory.method
+import com.highcapable.yukihookapi.hook.param.HookParam
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.android.TextViewClass
 import com.highcapable.yukihookapi.hook.type.android.ViewClass
@@ -17,339 +19,308 @@ import com.highcapable.yukihookapi.hook.type.java.ListClass
 import com.highcapable.yukihookapi.hook.type.java.LongType
 import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
-import de.robv.android.xposed.XposedHelpers
+import org.luckypray.dexkit.DexKitBridge
+import java.lang.reflect.Modifier
 
 /**
- * @项目名 : QDReadHook
- * @作者 : MissYang
- * @创建时间 : 2022/8/28 16:12
- * @介绍 :
- */
-/**
  * 主页配置列表
+ * @since 7.9.306-1030
+ * @param [versionCode] 版本代码
+ * @param [configurations] 配置
  */
-fun PackageParam.homeOption(versionCode: Int, configurations: List<OptionEntity.SelectedModel>) {
+fun PackageParam.homeOption(versionCode: Int, configurations: List<SelectedModel>) {
     configurations.filter { it.selected }.takeIf { it.isNotEmpty() }?.forEach {
         when (it.title) {
             "主页顶部宝箱提示" -> hideMainTopBox(versionCode)
             "主页顶部战力提示" -> hideMainTopPower(versionCode)
             "书架每日导读" -> hideBookshelfDailyReading(versionCode)
             "书架去找书" -> hideBookshelfFindBook(versionCode)
-            "书架顶部标题" -> hideBookshelfTopTitle(versionCode)
-            "主页底部导航栏红点" -> hideBottomRedDot(versionCode)
         }
     }
 }
 
 /**
- * 搜索配置列表
- * NewSearchHomePageFragment
- * loadData
+ * 搜索选项
+ * @since 7.9.306-1030
+ * @param [versionCode] 版本代码
+ * @param [configurations] 配置
  */
-fun PackageParam.searchOption(versionCode: Int, configurations: List<OptionEntity.SelectedModel>) {
-    val (needHookClass, needHookMethod) = when (versionCode) {
-        in 1005..1030 -> "ea.search" to "m"
-        else -> return "搜索配置列表".printlnNotSupportVersion(versionCode)
-    }
+fun PackageParam.searchOption(versionCode: Int, configurations: List<SelectedModel>) {
+    when (versionCode) {
+        in 1030..1099 -> {
+            val map = mapOf(
+                "搜索历史" to 1, "搜索发现" to 2, "搜索排行榜" to 3, "为你推荐" to 4
+            ).filterKeys { key -> configurations.any { it.selected && it.title == key } }
 
-    val map = mapOf(
-        "搜索历史" to 1,
-        "搜索发现" to 2,
-        "搜索排行榜" to 3,
-        "为你推荐" to 4
-    ).filterKeys { key -> configurations.any { it.selected && it.title == key } }
-
-    if (map.isNotEmpty()) {
-        needHookClass.hook {
-            injectMember {
-                method {
-                    name = needHookMethod
-                    param(ListClass)
-                    returnType = UnitType
-                }
-                beforeHook {
-                    val list = args[0].safeCast<MutableList<*>>() ?: return@beforeHook
-                    val iterator = list.iterator()
-                    while (iterator.hasNext()) {
-                        val type = iterator.next()?.getParam<Int>("type")
-                        if (type in map.values) {
-                            iterator.remove()
+            if (map.isNotEmpty()) {
+                DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
+                    bridge.findClass {
+                        excludePackages = listOf("com")
+                        matcher {
+                            usingStrings = listOf("combineBean", "dataList")
+                        }
+                    }.firstNotNullOfOrNull { classData ->
+                        classData.getMethods().findMethod {
+                            matcher {
+                                paramTypes = listOf("java.util.List")
+                                returnType = "void"
+                                usingStrings = listOf("dataList")
+                            }
+                        }.firstNotNullOfOrNull { methodData ->
+                            methodData.className.toClass().method {
+                                name = methodData.methodName
+                                paramCount(methodData.paramTypeNames.size)
+                                returnType = UnitType
+                            }.hook().before {
+                                val list = args[0].safeCast<MutableList<*>>() ?: return@before
+                                val iterator = list.iterator()
+                                while (iterator.hasNext()) {
+                                    val type = iterator.next()?.getParam<Int>("type")
+                                    if (type in map.values) {
+                                        iterator.remove()
+                                    }
+                                }
+                            }
                         }
                     }
+
                 }
             }
         }
+
+        else -> "搜索配置列表".printlnNotSupportVersion(versionCode)
     }
 }
 
 /**
  * 精选-隐藏配置
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.selectedOption(versionCode: Int) {
     when (versionCode) {
-        in 868..1099 -> {
-            /**
-             * 新方法
-             */
-            findClass("com.qidian.QDReader.ui.modules.bookstore.BookStoreRebornFragment").hook {
-                injectMember {
-                    method {
-                        name = "updateUI"
-                        paramCount(4)
-                        returnType = UnitType
-                    }
-                    beforeHook {
-                        val bookStoreWrap = args[0] ?: return@beforeHook
-                        val cardItems =
-                            bookStoreWrap.getParam<MutableList<*>>("cardItems") ?: return@beforeHook
-                        val iterator = cardItems.iterator()
-                        while (iterator.hasNext()) {
-                            val bookStoreCardItem = iterator.next() ?: continue
-                            val colName = bookStoreCardItem.getParam<String>("colName")
-                            var title = bookStoreCardItem.getParam<String>("title")
-                            if (!colName.isNullOrBlank() && title.isNullOrBlank()) {
-                                when (colName) {
-                                    "banner" -> {
-                                        title = "轮播图"
-                                    }
+        in 1030..1099 -> {
 
+            "com.qidian.QDReader.ui.modules.bookstore.BookStoreRebornFragment".toClass().method {
+                name = "updateUI"
+                paramCount(4)
+                returnType = UnitType
+            }.hook().before {
+                val bookStoreWrap = args[0] ?: return@before
+                val cardItems = bookStoreWrap.getParam<MutableList<*>>("cardItems") ?: return@before
+                val iterator = cardItems.iterator()
+                while (iterator.hasNext()) {
+                    val bookStoreCardItem = iterator.next() ?: continue
+                    val colName = bookStoreCardItem.getParam<String>("colName")
+                    var title = bookStoreCardItem.getParam<String>("title")
+                    if (!colName.isNullOrBlank() && title.isNullOrBlank()) {
+                        when (colName) {
+                            "banner" -> {
+                                title = "轮播图"
+                            }
+
+                            "broadcast" -> {
+                                title = "轮播消息"
+                            }
+
+                            "icon" -> {
+                                val jsonObject =
+                                    bookStoreCardItem.getParam<Any>("jsonObject") ?: continue
+                                jsonObject.current {
+                                    val jsonArray = method {
+                                        name = "getAsJsonArray"
+                                        paramCount(1)
+                                    }.call("Items")
+
+                                    jsonArray?.current {
+                                        val iterator2 = method {
+                                            name = "iterator"
+                                        }.call().safeCast<MutableIterator<*>>()
+
+                                        while (iterator2?.hasNext() == true) {
+                                            val item = iterator2.next()
+                                            item?.current {
+                                                val title2 = method {
+                                                    name = "get"
+                                                }.call("Text")
+                                                HookEntry.optionEntity.viewHideOption.selectedOption.configurations.findOrPlus(
+                                                    title = "$title2".replace("\"", ""),
+                                                    iterator = iterator2
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (!title.isNullOrBlank()) {
+                        HookEntry.optionEntity.viewHideOption.selectedOption.configurations.findOrPlus(
+                            title = title, iterator = iterator
+                        )
+                    }
+                }
+            }
+
+            "com.qidian.QDReader.ui.modules.bookstore.MorphingFragment".toClass().method {
+                name = "updateUI"
+                paramCount(4)
+                returnType = UnitType
+            }.hook().before {
+                val bookStoreWrap = args[0] ?: return@before
+                val cardItems = bookStoreWrap.getParam<MutableList<*>>("cardItems") ?: return@before
+                val iterator = cardItems.iterator()
+                while (iterator.hasNext()) {
+                    val bookStoreCardItem = iterator.next() ?: continue
+                    val data = bookStoreCardItem.getParam<Any>("data") ?: continue
+                    val columnName = data.getParam<Any>("extension")?.getParam<String>("columnName")
+                    var title = data.getParam<Any>("cardTitle")?.getParam<String>("name")
+                    if (!columnName.isNullOrBlank() && title.isNullOrBlank() && "banner" == columnName) {
+                        title = "轮播图"
+                    }
+                    if (!title.isNullOrBlank()) {
+                        HookEntry.optionEntity.viewHideOption.selectedOption.configurations.findOrPlus(
+                            title = title!!, iterator = iterator
+                        )
+                    }
+                    val multiData = data.getParam<MutableList<*>>("multiData")
+                    if (multiData != null) {
+                        val multiIterator = multiData.iterator()
+                        while (multiIterator.hasNext()) {
+                            val item = multiIterator.next() ?: continue
+                            val columnName2 =
+                                item.getParam<Any>("extension")?.getParam<String>("columnName")
+                            var title2 = item.getParam<Any>("cardTitle")?.getParam<String>("name")
+                            if (!columnName2.isNullOrBlank() && title2.isNullOrBlank()) {
+                                when (columnName2) {
                                     "broadcast" -> {
-                                        title = "轮播消息"
+                                        title2 = "轮播消息"
                                     }
 
                                     "icon" -> {
-                                        val jsonObject =
-                                            bookStoreCardItem.getParam<Any>("jsonObject")
-                                                ?: continue
-                                        jsonObject.current {
-                                            val jsonArray = method {
-                                                name = "getAsJsonArray"
-                                                paramCount(1)
-                                            }.call("Items")
-
-                                            jsonArray?.current {
-                                                val iterator2 = method {
-                                                    name = "iterator"
-                                                }.call().safeCast<MutableIterator<*>>()
-
-                                                while (iterator2?.hasNext() == true) {
-                                                    val item = iterator2.next()
-                                                    item?.current {
-                                                        val title2 = method {
-                                                            name = "get"
-                                                        }.call("Text")
-                                                        HookEntry.optionEntity.viewHideOption.selectedOption.configurations.findOrPlus(
-                                                            title = "$title2".replace("\"", ""),
-                                                            iterator = iterator2
-                                                        )
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            if (!title.isNullOrBlank()) {
-                                HookEntry.optionEntity.viewHideOption.selectedOption.configurations.findOrPlus(
-                                    title = title,
-                                    iterator = iterator
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-            findClass("com.qidian.QDReader.ui.modules.bookstore.MorphingFragment").hook {
-                injectMember {
-                    method {
-                        name = "updateUI"
-                        paramCount(4)
-                        returnType = UnitType
-                    }
-                    beforeHook {
-                        val bookStoreWrap = args[0] ?: return@beforeHook
-                        val cardItems =
-                            bookStoreWrap.getParam<MutableList<*>>("cardItems") ?: return@beforeHook
-                        val iterator = cardItems.iterator()
-                        while (iterator.hasNext()) {
-                            val bookStoreCardItem = iterator.next() ?: continue
-                            val data = bookStoreCardItem.getParam<Any>("data") ?: continue
-                            val columnName =
-                                data.getParam<Any>("extension")?.getParam<String>("columnName")
-                            var title = data.getParam<Any>("cardTitle")?.getParam<String>("name")
-//                            "columnName: $columnName, title: $title".loge()
-                            if (!columnName.isNullOrBlank() && title.isNullOrBlank() && "banner" == columnName) {
-                                title = "轮播图"
-                            }
-                            if (!title.isNullOrBlank()) {
-                                HookEntry.optionEntity.viewHideOption.selectedOption.configurations.findOrPlus(
-                                    title = title!!,
-                                    iterator = iterator
-                                )
-                            }
-                            val multiData = data.getParam<MutableList<*>>("multiData")
-                            if (multiData != null) {
-                                val multiIterator = multiData.iterator()
-                                while (multiIterator.hasNext()) {
-                                    val item = multiIterator.next() ?: continue
-                                    val columnName2 =
-                                        item.getParam<Any>("extension")
-                                            ?.getParam<String>("columnName")
-                                    var title2 =
-                                        item.getParam<Any>("cardTitle")?.getParam<String>("name")
-                                    if (!columnName2.isNullOrBlank() && title2.isNullOrBlank()) {
-                                        when (columnName2) {
-                                            "broadcast" -> {
-                                                title2 = "轮播消息"
-                                            }
-
-                                            "icon" -> {
-                                                val list = item.getParam<MutableList<*>>("list")
-                                                if (list != null) {
-                                                    val listIterator = list.iterator()
-                                                    while (listIterator.hasNext()) {
-                                                        val iconItem = listIterator.next()
-                                                        val itemName =
-                                                            iconItem?.getParam<String>("itemName")
+                                        val list = item.getParam<MutableList<*>>("list")
+                                        if (list != null) {
+                                            val listIterator = list.iterator()
+                                            while (listIterator.hasNext()) {
+                                                val iconItem = listIterator.next()
+                                                val itemName =
+                                                    iconItem?.getParam<String>("itemName")
 //                                                        "itemName: $itemName".loge()
-                                                        if (!itemName.isNullOrBlank()) {
-                                                            HookEntry.optionEntity.viewHideOption.selectedOption.configurations.findOrPlus(
-                                                                title = itemName,
-                                                                iterator = listIterator
-                                                            )
-                                                        }
-                                                    }
+                                                if (!itemName.isNullOrBlank()) {
+                                                    HookEntry.optionEntity.viewHideOption.selectedOption.configurations.findOrPlus(
+                                                        title = itemName, iterator = listIterator
+                                                    )
                                                 }
                                             }
                                         }
                                     }
-                                    if (!title2.isNullOrBlank()) {
-                                        HookEntry.optionEntity.viewHideOption.selectedOption.configurations.findOrPlus(
-                                            title = title2,
-                                            iterator = multiIterator
-                                        )
-                                    }
                                 }
+                            }
+                            if (!title2.isNullOrBlank()) {
+                                HookEntry.optionEntity.viewHideOption.selectedOption.configurations.findOrPlus(
+                                    title = title2, iterator = multiIterator
+                                )
                             }
                         }
                     }
                 }
             }
+
         }
 
-        else -> "精选-隐藏配置".printlnNotSupportVersion(versionCode)
+        else -> "选项配置列表".printlnNotSupportVersion(versionCode)
     }
 }
 
 /**
  * 精选-标题隐藏配置
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.selectedTitleOption(versionCode: Int) {
     when (versionCode) {
-        in 872..1099 -> {
-            findClass("com.qidian.QDReader.ui.fragment.QDStorePagerFragment").hook {
-                injectMember {
-                    method {
-                        name = "onViewInject"
-                        param(ViewClass)
-                        returnType = UnitType
-                    }
-                    afterHook {
+        in 1030..1099 -> {
+            "com.qidian.QDReader.ui.fragment.QDStorePagerFragment".toClass().method {
+                name = "onViewInject"
+                param(ViewClass)
+                returnType = UnitType
+            }.hook().after {
+                val mAdapter = instance.getParam<Any>("mAdapter") ?: return@after
+                val mTabLayout = instance.getParam<FrameLayout>("mTabLayout") ?: return@after
 
-                        val mAdapter = instance.getParam<Any>("mAdapter") ?: return@afterHook
-                        val mTabLayout =
-                            instance.getParam<FrameLayout>("mTabLayout") ?: return@afterHook
-
-                        mAdapter.current {
-                            val countSize = superClass().method {
-                                name = "getCount"
-                                emptyParam()
-                                returnType = IntType
-                            }.int()
-                            val pageList = mutableListOf<Any?>()
-                            val needShieldTitleList = HookEntry.getNeedShieldTitleList()
-                            if (countSize > 0 && needShieldTitleList.isNotEmpty()) {
-                                needShieldTitleList.forEach {
-                                    val page = superClass().method {
-                                        name = "getItemByType"
-                                        paramCount(1)
-                                        returnType =
-                                            "com.qidian.QDReader.ui.fragment.BasePagerFragment".toClass()
-                                    }.call(it)
-                                    pageList.add(page)
+                mAdapter.current {
+                    val countSize = superClass().method {
+                        name = "getCount"
+                        emptyParam()
+                        returnType = IntType
+                    }.int()
+                    val pageList = mutableListOf<Any?>()
+                    val needShieldTitleList = HookEntry.getNeedShieldTitleList()
+                    if (countSize > 0 && needShieldTitleList.isNotEmpty()) {
+                        needShieldTitleList.forEach {
+                            val page = superClass().method {
+                                name = "getItemByType"
+                                paramCount(1)
+                                returnType =
+                                    "com.qidian.QDReader.ui.fragment.BasePagerFragment".toClass()
+                            }.call(it)
+                            pageList.add(page)
 //                                    "type: $it".loge()
-                                }
-                                if (pageList.isNotEmpty()) {
-                                    pageList.forEach {
-                                        it?.let {
-                                            val v = superClass().method {
-                                                name = "removePage"
-                                                paramCount(1)
-                                                returnType = IntType
-                                            }.int(it)
+                        }
+                        if (pageList.isNotEmpty()) {
+                            pageList.forEach {
+                                it?.let {
+//                                    val v =
+                                        superClass().method {
+                                        name = "removePage"
+                                        paramCount(1)
+                                        returnType = IntType
+                                    }.int(it)
 //                                            "${it::class.java.name} removePage: $v".loge()
-                                        }
-                                    }
-
-                                    superClass().method {
-                                        name = "notifyDataSetChanged"
-                                        emptyParam()
-                                        returnType = UnitType
-                                    }.call()
                                 }
                             }
-                        }
 
-                        if (versionCode in 872..1020){
-                            instance.current {
-                                method {
-                                    name = "calculateSize"
-                                    emptyParam()
-                                    returnType = BooleanType
-                                }.call()
-                            }
-                        }
-
-                        val textViews = mTabLayout.findViewsByType(TextViewClass)
-
-                        textViews.forEach { view ->
-                            val text = (view as TextView).text.toString()
-                            if (text.isNotBlank()) {
-                                HookEntry.optionEntity.viewHideOption.selectedOption.selectedTitleConfigurations.findOrPlus(
-                                    title = text
-                                ) {
-                                    val parent = view.parent.parent.parent as LinearLayout
-                                    parent.removeView(view.parent.parent as View)
-                                }
-                            }
+                            superClass().method {
+                                name = "notifyDataSetChanged"
+                                emptyParam()
+                                returnType = UnitType
+                            }.call()
                         }
                     }
                 }
 
+                val textViews = mTabLayout.findViewsByType(TextViewClass)
+
+                textViews.forEach { view ->
+                    val text = (view as TextView).text.toString()
+                    if (text.isNotBlank()) {
+                        HookEntry.optionEntity.viewHideOption.selectedOption.selectedTitleConfigurations.findOrPlus(
+                            title = text
+                        ) {
+                            val parent = view.parent.parent.parent as LinearLayout
+                            parent.removeView(view.parent.parent as View)
+                        }
+                    }
+                }
             }
         }
 
-        else -> "精选-标题隐藏配置".printlnNotSupportVersion(versionCode)
+        else -> "精选-标题隐藏".printlnNotSupportVersion(versionCode)
     }
 }
 
 /**
  * 隐藏主页面-顶部宝箱提示
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.hideMainTopBox(versionCode: Int) {
     when (versionCode) {
-        in 812..1099 -> {
-            findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
-                injectMember {
-                    method {
-                        name = "getGlobalMsg"
-                        emptyParam()
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
+        in 1030..1099 -> {
+            intercept(
+                className = "com.qidian.QDReader.ui.activity.MainGroupActivity",
+                methodName = "getGlobalMsg"
+            )
         }
 
         else -> "主页面-顶部宝箱提示".printlnNotSupportVersion(versionCode)
@@ -358,239 +329,154 @@ fun PackageParam.hideMainTopBox(versionCode: Int) {
 
 /**
  * 隐藏主页面-顶部战力提示
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.hideMainTopPower(versionCode: Int) {
     when (versionCode) {
         in 878..1099 -> {
-            findClass("com.qidian.QDReader.ui.activity.MainGroupActivity").hook {
-                injectMember {
-                    method {
-                        name = "getFightRankMsg"
-                        emptyParam()
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
+            intercept(
+                className = "com.qidian.QDReader.ui.activity.MainGroupActivity",
+                methodName = "getFightRankMsg"
+            )
         }
+
+        else -> "主页面-顶部战力提示".printlnNotSupportVersion(versionCode)
     }
 }
 
 /**
  * 隐藏书架-每日导读
- * 上级调用:com.qidian.QDReader.ui.fragment.QDBookShelfPagerFragment.bindView()
- * bindGridAdapter()
- * bindListAdapter()
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.hideBookshelfDailyReading(versionCode: Int) {
-    val gridAdapterClass = when (versionCode) {
-        in 804..812 -> "com.qidian.QDReader.ui.adapter.j0"
-        in 827..860 -> "com.qidian.QDReader.ui.adapter.i0"
-        in 868..878 -> "com.qidian.QDReader.ui.adapter.j0"
-        in 884..970 -> "com.qidian.QDReader.ui.adapter.g0"
-        in 980..1030 -> "com.qidian.QDReader.ui.adapter.f0"
-        else -> null
-    }
-    val listAdapterClass = when (versionCode) {
-        in 804..812 -> "com.qidian.QDReader.ui.adapter.h0"
-        in 827..860 -> "com.qidian.QDReader.ui.adapter.k0"
-        in 868..878 -> "com.qidian.QDReader.ui.adapter.l0"
-        in 884..970 -> "com.qidian.QDReader.ui.adapter.i0"
-        in 980..1030 -> "com.qidian.QDReader.ui.adapter.h0"
-        else -> null
-    }
-    if (gridAdapterClass == null || listAdapterClass == null) {
-        "隐藏书架-每日导读".printlnNotSupportVersion(versionCode)
-    } else {
-        gridAdapterClass.hook {
-            injectMember {
-                method {
-                    name = "getHeaderItemCount"
-                    emptyParam()
-                    returnType = IntType
+    when (versionCode) {
+        in 1030..1099 -> {
+            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
+                bridge.findClass {
+                    matcher {
+                        methods {
+                            add {
+                                paramTypes = listOf("int")
+                                returnType = "com.qidian.QDReader.repository.entity.BookItem"
+                            }
+                            add {
+                                paramTypes =
+                                    listOf("com.qidian.QDReader.repository.entity.BookShelfItem")
+                                returnType = "void"
+                            }
+                        }
+                    }
+                }.forEach { classData ->
+                    classData.getMethods().findMethod {
+                        matcher {
+                            name = "getHeaderItemCount"
+                            returnType = "int"
+                        }
+                    }.firstNotNullOfOrNull { methodData ->
+                        methodData.className.toClass().method {
+                            name = methodData.methodName
+                            returnType = IntType
+                        }.hook().replaceTo(0)
+                    }
                 }
-                replaceTo(0)
             }
         }
 
-        listAdapterClass.hook {
-            injectMember {
-                method {
-                    name = "getHeaderItemCount"
-                    emptyParam()
-                    returnType = IntType
-                }
-                replaceTo(0)
-            }
-        }
+        else -> "书架-每日导读".printlnNotSupportVersion(versionCode)
     }
-
-    if (versionCode > 827) {
-        findClass("com.qidian.QDReader.ui.modules.bookshelf.view.BookShelfCheckInView").hook {
-            injectMember {
-                method {
-                    name = "setupDailyReading"
-                    returnType = UnitType
-                }
-                intercept()
-            }
-        }
-    }
-
 }
 
 /**
  * 隐藏书架-去找书
+ * @since 7.9.306-1030
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.hideBookshelfFindBook(versionCode: Int) {
     when (versionCode) {
-        in 868..1030 -> {
-            /**
-             * QDBookShelfBrowserRecordHolder
-             */
-            val needHookClass = when (versionCode) {
-                in 868..878 -> "com.qidian.QDReader.ui.viewholder.bookshelf.r"
-                in 884..1030 -> "com.qidian.QDReader.ui.viewholder.bookshelf.o"
-                else -> null
-            }
-            needHookClass?.hook {
-                injectMember {
-                    constructor {
-                        paramCount(2)
+        in 1030..1099 -> {
+            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
+                bridge.findClass {
+                    searchPackages = listOf("com.qidian.QDReader.ui.viewholder.bookshelf")
+                    matcher {
+                        usingStrings = listOf("QDBookShelfBrowserRecordHolder", "itemView")
                     }
-                    afterHook {
-                        args[0]?.safeCast<View>()?.setVisibilityIfNotEqual()
+                }.firstNotNullOfOrNull { classData ->
+                    classData.getMethods().findMethod {
+                        matcher {
+                            paramTypes = listOf("android.view.View", "android.content.Context")
+                        }
+                    }.firstNotNullOfOrNull { methodData ->
+                        methodData.className.toClass().constructor {
+                            paramCount(methodData.paramTypeNames.size)
+                        }.hook().after {
+                            args[0]?.safeCast<View>()?.setVisibilityIfNotEqual()
+                        }
                     }
                 }
-            } ?: "隐藏书架-去找书".printlnNotSupportVersion(versionCode)
-            findClass("com.qidian.QDReader.ui.modules.bookshelf.adapter.BaseBooksAdapter").hook {
-                injectMember {
-                    method {
-                        name = "getFooterItemCount"
-                        emptyParam()
-                        returnType = IntType
-                    }
-                    replaceTo(0)
-                }
             }
+
+            "com.qidian.QDReader.ui.modules.bookshelf.adapter.BaseBooksAdapter".toClass().method {
+                name = "getFooterItemCount"
+                emptyParam()
+                returnType = IntType
+            }.hook().replaceTo(0)
         }
 
-        else -> "隐藏书架-去找书".printlnNotSupportVersion(versionCode)
-    }
-}
-
-/**
- * 隐藏书架-顶部标题
- */
-fun PackageParam.hideBookshelfTopTitle(versionCode: Int) {
-    when (versionCode) {
-        in 1005..1099 -> {
-            findClass("com.qidian.QDReader.ui.modules.bookshelf.adapter.BaseBooksAdapter").hook {
-                injectMember {
-                    method {
-                        name = "getHeaderItemCount"
-                        emptyParam()
-                        returnType = IntType
-                    }
-                    replaceTo(0)
-                }
-            }
-        }
-    }
-}
-
-/**
- * 搜索页面一刀切
- */
-fun PackageParam.hideSearchAllView(versionCode: Int) {
-    when (versionCode) {
-        in 788..1099 -> {
-            /**
-             * 搜索页面一刀切
-             */
-            findClass("com.qidian.QDReader.ui.fragment.serach.NewSearchHomePageFragment").hook {
-                injectMember {
-                    method {
-                        name = "loadData"
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
-        }
-
-        else -> "屏蔽搜索页面一刀切".printlnNotSupportVersion(versionCode)
+        else -> "书架-去找书".printlnNotSupportVersion(versionCode)
     }
 }
 
 /**
  * 隐藏底部导航栏红点
- * 上级调用位置:com.qidian.QDReader.ui.widget.maintab.PagerSlidingTabStrip.s() smallDotsView
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
-fun PackageParam.hideBottomRedDot(versionCode: Int) {
-    val needHookClass = when (versionCode) {
-        in 758..768 -> "com.qidian.QDReader.ui.widget.maintab.a"
-        in 772..878 -> "com.qidian.QDReader.ui.widget.maintab.e"
-        in 884..1030 -> "com.qidian.QDReader.ui.widget.maintab.b"
-        else -> null
-    }
-    val needHookMethod = when (versionCode) {
-        in 758..878 -> "h"
-        884 -> "e"
-        in 890..900 -> "h"
-        906 -> "e"
-        in 916..924 -> "h"
-        in 932..958 -> "e"
-        in 970..980 -> "g"
-        in 994..1030 -> "h"
-        else -> null
-    }
-    if (needHookClass == null || needHookMethod == null) {
-        "隐藏底部导航栏红点".printlnNotSupportVersion(versionCode)
-        return
-    }
-    needHookClass.hook {
-        injectMember {
-            method {
-                name = needHookMethod
-                returnType = IntType
-            }
-            replaceTo(1)
-        }
-    }
-}
-
-/**
- * 隐藏底部导航栏
- */
-fun PackageParam.hideBottomNavigation(versionCode: Int) {
-
-    val needHookMethod = when (versionCode) {
-        in 872..878 -> "s"
-        in 884..958 -> "p"
-        in 970..980 -> "s"
-        in 994..1030 -> "t"
-        else -> null
-    }
-    if (needHookMethod == null) {
-        "隐藏底部导航栏".printlnNotSupportVersion(versionCode)
-        return
-    }
-
+fun PackageParam.hideBottom(
+    versionCode: Int,
+    hideRedDot: Boolean = true,
+    hideNavigation: Boolean = true,
+) {
     when (versionCode) {
-        in 827..1030 -> {
-            findClass("com.qidian.QDReader.ui.widget.maintab.PagerSlidingTabStrip").hook {
-                injectMember {
-                    method {
-                        name = needHookMethod
-                        emptyParam()
-                        returnType = UnitType
+        in 1030..1099 -> {
+            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
+                bridge.findClass {
+                    searchPackages = listOf("com.qidian.QDReader.ui.widget.maintab")
+                    matcher {
+                        usingStrings = listOf(
+                            "Icon tab provider return null when index in [0, tab count).",
+                            "tabLayout",
+                            "BOTTOM_TAB_OPERATION_RED_DOT_"
+                        )
                     }
-                    afterHook {
-                        val linearLayouts = instance.getViews<LinearLayout>()
-                        if (linearLayouts.isNotEmpty()) {
-                            linearLayouts.forEach {
-                                val textViews = it.findViewsByType(TextViewClass)
+                }.firstNotNullOfOrNull { classData ->
+                    classData.getMethods().findMethod {
+                        matcher {
+                            usingStrings = listOf(
+                                "Icon tab provider return null when index in [0, tab count).",
+                                "tabLayout",
+                                "BOTTOM_TAB_OPERATION_RED_DOT_"
+                            )
+                        }
+                    }.firstNotNullOfOrNull { methodData ->
+                        methodData.className.toClass().method {
+                            name = methodData.methodName
+                            returnType = UnitType
+                        }.hook().after {
+                            val linearLayout =
+                                instance.getViews("android.widget.LinearLayout".toClass())
+                                    .filterIsInstance<LinearLayout>().firstOrNull() ?: return@after
+
+                            if (hideRedDot) {
+                                linearLayout.findViewsByType("com.qidian.QDReader.framework.widget.customerview.SmallDotsView".toClass())
+                                    .takeIf {
+                                        it.isNotEmpty()
+                                    }?.hideViews()
+                            }
+
+                            if (hideNavigation) {
+                                val textViews = linearLayout.findViewsByType(TextViewClass)
                                     .filter { textView -> (textView as TextView).text.isNotBlank() }
                                 if (textViews.isNotEmpty()) {
                                     textViews.forEach { textView ->
@@ -612,387 +498,79 @@ fun PackageParam.hideBottomNavigation(versionCode: Int) {
             }
         }
 
-        else -> "隐藏底部导航栏".printlnNotSupportVersion(versionCode)
-    }
-}
-
-/**
- * 发现-隐藏控件
- */
-fun PackageParam.findViewHide(
-    versionCode: Int,
-) {
-    when (versionCode) {
-        in 860..1099 -> {
-            findClass("com.qidian.QDReader.ui.fragment.FindFragmentReborn").hook {
-                injectMember {
-                    method {
-                        name = "parserFindBean"
-                        param(
-                            "com.qidian.QDReader.repository.entity.FindBean".toClass(),
-                            BooleanType
-                        )
-                        returnType = ListClass
-                    }
-                    beforeHook {
-                        args[0]?.let { findBean ->
-                            val adItems = findBean.getParam<MutableList<*>>("adItems")
-                            adItems?.let {
-                                val iterator = it.iterator()
-                                while (iterator.hasNext()) {
-                                    val next = iterator.next().toJSONString().parseObject()
-                                    val showName =
-                                        next?.getString("showName")
-                                            ?: next?.getString("ShowName")
-                                    if (!showName.isNullOrBlank()) {
-                                        HookEntry.optionEntity.viewHideOption.findOption.advItem.findOrPlus(
-                                            showName,
-                                            iterator
-                                        )
-                                        updateOptionEntity()
-                                    }
-                                }
-                            }
-
-                            if (HookEntry.optionEntity.viewHideOption.findOption.broadCasts) {
-                                findBean.getParam<MutableList<*>>("broadcasts")?.clear()
-                            }
-
-                            if (HookEntry.optionEntity.viewHideOption.findOption.feedsItem) {
-                                findBean.getParam<MutableList<*>>("feedsItems")?.clear()
-                            }
-
-                            val filterConf = findBean.getParam<MutableList<*>>("filterConf")
-                            filterConf?.let {
-                                val iterator = it.iterator()
-                                while (iterator.hasNext()) {
-                                    val next = iterator.next().toJSONString().parseObject()
-                                    val name =
-                                        next?.getString("desc") ?: next?.getString("Desc")
-                                    if (!name.isNullOrBlank()) {
-                                        HookEntry.optionEntity.viewHideOption.findOption.filterConfItem.findOrPlus(
-                                            name,
-                                            iterator
-                                        )
-                                        updateOptionEntity()
-                                    }
-                                }
-                            }
-
-                            val headItems = findBean.getParam<MutableList<*>>("headItems")
-                            headItems?.let {
-                                val iterator = it.iterator()
-                                while (iterator.hasNext()) {
-                                    val next = iterator.next().toJSONString().parseObject()
-                                    val name =
-                                        next?.getString("showName")
-                                            ?: next?.getString("ShowName")
-                                    if (!name.isNullOrBlank()) {
-                                        HookEntry.optionEntity.viewHideOption.findOption.headItem.findOrPlus(
-                                            name,
-                                            iterator
-                                        )
-                                        updateOptionEntity()
-                                    }
-                                }
-                            }
-
-                        }
-                    }
-                }
-            }
-        }
-
-        else -> "发现-隐藏控件".printlnNotSupportVersion(versionCode)
+        else -> "主页面-底部导航栏".printlnNotSupportVersion(versionCode)
     }
 }
 
 /**
  * 我-隐藏控件
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.accountViewHide(
     versionCode: Int,
 ) {
     when (versionCode) {
-        in 792..808 -> {
-            /**
-             * 我-隐藏控件
-             */
-            findClass("com.qidian.QDReader.ui.fragment.QDUserAccountFragment").hook {
-                injectMember {
-                    method {
-                        name = "lambda\$loadData\$3"
-                        param("com.qidian.QDReader.repository.entity.UserAccountDataBean".toClass())
-                        returnType = UnitType
+        in 1030..1099 -> {
+
+            "com.qidian.QDReader.ui.fragment.main_group.QDUserAccountRebornFragment".toClass()
+                .method {
+                    name = "processAccountItem"
+                    param("com.qidian.QDReader.repository.entity.user_account.UserAccountItemBean".toClass())
+                    returnType = ListClass
+                }.hook().after {
+                    val userAccountItemBean = args[0] ?: return@after
+                    val benefitButtonList =
+                        userAccountItemBean.getParam<MutableList<*>>("benefitButtonList")
+                    if (!benefitButtonList.isNullOrEmpty()) {
+                        val iterator = benefitButtonList.iterator()
+                        while (iterator.hasNext()) {
+                            val next = iterator.next().toJSONString().parseObject()
+                            val name = next?.getStringWithFallback("name")
+                            if (!name.isNullOrBlank()) {
+                                HookEntry.optionEntity.viewHideOption.accountOption.configurations.findOrPlus(
+                                    title = name, iterator = iterator
+                                )
+                            }
+                        }
+
+
                     }
-                    beforeHook {
-                        args[0]?.let {
-                            val items = it.getParam<MutableList<*>>("Items")
-                            items?.let { list ->
-                                safeRun {
-                                    val iterator = list.iterator()
-                                    while (iterator.hasNext()) {
-                                        iterator.next().safeCast<MutableList<*>>()
-                                            ?.let { list2 ->
-                                                val iterator2 = list2.iterator()
-                                                while (iterator2.hasNext()) {
-                                                    val item2 =
-                                                        iterator2.next().toJSONString()
-                                                            .parseObject()
-                                                    val showName = item2?.getString("showName")
-                                                    if (!showName.isNullOrBlank()) {
-                                                        HookEntry.optionEntity.viewHideOption.accountOption.configurations.findOrPlus(
-                                                            title = showName,
-                                                            iterator = iterator2
-                                                        )
-                                                    }
-                                                }
-                                            }
-                                    }
-                                }
+
+                    val functionButtonList =
+                        userAccountItemBean.getParam<MutableList<Any?>>("functionButtonList")
+                    if (!functionButtonList.isNullOrEmpty()) {
+                        val iterator = functionButtonList.iterator()
+                        while (iterator.hasNext()) {
+                            val next = iterator.next().toJSONString().parseObject()
+                            val name = next?.getStringWithFallback("name")
+                            if (!name.isNullOrBlank()) {
+                                HookEntry.optionEntity.viewHideOption.accountOption.configurations.findOrPlus(
+                                    title = name, iterator = iterator
+                                )
                             }
                         }
                     }
+
+                    val bottomButtonList =
+                        userAccountItemBean.getParam<MutableList<*>>("bottomButtonList")
+                    if (!bottomButtonList.isNullOrEmpty()) {
+                        val iterator = bottomButtonList.iterator()
+                        while (iterator.hasNext()) {
+                            val next = iterator.next().toJSONString().parseObject()
+                            val name = next?.getStringWithFallback("name")
+                            if (!name.isNullOrBlank()) {
+                                HookEntry.optionEntity.viewHideOption.accountOption.configurations.findOrPlus(
+                                    title = name, iterator = iterator
+                                )
+                            }
+                        }
+
+                    }
+
                 }
-            }
-        }
-
-        in 812..900 -> {
-            findClass("com.qidian.QDReader.ui.fragment.QDUserAccountFragment").hook {
-                injectMember {
-                    method {
-                        name = "renderUIByData"
-                        param("com.qidian.QDReader.repository.entity.UserAccountDataBean".toClass())
-                        returnType = UnitType
-                    }
-                    beforeHook {
-                        args[0]?.let {
-                            val items = it.getParam<MutableList<*>>("Items")
-                            items?.let { list ->
-                                safeRun {
-                                    val iterator = list.iterator()
-                                    while (iterator.hasNext()) {
-                                        iterator.next().safeCast<MutableList<*>>()
-                                            ?.let { list2 ->
-                                                val iterator2 = list2.iterator()
-                                                while (iterator2.hasNext()) {
-                                                    val item2 =
-                                                        iterator2.next().toJSONString()
-                                                            .parseObject()
-                                                    val showName = item2?.getString("showName")
-                                                    if (!showName.isNullOrBlank()) {
-                                                        HookEntry.optionEntity.viewHideOption.accountOption.configurations.findOrPlus(
-                                                            title = showName,
-                                                            iterator = iterator2
-                                                        )
-                                                    }
-                                                }
-                                            }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            if (versionCode in 868..900) {
-                findClass("com.qidian.QDReader.ui.fragment.main_group.QDUserAccountRebornFragment").hook {
-                    injectMember {
-                        method {
-                            name = "processAccountItem"
-                            param("com.qidian.QDReader.repository.entity.user_account.UserAccountItemBean".toClass())
-                            returnType = ListClass
-                        }
-                        afterHook {
-                            val userAccountItemBean = args[0] ?: return@afterHook
-//                            val member = userAccountItemBean.getParam<Any>("member")
-//                            member?.setParams(
-//                                "isMember" to 1,
-//                                "title" to "至尊卡",
-//                                "subTitle" to "会员到期时间：2099-12-31"
-//                            )
-                            val benefitButtonList =
-                                userAccountItemBean.getParam<MutableList<*>>("benefitButtonList")
-                            if (!benefitButtonList.isNullOrEmpty()) {
-                                val iterator = benefitButtonList.iterator()
-                                while (iterator.hasNext()) {
-                                    val next = iterator.next().toJSONString().parseObject()
-                                    val name =
-                                        next?.getString("name") ?: next?.getString("Name")
-                                    if (!name.isNullOrBlank()) {
-                                        HookEntry.optionEntity.viewHideOption.accountOption.newConfiguration.findOrPlus(
-                                            title = name,
-                                            iterator = iterator
-                                        )
-                                    }
-                                }
 
 
-                            }
-
-                            val functionButtonList =
-                                userAccountItemBean.getParam<MutableList<*>>("functionButtonList")
-                            if (!functionButtonList.isNullOrEmpty()) {
-                                val iterator = functionButtonList.iterator()
-                                while (iterator.hasNext()) {
-                                    val next = iterator.next().toJSONString().parseObject()
-                                    val name =
-                                        next?.getString("name") ?: next?.getString("Name")
-                                    if (!name.isNullOrBlank()) {
-                                        HookEntry.optionEntity.viewHideOption.accountOption.newConfiguration.findOrPlus(
-                                            title = name,
-                                            iterator = iterator
-                                        )
-                                    }
-                                }
-
-
-                            }
-
-                            val bottomButtonList =
-                                userAccountItemBean.getParam<MutableList<*>>("bottomButtonList")
-                            if (!bottomButtonList.isNullOrEmpty()) {
-                                val iterator = bottomButtonList.iterator()
-                                while (iterator.hasNext()) {
-                                    val next = iterator.next().toJSONString().parseObject()
-                                    val name =
-                                        next?.getString("name") ?: next?.getString("Name")
-                                    if (!name.isNullOrBlank()) {
-                                        HookEntry.optionEntity.viewHideOption.accountOption.newConfiguration.findOrPlus(
-                                            title = name,
-                                            iterator = iterator
-                                        )
-                                    }
-                                }
-
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        in 906..1099 -> {
-            findClass("com.qidian.QDReader.ui.fragment.main_group.QDUserAccountRebornFragment").hook {
-                injectMember {
-                    method {
-                        name = "processAccountItem"
-                        param("com.qidian.QDReader.repository.entity.user_account.UserAccountItemBean".toClass())
-                        returnType = ListClass
-                    }
-                    afterHook {
-                        val userAccountItemBean = args[0] ?: return@afterHook
-//                            val member = userAccountItemBean.getParam<Any>("member")
-//                            member?.setParams(
-//                                "isMember" to 1,
-//                                "title" to "至尊卡",
-//                                "subTitle" to "会员到期时间：2099-12-31"
-//                            )
-                        val benefitButtonList =
-                            userAccountItemBean.getParam<MutableList<*>>("benefitButtonList")
-                        if (!benefitButtonList.isNullOrEmpty()) {
-                            val iterator = benefitButtonList.iterator()
-                            while (iterator.hasNext()) {
-                                val next = iterator.next().toJSONString().parseObject()
-                                val name = next?.getString("name") ?: next?.getString("Name")
-                                if (!name.isNullOrBlank()) {
-                                    HookEntry.optionEntity.viewHideOption.accountOption.newConfiguration.findOrPlus(
-                                        title = name,
-                                        iterator = iterator
-                                    )
-                                }
-                            }
-
-
-                        }
-
-                        val functionButtonList =
-                            userAccountItemBean.getParam<MutableList<Any?>>("functionButtonList")
-                        if (!functionButtonList.isNullOrEmpty()) {
-                            val iterator = functionButtonList.iterator()
-                            while (iterator.hasNext()) {
-                                val next = iterator.next().toJSONString().parseObject()
-                                val name = next?.getString("name") ?: next?.getString("Name")
-                                if (!name.isNullOrBlank()) {
-                                    HookEntry.optionEntity.viewHideOption.accountOption.newConfiguration.findOrPlus(
-                                        title = name,
-                                        iterator = iterator
-                                    )
-                                }
-                            }
-
-                            // 添加列表
-                            if (HookEntry.optionEntity.hideBenefitsOption.configurations[1].selected) {
-                                val hideWelfareList =
-                                    HookEntry.optionEntity.hideBenefitsOption.hideWelfareList
-                                if (hideWelfareList.isNotEmpty()) {
-                                    val copyFunctionButtonList = functionButtonList
-                                    copyFunctionButtonList.first()?.let { item ->
-                                        val className = item::class.java.name
-                                        if ("com.qidian.QDReader.repository.entity.user_account.FunctionButton" == className) {
-                                            hideWelfareList.forEach { model ->
-                                                val copyFunctionButton =
-                                                    item::class.java.constructor {
-                                                        param(
-                                                            StringClass,
-                                                            StringClass,
-                                                            StringClass,
-                                                            StringClass,
-                                                            StringClass,
-                                                            "com.qidian.QDReader.repository.entity.RedDot".toClass(),
-                                                            LongType,
-                                                            LongType,
-                                                            IntType,
-                                                            IntType
-                                                        )
-                                                    }.get().call(
-                                                        "",
-                                                        model.imageUrl,
-                                                        model.title,
-                                                        "",
-                                                        model.actionUrl,
-                                                        null,
-                                                        0L,
-                                                        0L,
-                                                        0,
-                                                        0
-                                                    )
-
-                                                copyFunctionButtonList += copyFunctionButton
-                                            }
-                                            if (copyFunctionButtonList.isNotEmpty()) {
-                                                userAccountItemBean.setParam(
-                                                    "functionButtonList",
-                                                    copyFunctionButtonList
-                                                )
-                                            }
-
-                                        }
-                                        "className:$className".loge()
-                                    }
-                                }
-                            }
-                        }
-
-                        val bottomButtonList =
-                            userAccountItemBean.getParam<MutableList<*>>("bottomButtonList")
-                        if (!bottomButtonList.isNullOrEmpty()) {
-                            val iterator = bottomButtonList.iterator()
-                            while (iterator.hasNext()) {
-                                val next = iterator.next().toJSONString().parseObject()
-                                val name = next?.getString("name") ?: next?.getString("Name")
-                                if (!name.isNullOrBlank()) {
-                                    HookEntry.optionEntity.viewHideOption.accountOption.newConfiguration.findOrPlus(
-                                        title = name,
-                                        iterator = iterator
-                                    )
-                                }
-                            }
-
-                        }
-                    }
-                }
-            }
         }
 
         else -> "我-隐藏控件".printlnNotSupportVersion(versionCode)
@@ -1001,78 +579,40 @@ fun PackageParam.accountViewHide(
 
 /**
  * 隐藏我-右上角消息红点
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.accountRightTopRedDot(versionCode: Int) {
     when (versionCode) {
-        in 812..1099 -> {
-            findClass("com.qidian.QDReader.component.config.QDAppConfigHelper\$Companion").hook {
-                injectMember {
+        in 1030..1099 -> {
+            returnFalse(
+                className = "com.qidian.QDReader.component.config.QDAppConfigHelper\$Companion",
+                methodName = "isEnableUniteMessage"
+            )
+
+            fun HookParam.hideSmallDotsView() {
+                instance.getViews("com.qidian.QDReader.framework.widget.customerview.SmallDotsView".toClass())
+                    .takeIf { it.isNotEmpty() }?.filterIsInstance<View>()?.hideViews()
+            }
+
+            "com.qidian.QDReader.ui.fragment.main_group.QDUserAccountRebornFragment".toClass()
+                .apply {
                     method {
-                        name = "isEnableUniteMessage"
-                        emptyParam()
-                        returnType = BooleanType
+                        name = "setNewMsgText"
+                        paramCount(2)
+                        returnType = UnitType
+                    }.hook().after {
+                        hideSmallDotsView()
                     }
-                    replaceToFalse()
+
+                    method {
+                        name = "initView"
+                        paramCount(1)
+                        returnType = UnitType
+                    }.hook().after {
+                        hideSmallDotsView()
+                    }
                 }
-            }
-
-            if (versionCode >= 868) {
-                findClass("com.qidian.QDReader.ui.fragment.main_group.QDUserAccountRebornFragment").hook {
-                    injectMember {
-                        method {
-                            name = "setNewMsgText"
-                            paramCount(2)
-                            returnType = UnitType
-                        }
-                        afterHook {
-                            val msgDotView = instance.getParam<View>("msgDotView")
-                            msgDotView?.setVisibilityIfNotEqual(View.VISIBLE)
-                        }
-                    }
-
-                    injectMember {
-                        method {
-                            name = "initView"
-                            paramCount(1)
-                            returnType = UnitType
-                        }
-                        afterHook {
-                            val msgDotView = instance.getView<View>("msgDotView")
-                            msgDotView?.setVisibilityIfNotEqual(View.VISIBLE)
-                        }
-                    }
-
-                    /*
-                    injectMember {
-                        method {
-                            name = "updateNewMsgUnReadCount"
-                            emptyParam()
-                            returnType = UnitType
-                        }
-                       intercept()
-                    }
-
-                    injectMember {
-                        method {
-                            name = "updateRedPoint"
-                            emptyParam()
-                            returnType = UnitType
-                        }
-                        intercept()
-                    }
-
-                    injectMember {
-                        method {
-                            name = "updateRedPointReturnShow"
-                            emptyParam()
-                            returnType = BooleanType
-                        }
-                        replaceToFalse()
-                    }
-
-                     */
-                }
-            }
 
         }
 
@@ -1081,35 +621,8 @@ fun PackageParam.accountRightTopRedDot(versionCode: Int) {
 }
 
 /**
- * 我-移除青少年模式弹框
- * 上级调用:com.qidian.QDReader.bll.helper.QDTeenagerHelper$Companion.h() new-instance v2, g1
- */
-fun PackageParam.removeQSNYDialog(versionCode: Int) {
-    val needHookClass = when (versionCode) {
-        in 758..854 -> "com.qidian.QDReader.bll.helper.g1"
-        in 858..868 -> "com.qidian.QDReader.bll.helper.m1"
-        in 872..878 -> "com.qidian.QDReader.bll.helper.k1"
-        in 884..900 -> "com.qidian.QDReader.bll.helper.h1"
-        in 906..924 -> "com.qidian.QDReader.bll.helper.n1"
-        in 932..970 -> "com.qidian.QDReader.bll.helper.m0"
-        980 -> "com.qidian.QDReader.bll.helper.l0"
-        in 994..1030 -> "com.qidian.QDReader.bll.helper.n0"
-        else -> null
-    }
-    needHookClass?.hook {
-        injectMember {
-            method {
-                name = "run"
-                emptyParam()
-                returnType = UnitType
-            }
-            intercept()
-        }
-    } ?: "移除青少年模式弹框".printlnNotSupportVersion(versionCode)
-}
-
-/**
  * 书籍详情-隐藏控件
+ * @since 7.9.306-1030 ~ 1099
  * @param versionCode 版本号
  * @param isNeedHideCqzs 是否需要隐藏出圈指数
  * @param isNeedHideRybq 是否需要隐藏荣誉标签
@@ -1136,440 +649,199 @@ fun PackageParam.bookDetailHide(
     isNeedHideBookRecommend2: Boolean = false,
 ) {
     when (versionCode) {
-        in 808..812 -> {
+        in 1030..1099 -> {
+            "com.qidian.QDReader.ui.activity.QDBookDetailActivity".toClass().apply {
+                method {
+                    name = "notifyData"
+                    param(BooleanType)
+                    returnType = UnitType
+                }.hook().before {
+                    val mBookDetail = instance.getParam<Any>("mBookDetail")
+                    mBookDetail?.let {
 
-            findClass("com.qidian.QDReader.ui.activity.QDBookDetailActivity").hook {
-                injectMember {
-                    method {
-                        name = "notifyData"
-                        param(BooleanType)
-                        returnType = UnitType
-                    }
-                    beforeHook {
-                        val mBookDetail = instance.getParam<Any>("mBookDetail")
-                        mBookDetail?.let {
-
-                            val baseBookInfo = it.getParam<Any>("baseBookInfo")
-                            baseBookInfo?.let {
-                                /**
-                                 * 荣誉标签
-                                 */
-                                if (isNeedHideRybq) {
-                                    val honorTagList =
-                                        baseBookInfo.getParam<MutableList<*>>("honorTagList")
-                                    honorTagList?.clear()
-                                }
-
-                                /**
-                                 * 月票金主
-                                 */
-                                if (isNeedHideYpjz) {
-                                    val monthTopUser =
-                                        baseBookInfo.getParam<MutableList<*>>("monthTopUser")
-                                    monthTopUser?.clear()
-                                }
-
+                        val baseBookInfo = it.getParam<Any>("baseBookInfo")
+                        baseBookInfo?.let {
+                            /**
+                             * 荣誉标签
+                             */
+                            if (isNeedHideRybq) {
+                                val honorTagList =
+                                    baseBookInfo.getParam<MutableList<*>>("honorTagList")
+                                honorTagList?.clear()
                             }
 
                             /**
-                             * QQ群
+                             * 月票金主
                              */
-                            if (isNeedHideQqGroups) {
-                                val qqGroup = it.getParam<MutableList<*>>("qqGroup")
-                                qqGroup?.clear()
-                            }
-
-                            /**
-                             * 同类作品推荐
-                             */
-                            if (isNeedHideBookRecommend) {
-                                val sameRecommend = it.getParam<MutableList<*>>("sameRecommend")
-                                sameRecommend?.clear()
-                            }
-
-                            /**
-                             * 看过此书的人还看过
-                             */
-                            if (isNeedHideBookRecommend2) {
-                                val bookFriendsRecommend =
-                                    it.getParam<MutableList<*>>("bookFriendsRecommend")
-                                bookFriendsRecommend?.clear()
+                            if (isNeedHideYpjz) {
+                                val monthTopUser =
+                                    baseBookInfo.getParam<MutableList<*>>("monthTopUser")
+                                monthTopUser?.clear()
                             }
 
                         }
+
+                        /**
+                         * QQ群
+                         */
+                        if (isNeedHideQqGroups) {
+                            val qqGroup = it.getParam<MutableList<*>>("qqGroup")
+                            qqGroup?.clear()
+                        }
+
+                        /**
+                         * 同类作品推荐
+                         */
+                        if (isNeedHideBookRecommend) {
+                            val sameRecommend = it.getParam<MutableList<*>>("sameRecommend")
+                            sameRecommend?.clear()
+                        }
+
+                        /**
+                         * 看过此书的人还看过
+                         */
+                        if (isNeedHideBookRecommend2) {
+                            val bookFriendsRecommend =
+                                it.getParam<MutableList<*>>("bookFriendsRecommend")
+                            bookFriendsRecommend?.clear()
+                        }
+
                     }
                 }
 
                 if (isNeedHideCenterAd) {
-                    injectMember {
-                        method {
-                            name = "getAD\$lambda-74\$lambda-73\$lambda-72"
-                            returnType = UnitType
-                        }
-                        intercept()
-                    }
-                }
-
-                if (isNeedHideFloatAd) {
-                    injectMember {
-                        method {
-                            name = "getFloatingAd"
-                            emptyParam()
-                            returnType = UnitType
-                        }
-                        intercept()
-                    }
-                }
-
-                if (isNeedHideCqzs) {
-                    /**
-                     * 出圈指数
-                     */
-                    injectMember {
-                        method {
-                            name = "addCircleMarkInfo"
-                            param("com.qidian.QDReader.repository.entity.OutCircleIndexInfo".toClass())
-                            returnType = UnitType
-                        }
-                        afterHook {
-                            val view = XposedHelpers.callMethod(this, "findViewById", 0x7F090442)
-                                .safeCast<View>()
-                            view?.setVisibilityIfNotEqual()
-                        }
-                    }
-                }
-
-            }
-
-            if (isNeedHideSyb) {
-                /**
-                 * 隐藏书友榜
-                 */
-                findClass("com.qidian.QDReader.ui.view.BookFansModuleView").hook {
-                    injectMember {
-                        method {
-                            name = "d"
-                            param(
-                                LongType,
-                                StringClass,
-                                "com.qidian.QDReader.repository.entity.FansInfo".toClass(),
-                                ListClass
-                            )
-                            returnType = UnitType
-                        }
-                        afterHook {
-                            instance.safeCast<LinearLayout>()?.setVisibilityIfNotEqual()
-                        }
-                    }
-                }
-            }
-
-            if (isNeedHideSyq) {
-                /**
-                 * 隐藏书友圈
-                 */
-                findClass("com.qidian.QDReader.ui.view.BookCircleModuleView").hook {
-                    injectMember {
-                        method {
-                            name = "bind"
-                            returnType = UnitType
-                        }
-                        afterHook {
-                            instance.safeCast<LinearLayout>()?.setVisibilityIfNotEqual()
-                        }
-                    }
-                }
-            }
-        }
-
-        in 827..1030 -> {
-            findClass("com.qidian.QDReader.ui.activity.QDBookDetailActivity").hook {
-                injectMember {
                     method {
-                        name = "notifyData"
-                        param(BooleanType)
+                        name {
+                            it.contains("getAD\$lambda")
+                        }
+                        paramCount(2)
                         returnType = UnitType
-                    }
-                    beforeHook {
-                        val mBookDetail = instance.getParam<Any>("mBookDetail")
-                        mBookDetail?.let {
-
-                            val baseBookInfo = it.getParam<Any>("baseBookInfo")
-                            baseBookInfo?.let {
-                                /**
-                                 * 荣誉标签
-                                 */
-                                if (isNeedHideRybq) {
-                                    val honorTagList =
-                                        baseBookInfo.getParam<MutableList<*>>("honorTagList")
-                                    honorTagList?.clear()
-                                }
-
-                                /**
-                                 * 月票金主
-                                 */
-                                if (isNeedHideYpjz) {
-                                    val monthTopUser =
-                                        baseBookInfo.getParam<MutableList<*>>("monthTopUser")
-                                    monthTopUser?.clear()
-                                }
-
-                            }
-
-                            /**
-                             * QQ群
-                             */
-                            if (isNeedHideQqGroups) {
-                                val qqGroup = it.getParam<MutableList<*>>("qqGroup")
-                                qqGroup?.clear()
-                            }
-
-                            /**
-                             * 同类作品推荐
-                             */
-                            if (isNeedHideBookRecommend) {
-                                val sameRecommend = it.getParam<MutableList<*>>("sameRecommend")
-                                sameRecommend?.clear()
-                            }
-
-                            /**
-                             * 看过此书的人还看过
-                             */
-                            if (isNeedHideBookRecommend2) {
-                                val bookFriendsRecommend =
-                                    it.getParam<MutableList<*>>("bookFriendsRecommend")
-                                bookFriendsRecommend?.clear()
-                            }
-
-                        }
-                    }
-                }
-
-                if (isNeedHideCenterAd) {
-                    injectMember {
-                        method {
-                            name {
-                                it.contains("getAD\$lambda")
-                            }
-                            paramCount(2)
-                            returnType = UnitType
-                        }
-                        intercept()
-                    }
+                    }.hook().intercept()
                 }
 
                 if (isNeedHideFloatAd) {
-                    injectMember {
-                        method {
-                            name = "getFloatingAd"
-                            emptyParam()
-                            returnType = UnitType
-                        }
-                        intercept()
-                    }
+                    method {
+                        name = "getFloatingAd"
+                        emptyParam()
+                        returnType = UnitType
+                    }.hook().intercept()
                 }
 
                 if (isNeedHideCqzs) {
-                    /**
-                     * 出圈指数
-                     */
-                    injectMember {
-                        method {
-                            name = "addCircleMarkInfo"
-                            param("com.qidian.QDReader.repository.entity.OutCircleIndexInfo".toClass())
-                            returnType = UnitType
-                        }
-                        afterHook {
-                            val viewMap = instance.getParam<Map<*, View>>("_\$_findViewCache")
-                                ?: return@afterHook
-                            viewMap.values.filterIsInstance<TextView>()
-                                .firstOrNull { "tvCircleMarkLevel" == it.getName() }
-                                ?.setVisibilityIfNotEqual()
-                                ?: "隐藏出圈指数".printlnNotSupportVersion(versionCode)
-                        }
+                    method {
+                        name = "addCircleMarkInfo"
+                        param("com.qidian.QDReader.repository.entity.OutCircleIndexInfo".toClass())
+                        returnType = UnitType
+                    }.hook().after {
+                        val viewMap =
+                            instance.getParam<Map<*, View>>("_\$_findViewCache") ?: return@after
+                        viewMap.values.filterIsInstance<TextView>()
+                            .firstOrNull { "tvCircleMarkLevel" == it.getName() }
+                            ?.setVisibilityIfNotEqual() ?: "隐藏出圈指数".printlnNotSupportVersion(
+                            versionCode
+                        )
                     }
                 }
+
 
             }
 
             if (isNeedHideSyb) {
-                /**
-                 * 隐藏书友榜
-                 */
-                val bookFansModuleNeedHookMethod = when (versionCode) {
-                    in 827..878 -> "d"
-                    in 884..1030 -> "a"
-                    else -> null
+                "com.qidian.QDReader.ui.view.BookFansModuleView".toClass().method {
+                    param(
+                        LongType,
+                        StringClass,
+                        "com.qidian.QDReader.repository.entity.FansInfo".toClass(),
+                        ListClass
+                    )
+                    returnType = UnitType
+                }.hook().after {
+                    instance.safeCast<LinearLayout>()?.setVisibilityIfNotEqual()
                 }
-                if (bookFansModuleNeedHookMethod == null) {
-                    "隐藏书友榜".printlnNotSupportVersion(versionCode)
-                } else {
-                    findClass("com.qidian.QDReader.ui.view.BookFansModuleView").hook {
-                        injectMember {
-                            method {
-                                name = bookFansModuleNeedHookMethod
-                                param(
-                                    LongType,
-                                    StringClass,
-                                    "com.qidian.QDReader.repository.entity.FansInfo".toClass(),
-                                    ListClass
-                                )
-                                returnType = UnitType
-                            }
-                            afterHook {
-                                instance.safeCast<LinearLayout>()?.setVisibilityIfNotEqual()
-                            }
-                        }
-                    }
-                }
-
             }
 
             if (isNeedHideSyq) {
-                /**
-                 * 隐藏书友圈
-                 */
-                findClass("com.qidian.QDReader.ui.view.BookCircleModuleView").hook {
-                    injectMember {
-                        method {
-                            name = "bind"
-                            returnType = UnitType
-                        }
-                        afterHook {
-                            instance.safeCast<LinearLayout>()?.setVisibilityIfNotEqual()
-                        }
-                    }
+                "com.qidian.QDReader.ui.view.BookCircleModuleView".toClass().method {
+                    name = "bind"
+                    returnType = UnitType
+                }.hook().after {
+                    instance.safeCast<LinearLayout>()?.setVisibilityIfNotEqual()
                 }
             }
+
         }
 
-        else -> "书籍详情-隐藏控件".printlnNotSupportVersion(versionCode)
+        else -> "书籍详情".printlnNotSupportVersion(versionCode)
     }
+
 }
 
 /**
  * 阅读页面-隐藏控件
- * CircleNewPostLastTime
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.hideReadPage(versionCode: Int) {
-    val needHookClass = when (versionCode) {
-        in 1005..1030 -> "com.qidian.QDReader.readerengine.view.menu.q0"
-        else -> null
-    }
-    val needHookMethod = when (versionCode) {
-        in 1005..1020 -> "t0"
-        1030 -> "u0"
-        else -> null
-    }
-    needHookClass?.hook {
-        injectMember {
-            method {
-                name = needHookMethod!!
-                emptyParam()
-                returnType = UnitType
-            }
-            afterHook {
-                instance.getParamList<View>().takeIf { it.isNotEmpty() }?.let { views ->
-                    val iterator = views.iterator()
-                    while (iterator.hasNext()) {
-                        val view = iterator.next()
-                        val name = view.getName()
-                        HookEntry.optionEntity.viewHideOption.readPageOptions.configurations.findOrPlus(
-                            name
-                        ) {
-                            view.setVisibilityWithChildren()
+    when (versionCode) {
+        in 1030..1099 -> {
+            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
+                bridge.findClass {
+                    searchPackages = listOf("com.qidian.QDReader.readerengine.view.menu")
+                    matcher {
+                        usingStrings = listOf("QDReaderActivity_MoreMenu", "CircleNewPostLastTime")
+                    }
+                }.firstNotNullOfOrNull { classData ->
+                    classData.getMethods().findMethod {
+                        matcher {
+                            modifiers = Modifier.PRIVATE
+                            paramTypes = listOf("android.content.Context")
+                            returnType = "void"
+                        }
+                    }.firstNotNullOfOrNull { methodData ->
+                        methodData.className.toClass().method {
+                            name = methodData.methodName
+                            paramCount(methodData.paramTypeNames.size)
+                            returnType = UnitType
+                        }.hook().after {
+                            instance.getParamList<View>().takeIf { it.isNotEmpty() }?.let { views ->
+                                val iterator = views.iterator()
+                                while (iterator.hasNext()) {
+                                    val view = iterator.next()
+                                    val name = view.getName()
+                                    HookEntry.optionEntity.viewHideOption.readPageOptions.configurations.findOrPlus(
+                                        name
+                                    ) {
+                                        view.setVisibilityWithChildren()
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
         }
-    } ?: "阅读页面-隐藏控件".printlnNotSupportVersion(versionCode)
-}
 
-/**
- * 隐藏阅读页-章末底部月票打赏红包
- */
-fun PackageParam.hideReadPageBottom(versionCode: Int) {
-    when (versionCode) {
-        in 827..1099 -> {
-            findClass("com.qidian.QDReader.readerengine.view.QDSuperEngineView").hook {
-                injectMember {
-                    method {
-                        name = "initInteractionBarView"
-                        returnType = UnitType
-                    }
-                    afterHook {
-                        val mInteractionBarView =
-                            instance.getView<LinearLayout>("mInteractionBarView")
-                        mInteractionBarView?.setVisibilityIfNotEqual()
-                    }
-                }
-            }
-        }
-
-        else -> "隐藏阅读页-章末底部月票打赏红包".printlnNotSupportVersion(versionCode)
+        else -> "阅读页面-隐藏控件".printlnNotSupportVersion(versionCode)
     }
 }
 
 /**
- * 漫画-隐藏轮播图广告
- * 上级调用: com.qidian.QDReader.repository.entity.ComicSquareItem.getComicSquareAdItems()
- */
-fun PackageParam.comicHideBannerAd(versionCode: Int) {
-    val needHookClass = when (versionCode) {
-        812 -> "la.h"
-        827 -> "oa.h"
-        in 834..843 -> "na.h"
-        in 850..860 -> "na.g"
-        868 -> "pa.g"
-        872 -> "na.g"
-        878 -> "ma.g"
-        in 884..890 -> "fa.d"
-        in 896..900 -> "ga.d"
-        in 906..916 -> "ka.d"
-        924 -> "la.d"
-        in 932..938 -> "oa.d"
-        944 -> "na.d"
-        950 -> "pa.d"
-        958 -> "ma.d"
-        970 -> "la.d"
-        in 980..1020 -> "fb.d"
-        1030 -> "ib.d"
-        else -> null
-    }
-    needHookClass?.hook {
-        injectMember {
-            method {
-                name = "bindView"
-                emptyParam()
-                returnType = UnitType
-            }
-            afterHook {
-                instance.getViews("com.qd.ui.component.widget.banner.QDUIScrollBanner".toClass())
-                    .mapNotNull { it.safeCast<View>()?.parent.safeCast<View>() }.hideViews()
-            }
-        }
-    } ?: "漫画-隐藏轮播图广告".printlnNotSupportVersion(versionCode)
-}
-
-/**
- * 隐藏小红点
+ * 隐藏红点
+ * @since 7.9.306-1030
+ * @param [versionCode] 版本代码
  */
 fun PackageParam.hideRedDot(versionCode: Int) {
     when (versionCode) {
         in 868..1099 -> {
-            findClass("com.qidian.QDReader.framework.widget.customerview.SmallDotsView").hook {
-                injectMember {
-                    method {
-                        name = "onDraw"
-                        paramCount(1)
-                        returnType = UnitType
-                    }
-                    intercept()
-                }
-            }
+            intercept(
+                className = "com.qidian.QDReader.framework.widget.customerview.SmallDotsView",
+                methodName = "onDraw",
+                paramCount = 1
+            )
         }
 
         else -> "隐藏小红点".printlnNotSupportVersion(versionCode)
     }
 }
+
+
