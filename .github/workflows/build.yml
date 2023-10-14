@@ -99,13 +99,3 @@ jobs:
            -F armAll="@$armAll" \
            -F universal="@$universal"
           fi
-
-      - name: Generate Documentation
-        run: |
-          chmod +x gradlew
-          ./gradlew dokkaHtml
-
-      - name: Publish GitHub Page
-        uses: uibcdf/action-html-dir-to-gh-pages@v1.0.0
-        with:
-          html_dir: app/build/documentation/html
