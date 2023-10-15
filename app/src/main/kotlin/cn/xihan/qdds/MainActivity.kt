@@ -82,6 +82,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.UrlAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -496,7 +497,8 @@ private fun MainScreen(
             val enableCustomStartImage =
                 rememberMutableStateOf(value = HookEntry.optionEntity.startImageOption.enableCustomStartImage)
 
-            ItemWithSwitch(text = "启用自定义启动图",
+            ItemWithSwitch(
+                text = "启用自定义启动图",
                 checked = enableCustomStartImage,
                 onCheckedChange = {
                     HookEntry.optionEntity.startImageOption.enableCustomStartImage = it
@@ -515,8 +517,7 @@ private fun MainScreen(
                 ItemWithSwitch(text = "启用重定向本地启动图",
                     checked = rememberMutableStateOf(value = HookEntry.optionEntity.startImageOption.enableRedirectLocalStartImage),
                     onCheckedChange = {
-                        HookEntry.optionEntity.startImageOption.enableRedirectLocalStartImage =
-                            it
+                        HookEntry.optionEntity.startImageOption.enableRedirectLocalStartImage = it
                     })
 
                 if (HookEntry.optionEntity.startImageOption.officialLaunchMapList.isNotEmpty()) {
@@ -569,30 +570,24 @@ private fun MainScreen(
                             ) {
                                 items(list.windowed(3, 3, true)) { sublist ->
                                     Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
+                                        modifier = Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.SpaceEvenly,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         sublist.forEach { item ->
-                                            StartImageItem(
-                                                startImageModel = item,
+                                            StartImageItem(startImageModel = item,
                                                 modifier = Modifier
-                                                    .combinedClickable(
-                                                        onClick = {},
-                                                        onLongClick = {
-                                                            context.apply {
-                                                                toast("已复制图片链接")
-                                                                copyToClipboard(item.imageUrl)
-                                                            }
+                                                    .combinedClickable(onClick = {}, onLongClick = {
+                                                        context.apply {
+                                                            toast("已复制图片链接")
+                                                            copyToClipboard(item.imageUrl)
                                                         }
-                                                    )
+                                                    })
                                                     .height(250.dp)
                                                     .fillParentMaxWidth(.3f)
                                                     .padding(
                                                         2.dp
-                                                    )
-                                            )
+                                                    ))
                                         }
 
                                     }
@@ -871,8 +866,7 @@ private fun PurifyScreen(
                 })
 
             if (enableHideLastPage.value) {
-                ItemWithNewPage(
-                    text = "阅读页-最后一页-隐藏控件列表",
+                ItemWithNewPage(text = "阅读页-最后一页-隐藏控件列表",
                     modifier = itemModifier,
                     onClick = {
                         context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.bookLastPageOptions)
@@ -1075,7 +1069,9 @@ private fun Disclaimers(
             append(" 查看")
         }
 
-        ClickableText(text = text, onClick = { offset ->
+        ClickableText(text = text, style = TextStyle(
+            color = MaterialTheme.colorScheme.onSurface
+        ), onClick = { offset ->
             text.getUrlAnnotations(start = offset, end = offset).map { it.item.url }
                 .forEach { url ->
                     url.takeUnless { url.isBlank() }?.let { context.openUrl(url) }
@@ -1181,8 +1177,7 @@ private fun AnimatedSwitchButton(
             label = ""
         )
 
-        LottieAnimation(
-            modifier = modifier,
+        LottieAnimation(modifier = modifier,
             composition = switchButton,
             progress = { animationProgress })
     }
