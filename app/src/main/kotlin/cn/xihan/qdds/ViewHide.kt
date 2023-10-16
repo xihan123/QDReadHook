@@ -354,31 +354,54 @@ fun PackageParam.hideBookshelfDailyReading(versionCode: Int) {
     when (versionCode) {
         in 1030..1099 -> {
             DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                bridge.findClass {
-                    matcher {
-                        methods {
-                            add {
-                                paramTypes = listOf("int")
-                                returnType = "com.qidian.QDReader.repository.entity.BookItem"
+                bridge.apply {
+                    findClass {
+                        matcher {
+                            methods {
+                                add {
+                                    paramTypes = listOf("int")
+                                    returnType = "com.qidian.QDReader.repository.entity.BookItem"
+                                }
+                                add {
+                                    paramTypes =
+                                        listOf("com.qidian.QDReader.repository.entity.BookShelfItem")
+                                    returnType = "void"
+                                }
                             }
-                            add {
-                                paramTypes =
-                                    listOf("com.qidian.QDReader.repository.entity.BookShelfItem")
-                                returnType = "void"
+                        }
+                    }.forEach { classData ->
+                        classData.getMethods().findMethod {
+                            matcher {
+                                name = "getHeaderItemCount"
+                                returnType = "int"
                             }
+                        }.firstNotNullOfOrNull { methodData ->
+                            methodData.className.toClass().method {
+                                name = methodData.methodName
+                                returnType = IntType
+                            }.hook().replaceTo(0)
                         }
                     }
-                }.forEach { classData ->
-                    classData.getMethods().findMethod {
+
+                    findClass {
+                        searchPackages = listOf("com.qidian.QDReader.ui.modules.bookshelf.view")
                         matcher {
-                            name = "getHeaderItemCount"
-                            returnType = "int"
+                            usingStrings = listOf("it.CategoryName","it.SubCategoryName","it.AuthorTags")
                         }
-                    }.firstNotNullOfOrNull { methodData ->
-                        methodData.className.toClass().method {
-                            name = methodData.methodName
-                            returnType = IntType
-                        }.hook().replaceTo(0)
+                    }.firstNotNullOfOrNull { classData ->
+                        classData.getMethods().findMethod {
+                            matcher {
+                                paramTypes = listOf("com.qidian.QDReader.repository.entity.DailyReadingItem")
+                                returnType = "void"
+                                usingStrings = listOf("it.CategoryName","it.SubCategoryName","it.AuthorTags")
+                            }
+                        }.firstNotNullOfOrNull { methodData ->
+                            intercept(
+                                className = methodData.className,
+                                methodName = methodData.methodName,
+                                paramCount = methodData.paramTypeNames.size
+                            )
+                        }
                     }
                 }
             }
