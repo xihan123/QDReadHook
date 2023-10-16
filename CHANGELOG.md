@@ -1,4 +1,30 @@
 # Changelog
+## [3.0.1](https://github.com/xihan123/QDReadHook/compare/v3.0.0...v3.0.1) (2023-10-16)
+
+
+### Reverts
+
+* **隐藏控件:** 恢复 `隐藏书架顶部标题` 功能 ([8d878c5](https://github.com/xihan123/QDReadHook/commit/8d878c5a1b092ec5a56da23f277b1c01976e4c04))
+
+
+### Features
+
+* 主设置:`启动时检查权限` 为可选，并调整隐藏控件的选项顺序 ([7bc4f41](https://github.com/xihan123/QDReadHook/commit/7bc4f413551fb993f20e3d20b57bedf7614b4ef4))
+
+
+### Bug Fixes
+
+* 修复 `搜索配置` 选项可能为空白 ([ca1e851](https://github.com/xihan123/QDReadHook/commit/ca1e851239e7ce96748669a0daeea811cad5708c))
+* 修复 `隐藏每日导读` 选项失效 ([714c2b9](https://github.com/xihan123/QDReadHook/commit/714c2b92017717daa23230469330e6e59bdb9108))
+* 修复深色模式 `免责声明` 字体颜色看不清 ([a05dadb](https://github.com/xihan123/QDReadHook/commit/a05dadb37e7297c2a3d086ee3ed4ec7f27a7aa3d))
+
+
+### Miscellaneous
+
+* **master:** release 3.0.0 ([ef9cb71](https://github.com/xihan123/QDReadHook/commit/ef9cb71b10c30c1ba8a55c2e3e0e785ace860c5a))
+* 更新依赖 ([a185651](https://github.com/xihan123/QDReadHook/commit/a185651f5e32facc7e939182dc350efcc2e4ed0a))
+* 更新依赖 ([17d6b69](https://github.com/xihan123/QDReadHook/commit/17d6b69e859d46d6c0d504ad05fce26da0d01715))
+
 ## [3.0.0](https://github.com/xihan123/QDReadHook/compare/v3.0.0...v3.0.0) (2023-10-14)
 
 
