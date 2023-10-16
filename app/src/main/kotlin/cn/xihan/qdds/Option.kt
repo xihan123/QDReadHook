@@ -299,6 +299,7 @@ data class OptionEntity(
                 SelectedModel("主页顶部宝箱提示"),
                 SelectedModel("主页顶部战力提示"),
                 SelectedModel("书架每日导读"),
+                SelectedModel("书架顶部标题"),
                 SelectedModel("书架去找书")
             ),
             var bottomNavigationConfigurations: MutableList<SelectedModel> = mutableListOf()

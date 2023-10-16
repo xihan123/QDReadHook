@@ -34,6 +34,7 @@ fun PackageParam.homeOption(versionCode: Int, configurations: List<SelectedModel
             "主页顶部宝箱提示" -> hideMainTopBox(versionCode)
             "主页顶部战力提示" -> hideMainTopPower(versionCode)
             "书架每日导读" -> hideBookshelfDailyReading(versionCode)
+            "书架顶部标题" -> hideBookshelfTopTitle(versionCode)
             "书架去找书" -> hideBookshelfFindBook(versionCode)
         }
     }
@@ -271,7 +272,7 @@ fun PackageParam.selectedTitleOption(versionCode: Int) {
                             pageList.forEach {
                                 it?.let {
 //                                    val v =
-                                        superClass().method {
+                                    superClass().method {
                                         name = "removePage"
                                         paramCount(1)
                                         returnType = IntType
@@ -386,14 +387,17 @@ fun PackageParam.hideBookshelfDailyReading(versionCode: Int) {
                     findClass {
                         searchPackages = listOf("com.qidian.QDReader.ui.modules.bookshelf.view")
                         matcher {
-                            usingStrings = listOf("it.CategoryName","it.SubCategoryName","it.AuthorTags")
+                            usingStrings =
+                                listOf("it.CategoryName", "it.SubCategoryName", "it.AuthorTags")
                         }
                     }.firstNotNullOfOrNull { classData ->
                         classData.getMethods().findMethod {
                             matcher {
-                                paramTypes = listOf("com.qidian.QDReader.repository.entity.DailyReadingItem")
+                                paramTypes =
+                                    listOf("com.qidian.QDReader.repository.entity.DailyReadingItem")
                                 returnType = "void"
-                                usingStrings = listOf("it.CategoryName","it.SubCategoryName","it.AuthorTags")
+                                usingStrings =
+                                    listOf("it.CategoryName", "it.SubCategoryName", "it.AuthorTags")
                             }
                         }.firstNotNullOfOrNull { methodData ->
                             intercept(
@@ -448,6 +452,24 @@ fun PackageParam.hideBookshelfFindBook(versionCode: Int) {
         }
 
         else -> "书架-去找书".printlnNotSupportVersion(versionCode)
+    }
+}
+
+/**
+ * 隐藏书架顶部标题
+ * @since 7.9.306-1030
+ * @param [versionCode] 版本代码
+ * @suppress Generate Documentation
+ */
+fun PackageParam.hideBookshelfTopTitle(versionCode: Int) {
+    when (versionCode) {
+        in 1030..1099 -> {
+            "com.qidian.QDReader.ui.modules.bookshelf.adapter.BaseBooksAdapter".toClass().method {
+                name = "getHeaderItemCount"
+                emptyParam()
+                returnType = IntType
+            }.hook().replaceTo(0)
+        }
     }
 }
 
