@@ -325,6 +325,14 @@ private fun MainScreen(
     ) {
 
         PrimaryCard("主设置") {
+
+            ItemWithSwitch(text = "启用启动时检查权限",
+                modifier = itemModifier,
+                checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableStartCheckingPermissions),
+                onCheckedChange = {
+                    HookEntry.optionEntity.mainOption.enableStartCheckingPermissions = it
+                })
+
             ItemWithSwitch(text = "发帖上传图片显示直链",
                 modifier = itemModifier,
                 checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enablePostToShowImageUrl),
@@ -575,7 +583,8 @@ private fun MainScreen(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         sublist.forEach { item ->
-                                            StartImageItem(startImageModel = item,
+                                            StartImageItem(
+                                                startImageModel = item,
                                                 modifier = Modifier
                                                     .combinedClickable(onClick = {}, onLongClick = {
                                                         context.apply {
@@ -587,7 +596,8 @@ private fun MainScreen(
                                                     .fillParentMaxWidth(.3f)
                                                     .padding(
                                                         2.dp
-                                                    ))
+                                                    )
+                                            )
                                         }
 
                                     }
@@ -718,6 +728,18 @@ private fun PurifyScreen(
                     HookEntry.optionEntity.viewHideOption.enableHideRedDot = it
                 })
 
+            ItemWithSwitch(text = "隐藏我-右上角消息红点",
+                modifier = itemModifier,
+                checked = rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.accountOption.enableHideAccountRightTopRedDot),
+                onCheckedChange = {
+                    HookEntry.optionEntity.viewHideOption.accountOption.enableHideAccountRightTopRedDot =
+                        it
+                })
+
+            ItemWithNewPage(text = "搜索配置列表", modifier = itemModifier, onClick = {
+                context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.searchOption)
+            })
+
             ItemWithNewPage(text = "主页隐藏选项列表", modifier = itemModifier, onClick = {
                 context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.homeOption.configurations)
             })
@@ -784,18 +806,6 @@ private fun PurifyScreen(
                     context.toast("已恢复默认")
                 })
             }
-
-            ItemWithNewPage(text = "搜索配置列表", modifier = itemModifier, onClick = {
-                context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.searchOption)
-            })
-
-            ItemWithSwitch(text = "隐藏我-右上角消息红点",
-                modifier = itemModifier,
-                checked = rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.accountOption.enableHideAccountRightTopRedDot),
-                onCheckedChange = {
-                    HookEntry.optionEntity.viewHideOption.accountOption.enableHideAccountRightTopRedDot =
-                        it
-                })
 
             val hideAccount =
                 rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.accountOption.enableHideAccount)

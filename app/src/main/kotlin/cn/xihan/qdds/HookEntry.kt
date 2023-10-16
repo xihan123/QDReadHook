@@ -83,54 +83,14 @@ class HookEntry : IYukiHookXposedInit {
 
             }
 
-            "com.qidian.QDReader.ui.activity.SplashActivity".toClass().apply {
-                val hook = method {
-                    name = "go2Where"
-                    emptyParam()
-                    returnType = UnitType
-                }.hook {
-                    replaceUnit {
-                        instance<Activity>().requestPermissionDialog()
-                    }
-                }
-
-                val hook2 = method {
-                    name = "go2Main"
-                    paramCount(1)
-                    returnType = UnitType
-                }.hook {
-                    replaceUnit {
-                        instance<Activity>().requestPermissionDialog()
-                    }
-                }
-
-                method {
-                    name = "onCreate"
-                    param(BundleClass)
-                    returnType = UnitType
-                }.hook().after {
-                    instance<Activity>().apply {
-                        // 判断权限
-                        val permission = XXPermissions.isGranted(
-                            this, if (this.applicationInfo.targetSdkVersion > 30) arrayOf(
-                                Permission.MANAGE_EXTERNAL_STORAGE,
-                                Permission.REQUEST_INSTALL_PACKAGES
-                            ) else Permission.Group.STORAGE.plus(Permission.REQUEST_INSTALL_PACKAGES)
-                        )
-                        if (permission) {
-                            hook.remove()
-                            hook2.remove()
-                        }
-                    }
-                }
-            }
-
         }
-
-
     }
 
     private fun PackageParam.mainFunction(versionCode: Int) {
+
+        if (optionEntity.mainOption.enableStartCheckingPermissions){
+            startCheckingPermissions(versionCode)
+        }
 
         if (optionEntity.mainOption.enablePostToShowImageUrl) {
             postToShowImageUrl(versionCode)
@@ -539,6 +499,62 @@ class HookEntry : IYukiHookXposedInit {
 }
 
 /**
+ * 开始检查权限
+ * @since 7.9.306-1030
+ * @param [versionCode] 版本代码
+ * @suppress Generate Documentation
+ */
+fun PackageParam.startCheckingPermissions(versionCode: Int) {
+    when (versionCode) {
+        in 1030..1099 -> {
+            "com.qidian.QDReader.ui.activity.SplashActivity".toClass().apply {
+                val hook = method {
+                    name = "go2Where"
+                    emptyParam()
+                    returnType = UnitType
+                }.hook {
+                    replaceUnit {
+                        instance<Activity>().requestPermissionDialog()
+                    }
+                }
+
+                val hook2 = method {
+                    name = "go2Main"
+                    paramCount(1)
+                    returnType = UnitType
+                }.hook {
+                    replaceUnit {
+                        instance<Activity>().requestPermissionDialog()
+                    }
+                }
+
+                method {
+                    name = "onCreate"
+                    param(BundleClass)
+                    returnType = UnitType
+                }.hook().after {
+                    instance<Activity>().apply {
+                        // 判断权限
+                        val permission = XXPermissions.isGranted(
+                            this, if (this.applicationInfo.targetSdkVersion > 30) arrayOf(
+                                Permission.MANAGE_EXTERNAL_STORAGE,
+                                Permission.REQUEST_INSTALL_PACKAGES
+                            ) else Permission.Group.STORAGE.plus(Permission.REQUEST_INSTALL_PACKAGES)
+                        )
+                        if (permission) {
+                            hook.remove()
+                            hook2.remove()
+                        }
+                    }
+                }
+            }
+        }
+
+        else -> "startCheckingPermissions".printlnNotSupportVersion(versionCode)
+    }
+}
+
+/**
  * 解锁会员卡专属背景
  * @since 7.9.306-1030 ~ 1099
  * @param [versionCode] 版本代码
@@ -888,6 +904,7 @@ fun PackageParam.oldDailyRead(versionCode: Int) {
                     }
             }
         }
+
         else -> "启用旧版每日导读".printlnNotSupportVersion(versionCode)
     }
 }
