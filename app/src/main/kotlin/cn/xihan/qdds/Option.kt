@@ -435,6 +435,7 @@ fun readOptionEntity(): OptionEntity {
             val newBookDetailOptionConfigurations =
                 defaultOptionEntity.viewHideOption.bookDetailOptions
             val newAutomaticReceiveOptionConfigurations = defaultOptionEntity.automatizationOption
+            val newSearchOption = defaultOptionEntity.viewHideOption.searchOption
             advOption = advOption.merge(
                 newAdvOptionConfigurations
             )
@@ -451,6 +452,9 @@ fun readOptionEntity(): OptionEntity {
             )
             automatizationOption = automatizationOption.merge(
                 newAutomaticReceiveOptionConfigurations
+            )
+            viewHideOption.searchOption = viewHideOption.searchOption.merge(
+                newSearchOption
             )
         }
     } catch (e: Throwable) {
