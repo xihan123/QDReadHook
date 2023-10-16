@@ -18,6 +18,11 @@ dependencyResolutionManagement {
 //        maven("https://mirrors.cloud.tencent.com/nexus/repository/maven-public/")
         google()
         mavenCentral()
+        maven("https://jitpack.io"){
+            content {
+                includeGroupByRegex("com\\.github.*")
+            }
+        }
         maven("https://api.xposed.info/"){
             mavenContent {
                 includeGroup("de.robv.android.xposed")
