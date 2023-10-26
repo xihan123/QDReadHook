@@ -60,6 +60,10 @@ class HookEntry : IYukiHookXposedInit {
                 }
             }
 
+            if (optionEntity.mainOption.enableStartCheckingPermissions) {
+                startCheckingPermissions(versionCode)
+            }
+
             "com.qidian.QDReader.ui.activity.MoreActivity".toClass().apply {
                 method {
                     name = "initWidget"
@@ -94,10 +98,6 @@ class HookEntry : IYukiHookXposedInit {
     }
 
     private fun PackageParam.mainFunction(versionCode: Int, bridge: DexKitBridge) {
-
-        if (optionEntity.mainOption.enableStartCheckingPermissions) {
-            startCheckingPermissions(versionCode)
-        }
 
         if (optionEntity.mainOption.enablePostToShowImageUrl) {
             postToShowImageUrl(versionCode, bridge)
