@@ -426,7 +426,7 @@ fun readOptionFile(errorAction: (String) -> Unit = {}): File? = try {
 }
 
 fun readOptionEntity(): OptionEntity {
-    val file = readOptionFile(){
+    val file = readOptionFile {
         it.loge()
     } ?: return defaultOptionEntity
     return try {

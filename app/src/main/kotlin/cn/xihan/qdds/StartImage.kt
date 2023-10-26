@@ -96,37 +96,37 @@ fun PackageParam.captureTheOfficialLaunchMapList(versionCode: Int) {
                     paramCount(2)
                     returnType = UnitType
                 }.hook().after {
-                val dataList = instance.getParam<ArrayList<*>>("dataList")
-                val startImageList =
-                    optionEntity.startImageOption.officialLaunchMapList.toMutableList()
-                dataList?.forEach { item ->
-                    item?.let {
-                        val imageUrl = item.getParam<String>("imageUrl")
-                        val paperId = item.getParam<Long>("paperId")
-                        val name = item.getParam<String>("name")
-                        val preImageUrl = item.getParam<String>("preImageUrl")
-                        if (imageUrl != null && paperId != null && name != null && preImageUrl != null) {
-                            startImageList.find { it1 -> it1.paperId == paperId }
-                                ?.let { startImage ->
-                                    startImage.name = name
-                                    startImage.imageUrl = imageUrl
-                                    startImage.preImageUrl = preImageUrl
-                                } ?: startImageList.plusAssign(
-                                StartImageModel(
-                                    name = name,
-                                    imageUrl = imageUrl,
-                                    preImageUrl = preImageUrl,
-                                    paperId = paperId
+                    val dataList = instance.getParam<ArrayList<*>>("dataList")
+                    val startImageList =
+                        optionEntity.startImageOption.officialLaunchMapList.toMutableList()
+                    dataList?.forEach { item ->
+                        item?.let {
+                            val imageUrl = item.getParam<String>("imageUrl")
+                            val paperId = item.getParam<Long>("paperId")
+                            val name = item.getParam<String>("name")
+                            val preImageUrl = item.getParam<String>("preImageUrl")
+                            if (imageUrl != null && paperId != null && name != null && preImageUrl != null) {
+                                startImageList.find { it1 -> it1.paperId == paperId }
+                                    ?.let { startImage ->
+                                        startImage.name = name
+                                        startImage.imageUrl = imageUrl
+                                        startImage.preImageUrl = preImageUrl
+                                    } ?: startImageList.plusAssign(
+                                    StartImageModel(
+                                        name = name,
+                                        imageUrl = imageUrl,
+                                        preImageUrl = preImageUrl,
+                                        paperId = paperId
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
-                }
 
-                optionEntity.startImageOption.officialLaunchMapList =
-                    startImageList
-                updateOptionEntity()
-            }
+                    optionEntity.startImageOption.officialLaunchMapList =
+                        startImageList
+                    updateOptionEntity()
+                }
         }
 
         else -> "抓取官方启动图列表".printlnNotSupportVersion(versionCode)

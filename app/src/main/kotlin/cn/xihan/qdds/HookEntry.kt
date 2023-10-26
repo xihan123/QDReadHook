@@ -37,6 +37,12 @@ import java.lang.reflect.Modifier
 @InjectYukiHookWithXposed
 class HookEntry : IYukiHookXposedInit {
 
+    init {
+        if (optionEntity.allowDisclaimers) {
+            System.loadLibrary("dexkit")
+        }
+    }
+
     override fun onInit() = YukiHookAPI.configs {
         YLog.Configs.apply {
             tag = "yuki"
@@ -49,8 +55,9 @@ class HookEntry : IYukiHookXposedInit {
         loadApp(name = QD_PACKAGE_NAME) {
 
             if (optionEntity.allowDisclaimers) {
-                System.loadLibrary("dexkit")
-                mainFunction(versionCode = versionCode)
+                DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
+                    mainFunction(versionCode = versionCode, bridge = bridge)
+                }
             }
 
             "com.qidian.QDReader.ui.activity.MoreActivity".toClass().apply {
@@ -86,14 +93,14 @@ class HookEntry : IYukiHookXposedInit {
         }
     }
 
-    private fun PackageParam.mainFunction(versionCode: Int) {
+    private fun PackageParam.mainFunction(versionCode: Int, bridge: DexKitBridge) {
 
-        if (optionEntity.mainOption.enableStartCheckingPermissions){
+        if (optionEntity.mainOption.enableStartCheckingPermissions) {
             startCheckingPermissions(versionCode)
         }
 
         if (optionEntity.mainOption.enablePostToShowImageUrl) {
-            postToShowImageUrl(versionCode)
+            postToShowImageUrl(versionCode, bridge)
         }
 
         if (optionEntity.mainOption.enableUnlockMemberBackground) {
@@ -105,7 +112,7 @@ class HookEntry : IYukiHookXposedInit {
         }
 
         if (optionEntity.mainOption.enableIgnoreFreeSubscribeLimit) {
-            ignoreFreeSubscribeLimit(versionCode)
+            ignoreFreeSubscribeLimit(versionCode, bridge)
         }
 
         if (optionEntity.mainOption.enableExportEmoji) {
@@ -113,30 +120,32 @@ class HookEntry : IYukiHookXposedInit {
         }
 
         if (optionEntity.mainOption.enableOldDailyRead) {
-            oldDailyRead(versionCode)
+            oldDailyRead(versionCode, bridge)
         }
 
         if (optionEntity.readPageOption.enableReadTimeFactor) {
             readingTimeSpeedFactor(
                 versionCode = versionCode,
-                speedFactor = optionEntity.readPageOption.speedFactor
+                speedFactor = optionEntity.readPageOption.speedFactor,
+                bridge = bridge
             )
         }
 
         if (optionEntity.readPageOption.enableRedirectReadingPageBackgroundPath) {
-            redirectReadingPageBackgroundPath(versionCode)
+            redirectReadingPageBackgroundPath(versionCode, bridge)
         }
 
-        advOption(versionCode, optionEntity.advOption)
+        advOption(versionCode, optionEntity.advOption, bridge)
 
-        interceptOption(versionCode, optionEntity.interceptOption)
+        interceptOption(versionCode, optionEntity.interceptOption, bridge)
 
-        homeOption(versionCode, optionEntity.viewHideOption.homeOption.configurations)
+        homeOption(versionCode, optionEntity.viewHideOption.homeOption.configurations, bridge)
 
         hideBottom(
             versionCode = versionCode,
             hideRedDot = optionEntity.viewHideOption.enableHideRedDot,
-            hideNavigation = optionEntity.viewHideOption.homeOption.enableCaptureBottomNavigation
+            hideNavigation = optionEntity.viewHideOption.homeOption.enableCaptureBottomNavigation,
+            bridge = bridge
         )
 
         if (optionEntity.viewHideOption.selectedOption.enableSelectedHide) {
@@ -147,7 +156,7 @@ class HookEntry : IYukiHookXposedInit {
             selectedTitleOption(versionCode)
         }
 
-        searchOption(versionCode, optionEntity.viewHideOption.searchOption)
+        searchOption(versionCode, optionEntity.viewHideOption.searchOption, bridge)
 
         if (optionEntity.viewHideOption.accountOption.enableHideAccountRightTopRedDot) {
             accountRightTopRedDot(versionCode)
@@ -202,7 +211,8 @@ class HookEntry : IYukiHookXposedInit {
             enableShowReaderPageChapterSaveRawPictures = optionEntity.readPageOption.enableShowReaderPageChapterSaveRawPicture,
             enableShowReaderPageChapterSavePictureDialog = optionEntity.readPageOption.enableShowReaderPageChapterSavePictureDialog,
             enableShowReaderPageChapterSaveAudioDialog = optionEntity.readPageOption.enableShowReaderPageChapterSaveAudioDialog,
-            enableCopyReaderPageChapterComment = optionEntity.readPageOption.enableCopyReaderPageChapterComment
+            enableCopyReaderPageChapterComment = optionEntity.readPageOption.enableCopyReaderPageChapterComment,
+            bridge = bridge
         )
 
         if (optionEntity.viewHideOption.enableHideLastPage) {
@@ -236,7 +246,7 @@ class HookEntry : IYukiHookXposedInit {
         }
 
         if (optionEntity.viewHideOption.readPageOptions.enableCaptureBookReadPageView) {
-            hideReadPage(versionCode)
+            hideReadPage(versionCode, bridge)
         }
 
         if (optionEntity.startImageOption.enableCustomStartImage) {
@@ -255,15 +265,14 @@ class HookEntry : IYukiHookXposedInit {
             customBookShelfTopImage(versionCode)
         }
 
-        shieldOption(versionCode, optionEntity.shieldOption.configurations)
+        shieldOption(versionCode, optionEntity.shieldOption.configurations, bridge)
 
         if (optionEntity.shieldOption.enableQuickShieldDialog) {
             quickShield(versionCode)
         }
 
         automatizationOption(
-            versionCode = versionCode,
-            optionEntity.automatizationOption
+            versionCode = versionCode, optionEntity.automatizationOption
         )
     }
 
@@ -307,8 +316,7 @@ class HookEntry : IYukiHookXposedInit {
          */
         fun isNeedShield(
             bookName: String? = null, authorName: String? = null, bookType: Set<String>? = null
-        ): Boolean {
-            /*
+        ): Boolean {/*
             if (BuildConfig.DEBUG) {
                 "bookName: $bookName\nauthorName:$authorName\nbookType:$bookType".loge()
             }
@@ -641,43 +649,41 @@ fun PackageParam.freeAdReward(versionCode: Int) {
  * @since 7.9.306-1030 ~ 1099
  * @param [versionCode] 版本代码
  */
-fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int) {
+fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
         in 1030..1099 -> {
-            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                bridge.findClass {
-                    searchPackages = listOf("com.qidian.QDReader.component.bll.manager")
-                    matcher {
-                        methods {
-                            add {
-                                modifiers = Modifier.PRIVATE
-                                returnType = "int"
-                                paramCount = 3
-                            }
-                        }
-                        usingStrings = listOf("IsFreeLimit", "HasCopyRight")
-                    }
-                }.firstNotNullOfOrNull { classData ->
-                    classData.getMethods().findMethod {
-                        matcher {
+            bridge.findClass {
+                searchPackages = listOf("com.qidian.QDReader.component.bll.manager")
+                matcher {
+                    methods {
+                        add {
+                            modifiers = Modifier.PRIVATE
                             returnType = "int"
-                            paramTypes = listOf(
-                                "com.qidian.QDReader.framework.network.qd.QDHttpResp",
-                                "org.json.JSONObject",
-                                "long"
-                            )
-                            usingStrings = listOf("IsFreeLimit")
+                            paramCount = 3
                         }
-                    }.firstNotNullOfOrNull { methodData ->
-                        methodData.className.toClass().method {
-                            name = methodData.methodName
-                            paramCount(3)
-                            returnType = IntType
-                        }.hook().before {
-                            val jb = args[1].safeCast<JSONObject>()
-                            jb?.optJSONObject("Data")?.put("IsFreeLimit", -1)
-                            args(1).set(jb)
-                        }
+                    }
+                    usingStrings = listOf("IsFreeLimit", "HasCopyRight")
+                }
+            }.firstNotNullOfOrNull { classData ->
+                classData.getMethods().findMethod {
+                    matcher {
+                        returnType = "int"
+                        paramTypes = listOf(
+                            "com.qidian.QDReader.framework.network.qd.QDHttpResp",
+                            "org.json.JSONObject",
+                            "long"
+                        )
+                        usingStrings = listOf("IsFreeLimit")
+                    }
+                }.firstNotNullOfOrNull { methodData ->
+                    methodData.className.toClass().method {
+                        name = methodData.methodName
+                        paramCount(3)
+                        returnType = IntType
+                    }.hook().before {
+                        val jb = args[1].safeCast<JSONObject>()
+                        jb?.optJSONObject("Data")?.put("IsFreeLimit", -1)
+                        args(1).set(jb)
                     }
                 }
             }
@@ -703,11 +709,9 @@ fun PackageParam.exportEmoji(versionCode: Int) {
                 returnType = UnitType
             }.hook().after {
                 val stickersBean = args[1] ?: return@after
-                val viewMap =
-                    args[0]?.getParam<Map<*, View>>("_\$_findViewCache") ?: return@after
+                val viewMap = args[0]?.getParam<Map<*, View>>("_\$_findViewCache") ?: return@after
                 val faceList = stickersBean.getParam<MutableList<*>>("mFaceList")
-                val yWImageLoader =
-                    "com.yuewen.component.imageloader.YWImageLoader".toClassOrNull()
+                val yWImageLoader = "com.yuewen.component.imageloader.YWImageLoader".toClassOrNull()
                 val context = args[0] ?: return@after
                 if (faceList.isNullOrEmpty() || yWImageLoader == null) {
                     return@after
@@ -799,41 +803,39 @@ private fun Context.exportEmojiDialog(
  * @since 7.9.306-1030 ~ 1099
  * @param [versionCode] 版本代码
  */
-fun PackageParam.postToShowImageUrl(versionCode: Int) {
+fun PackageParam.postToShowImageUrl(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
         in 1030..1099 -> {
-            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                bridge.findClass {
-                    searchPackages = listOf("com.qidian.QDReader.ui.dialog")
-                    matcher {
-                        methods {
-                            add {
-                                paramTypes = listOf(
-                                    "com.qidian.QDReader.repository.entity.upload.UploadImageResult",
-                                    "com.qidian.QDReader.repository.entity.upload.UploadImageResult"
-                                )
-                            }
-                        }
-                    }
-                }.firstNotNullOfOrNull { classData ->
-                    classData.name.toClass().method {
-                        name = "dismiss"
-                        emptyParam()
-                        returnType = UnitType
-                        superClass()
-                    }.hook().after {
-                        val lists = instance.getParamList<List<*>>().takeUnless { it.isEmpty() }
-                            ?.filterNot { it[0] is String }
-                        lists?.firstOrNull()?.let { urlList ->
-                            urlList.mapNotNull { it?.getParam<String>("mAccessUrl") }
-                                .let { accessUrls ->
-                                    instance.getViews<TextView>()
-                                        .firstNotNullOfOrNull { it.context }
-                                        ?.showUrlListDialog(accessUrls)
-                                }
+            bridge.findClass {
+                searchPackages = listOf("com.qidian.QDReader.ui.dialog")
+                matcher {
+                    methods {
+                        add {
+                            paramTypes = listOf(
+                                "com.qidian.QDReader.repository.entity.upload.UploadImageResult",
+                                "com.qidian.QDReader.repository.entity.upload.UploadImageResult"
+                            )
                         }
                     }
                 }
+            }.firstNotNullOfOrNull { classData ->
+                classData.name.toClass().method {
+                    name = "dismiss"
+                    emptyParam()
+                    returnType = UnitType
+                    superClass()
+                }.hook().after {
+                    val lists = instance.getParamList<List<*>>().takeUnless { it.isEmpty() }
+                        ?.filterNot { it[0] is String }
+                    lists?.firstOrNull()?.let { urlList ->
+                        urlList.mapNotNull { it?.getParam<String>("mAccessUrl") }
+                            .let { accessUrls ->
+                                instance.getViews<TextView>().firstNotNullOfOrNull { it.context }
+                                    ?.showUrlListDialog(accessUrls)
+                            }
+                    }
+                }
+
             }
         }
 
@@ -867,43 +869,43 @@ private fun Context.showUrlListDialog(urls: List<String>) {
  * @since 7.9.306-1050 ~ 1099
  * @param [versionCode] 版本代码
  */
-fun PackageParam.oldDailyRead(versionCode: Int) {
+fun PackageParam.oldDailyRead(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
         in 1050..1099 -> {
-            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                bridge.findClass {
-                    searchPackages = listOf("com.qidian.QDReader.flutter")
-                    matcher {
-                        usingStrings = listOf("flutterEntryPath", "RoutePath", "Params")
-                    }
-                }.filter { "DailyReadingMainPageActivity" in it.name }
-                    .firstNotNullOfOrNull { classData ->
-                        classData.getMethods().findMethod {
-                            matcher {
-                                modifiers = Modifier.PUBLIC
-                                paramCount = 3
-                                returnType = "void"
-                            }
-                        }.firstNotNullOfOrNull { methodData ->
-                            methodData.className.toClass().method {
-                                name = methodData.methodName
-                                paramCount(methodData.paramTypeNames.size)
+
+            bridge.findClass {
+                searchPackages = listOf("com.qidian.QDReader.flutter")
+                matcher {
+                    usingStrings = listOf("flutterEntryPath", "RoutePath", "Params")
+                }
+            }.filter { "DailyReadingMainPageActivity" in it.name }
+                .firstNotNullOfOrNull { classData ->
+                    classData.getMethods().findMethod {
+                        matcher {
+                            modifiers = Modifier.PUBLIC
+                            paramCount = 3
+                            returnType = "void"
+                        }
+                    }.firstNotNullOfOrNull { methodData ->
+                        methodData.className.toClass().method {
+                            name = methodData.methodName
+                            paramCount(methodData.paramTypeNames.size)
+                            returnType = UnitType
+                        }.hook().replaceUnit {
+                            val context = args[0].safeCast<Context>() ?: return@replaceUnit
+                            val stringArray =
+                                args[2].safeCast<Array<String>>() ?: return@replaceUnit
+                            val instance by lazyClassOrNull("com.qidian.QDReader.ui.activity.DailyReadingActivity")
+                            instance?.method {
+                                name = "openDailyReading"
+                                paramCount(2)
                                 returnType = UnitType
-                            }.hook().replaceUnit {
-                                val context = args[0].safeCast<Context>() ?: return@replaceUnit
-                                val stringArray =
-                                    args[2].safeCast<Array<String>>() ?: return@replaceUnit
-                                val instance by lazyClassOrNull("com.qidian.QDReader.ui.activity.DailyReadingActivity")
-                                instance?.method {
-                                    name = "openDailyReading"
-                                    paramCount(2)
-                                    returnType = UnitType
-                                }?.get(instance)?.call(context, stringArray.first().toLong())
-                            }
+                            }?.get(instance)?.call(context, stringArray.first().toLong())
                         }
                     }
-            }
+                }
         }
+
 
         else -> "启用旧版每日导读".printlnNotSupportVersion(versionCode)
     }

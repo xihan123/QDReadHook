@@ -28,14 +28,16 @@ import java.lang.reflect.Modifier
  * @param [versionCode] 版本代码
  * @param [configurations] 配置
  */
-fun PackageParam.homeOption(versionCode: Int, configurations: List<SelectedModel>) {
+fun PackageParam.homeOption(
+    versionCode: Int, configurations: List<SelectedModel>, bridge: DexKitBridge
+) {
     configurations.filter { it.selected }.takeIf { it.isNotEmpty() }?.forEach {
         when (it.title) {
             "主页顶部宝箱提示" -> hideMainTopBox(versionCode)
             "主页顶部战力提示" -> hideMainTopPower(versionCode)
-            "书架每日导读" -> hideBookshelfDailyReading(versionCode)
+            "书架每日导读" -> hideBookshelfDailyReading(versionCode, bridge)
             "书架顶部标题" -> hideBookshelfTopTitle(versionCode)
-            "书架去找书" -> hideBookshelfFindBook(versionCode)
+            "书架去找书" -> hideBookshelfFindBook(versionCode, bridge)
         }
     }
 }
@@ -46,7 +48,9 @@ fun PackageParam.homeOption(versionCode: Int, configurations: List<SelectedModel
  * @param [versionCode] 版本代码
  * @param [configurations] 配置
  */
-fun PackageParam.searchOption(versionCode: Int, configurations: List<SelectedModel>) {
+fun PackageParam.searchOption(
+    versionCode: Int, configurations: List<SelectedModel>, bridge: DexKitBridge
+) {
     when (versionCode) {
         in 1030..1099 -> {
             val map = mapOf(
@@ -54,37 +58,35 @@ fun PackageParam.searchOption(versionCode: Int, configurations: List<SelectedMod
             ).filterKeys { key -> configurations.any { it.selected && it.title == key } }
 
             if (map.isNotEmpty()) {
-                DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                    bridge.findClass {
-                        excludePackages = listOf("com")
+
+                bridge.findClass {
+                    excludePackages = listOf("com")
+                    matcher {
+                        usingStrings = listOf("combineBean", "dataList")
+                    }
+                }.firstNotNullOfOrNull { classData ->
+                    classData.getMethods().findMethod {
                         matcher {
-                            usingStrings = listOf("combineBean", "dataList")
+                            paramTypes = listOf("java.util.List")
+                            returnType = "void"
+                            usingStrings = listOf("dataList")
                         }
-                    }.firstNotNullOfOrNull { classData ->
-                        classData.getMethods().findMethod {
-                            matcher {
-                                paramTypes = listOf("java.util.List")
-                                returnType = "void"
-                                usingStrings = listOf("dataList")
-                            }
-                        }.firstNotNullOfOrNull { methodData ->
-                            methodData.className.toClass().method {
-                                name = methodData.methodName
-                                paramCount(methodData.paramTypeNames.size)
-                                returnType = UnitType
-                            }.hook().before {
-                                val list = args[0].safeCast<MutableList<*>>() ?: return@before
-                                val iterator = list.iterator()
-                                while (iterator.hasNext()) {
-                                    val type = iterator.next()?.getParam<Int>("type")
-                                    if (type in map.values) {
-                                        iterator.remove()
-                                    }
+                    }.firstNotNullOfOrNull { methodData ->
+                        methodData.className.toClass().method {
+                            name = methodData.methodName
+                            paramCount(methodData.paramTypeNames.size)
+                            returnType = UnitType
+                        }.hook().before {
+                            val list = args[0].safeCast<MutableList<*>>() ?: return@before
+                            val iterator = list.iterator()
+                            while (iterator.hasNext()) {
+                                val type = iterator.next()?.getParam<Int>("type")
+                                if (type in map.values) {
+                                    iterator.remove()
                                 }
                             }
                         }
                     }
-
                 }
             }
         }
@@ -351,61 +353,60 @@ fun PackageParam.hideMainTopPower(versionCode: Int) {
  * @since 7.9.306-1030 ~ 1099
  * @param [versionCode] 版本代码
  */
-fun PackageParam.hideBookshelfDailyReading(versionCode: Int) {
+fun PackageParam.hideBookshelfDailyReading(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
         in 1030..1099 -> {
-            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                bridge.apply {
-                    findClass {
-                        matcher {
-                            methods {
-                                add {
-                                    paramTypes = listOf("int")
-                                    returnType = "com.qidian.QDReader.repository.entity.BookItem"
-                                }
-                                add {
-                                    paramTypes =
-                                        listOf("com.qidian.QDReader.repository.entity.BookShelfItem")
-                                    returnType = "void"
-                                }
+
+            bridge.apply {
+                findClass {
+                    matcher {
+                        methods {
+                            add {
+                                paramTypes = listOf("int")
+                                returnType = "com.qidian.QDReader.repository.entity.BookItem"
                             }
-                        }
-                    }.forEach { classData ->
-                        classData.getMethods().findMethod {
-                            matcher {
-                                name = "getHeaderItemCount"
-                                returnType = "int"
+                            add {
+                                paramTypes =
+                                    listOf("com.qidian.QDReader.repository.entity.BookShelfItem")
+                                returnType = "void"
                             }
-                        }.firstNotNullOfOrNull { methodData ->
-                            methodData.className.toClass().method {
-                                name = methodData.methodName
-                                returnType = IntType
-                            }.hook().replaceTo(0)
                         }
                     }
-
-                    findClass {
-                        searchPackages = listOf("com.qidian.QDReader.ui.modules.bookshelf.view")
+                }.forEach { classData ->
+                    classData.getMethods().findMethod {
                         matcher {
+                            name = "getHeaderItemCount"
+                            returnType = "int"
+                        }
+                    }.firstNotNullOfOrNull { methodData ->
+                        methodData.className.toClass().method {
+                            name = methodData.methodName
+                            returnType = IntType
+                        }.hook().replaceTo(0)
+                    }
+                }
+
+                findClass {
+                    searchPackages = listOf("com.qidian.QDReader.ui.modules.bookshelf.view")
+                    matcher {
+                        usingStrings =
+                            listOf("it.CategoryName", "it.SubCategoryName", "it.AuthorTags")
+                    }
+                }.firstNotNullOfOrNull { classData ->
+                    classData.getMethods().findMethod {
+                        matcher {
+                            paramTypes =
+                                listOf("com.qidian.QDReader.repository.entity.DailyReadingItem")
+                            returnType = "void"
                             usingStrings =
                                 listOf("it.CategoryName", "it.SubCategoryName", "it.AuthorTags")
                         }
-                    }.firstNotNullOfOrNull { classData ->
-                        classData.getMethods().findMethod {
-                            matcher {
-                                paramTypes =
-                                    listOf("com.qidian.QDReader.repository.entity.DailyReadingItem")
-                                returnType = "void"
-                                usingStrings =
-                                    listOf("it.CategoryName", "it.SubCategoryName", "it.AuthorTags")
-                            }
-                        }.firstNotNullOfOrNull { methodData ->
-                            intercept(
-                                className = methodData.className,
-                                methodName = methodData.methodName,
-                                paramCount = methodData.paramTypeNames.size
-                            )
-                        }
+                    }.firstNotNullOfOrNull { methodData ->
+                        intercept(
+                            className = methodData.className,
+                            methodName = methodData.methodName,
+                            paramCount = methodData.paramTypeNames.size
+                        )
                     }
                 }
             }
@@ -420,26 +421,25 @@ fun PackageParam.hideBookshelfDailyReading(versionCode: Int) {
  * @since 7.9.306-1030
  * @param [versionCode] 版本代码
  */
-fun PackageParam.hideBookshelfFindBook(versionCode: Int) {
+fun PackageParam.hideBookshelfFindBook(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
         in 1030..1099 -> {
-            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                bridge.findClass {
-                    searchPackages = listOf("com.qidian.QDReader.ui.viewholder.bookshelf")
+
+            bridge.findClass {
+                searchPackages = listOf("com.qidian.QDReader.ui.viewholder.bookshelf")
+                matcher {
+                    usingStrings = listOf("QDBookShelfBrowserRecordHolder", "itemView")
+                }
+            }.firstNotNullOfOrNull { classData ->
+                classData.getMethods().findMethod {
                     matcher {
-                        usingStrings = listOf("QDBookShelfBrowserRecordHolder", "itemView")
+                        paramTypes = listOf("android.view.View", "android.content.Context")
                     }
-                }.firstNotNullOfOrNull { classData ->
-                    classData.getMethods().findMethod {
-                        matcher {
-                            paramTypes = listOf("android.view.View", "android.content.Context")
-                        }
-                    }.firstNotNullOfOrNull { methodData ->
-                        methodData.className.toClass().constructor {
-                            paramCount(methodData.paramTypeNames.size)
-                        }.hook().after {
-                            args[0]?.safeCast<View>()?.setVisibilityIfNotEqual()
-                        }
+                }.firstNotNullOfOrNull { methodData ->
+                    methodData.className.toClass().constructor {
+                        paramCount(methodData.paramTypeNames.size)
+                    }.hook().after {
+                        args[0]?.safeCast<View>()?.setVisibilityIfNotEqual()
                     }
                 }
             }
@@ -482,12 +482,22 @@ fun PackageParam.hideBottom(
     versionCode: Int,
     hideRedDot: Boolean = true,
     hideNavigation: Boolean = true,
+    bridge: DexKitBridge
 ) {
     when (versionCode) {
         in 1030..1099 -> {
-            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                bridge.findClass {
-                    searchPackages = listOf("com.qidian.QDReader.ui.widget.maintab")
+
+            bridge.findClass {
+                searchPackages = listOf("com.qidian.QDReader.ui.widget.maintab")
+                matcher {
+                    usingStrings = listOf(
+                        "Icon tab provider return null when index in [0, tab count).",
+                        "tabLayout",
+                        "BOTTOM_TAB_OPERATION_RED_DOT_"
+                    )
+                }
+            }.firstNotNullOfOrNull { classData ->
+                classData.getMethods().findMethod {
                     matcher {
                         usingStrings = listOf(
                             "Icon tab provider return null when index in [0, tab count).",
@@ -495,44 +505,34 @@ fun PackageParam.hideBottom(
                             "BOTTOM_TAB_OPERATION_RED_DOT_"
                         )
                     }
-                }.firstNotNullOfOrNull { classData ->
-                    classData.getMethods().findMethod {
-                        matcher {
-                            usingStrings = listOf(
-                                "Icon tab provider return null when index in [0, tab count).",
-                                "tabLayout",
-                                "BOTTOM_TAB_OPERATION_RED_DOT_"
-                            )
+                }.firstNotNullOfOrNull { methodData ->
+                    methodData.className.toClass().method {
+                        name = methodData.methodName
+                        returnType = UnitType
+                    }.hook().after {
+                        val linearLayout =
+                            instance.getViews("android.widget.LinearLayout".toClass())
+                                .filterIsInstance<LinearLayout>().firstOrNull() ?: return@after
+
+                        if (hideRedDot) {
+                            linearLayout.findViewsByType("com.qidian.QDReader.framework.widget.customerview.SmallDotsView".toClass())
+                                .takeIf {
+                                    it.isNotEmpty()
+                                }?.hideViews()
                         }
-                    }.firstNotNullOfOrNull { methodData ->
-                        methodData.className.toClass().method {
-                            name = methodData.methodName
-                            returnType = UnitType
-                        }.hook().after {
-                            val linearLayout =
-                                instance.getViews("android.widget.LinearLayout".toClass())
-                                    .filterIsInstance<LinearLayout>().firstOrNull() ?: return@after
 
-                            if (hideRedDot) {
-                                linearLayout.findViewsByType("com.qidian.QDReader.framework.widget.customerview.SmallDotsView".toClass())
-                                    .takeIf {
-                                        it.isNotEmpty()
-                                    }?.hideViews()
-                            }
-
-                            if (hideNavigation) {
-                                val textViews = linearLayout.findViewsByType(TextViewClass)
-                                    .filter { textView -> (textView as TextView).text.isNotBlank() }
-                                if (textViews.isNotEmpty()) {
-                                    textViews.forEach { textView ->
-                                        val text = (textView as TextView).text
-                                        if ("回到顶部" !in text) {
-                                            HookEntry.optionEntity.viewHideOption.homeOption.bottomNavigationConfigurations.findOrPlus(
-                                                title = "主页底部导航栏${text}"
-                                            ) {
-                                                textView.parent.parent.safeCast<View>()
-                                                    ?.setVisibilityIfNotEqual()
-                                            }
+                        if (hideNavigation) {
+                            val textViews = linearLayout.findViewsByType(TextViewClass)
+                                .filter { textView -> (textView as TextView).text.isNotBlank() }
+                            if (textViews.isNotEmpty()) {
+                                textViews.forEach { textView ->
+                                    val text = (textView as TextView).text
+                                    if ("回到顶部" !in text) {
+                                        HookEntry.optionEntity.viewHideOption.homeOption.bottomNavigationConfigurations.findOrPlus(
+                                            title = "主页底部导航栏${text}"
+                                        ) {
+                                            textView.parent.parent.safeCast<View>()
+                                                ?.setVisibilityIfNotEqual()
                                         }
                                     }
                                 }
@@ -826,38 +826,37 @@ fun PackageParam.bookDetailHide(
  * @since 7.9.306-1030 ~ 1099
  * @param [versionCode] 版本代码
  */
-fun PackageParam.hideReadPage(versionCode: Int) {
+fun PackageParam.hideReadPage(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
         in 1030..1099 -> {
-            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                bridge.findClass {
-                    searchPackages = listOf("com.qidian.QDReader.readerengine.view.menu")
+
+            bridge.findClass {
+                searchPackages = listOf("com.qidian.QDReader.readerengine.view.menu")
+                matcher {
+                    usingStrings = listOf("QDReaderActivity_MoreMenu", "CircleNewPostLastTime")
+                }
+            }.firstNotNullOfOrNull { classData ->
+                classData.getMethods().findMethod {
                     matcher {
-                        usingStrings = listOf("QDReaderActivity_MoreMenu", "CircleNewPostLastTime")
+                        modifiers = Modifier.PRIVATE
+                        paramTypes = listOf("android.content.Context")
+                        returnType = "void"
                     }
-                }.firstNotNullOfOrNull { classData ->
-                    classData.getMethods().findMethod {
-                        matcher {
-                            modifiers = Modifier.PRIVATE
-                            paramTypes = listOf("android.content.Context")
-                            returnType = "void"
-                        }
-                    }.firstNotNullOfOrNull { methodData ->
-                        methodData.className.toClass().method {
-                            name = methodData.methodName
-                            paramCount(methodData.paramTypeNames.size)
-                            returnType = UnitType
-                        }.hook().after {
-                            instance.getParamList<View>().takeIf { it.isNotEmpty() }?.let { views ->
-                                val iterator = views.iterator()
-                                while (iterator.hasNext()) {
-                                    val view = iterator.next()
-                                    val name = view.getName()
-                                    HookEntry.optionEntity.viewHideOption.readPageOptions.configurations.findOrPlus(
-                                        name
-                                    ) {
-                                        view.setVisibilityWithChildren()
-                                    }
+                }.firstNotNullOfOrNull { methodData ->
+                    methodData.className.toClass().method {
+                        name = methodData.methodName
+                        paramCount(methodData.paramTypeNames.size)
+                        returnType = UnitType
+                    }.hook().after {
+                        instance.getParamList<View>().takeIf { it.isNotEmpty() }?.let { views ->
+                            val iterator = views.iterator()
+                            while (iterator.hasNext()) {
+                                val view = iterator.next()
+                                val name = view.getName()
+                                HookEntry.optionEntity.viewHideOption.readPageOptions.configurations.findOrPlus(
+                                    name
+                                ) {
+                                    view.setVisibilityWithChildren()
                                 }
                             }
                         }

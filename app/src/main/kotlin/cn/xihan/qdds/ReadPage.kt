@@ -21,30 +21,29 @@ import java.lang.reflect.Modifier
  * @since 7.9.306-1030 ~ 1099
  * @param [versionCode] 版本代码
  */
-fun PackageParam.redirectReadingPageBackgroundPath(versionCode: Int) {
+fun PackageParam.redirectReadingPageBackgroundPath(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
         in 1030..1099 -> {
-            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                bridge.findClass {
-                    excludePackages = listOf("com")
+
+            bridge.findClass {
+                excludePackages = listOf("com")
+                matcher {
+                    usingStrings =
+                        listOf("QDReaderAndroidUpdateNew.xml", "QDReader.apk", "ReaderTheme")
+                }
+            }.firstNotNullOfOrNull { classData ->
+                classData.getMethods().findMethod {
                     matcher {
-                        usingStrings =
-                            listOf("QDReaderAndroidUpdateNew.xml", "QDReader.apk", "ReaderTheme")
+                        returnType = "java.lang.String"
+                        paramTypes = listOf("long")
+                        usingStrings = listOf("ReaderTheme")
                     }
-                }.firstNotNullOfOrNull { classData ->
-                    classData.getMethods().findMethod {
-                        matcher {
-                            returnType = "java.lang.String"
-                            paramTypes = listOf("long")
-                            usingStrings = listOf("ReaderTheme")
-                        }
-                    }.firstNotNullOfOrNull { methodData ->
-                        methodData.className.toClass().method {
-                            name = methodData.methodName
-                            paramCount(methodData.paramTypeNames.size)
-                            returnType = StringClass
-                        }.hook().replaceTo(redirectThemePath)
-                    }
+                }.firstNotNullOfOrNull { methodData ->
+                    methodData.className.toClass().method {
+                        name = methodData.methodName
+                        paramCount(methodData.paramTypeNames.size)
+                        returnType = StringClass
+                    }.hook().replaceTo(redirectThemePath)
                 }
             }
         }
@@ -67,7 +66,8 @@ fun PackageParam.readingPageChapterCorrelation(
     enableShowReaderPageChapterSaveRawPictures: Boolean = false,
     enableShowReaderPageChapterSavePictureDialog: Boolean = false,
     enableShowReaderPageChapterSaveAudioDialog: Boolean = false,
-    enableCopyReaderPageChapterComment: Boolean = false
+    enableCopyReaderPageChapterComment: Boolean = false,
+    bridge: DexKitBridge
 ) {
     when (versionCode) {
         in 1030..1099 -> {
@@ -82,121 +82,116 @@ fun PackageParam.readingPageChapterCorrelation(
             }
 
             if (enableShowReaderPageChapterSavePictureDialog || enableCopyReaderPageChapterComment) {
-                DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                    bridge.findClass {
-                        searchPackages = listOf("com.qidian.QDReader.ui.viewholder.chaptercomment")
+
+                bridge.findClass {
+                    searchPackages = listOf("com.qidian.QDReader.ui.viewholder.chaptercomment")
+                    matcher {
+                        usingStrings = listOf("%s楼 · %s")
+                    }
+                }.forEach { classData ->
+                    classData.getMethods().findMethod {
                         matcher {
-                            usingStrings = listOf("%s楼 · %s")
+                            returnType = "void"
+                            paramTypes = listOf(
+                                "com.qidian.QDReader.repository.entity.chaptercomment.NewParagraphCommentListBean\$DataListBean",
+                                "com.qidian.QDReader.repository.entity.chaptercomment.NewParagraphCommentListBean\$BookInfoBean"
+                            )
+                            usingStrings = listOf(" · %s")
                         }
-                    }.forEach { classData ->
-                        classData.getMethods().findMethod {
-                            matcher {
-                                returnType = "void"
-                                paramTypes = listOf(
-                                    "com.qidian.QDReader.repository.entity.chaptercomment.NewParagraphCommentListBean\$DataListBean",
-                                    "com.qidian.QDReader.repository.entity.chaptercomment.NewParagraphCommentListBean\$BookInfoBean"
-                                )
-                                usingStrings = listOf(" · %s")
-                            }
-                        }.firstNotNullOfOrNull { methodData ->
-                            methodData.className.toClass().method {
-                                name = methodData.methodName
-                                paramCount(methodData.paramTypeNames.size)
-                                returnType = UnitType
-                            }.hook().after {
-                                if (enableShowReaderPageChapterSavePictureDialog) {
-                                    val rawImgUrl = args[0]?.toJSONString().parseObject()
-                                        .getString("imageDetail")
-                                    val imageViews = instance.getViews<ImageView>()
-                                    if (!rawImgUrl.isNullOrBlank() || imageViews.isNotEmpty()) {
-                                        imageViews.filter { "app:id/image" in it.toString() }
-                                            .takeIf { it.isNotEmpty() }?.first()
-                                            ?.setOnLongClickListener { imageView ->
-                                                imageView.context.alertDialog {
-                                                    title = "图片地址"
-                                                    message = rawImgUrl
-                                                    positiveButton("复制") {
-                                                        imageView.context.copyToClipboard(rawImgUrl)
-                                                    }
-                                                    negativeButton("取消") {
-                                                        it.dismiss()
-                                                    }
-                                                    build()
-                                                    show()
+                    }.firstNotNullOfOrNull { methodData ->
+                        methodData.className.toClass().method {
+                            name = methodData.methodName
+                            paramCount(methodData.paramTypeNames.size)
+                            returnType = UnitType
+                        }.hook().after {
+                            if (enableShowReaderPageChapterSavePictureDialog) {
+                                val rawImgUrl =
+                                    args[0]?.toJSONString().parseObject().getString("imageDetail")
+                                val imageViews = instance.getViews<ImageView>()
+                                if (!rawImgUrl.isNullOrBlank() || imageViews.isNotEmpty()) {
+                                    imageViews.filter { "app:id/image" in it.toString() }
+                                        .takeIf { it.isNotEmpty() }?.first()
+                                        ?.setOnLongClickListener { imageView ->
+                                            imageView.context.alertDialog {
+                                                title = "图片地址"
+                                                message = rawImgUrl
+                                                positiveButton("复制") {
+                                                    imageView.context.copyToClipboard(rawImgUrl)
                                                 }
-                                                true
-                                            }
-                                    }
-                                }
-
-                                if (enableCopyReaderPageChapterComment) {
-                                    val messageTextView =
-                                        "com.qd.ui.component.widget.textview.MessageTextView".toClass()
-                                    val textViews = instance.getViews(messageTextView)
-                                    if (textViews.isNotEmpty()) {
-                                        textViews.forEach { any ->
-                                            val textView = any.safeCast<TextView>()
-                                            textView?.setOnLongClickListener {
-                                                textView.context.alertDialog {
-                                                    title = "评论内容"
-                                                    message = textView.text.toString()
-                                                    positiveButton("复制") {
-                                                        textView.context.copyToClipboard(textView.text.toString())
-                                                    }
-                                                    negativeButton("取消") {
-                                                        it.dismiss()
-                                                    }
-                                                    build()
-                                                    show()
+                                                negativeButton("取消") {
+                                                    it.dismiss()
                                                 }
-                                                true
+                                                build()
+                                                show()
                                             }
-
+                                            true
                                         }
+                                }
+                            }
+
+                            if (enableCopyReaderPageChapterComment) {
+                                val messageTextView =
+                                    "com.qd.ui.component.widget.textview.MessageTextView".toClass()
+                                val textViews = instance.getViews(messageTextView)
+                                if (textViews.isNotEmpty()) {
+                                    textViews.forEach { any ->
+                                        val textView = any.safeCast<TextView>()
+                                        textView?.setOnLongClickListener {
+                                            textView.context.alertDialog {
+                                                title = "评论内容"
+                                                message = textView.text.toString()
+                                                positiveButton("复制") {
+                                                    textView.context.copyToClipboard(textView.text.toString())
+                                                }
+                                                negativeButton("取消") {
+                                                    it.dismiss()
+                                                }
+                                                build()
+                                                show()
+                                            }
+                                            true
+                                        }
+
                                     }
                                 }
-
                             }
+
                         }
                     }
                 }
-
             }
 
             if (enableShowReaderPageChapterSaveAudioDialog) {
-                DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                    bridge.findClass {
-                        searchPackages = listOf("com.qidian.QDReader.ui.view.chapter_review")
-                        matcher {
-                            usingStrings = listOf("temp_audio", "temp", "audio")
-                        }
-                    }.firstNotNullOfOrNull { classData ->
-                        classData.getMethods().findMethod {
-                            matcher {
-                                modifiers = Modifier.PUBLIC
-                                paramCount = 6
-                                returnType = "void"
-                                usingStrings = listOf("temp")
-                            }
-                        }.firstNotNullOfOrNull { methodData ->
-                            methodData.className.toClass().method {
-                                name = methodData.methodName
-                                paramCount(methodData.paramTypeNames.size)
-                                returnType = UnitType
-                            }.hook().after {
-                                val relativeLayouts = instance.getViews(
-                                    "com.qd.ui.component.widget.roundwidget.QDUIRoundRelativeLayout".toClass(),
-                                    true
-                                ).filterIsInstance<RelativeLayout>()
-                                val strings =
-                                    instance.getParamList<String>().filter { it.isNotBlank() }
-                                relativeLayouts.forEach { relativeLayout ->
-                                    relativeLayout.setOnLongClickListener { view ->
-                                        view.context.audioExportDialog(strings[0], strings[1])
-                                        true
-                                    }
-                                }
 
+                bridge.findClass {
+                    searchPackages = listOf("com.qidian.QDReader.ui.view.chapter_review")
+                    matcher {
+                        usingStrings = listOf("temp_audio", "temp", "audio")
+                    }
+                }.firstNotNullOfOrNull { classData ->
+                    classData.getMethods().findMethod {
+                        matcher {
+                            modifiers = Modifier.PUBLIC
+                            paramCount = 6
+                            returnType = "void"
+                            usingStrings = listOf("temp")
+                        }
+                    }.firstNotNullOfOrNull { methodData ->
+                        methodData.className.toClass().method {
+                            name = methodData.methodName
+                            paramCount(methodData.paramTypeNames.size)
+                            returnType = UnitType
+                        }.hook().after {
+                            val relativeLayouts = instance.getViews(
+                                "com.qd.ui.component.widget.roundwidget.QDUIRoundRelativeLayout".toClass(),
+                                true
+                            ).filterIsInstance<RelativeLayout>()
+                            val strings = instance.getParamList<String>().filter { it.isNotBlank() }
+                            relativeLayouts.forEach { relativeLayout ->
+                                relativeLayout.setOnLongClickListener { view ->
+                                    view.context.audioExportDialog(strings[0], strings[1])
+                                    true
+                                }
                             }
                         }
                     }
@@ -270,46 +265,43 @@ private fun Context.audioExportDialog(networkUrl: String, filePath: String) {
  * @param [speedFactor] 速度系数
  */
 fun PackageParam.readingTimeSpeedFactor(
-    versionCode: Int,
-    speedFactor: Int = 5
+    versionCode: Int, speedFactor: Int = 5, bridge: DexKitBridge
 ) {
     when (versionCode) {
         in 1030..1099 -> {
-            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                bridge.findClass {
-                    excludePackages = listOf("com")
+
+            bridge.findClass {
+                excludePackages = listOf("com")
+                matcher {
+                    usingStrings =
+                        listOf("xys", "自动保存后重新开始新的Session", "user_book_read_time")
+                }
+            }.firstNotNullOfOrNull { classData ->
+                classData.getMethods().findMethod {
                     matcher {
-                        usingStrings =
-                            listOf("xys", "自动保存后重新开始新的Session", "user_book_read_time")
+                        returnType = "java.util.List"
+                        paramCount = 2
+                        usingStrings = listOf("user_book_read_time")
                     }
-                }.firstNotNullOfOrNull { classData ->
-                    classData.getMethods().findMethod {
-                        matcher {
-                            returnType = "java.util.List"
-                            paramCount = 2
-                            usingStrings = listOf("user_book_read_time")
-                        }
-                    }.firstNotNullOfOrNull { methodData ->
-                        methodData.className.toClass().method {
-                            name = methodData.methodName
-                            paramCount(methodData.paramTypeNames.size)
-                            returnType = ListClass
-                        }.hook().after {
-                            val list = result.safeCast<MutableList<*>>()
-                            if (list.isNullOrEmpty()) return@after
-                            list.forEach { item ->
-                                item?.let {
-                                    val totalTime = it.getParam<Long>("totalTime")
-                                    val currentTime = System.currentTimeMillis()
-                                    val startTime2 =
-                                        currentTime - ((totalTime ?: 10000) * speedFactor)
-                                    it.setParams(
-                                        "startTime" to startTime2,
-                                        "endTime" to currentTime,
-                                        "totalTime" to (currentTime - startTime2),
-                                        "chapterVIP" to 1
-                                    )
-                                }
+                }.firstNotNullOfOrNull { methodData ->
+                    methodData.className.toClass().method {
+                        name = methodData.methodName
+                        paramCount(methodData.paramTypeNames.size)
+                        returnType = ListClass
+                    }.hook().after {
+                        val list = result.safeCast<MutableList<*>>()
+                        if (list.isNullOrEmpty()) return@after
+                        list.forEach { item ->
+                            item?.let {
+                                val totalTime = it.getParam<Long>("totalTime")
+                                val currentTime = System.currentTimeMillis()
+                                val startTime2 = currentTime - ((totalTime ?: 10000) * speedFactor)
+                                it.setParams(
+                                    "startTime" to startTime2,
+                                    "endTime" to currentTime,
+                                    "totalTime" to (currentTime - startTime2),
+                                    "chapterVIP" to 1
+                                )
                             }
                         }
                     }

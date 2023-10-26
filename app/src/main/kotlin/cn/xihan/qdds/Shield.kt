@@ -25,23 +25,25 @@ import java.lang.reflect.Modifier
  * @param [configurations] 配置
  */
 fun PackageParam.shieldOption(
-    versionCode: Int, configurations: List<SelectedModel>
+    versionCode: Int,
+    configurations: List<SelectedModel>,
+    bridge: DexKitBridge
 ) {
     configurations.filter { it.selected }.takeIf { it.isNotEmpty() }?.forEach { selected ->
         when (selected.title) {
             "精选-主页面" -> shieldMainPage(versionCode)
-            "精选-分类" -> shieldCategory(versionCode)
-            "精选-分类-全部作品" -> shieldCategoryAllBook(versionCode)
-            "精选-免费-免费推荐" -> shieldFreeRecommend(versionCode)
+            "精选-分类" -> shieldCategory(versionCode, bridge)
+            "精选-分类-全部作品" -> shieldCategoryAllBook(versionCode, bridge)
+            "精选-免费-免费推荐" -> shieldFreeRecommend(versionCode, bridge)
             "精选-免费-新书入库" -> shieldFreeNewBook(versionCode)
-            "精选-畅销精选、主编力荐等更多" -> shieldHotAndRecommend(versionCode)
-            "精选-新书强推、三江推荐" -> shieldNewBookAndRecommend(versionCode)
+            "精选-畅销精选、主编力荐等更多" -> shieldHotAndRecommend(versionCode, bridge)
+            "精选-新书强推、三江推荐" -> shieldNewBookAndRecommend(versionCode, bridge)
             "精选-排行榜" -> shieldBookRank(versionCode)
             "精选-新书" -> shieldNewBook(versionCode)
-            "每日导读" -> shieldDailyReading(versionCode)
+            "每日导读" -> shieldDailyReading(versionCode, bridge)
             "分类-小编力荐、本周强推等更多" -> shieldCategoryBookListReborn(versionCode)
             "精选-漫画" -> shieldComic(versionCode)
-            "精选-漫画-其他" -> shieldComicOther(versionCode)
+            "精选-漫画-其他" -> shieldComicOther(versionCode, bridge)
         }
     }
 }
@@ -52,79 +54,78 @@ fun PackageParam.shieldOption(
  * @param [versionCode] 版本代码
  */
 fun PackageParam.shieldDailyReading(
-    versionCode: Int
+    versionCode: Int, bridge: DexKitBridge
 ) {
     when (versionCode) {
         in 1030..1099 -> {
-            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                bridge.apply {
-                    findClass {
-                        searchPackages = listOf("com.qidian.QDReader.ui.adapter")
-                        matcher {
-                            usingStrings = listOf(
-                                "DailyReadingClosedAd", "PositionMark"
-                            )
-                        }
-                    }.firstNotNullOfOrNull { classData ->
-                        classData.getMethods().findMethod {
-                            matcher {
-                                modifiers = Modifier.PUBLIC
-                                paramTypes = listOf("java.util.ArrayList")
-                                returnType = "void"
-                            }
-                        }.firstNotNullOfOrNull { methodData ->
-                            shieldUnit(
-                                className = methodData.className,
-                                methodName = methodData.methodName,
-                                paramCount = methodData.paramTypeNames.size
-                            )
-                        }
+
+            bridge.apply {
+                findClass {
+                    searchPackages = listOf("com.qidian.QDReader.ui.adapter")
+                    matcher {
+                        usingStrings = listOf(
+                            "DailyReadingClosedAd", "PositionMark"
+                        )
                     }
-
-                    /*
-                    findClass {
-                        searchPackages = listOf("com.qidian.QDReader.flutter")
+                }.firstNotNullOfOrNull { classData ->
+                    classData.getMethods().findMethod {
                         matcher {
+                            modifiers = Modifier.PUBLIC
+                            paramTypes = listOf("java.util.ArrayList")
+                            returnType = "void"
+                        }
+                    }.firstNotNullOfOrNull { methodData ->
+                        shieldUnit(
+                            className = methodData.className,
+                            methodName = methodData.methodName,
+                            paramCount = methodData.paramTypeNames.size
+                        )
+                    }
+                }
 
-                            addMethod {
-                                name = "onSuccess"
-                                paramTypes = listOf(
-                                    "java.util.ArrayList"
-                                )
-                                returnType = "void"
-                                usingStrings = listOf(
-                                    "dailyReadingDataCacheChange"
-                                )
-                            }
+                /*
+                findClass {
+                    searchPackages = listOf("com.qidian.QDReader.flutter")
+                    matcher {
 
+                        addMethod {
+                            name = "onSuccess"
+                            paramTypes = listOf(
+                                "java.util.ArrayList"
+                            )
+                            returnType = "void"
                             usingStrings = listOf(
                                 "dailyReadingDataCacheChange"
                             )
                         }
-                    }.firstNotNullOfOrNull { classData ->
-                        "classData: $classData".loge()
-                        classData.getMethods().findMethod {
-                            matcher {
-                                name = "onSuccess"
-                                paramTypes = listOf(
-                                    "java.util.ArrayList"
-                                )
-                                returnType = "void"
-                                usingStrings = listOf(
-                                    "dailyReadingDataCacheChange"
-                                )
-                            }
-                        }.firstNotNullOfOrNull { methodData ->
-                            shieldUnit(
-                                className = methodData.className,
-                                methodName = methodData.methodName,
-                                paramCount = methodData.paramTypeNames.size
+
+                        usingStrings = listOf(
+                            "dailyReadingDataCacheChange"
+                        )
+                    }
+                }.firstNotNullOfOrNull { classData ->
+                    "classData: $classData".loge()
+                    classData.getMethods().findMethod {
+                        matcher {
+                            name = "onSuccess"
+                            paramTypes = listOf(
+                                "java.util.ArrayList"
+                            )
+                            returnType = "void"
+                            usingStrings = listOf(
+                                "dailyReadingDataCacheChange"
                             )
                         }
+                    }.firstNotNullOfOrNull { methodData ->
+                        shieldUnit(
+                            className = methodData.className,
+                            methodName = methodData.methodName,
+                            paramCount = methodData.paramTypeNames.size
+                        )
                     }
-
-                     */
                 }
+
+                 */
             }
         }
 
@@ -155,43 +156,41 @@ fun PackageParam.shieldMainPage(versionCode: Int) {
  * @since 7.9.306-1030 ~ 1099
  * @param [versionCode] 版本代码
  */
-fun PackageParam.shieldCategory(versionCode: Int) {
+fun PackageParam.shieldCategory(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
         in 1030..1099 -> {
-            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                bridge.findClass {
-                    searchPackages = listOf("com.qidian.QDReader.ui.adapter")
-                    matcher {
-                        usingStrings = listOf(
-                            "QDBookCategoryActivity", "fenleicategory"
-                        )
-                    }
-                }.firstNotNullOfOrNull { classData ->
-                    classData.getMethods().findMethod {
-                        matcher {
-                            modifiers = Modifier.PUBLIC
-                            paramTypes = listOf("int", "java.util.List")
-                            returnType = "void"
-                        }
-                    }.firstNotNullOfOrNull { methodData ->
-                        methodData.className.toClass().method {
-                            name = methodData.methodName
-                            paramCount(methodData.paramTypeNames.size)
-                            returnType = UnitType
-                        }.hook().before {
-                            val list = args[0].safeCast<List<*>>() ?: return@before
-                            val iterator = list.iterator()
-                            while (iterator.hasNext()) {
-                                runAndCatch {
-                                    iterator.next()?.getParam<MutableList<*>>("categoryItems")
-                                        ?.let {
-                                            parseNeedShieldList(it)
-                                        }
-                                }
-                            }
-                            args(0).set(list)
-                        }
 
+            bridge.findClass {
+                searchPackages = listOf("com.qidian.QDReader.ui.adapter")
+                matcher {
+                    usingStrings = listOf(
+                        "QDBookCategoryActivity", "fenleicategory"
+                    )
+                }
+            }.firstNotNullOfOrNull { classData ->
+                classData.getMethods().findMethod {
+                    matcher {
+                        modifiers = Modifier.PUBLIC
+                        paramTypes = listOf("int", "java.util.List")
+                        returnType = "void"
+                    }
+                }.firstNotNullOfOrNull { methodData ->
+                    methodData.className.toClass().method {
+                        name = methodData.methodName
+                        paramCount(methodData.paramTypeNames.size)
+                        returnType = UnitType
+                    }.hook().before {
+                        val list = args[0].safeCast<List<*>>() ?: return@before
+                        val iterator = list.iterator()
+                        while (iterator.hasNext()) {
+                            runAndCatch {
+                                iterator.next()?.getParam<MutableList<*>>("categoryItems")
+                                    ?.let {
+                                        parseNeedShieldList(it)
+                                    }
+                            }
+                        }
+                        args(0).set(list)
                     }
                 }
             }
@@ -210,40 +209,39 @@ fun PackageParam.shieldCategory(versionCode: Int) {
  * @since 7.9.306-1030 ~ 1099
  * @param [versionCode] 版本代码
  */
-fun PackageParam.shieldCategoryAllBook(versionCode: Int) {
+fun PackageParam.shieldCategoryAllBook(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
         in 1030..1099 -> {
-            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                bridge.findClass {
-                    searchPackages = listOf("com.qidian.QDReader.ui.fragment")
-                    matcher {
-                        methods {
-                            add {
-                                modifiers = Modifier.PUBLIC
-                                paramTypes = listOf("int", "java.util.ArrayList")
-                                returnType = "void"
-                            }
-                        }
-                        usingStrings = listOf(
-                            "errorMessage", "serverBookList"
-                        )
-                    }
-                }.firstNotNullOfOrNull { classData ->
-                    classData.getMethods().findMethod {
-                        matcher {
+
+            bridge.findClass {
+                searchPackages = listOf("com.qidian.QDReader.ui.fragment")
+                matcher {
+                    methods {
+                        add {
                             modifiers = Modifier.PUBLIC
                             paramTypes = listOf("int", "java.util.ArrayList")
                             returnType = "void"
-                            usingStrings = listOf("serverBookList")
                         }
-                    }.firstNotNullOfOrNull { methodData ->
-                        shieldUnit(
-                            className = methodData.className,
-                            methodName = methodData.methodName,
-                            paramCount = methodData.paramTypeNames.size,
-                            index = 1
-                        )
                     }
+                    usingStrings = listOf(
+                        "errorMessage", "serverBookList"
+                    )
+                }
+            }.firstNotNullOfOrNull { classData ->
+                classData.getMethods().findMethod {
+                    matcher {
+                        modifiers = Modifier.PUBLIC
+                        paramTypes = listOf("int", "java.util.ArrayList")
+                        returnType = "void"
+                        usingStrings = listOf("serverBookList")
+                    }
+                }.firstNotNullOfOrNull { methodData ->
+                    shieldUnit(
+                        className = methodData.className,
+                        methodName = methodData.methodName,
+                        paramCount = methodData.paramTypeNames.size,
+                        index = 1
+                    )
                 }
             }
         }
@@ -257,28 +255,15 @@ fun PackageParam.shieldCategoryAllBook(versionCode: Int) {
  * @since 7.9.306-1030 ~ 1099
  * @param [versionCode] 版本代码
  */
-fun PackageParam.shieldFreeRecommend(versionCode: Int) {
+fun PackageParam.shieldFreeRecommend(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
         in 1030..1099 -> {
-            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                bridge.findClass {
-                    excludePackages = listOf("com")
-                    matcher {
-                        methods {
-                            add {
-                                modifiers = Modifier.PUBLIC
-                                paramTypes = listOf(
-                                    "com.qidian.QDReader.repository.entity.BookStoreDynamicItem",
-                                    "int",
-                                    "int"
-                                )
-                                returnType = "void"
-                            }
-                        }
-                    }
-                }.firstNotNullOfOrNull { classData ->
-                    classData.getMethods().findMethod {
-                        matcher {
+
+            bridge.findClass {
+                excludePackages = listOf("com")
+                matcher {
+                    methods {
+                        add {
                             modifiers = Modifier.PUBLIC
                             paramTypes = listOf(
                                 "com.qidian.QDReader.repository.entity.BookStoreDynamicItem",
@@ -287,15 +272,27 @@ fun PackageParam.shieldFreeRecommend(versionCode: Int) {
                             )
                             returnType = "void"
                         }
-                    }.firstNotNullOfOrNull { methodData ->
-                        methodData.className.toClass().method {
-                            name = methodData.methodName
-                            paramCount(methodData.paramTypeNames.size)
-                            returnType = UnitType
-                        }.hook().before {
-                            args[0]?.getParam<ArrayList<*>>("BookList")?.let {
-                                parseNeedShieldList(it)
-                            }
+                    }
+                }
+            }.firstNotNullOfOrNull { classData ->
+                classData.getMethods().findMethod {
+                    matcher {
+                        modifiers = Modifier.PUBLIC
+                        paramTypes = listOf(
+                            "com.qidian.QDReader.repository.entity.BookStoreDynamicItem",
+                            "int",
+                            "int"
+                        )
+                        returnType = "void"
+                    }
+                }.firstNotNullOfOrNull { methodData ->
+                    methodData.className.toClass().method {
+                        name = methodData.methodName
+                        paramCount(methodData.paramTypeNames.size)
+                        returnType = UnitType
+                    }.hook().before {
+                        args[0]?.getParam<ArrayList<*>>("BookList")?.let {
+                            parseNeedShieldList(it)
                         }
                     }
                 }
@@ -426,33 +423,32 @@ fun PackageParam.shieldFreeNewBook(versionCode: Int) {
  * @since 7.9.306-1030 ~ 1099
  * @param [versionCode] 版本代码
  */
-fun PackageParam.shieldHotAndRecommend(versionCode: Int) {
+fun PackageParam.shieldHotAndRecommend(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
         in 1030..1099 -> {
-            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                bridge.findClass {
-                    searchPackages = listOf("com.qidian.QDReader.ui.adapter")
+
+            bridge.findClass {
+                searchPackages = listOf("com.qidian.QDReader.ui.adapter")
+                matcher {
+                    usingStrings = listOf(
+                        "BookLastPageBookShortageActivity", "morebooklist", "booklist"
+                    )
+                }
+            }.firstNotNullOfOrNull { classData ->
+                classData.getMethods().findMethod {
                     matcher {
-                        usingStrings = listOf(
-                            "BookLastPageBookShortageActivity", "morebooklist", "booklist"
+                        modifiers = Modifier.PUBLIC
+                        paramTypes = listOf(
+                            "java.util.List"
                         )
+                        returnType = "void"
                     }
-                }.firstNotNullOfOrNull { classData ->
-                    classData.getMethods().findMethod {
-                        matcher {
-                            modifiers = Modifier.PUBLIC
-                            paramTypes = listOf(
-                                "java.util.List"
-                            )
-                            returnType = "void"
-                        }
-                    }.firstNotNullOfOrNull { methodData ->
-                        shieldUnit(
-                            className = methodData.className,
-                            methodName = methodData.methodName,
-                            paramCount = methodData.paramTypeNames.size
-                        )
-                    }
+                }.firstNotNullOfOrNull { methodData ->
+                    shieldUnit(
+                        className = methodData.className,
+                        methodName = methodData.methodName,
+                        paramCount = methodData.paramTypeNames.size
+                    )
                 }
             }
         }
@@ -466,83 +462,81 @@ fun PackageParam.shieldHotAndRecommend(versionCode: Int) {
  * @since 7.9.306-1030 ~ 1099
  * @param [versionCode] 版本代码
  */
-fun PackageParam.shieldNewBookAndRecommend(versionCode: Int) {
+fun PackageParam.shieldNewBookAndRecommend(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
         in 1030..1099 -> {
-            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                bridge.findClass {
-                    searchPackages = listOf("com.qidian.QDReader.ui.adapter")
-                    matcher {
-                        methods {
-                            add {
-                                modifiers = Modifier.PUBLIC
-                                name = "getItem"
-                                paramTypes = listOf("int")
-                                returnType = "com.qidian.QDReader.repository.entity.BookStoreItem"
-                            }
+
+            bridge.findClass {
+                searchPackages = listOf("com.qidian.QDReader.ui.adapter")
+                matcher {
+                    methods {
+                        add {
+                            modifiers = Modifier.PUBLIC
+                            name = "getItem"
+                            paramTypes = listOf("int")
+                            returnType = "com.qidian.QDReader.repository.entity.BookStoreItem"
                         }
-                        usingStrings = listOf(" (", "-", ")")
                     }
-                }.filter { "QDTeenagerBookStoreAdapter" !in it.name }
-                    .firstNotNullOfOrNull { classData ->
-                        classData.getMethods().findMethod {
-                            matcher {
-                                modifiers = Modifier.PUBLIC
-                                paramTypes = listOf(
-                                    "java.util.List"
-                                )
-                                returnType = "void"
-                            }
-                        }.filter { "setHeaderData" != it.className }
-                            .firstNotNullOfOrNull { methodData ->
-                                methodData.className.toClass().method {
-                                    name = methodData.methodName
-                                    paramCount = methodData.paramTypeNames.size
-                                    returnType = UnitType
-                                }.hook().before {
-                                    args[0].safeCast<MutableList<*>>()?.let {
-                                        runAndCatch {
-                                            val iterator = it.iterator()
-                                            while (iterator.hasNext()) {
-                                                val item = iterator.next().toJSONString()
-                                                val json = item.parseObject()
-                                                val jb = json.getJSONObject("BookStoreItem")
-                                                if (jb != null) {
-                                                    val authorName =
-                                                        jb.getStringWithFallback("authorName")
-                                                    val bookName =
-                                                        jb.getStringWithFallback("bookName")
-                                                    val categoryName =
-                                                        jb.getStringWithFallback("categoryName")
-                                                    val array =
-                                                        jb.getJSONArrayWithFallback("tagList")
-                                                    val bookTypeArray = mutableSetOf("")
-                                                    if (!categoryName.isNullOrBlank()) {
-                                                        bookTypeArray += categoryName
-                                                    }
-                                                    if (!array.isNullOrEmpty()) {
-                                                        for (i in array.indices) {
-                                                            array += array.getString(i)
-                                                        }
-                                                    }
-                                                    val isNeedShield = isNeedShield(
-                                                        bookName = bookName,
-                                                        authorName = authorName,
-                                                        bookType = bookTypeArray
-                                                    )
-                                                    if (isNeedShield) {
-                                                        iterator.remove()
+                    usingStrings = listOf(" (", "-", ")")
+                }
+            }.filter { "QDTeenagerBookStoreAdapter" !in it.name }
+                .firstNotNullOfOrNull { classData ->
+                    classData.getMethods().findMethod {
+                        matcher {
+                            modifiers = Modifier.PUBLIC
+                            paramTypes = listOf(
+                                "java.util.List"
+                            )
+                            returnType = "void"
+                        }
+                    }.filter { "setHeaderData" != it.className }
+                        .firstNotNullOfOrNull { methodData ->
+                            methodData.className.toClass().method {
+                                name = methodData.methodName
+                                paramCount = methodData.paramTypeNames.size
+                                returnType = UnitType
+                            }.hook().before {
+                                args[0].safeCast<MutableList<*>>()?.let {
+                                    runAndCatch {
+                                        val iterator = it.iterator()
+                                        while (iterator.hasNext()) {
+                                            val item = iterator.next().toJSONString()
+                                            val json = item.parseObject()
+                                            val jb = json.getJSONObject("BookStoreItem")
+                                            if (jb != null) {
+                                                val authorName =
+                                                    jb.getStringWithFallback("authorName")
+                                                val bookName =
+                                                    jb.getStringWithFallback("bookName")
+                                                val categoryName =
+                                                    jb.getStringWithFallback("categoryName")
+                                                val array =
+                                                    jb.getJSONArrayWithFallback("tagList")
+                                                val bookTypeArray = mutableSetOf("")
+                                                if (!categoryName.isNullOrBlank()) {
+                                                    bookTypeArray += categoryName
+                                                }
+                                                if (!array.isNullOrEmpty()) {
+                                                    for (i in array.indices) {
+                                                        array += array.getString(i)
                                                     }
                                                 }
+                                                val isNeedShield = isNeedShield(
+                                                    bookName = bookName,
+                                                    authorName = authorName,
+                                                    bookType = bookTypeArray
+                                                )
+                                                if (isNeedShield) {
+                                                    iterator.remove()
+                                                }
                                             }
-                                            args(0).set(it)
                                         }
+                                        args(0).set(it)
                                     }
                                 }
-
                             }
-                    }
-            }
+                        }
+                }
 
         }
 
@@ -604,7 +598,7 @@ fun PackageParam.shieldComic(versionCode: Int) {
                 returnType = ArrayListClass
             }.hook().after {
                 result.safeCast<ArrayList<*>>()?.let {
-                    result = HookEntry.parseNeedShieldComicList(it)
+                    result = parseNeedShieldComicList(it)
                 }
             }
         }
@@ -618,39 +612,38 @@ fun PackageParam.shieldComic(versionCode: Int) {
  * @since 7.9.306-1030 ~ 1099
  * @param [versionCode] 版本代码
  */
-fun PackageParam.shieldComicOther(versionCode: Int) {
+fun PackageParam.shieldComicOther(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
         in 1030..1099 -> {
-            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                bridge.findClass {
-                    searchPackages = listOf("com.qidian.QDReader.ui.adapter")
-                    matcher {
-                        methods {
-                            add {
-                                modifiers = Modifier.PUBLIC
-                                paramTypes = listOf("int")
-                                returnType = "com.qidian.QDReader.repository.entity.ComicBookItem"
-                            }
+
+            bridge.findClass {
+                searchPackages = listOf("com.qidian.QDReader.ui.adapter")
+                matcher {
+                    methods {
+                        add {
+                            modifiers = Modifier.PUBLIC
+                            paramTypes = listOf("int")
+                            returnType = "com.qidian.QDReader.repository.entity.ComicBookItem"
                         }
                     }
-                }.firstNotNullOfOrNull { classData ->
-                    classData.getMethods().findMethod {
-                        matcher {
-                            modifiers = Modifier.PUBLIC
-                            paramTypes = listOf(
-                                "java.util.ArrayList"
-                            )
-                            returnType = "void"
-                        }
-                    }.firstNotNullOfOrNull { methodData ->
-                        methodData.className.toClass().method {
-                            name = methodData.methodName
-                            paramCount = methodData.paramTypeNames.size
-                            returnType = UnitType
-                        }.hook().before {
-                            args[0].safeCast<MutableList<*>>()?.let {
-                                args(0).set(parseNeedShieldComicList(it))
-                            }
+                }
+            }.firstNotNullOfOrNull { classData ->
+                classData.getMethods().findMethod {
+                    matcher {
+                        modifiers = Modifier.PUBLIC
+                        paramTypes = listOf(
+                            "java.util.ArrayList"
+                        )
+                        returnType = "void"
+                    }
+                }.firstNotNullOfOrNull { methodData ->
+                    methodData.className.toClass().method {
+                        name = methodData.methodName
+                        paramCount = methodData.paramTypeNames.size
+                        returnType = UnitType
+                    }.hook().before {
+                        args[0].safeCast<MutableList<*>>()?.let {
+                            args(0).set(parseNeedShieldComicList(it))
                         }
                     }
                 }

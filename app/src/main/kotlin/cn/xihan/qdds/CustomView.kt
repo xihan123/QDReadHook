@@ -1,8 +1,5 @@
 package cn.xihan.qdds
 
-import android.annotation.SuppressLint
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Typeface
 import android.view.View

@@ -4,7 +4,6 @@ import android.widget.LinearLayout
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.java.UnitType
-import okhttp3.internal.connection.ConnectInterceptor.intercept
 import org.luckypray.dexkit.DexKitBridge
 import java.lang.reflect.Modifier
 
@@ -14,11 +13,15 @@ import java.lang.reflect.Modifier
  * @param [versionCode] 版本代码
  * @param [configurations] 配置
  */
-fun PackageParam.advOption(versionCode: Int, configurations: List<SelectedModel>) {
+fun PackageParam.advOption(
+    versionCode: Int,
+    configurations: List<SelectedModel>,
+    bridge: DexKitBridge
+) {
     configurations.filter { it.selected }.takeIf { it.isNotEmpty() }?.forEach { selected ->
         when (selected.title) {
-            "闪屏广告" -> disableSplashAd(versionCode)
-            "GDT广告" -> disableGDTAD(versionCode)
+            "闪屏广告" -> disableSplashAd(versionCode, bridge)
+            "GDT广告" -> disableGDTAD(versionCode, bridge)
             "主页-每日阅读广告" -> disableDailyReadAd(versionCode)
             "主页-书架活动弹框" -> disableBookshelfActivityPopup(versionCode)
             "主页-书架浮窗活动" -> disableBookshelfFloatWindow(versionCode)
@@ -318,58 +321,56 @@ fun PackageParam.disableReadPageChapterEnd(
  * @since 7.9.306-1030
  * @param [versionCode] 版本代码
  */
-fun PackageParam.disableSplashAd(versionCode: Int) {
+fun PackageParam.disableSplashAd(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
         in 1030..1099 -> {
-            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                bridge.apply {
-                    findClass {
-                        searchPackages = listOf("com.qidian.QDReader.bll.splash")
+
+            bridge.apply {
+                findClass {
+                    searchPackages = listOf("com.qidian.QDReader.bll.splash")
+                    matcher {
+                        usingStrings = listOf("localLabels=")
+                    }
+                }.firstNotNullOfOrNull { classData ->
+                    classData.getMethods().findMethod {
                         matcher {
+                            modifiers = Modifier.PUBLIC
+                            paramTypes = listOf("android.content.Context")
+                            returnType = "void"
                             usingStrings = listOf("localLabels=")
                         }
-                    }.firstNotNullOfOrNull { classData ->
-                        classData.getMethods().findMethod {
-                            matcher {
-                                modifiers = Modifier.PUBLIC
-                                paramTypes = listOf("android.content.Context")
-                                returnType = "void"
-                                usingStrings = listOf("localLabels=")
-                            }
-                        }.firstNotNullOfOrNull { methodData ->
-                            methodData.className.toClass().method {
-                                name = methodData.methodName
-                                paramCount(1)
-                                returnType = UnitType
-                            }.hook().intercept()
-                        }
-                    }
-
-                    findClass {
-                        excludePackages = listOf("com")
-                        matcher {
-                            usingStrings = listOf(
-                                "SettingSplashEnableGDT",
-                                "SettingSplashGDTShowMaxCountOnDay",
-                                "SettingSplashGDTShowBeginTime",
-                                "SettingSplashGDTShowEndTime"
-                            )
-                        }
-                    }.firstNotNullOfOrNull { classData ->
-                        classData.getMethods().filter { it.isMethod }.forEach { methodData ->
-                            if ("boolean" == methodData.returnTypeName) {
-                                returnFalse(methodData.className, methodData.methodName)
-                            } else if ("void" == methodData.returnTypeName) {
-                                intercept(
-                                    methodData.className,
-                                    methodData.methodName,
-                                    methodData.paramTypeNames.size
-                                )
-                            }
-                        }
+                    }.firstNotNullOfOrNull { methodData ->
+                        methodData.className.toClass().method {
+                            name = methodData.methodName
+                            paramCount(1)
+                            returnType = UnitType
+                        }.hook().intercept()
                     }
                 }
 
+                findClass {
+                    excludePackages = listOf("com")
+                    matcher {
+                        usingStrings = listOf(
+                            "SettingSplashEnableGDT",
+                            "SettingSplashGDTShowMaxCountOnDay",
+                            "SettingSplashGDTShowBeginTime",
+                            "SettingSplashGDTShowEndTime"
+                        )
+                    }
+                }.firstNotNullOfOrNull { classData ->
+                    classData.getMethods().filter { it.isMethod }.forEach { methodData ->
+                        if ("boolean" == methodData.returnTypeName) {
+                            returnFalse(methodData.className, methodData.methodName)
+                        } else if ("void" == methodData.returnTypeName) {
+                            intercept(
+                                methodData.className,
+                                methodData.methodName,
+                                methodData.paramTypeNames.size
+                            )
+                        }
+                    }
+                }
             }
         }
 
@@ -382,40 +383,39 @@ fun PackageParam.disableSplashAd(versionCode: Int) {
  * @since 7.9.306-1030 ~ 1099
  * @param [versionCode]
  */
-fun PackageParam.disableGDTAD(versionCode: Int) {
+fun PackageParam.disableGDTAD(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
         in 1030..1099 -> {
-            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                bridge.findClass {
-                    searchPackages = listOf("com.qidian.QDReader.component.abtest")
-                    matcher {
-                        methods {
-                            add {
-                                modifiers = Modifier.PUBLIC
-                                returnType = "boolean"
-                            }
-                        }
-                        usingStrings = listOf("videolast-ad", "video-redpopup-ad")
-                    }
-                }.firstNotNullOfOrNull { classData ->
-                    classData.getMethods().apply {
-                        findMethod {
-                            matcher {
-                                returnType = "boolean"
-                                usingStrings = listOf("videolast-ad")
-                            }
-                        }.firstNotNullOfOrNull {
-                            returnFalse(it.className, it.methodName)
-                        }
 
-                        findMethod {
-                            matcher {
-                                returnType = "boolean"
-                                usingStrings = listOf("video-redpopup-ad")
-                            }
-                        }.firstNotNullOfOrNull {
-                            returnFalse(it.className, it.methodName)
+            bridge.findClass {
+                searchPackages = listOf("com.qidian.QDReader.component.abtest")
+                matcher {
+                    methods {
+                        add {
+                            modifiers = Modifier.PUBLIC
+                            returnType = "boolean"
                         }
+                    }
+                    usingStrings = listOf("videolast-ad", "video-redpopup-ad")
+                }
+            }.firstNotNullOfOrNull { classData ->
+                classData.getMethods().apply {
+                    findMethod {
+                        matcher {
+                            returnType = "boolean"
+                            usingStrings = listOf("videolast-ad")
+                        }
+                    }.firstNotNullOfOrNull {
+                        returnFalse(it.className, it.methodName)
+                    }
+
+                    findMethod {
+                        matcher {
+                            returnType = "boolean"
+                            usingStrings = listOf("video-redpopup-ad")
+                        }
+                    }.firstNotNullOfOrNull {
+                        returnFalse(it.className, it.methodName)
                     }
                 }
             }

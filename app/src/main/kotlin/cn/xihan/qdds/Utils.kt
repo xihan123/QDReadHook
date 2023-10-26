@@ -15,7 +15,6 @@ import android.os.Build
 import android.os.Parcelable
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewParent
 import android.widget.Toast
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.Composable
@@ -62,7 +61,8 @@ fun <T> rememberMutableStateOf(value: T): MutableState<T> = remember { mutableSt
  * @suppress Generate Documentation
  */
 @Composable
-fun <T> rememberSavableMutableStateOf(value: T): MutableState<T> = rememberSaveable { mutableStateOf(value) }
+fun <T> rememberSavableMutableStateOf(value: T): MutableState<T> =
+    rememberSaveable { mutableStateOf(value) }
 
 /**
  * 记住可变交互源
@@ -871,7 +871,9 @@ fun Activity.requestPermissionDialog(
             Permission.MANAGE_EXTERNAL_STORAGE, Permission.REQUEST_INSTALL_PACKAGES
         ) else Permission.Group.STORAGE.plus(Permission.REQUEST_INSTALL_PACKAGES)
     )
-    if (permission) { return }
+    if (permission) {
+        return
+    }
     alertDialog {
         title = "温馨提示"
         message = "请授予以下权限,否则无法正常使用"

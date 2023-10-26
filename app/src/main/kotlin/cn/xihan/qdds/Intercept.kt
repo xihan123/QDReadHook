@@ -15,18 +15,17 @@ import java.lang.reflect.Modifier
  * @param [configurations] 配置
  */
 fun PackageParam.interceptOption(
-    versionCode: Int,
-    configurations: List<SelectedModel>,
+    versionCode: Int, configurations: List<SelectedModel>, bridge: DexKitBridge
 ) {
     val interceptList = mutableListOf<String>()
     configurations.filter { it.selected }.takeIf { it.isNotEmpty() }?.forEach { selected ->
         when (selected.title) {
-            "检测更新" -> interceptCheckUpdate(versionCode)
+            "检测更新" -> interceptCheckUpdate(versionCode, bridge)
             "隐私政策更新弹框" -> interceptPrivacyPolicy(versionCode)
-            "同意隐私政策弹框" -> interceptAgreePrivacyPolicy(versionCode)
-            "WebSocket" -> interceptWebSocket(versionCode)
+            "同意隐私政策弹框" -> interceptAgreePrivacyPolicy(versionCode, bridge)
+            "WebSocket" -> interceptWebSocket(versionCode, bridge)
             "青少年模式请求" -> interceptQSNModeRequest(versionCode)
-            "青少年模式弹框" -> interceptQSNYDialog(versionCode)
+            "青少年模式弹框" -> interceptQSNYDialog(versionCode, bridge)
             "阅读页水印" -> interceptReaderBookPageWaterMark(versionCode)
             "发帖图片水印" -> interceptPostImageWatermark(versionCode)
             "自动跳转精选" -> interceptAutoJumpSelected(versionCode)
@@ -34,7 +33,7 @@ fun PackageParam.interceptOption(
             else -> interceptList += selected.title
         }
     }
-    if (interceptList.isNotEmpty()){
+    if (interceptList.isNotEmpty()) {
         interceptAsyncInitTask(versionCode, interceptList)
     }
 }
@@ -44,43 +43,36 @@ fun PackageParam.interceptOption(
  * @since 7.9.306-1030 ~ 1099
  * @param [versionCode] 版本代码
  */
-fun PackageParam.interceptCheckUpdate(versionCode: Int) {
+fun PackageParam.interceptCheckUpdate(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
         in 1030..1099 -> {
             intercept("com.qidian.QDReader.ui.activity.MainGroupActivity", "checkUpdate")
 
-            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                bridge.findClass {
-                    excludePackages = listOf("com")
-                    matcher {
-                        methods {
-                            add {
-                                modifiers = Modifier.PUBLIC
-                                returnType = "void"
-                                paramCount = 5
-                            }
-                        }
-                        usingStrings = listOf("SettingUpdateVersionNotifyTime", "0")
-                    }
-                }.firstNotNullOfOrNull { classData ->
-                    classData.getMethods().findMethod {
-                        matcher {
+
+            bridge.findClass {
+                excludePackages = listOf("com")
+                matcher {
+                    methods {
+                        add {
+                            modifiers = Modifier.PUBLIC
                             returnType = "void"
-                            paramTypes = listOf(
-                                "android.app.Activity",
-                                null,
-                                "android.os.Handler",
-                                "boolean",
-                                "boolean"
-                            )
+                            paramCount = 5
                         }
-                    }.firstNotNullOfOrNull { methodData ->
-                        intercept(
-                            methodData.className,
-                            methodData.methodName,
-                            methodData.paramTypeNames.size
+                    }
+                    usingStrings = listOf("SettingUpdateVersionNotifyTime", "0")
+                }
+            }.firstNotNullOfOrNull { classData ->
+                classData.getMethods().findMethod {
+                    matcher {
+                        returnType = "void"
+                        paramTypes = listOf(
+                            "android.app.Activity", null, "android.os.Handler", "boolean", "boolean"
                         )
                     }
+                }.firstNotNullOfOrNull { methodData ->
+                    intercept(
+                        methodData.className, methodData.methodName, methodData.paramTypeNames.size
+                    )
                 }
             }
         }
@@ -109,34 +101,30 @@ fun PackageParam.interceptPrivacyPolicy(version: Int) {
  * @since 7.9.306-1030 ~ 1099
  * @param [version] 版本
  */
-fun PackageParam.interceptAgreePrivacyPolicy(version: Int) {
+fun PackageParam.interceptAgreePrivacyPolicy(version: Int, bridge: DexKitBridge) {
     when (version) {
         in 1030..1099 -> {
-            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                bridge.findClass {
-                    searchPackages = listOf("com.qidian.QDReader.util")
+
+            bridge.findClass {
+                searchPackages = listOf("com.qidian.QDReader.util")
+                matcher {
+                    usingStrings = listOf(
+                        "first_install_app_for_privacy", "https://acts.qidian.com/pact/qd_pact.html"
+                    )
+                }
+            }.firstNotNullOfOrNull { classData ->
+                classData.getMethods().findMethod {
                     matcher {
-                        usingStrings = listOf(
-                            "first_install_app_for_privacy",
-                            "https://acts.qidian.com/pact/qd_pact.html"
+                        modifiers = Modifier.PUBLIC
+                        returnType = "void"
+                        paramTypes = listOf(
+                            "android.app.Activity", "boolean", "java.lang.String", null
                         )
                     }
-                }.firstNotNullOfOrNull { classData ->
-                    classData.getMethods().findMethod {
-                        matcher {
-                            modifiers = Modifier.PUBLIC
-                            returnType = "void"
-                            paramTypes = listOf(
-                                "android.app.Activity", "boolean", "java.lang.String", null
-                            )
-                        }
-                    }.firstNotNullOfOrNull { methodData ->
-                        intercept(
-                            methodData.className,
-                            methodData.methodName,
-                            methodData.paramTypeNames.size
-                        )
-                    }
+                }.firstNotNullOfOrNull { methodData ->
+                    intercept(
+                        methodData.className, methodData.methodName, methodData.paramTypeNames.size
+                    )
                 }
             }
         }
@@ -150,25 +138,24 @@ fun PackageParam.interceptAgreePrivacyPolicy(version: Int) {
  * @since 7.9.306-1030
  * @param [version] 版本
  */
-fun PackageParam.interceptWebSocket(version: Int) {
+fun PackageParam.interceptWebSocket(version: Int, bridge: DexKitBridge) {
     when (version) {
         in 1030..1099 -> {
-            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                bridge.findClass {
-                    searchPackages = listOf("com.qidian.QDReader.component.msg")
+
+            bridge.findClass {
+                searchPackages = listOf("com.qidian.QDReader.component.msg")
+                matcher {
+                    usingStrings = listOf("handleOpen WebSocket isOpen")
+                }
+            }.firstNotNullOfOrNull { classData ->
+                classData.getMethods().findMethod {
                     matcher {
+                        modifiers = Modifier.PRIVATE
+                        returnType = "void"
                         usingStrings = listOf("handleOpen WebSocket isOpen")
                     }
-                }.firstNotNullOfOrNull { classData ->
-                    classData.getMethods().findMethod {
-                        matcher {
-                            modifiers = Modifier.PRIVATE
-                            returnType = "void"
-                            usingStrings = listOf("handleOpen WebSocket isOpen")
-                        }
-                    }.firstNotNullOfOrNull { methodData ->
-                        intercept(methodData.className, methodData.methodName)
-                    }
+                }.firstNotNullOfOrNull { methodData ->
+                    intercept(methodData.className, methodData.methodName)
                 }
             }
         }
@@ -276,15 +263,14 @@ fun PackageParam.interceptFirstInstallAnalytics(versionCode: Int) {
  * 拦截异步初始化任务
  * @since 7.9.306-1030 ~ 1099
  */
-fun PackageParam.interceptAsyncInitTask(versionCode: Int,clsNameList: List<String>) {
-    when(versionCode){
+fun PackageParam.interceptAsyncInitTask(versionCode: Int, clsNameList: List<String>) {
+    when (versionCode) {
         in 1030..1099 -> {
-            "com.rousetime.android_startup.StartupManager".toClass(). method {
+            "com.rousetime.android_startup.StartupManager".toClass().method {
                 name = "start"
                 emptyParam()
             }.hook().before {
-                val startupList =
-                    instance.getParam<MutableList<*>>("startupList") ?: return@before
+                val startupList = instance.getParam<MutableList<*>>("startupList") ?: return@before
                 val iterator = startupList.iterator()
                 while (iterator.hasNext()) {
                     val clsName = iterator.next()?.javaClass?.name
@@ -294,6 +280,7 @@ fun PackageParam.interceptAsyncInitTask(versionCode: Int,clsNameList: List<Strin
                 }
             }
         }
+
         else -> "拦截异步初始化任务".printlnNotSupportVersion(versionCode)
     }
 }
@@ -303,34 +290,27 @@ fun PackageParam.interceptAsyncInitTask(versionCode: Int,clsNameList: List<Strin
  * @since 7.9.306-1030
  * @param [versionCode] 版本代码
  */
-fun PackageParam.interceptQSNYDialog(versionCode: Int) {
+fun PackageParam.interceptQSNYDialog(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
         in 1030..1099 -> {
-            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                bridge.findClass {
-                    searchPackages = listOf("com.qidian.QDReader.bll.helper")
+            bridge.findClass {
+                searchPackages = listOf("com.qidian.QDReader.bll.helper")
+                matcher {
+                    usingStrings = listOf(
+                        "SettingTeenagerModeOpen", "TeenagerMode", "teenagerUnopenedDesc"
+                    )
+                }
+            }.firstNotNullOfOrNull { classData ->
+                classData.getMethods().findMethod {
                     matcher {
-                        usingStrings = listOf(
-                            "SettingTeenagerModeOpen",
-                            "TeenagerMode",
-                            "teenagerUnopenedDesc"
-                        )
+                        modifiers = Modifier.PRIVATE
+                        paramTypes = listOf("com.qidian.QDReader.ui.activity.BaseActivity")
+                        returnType = "void"
                     }
-                }.firstNotNullOfOrNull { classData ->
-                    classData.getMethods().findMethod {
-                        matcher {
-                            modifiers = Modifier.PRIVATE
-                            paramTypes = listOf("com.qidian.QDReader.ui.activity.BaseActivity")
-                            returnType = "void"
-                        }
-                    }.firstNotNullOfOrNull { methodData ->
-                        intercept(
-                            methodData.className,
-                            methodData.methodName,
-                            methodData.paramTypeNames.size
-                        )
-                    }
-
+                }.firstNotNullOfOrNull { methodData ->
+                    intercept(
+                        methodData.className, methodData.methodName, methodData.paramTypeNames.size
+                    )
                 }
             }
         }
