@@ -1,4 +1,18 @@
 # Changelog
+## [3.0.2](https://github.com/xihan123/QDReadHook/compare/v3.0.1...v3.0.2) (2023-10-26)
+
+
+### Feature Improvements
+
+* [[#159](https://github.com/xihan123/QDReadHook/issues/159)](https://github.com/xihan123/QDReadHook/issues/159) ([54a4f6f](https://github.com/xihan123/QDReadHook/commit/54a4f6fb3121aef9edfe5e97b4147a155d8880a9))
+* 优化检查权限逻辑 ([434f6e5](https://github.com/xihan123/QDReadHook/commit/434f6e54ae26a26f8f85b8118faae41a86818598))
+
+
+### Miscellaneous
+
+* **master:** release 3.0.1 ([041919b](https://github.com/xihan123/QDReadHook/commit/041919b8fe9bcaf943074169771a31d266d299a1))
+* 更新依赖 ([cb7814d](https://github.com/xihan123/QDReadHook/commit/cb7814d7e988779a1d81fca4cf145349047dd659))
+
 ## [3.0.1](https://github.com/xihan123/QDReadHook/compare/v3.0.1...v3.0.1) (2023-10-16)
 
 
