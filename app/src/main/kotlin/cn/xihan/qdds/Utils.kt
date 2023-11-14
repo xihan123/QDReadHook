@@ -876,7 +876,7 @@ fun Activity.requestPermissionDialog(
     }
     alertDialog {
         title = "温馨提示"
-        message = "请授予以下权限,否则无法正常使用"
+        message = "请授予以下权限,否则无法正常使用\n存储权限:用来管理位于外部存储的配置文件\n安装未知应用权限:Android 11及以上读取其他应用版本号"
         positiveButton("授予") {
             if (applicationInfo.targetSdkVersion > 30) {
                 XXPermissions.with(this@requestPermissionDialog).permission(
