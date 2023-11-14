@@ -23,7 +23,7 @@
 
 * 1.2.7+ 配置文件路径为 "/sdcard/Download/QDReader",会自行移动原配置文件并删除原配置文件目录,注意原配置文件目录不要有重要文件
 
-* 下载地址
+* 起点下载地址
 
   * [支持的版本合集蓝奏云](https://xihan.lanzouv.com/b0413c6he) 密码:xihan
 
@@ -31,11 +31,17 @@
 
   * [官方网站](https://www.yuewen.com/app.html#appqd)
 
+* 模块下载地址:
+
+  * [releases](https://github.com/xihan123/QDReadHook/releases)
+
+  * [蓝奏云](https://xihan.lanzouj.com/b042w7oqb) 密码:9ikq
+
 * QD模块交流群: [727983520](https://qm.qq.com/cgi-bin/qm/qr?k=JT0K0sZEJHm4CnsRjRTKxY3uL-xoO6CG&jump_from=webapi&authKey=yGg3h07NWBGGF4TmxtRNykIQ4HLM4t/uxrAtqHx15zgRmIR4sC14HxKYOq376ekt) <a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=JT0K0sZEJHm4CnsRjRTKxY3uL-xoO6CG&jump_from=webapi&authKey=yGg3h07NWBGGF4TmxtRNykIQ4HLM4t/uxrAtqHx15zgRmIR4sC14HxKYOq376ekt"><img border="0" src="https://pub.idqqimg.com/wpa/images/group.png" alt="QD模块交流群" title="QD模块交流群"></a>
 
 ## 常见问题
 
-* 如提示 "**Manifest文件中Activity/Service/Permission的声明有问题或者Permission权限未授予**"
+* 如提示 "**Manifest文件中Activity/Service/Permission的声明有问题或者Permission权限未授予**"、"初始化错误"、"初始化失败"
 把 "**广告配置**" 中 "**GDT(TX)广告**" 去掉勾选
 
 * 如提示 "**激励广告拉取失败,详细错误码:50000**" 则检查设备网络，**DNS**或者**Hosts** 是否拦截了"**e.qq.com**"、"**gdt.qq.com**"、"**gtimg.cn**"、"**gdtimg.com**"域名
@@ -104,6 +110,12 @@
       2.首次启动起点拒绝隐私策略后关闭起点
       3.开启跳过闪屏页功能后即可正常使用起点
 
+      3.0.0之后的版本
+      1.清除起点数据
+      2.首次启动启动拒绝隐私策略并在弹框授予存储权限和安装未知应用权限
+
+      MIUI 可以尝试关闭MIUI优化，有接到反馈关闭该功能就正常了
+      
 ---
 
 ## Lspatch 使用说明
