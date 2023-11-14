@@ -1,4 +1,21 @@
 # Changelog
+## [3.0.3](https://github.com/xihan123/QDReadHook/compare/v3.0.2...v3.0.3) (2023-11-14)
+
+
+### Features
+
+* **广告设置:** `1086` + 版本新增主页-书架顶部广告 ([2f0fcfe](https://github.com/xihan123/QDReadHook/commit/2f0fcfe80e93caf1670f4243d39a6a66b0a4be16))
+
+
+### Feature Improvements
+
+* 改善权限申请提示 ([94bf781](https://github.com/xihan123/QDReadHook/commit/94bf781704cf75c939defb24bb4d8806623e3c04))
+
+
+### Miscellaneous
+
+* 更新依赖 ([222b9a6](https://github.com/xihan123/QDReadHook/commit/222b9a6b75cb3c7c979fe22a8c3c877459b852ae))
+
 ## [3.0.2](https://github.com/xihan123/QDReadHook/compare/v3.0.1...v3.0.2) (2023-10-26)
 
 
