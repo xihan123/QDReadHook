@@ -64,6 +64,7 @@ data class OptionEntity(
         SelectedModel("闪屏广告"),
         SelectedModel("GDT广告"),
         SelectedModel("主页-每日阅读广告"),
+        SelectedModel("主页-书架顶部广告"),
         SelectedModel("主页-书架活动弹框"),
         SelectedModel("主页-书架浮窗活动"),
         SelectedModel("主页-书架底部导航栏广告"),

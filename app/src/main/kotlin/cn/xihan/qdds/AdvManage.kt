@@ -24,6 +24,7 @@ fun PackageParam.advOption(
             "GDT广告" -> disableGDTAD(versionCode, bridge)
             "主页-每日阅读广告" -> disableDailyReadAd(versionCode)
             "主页-书架活动弹框" -> disableBookshelfActivityPopup(versionCode)
+            "主页-书架顶部广告" ->   disableBookshelfTopAd(versionCode)
             "主页-书架浮窗活动" -> disableBookshelfFloatWindow(versionCode)
             "主页-书架底部导航栏广告" -> disableBottomNavigationCenterAd(versionCode)
             "我-中间广告" -> disableAccountCenterAd(versionCode)
@@ -80,6 +81,24 @@ fun PackageParam.disableBookshelfActivityPopup(versionCode: Int) {
         }
 
         else -> "禁用书架活动弹框".printlnNotSupportVersion(versionCode)
+    }
+}
+
+/**
+ * 禁用书架顶部广告
+ * @since 7.9.306-1086 ~ 1099
+ * @param [versionCode] 版本代码
+ */
+fun PackageParam.disableBookshelfTopAd(versionCode: Int) {
+    when (versionCode) {
+        in 1086..1099 -> {
+            intercept(
+                className = "com.qidian.QDReader.ui.modules.bookshelf.BookShelfOperationManager",
+                methodName = "getBookShelfOperationRes"
+            )
+        }
+
+        else -> "禁用书架顶部广告".printlnNotSupportVersion(versionCode)
     }
 }
 
