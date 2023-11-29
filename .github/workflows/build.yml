@@ -48,7 +48,7 @@ jobs:
           echo storeFile='${{ steps.write_file.outputs.filePath }}' >> keystore.properties
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
