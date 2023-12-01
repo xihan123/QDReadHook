@@ -1,42 +1,403 @@
 package cn.xihan.qdds
 
+import android.content.Context
 import android.os.Environment
 import androidx.annotation.Keep
+import cn.xihan.qdds.Option.optionPath
 import com.alibaba.fastjson2.parseObject
 import com.alibaba.fastjson2.toJSONString
 import java.io.File
-
-
-/**
- * 基本路径
- * @suppress Generate Documentation
- */
-val basePath =
-    "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/QDReader"
+import java.lang.ref.WeakReference
 
 /**
- * 重定向主题路径
+ * 默认选项实体
  * @suppress Generate Documentation
  */
-val redirectThemePath = "${basePath}/ReaderTheme/"
+val defaultOptionEntity by lazy {
+    OptionEntity()
+}
 
 /**
- * 选项路径
+ * 默认空列表
  * @suppress Generate Documentation
  */
-val optionPath = "${basePath}/option.json"
+val defaultEmptyList by lazy { mutableListOf<SelectedModel>() }
 
 /**
- * 闪屏图片路径
+ * 读取选项
+ * @param [errorAction] 错误操作
+ * @return [File?]
  * @suppress Generate Documentation
  */
-val splashPath = "${basePath}/Splash/"
+private fun provideOptionFile(context: Context): File {
+    val filesDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
+    return File(filesDir, optionPath).apply {
+        parentFile?.mkdirs()
+        if (!exists()) {
+            createNewFile()
+            writeText(defaultOptionEntity.toJSONString())
+        }
+    }
+}
 
-/**
- * 音频路径
- * @suppress Generate Documentation
- */
-val audioPath = "${basePath}/Audio/"
+private fun provideOptionEntity(file: File): OptionEntity = try {
+    file.readText().parseObject<OptionEntity>().apply {
+        val newAdvOptionConfigurations = defaultOptionEntity.advOption
+        val newInterceptConfigurations = defaultOptionEntity.interceptOption
+        val newViewHideOptionConfigurations =
+            defaultOptionEntity.viewHideOption.homeOption.configurations
+        val newBookDetailOptionConfigurations =
+            defaultOptionEntity.viewHideOption.bookDetailOptions
+        val newAutomaticReceiveOptionConfigurations =
+            defaultOptionEntity.automatizationOption
+        val newSearchOption = defaultOptionEntity.viewHideOption.searchOption
+        advOption = advOption.merge(
+            newAdvOptionConfigurations
+        )
+        interceptOption = interceptOption.merge(
+            newInterceptConfigurations
+        )
+
+        viewHideOption.homeOption.configurations =
+            viewHideOption.homeOption.configurations.merge(
+                newViewHideOptionConfigurations
+            )
+        viewHideOption.bookDetailOptions = viewHideOption.bookDetailOptions.merge(
+            newBookDetailOptionConfigurations
+        )
+        automatizationOption = automatizationOption.merge(
+            newAutomaticReceiveOptionConfigurations
+        )
+        viewHideOption.searchOption = viewHideOption.searchOption.merge(
+            newSearchOption
+        )
+    }
+} catch (e: Throwable) {
+    e.loge()
+    defaultOptionEntity
+}
+
+//@SuppressLint("StaticFieldLeak")
+object Option {
+
+    lateinit var context: WeakReference<Context>
+    lateinit var optionFile: File
+    lateinit var optionEntity: OptionEntity
+
+    /**
+     * 选项路径
+     * @suppress Generate Documentation
+     */
+    const val optionPath = "option.json"
+    fun initialize(context: Context) {
+        this.context = WeakReference(context)
+        optionFile = provideOptionFile(context)
+        optionEntity = provideOptionEntity(optionFile)
+    }
+
+    /**
+     * 需要屏蔽的作者列表
+     */
+    private val authorList by lazy {
+        optionEntity.shieldOption.authorList
+    }
+
+    /**
+     * 需要屏蔽的书名关键词列表
+     */
+    private val bookNameList by lazy {
+        optionEntity.shieldOption.bookNameList
+    }
+
+    /**
+     * 需要屏蔽的书籍类型列表
+     */
+    private val bookTypeList by lazy {
+        optionEntity.shieldOption.bookTypeList
+    }
+
+    /**
+     * 判断是否需要屏蔽
+     * @param bookName 书名-可空
+     * @param authorName 作者名-可空
+     * @param bookType 书类型-可空
+     */
+    fun isNeedShield(
+        bookName: String? = null, authorName: String? = null, bookType: Set<String>? = null
+    ): Boolean {/*
+            if (BuildConfig.DEBUG) {
+                "bookName: $bookName\nauthorName:$authorName\nbookType:$bookType".loge()
+            }
+
+             */
+
+        bookNameList.takeIf { it.isNotEmpty() }?.let { bookNameList ->
+            bookName.takeUnless { it.isNullOrBlank() }?.let { bookName ->
+                if (bookNameList.any { it in bookName }) {
+                    return true
+                }
+            }
+        }
+
+        authorList.takeIf { it.isNotEmpty() }?.let { authorList ->
+            authorName.takeUnless { it.isNullOrBlank() }?.let { authorName ->
+                if (authorName in authorList) {
+                    return true
+                }
+            }
+        }
+
+        bookTypeList.takeIf { it.isNotEmpty() }?.let { list ->
+            bookType.takeUnless { it.isNullOrEmpty() }?.let { type ->
+                val bookTypes = type.filter { it.isNotBlank() || it.length > 1 }.toSet()
+                bookTypes.takeIf { it.isNotEmpty() }?.let { types ->
+                    if (optionEntity.shieldOption.enableBookTypeEnhancedBlocking) {
+                        if (types.any { list.any { it1 -> it1 in it } }) {
+                            return true
+                        }
+                    } else {
+                        if (types.any { it in list }) {
+                            return true
+                        }
+                    }
+                }
+            }
+        }
+
+        return false
+    }
+
+    /**
+     * 解析需要屏蔽的书籍列表
+     */
+    fun parseNeedShieldList(list: MutableList<*>): List<*> {
+        val iterator = list.iterator()
+        while (iterator.hasNext()) {
+            runAndCatch {
+                val jb = iterator.next().toJSONString().parseObject()
+                val bookName =
+                    jb.getStringWithFallback("bookName") ?: jb.getStringWithFallback("itemName")
+                val authorName = jb.getStringWithFallback("authorName")
+                val categoryName = jb.getStringWithFallback("categoryName")
+                val subCategoryName = jb.getStringWithFallback("subCategoryName")
+                    ?: jb.getStringWithFallback("itemSubName")
+                val tagName = jb.getStringWithFallback("tagName")
+                val array = jb.getJSONArrayWithFallback("AuthorTags")
+                    ?: jb.getJSONArrayWithFallback("tags")
+                    ?: jb.getJSONArrayWithFallback("tagList")
+                val tip = jb.getStringWithFallback("tip")
+                val bookTypeArray = mutableSetOf<String>()
+                if (categoryName != null) {
+                    bookTypeArray += categoryName
+                }
+                if (subCategoryName != null) {
+                    bookTypeArray += subCategoryName
+                }
+                if (tagName != null) {
+                    bookTypeArray += tagName
+                }
+                if (tip != null) {
+                    bookTypeArray += tip
+                }
+                if (!array.isNullOrEmpty()) {
+                    for (i in array.indices) {
+                        val tag = array.getString(i)
+                        if ("{" in tag) {
+                            tag.parseObject()?.getStringWithFallback("tagName")?.let {
+                                bookTypeArray += it
+                            }
+                        } else {
+                            array.getString(i)?.let {
+                                bookTypeArray += it
+                            }
+                        }
+                    }
+                }
+                if (isNeedShield(bookName, authorName, bookTypeArray)) {
+                    iterator.remove()
+                }
+            }
+        }
+        return list
+    }
+
+    /**
+     * 解析需要屏蔽的漫画列表
+     */
+    fun parseNeedShieldComicList(list: MutableList<*>): List<*> {
+        val iterator = list.iterator()
+        while (iterator.hasNext()) {
+            runAndCatch {
+                val jb = iterator.next().toJSONString().parseObject()
+                val comicName = jb.getStringWithFallback("comicName")
+                val authorName =
+                    jb.getStringWithFallback("authorName") ?: jb.getStringWithFallback("Author")
+                val categoryName = jb.getStringWithFallback("categoryName")
+                val subCategoryName = jb.getStringWithFallback("subCategoryName")
+                val tagName = jb.getStringWithFallback("tagName")
+                val extraTag = jb.getStringWithFallback("extraTag")
+                val array = jb.getJSONArrayWithFallback("authorTags")
+                    ?: jb.getJSONArrayWithFallback("tags")
+                    ?: jb.getJSONArrayWithFallback("tagList")
+                val bookTypeArray = mutableSetOf<String>()
+                if (categoryName != null) {
+                    bookTypeArray += categoryName
+                }
+                if (subCategoryName != null) {
+                    bookTypeArray += subCategoryName
+                }
+                if (tagName != null) {
+                    bookTypeArray += tagName
+                }
+                if (extraTag != null) {
+                    bookTypeArray += extraTag
+                }
+                if (!array.isNullOrEmpty()) {
+                    for (i in array.indices) {
+                        array.getString(i)?.let {
+                            bookTypeArray += it
+                        }
+                    }
+                }
+                if (isNeedShield(comicName, authorName, bookTypeArray)) {
+                    iterator.remove()
+                }
+            }
+        }
+        return list
+    }
+
+    /**
+     * 解析精选标题返回需要删除的列表
+     */
+    fun getNeedShieldTitleList(): List<Int> {
+        val type = mapOf(
+            1000 to "男生",
+            1001 to "女生",
+            1002 to "胶囊",
+            1003 to "漫画",
+            1004 to "听书",
+            1005 to "完本",
+            1010 to "全部",
+            0x3F3 to "7-11岁",
+            0x3F4 to "12-15岁",
+            0x3F5 to "16-18岁",
+        )
+        val needShieldTitleList =
+            optionEntity.viewHideOption.selectedOption.selectedTitleConfigurations.filter {
+                it.selected && it.title in type.values
+            }
+        return needShieldTitleList.mapNotNull { type.filterValues { it1 -> it1 == it.title }.keys.firstOrNull() }
+    }
+
+    /**
+     * 添加屏蔽的书名和作者 然后更新
+     * @param bookName 书名
+     * @param authorName 作者
+     */
+    fun addShieldBook(
+        bookName: String = "", authorName: String = ""
+    ) {
+        when {
+            bookName.isNotBlank() -> {
+                optionEntity.shieldOption.bookNameList += bookName
+            }
+
+            authorName.isNotBlank() -> {
+                optionEntity.shieldOption.authorList += authorName
+            }
+        }
+        updateOptionEntity()
+    }
+
+    /**
+     * 更新选项实体
+     * @return [Boolean]
+     * @suppress Generate Documentation
+     */
+    fun updateOptionEntity(): Boolean = try {
+        optionFile.writeText(optionEntity.toJSONString())
+        true
+    } catch (e: Throwable) {
+        e.loge()
+        false
+    }
+
+    /**
+     * 重置选项实体
+     * @return [Boolean]
+     * @suppress Generate Documentation
+     */
+    fun resetOptionEntity(): Boolean = try {
+        optionFile.writeText(OptionEntity().toJSONString())
+        true
+    } catch (e: Throwable) {
+        (e.message ?: "重置配置文件失败").loge()
+        false
+    }
+
+    /**
+     * 删除起点目录下所有文件
+     */
+    fun deleteAll() =
+        context.get()?.apply {
+            filesDir.listFiles()?.removeAll()
+            getExternalFilesDirs(null).firstNotNullOfOrNull {
+                it.listFiles()?.filterNot { file -> file.isDirectory && file.name == "Download" }
+                    ?.removeAll()
+            }
+        }
+
+    private fun Array<File>.removeAll() = runAndCatch {
+        forEach {
+            it.deleteRecursively()
+        }
+    }
+
+    private fun List<File>.removeAll() = runAndCatch {
+        forEach {
+            it.deleteRecursively()
+        }
+    }
+
+
+    /**
+     * 写入文本文件
+     * @param [fileName] 文件名
+     * @suppress Generate Documentation
+     */
+    fun String.writeTextFile(fileName: String = "test") {
+        // 使用File类的构造函数，创建一个File对象
+        val file = context.get()?.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) ?: return
+        // 使用generateSequence函数，创建一个序列，每次在文件名后面加上"-数字"
+        generateSequence(0) { it + 1 }
+            // 使用takeWhile函数，筛选出不存在的文件
+            .takeWhile {
+                !File(
+                    file.parent, "${file.nameWithoutExtension}-$it.${file.extension}"
+                ).exists()
+            }
+            // 使用firstOrNull函数，获取第一个元素，或者返回-1
+            .firstOrNull() ?: (-1)
+            // 使用let函数，对File对象进行操作
+            .let {
+                // 如果序列中有元素，则在文件名后面加上"-数字"
+                file.renameTo(
+                    File(
+                        file.parent,
+                        "${file.nameWithoutExtension}-$it.${file.extension}"
+                    )
+                )
+                // 确保父目录存在
+                file.parentFile?.mkdirs()
+                // 如果文件不存在，则创建新文件
+                if (!file.exists()) file.createNewFile()
+                // 将字符串写入到文件中
+                file.writeText(this)
+            }
+    }
+
+}
 
 /**
  * 配置实体
@@ -186,7 +547,6 @@ data class OptionEntity(
     /**
      * 启动图配置
      * @param enableCustomStartImage 启用自定义启动图
-     * @param enableRedirectLocalStartImage 启用重定向本地启动图
      * @param customStartImageUrlList 自定义启动图url列表
      * @param enableCaptureTheOfficialLaunchMapList 启用抓取官方启动图列表
      * @param officialLaunchMapList 官方启动图列表
@@ -194,7 +554,6 @@ data class OptionEntity(
     @Keep
     data class StartImageOption(
         var enableCustomStartImage: Boolean = false,
-        var enableRedirectLocalStartImage: Boolean = false,
         var enableCaptureTheOfficialLaunchMapList: Boolean = false,
         var customStartImageUrlList: Set<String> = emptySet(),
         var officialLaunchMapList: List<StartImageModel> = emptyList(),
@@ -217,7 +576,6 @@ data class OptionEntity(
 
     /**
      * 阅读页配置
-     * @param enableRedirectReadingPageBackgroundPath 启用自定义阅读页主题路径
      * @param enableCustomBookLastPage 启用自定义书籍最后一页
      * @param enableShowReaderPageChapterSaveRawPicture 启用显示阅读页章节保存原图
      * @param enableShowReaderPageChapterSavePictureDialog 启用显示阅读页章节保存图片对话框
@@ -228,7 +586,6 @@ data class OptionEntity(
      */
     @Keep
     data class ReadPageOption(
-        var enableRedirectReadingPageBackgroundPath: Boolean = false,
         var enableCustomBookLastPage: Boolean = false,
         var enableShowReaderPageChapterSaveRawPicture: Boolean = false,
         var enableShowReaderPageChapterSavePictureDialog: Boolean = false,
@@ -405,98 +762,3 @@ data class CustomBookShelfTopImageModel(
     var surfaceIcon: String = "",
     var headImage: String = "",
 )
-
-/**
- * 读取选项
- * @param [errorAction] 错误操作
- * @return [File?]
- * @suppress Generate Documentation
- */
-fun readOptionFile(errorAction: (String) -> Unit = {}): File? = try {
-    File(optionPath).apply {
-        parentFile?.mkdirs()
-        if (!exists()) {
-            createNewFile()
-            writeText(defaultOptionEntity.toJSONString())
-        }
-    }
-} catch (e: Throwable) {
-    errorAction.invoke(e.message ?: "读取配置文件失败")
-    e.loge()
-    null
-}
-
-fun readOptionEntity(): OptionEntity {
-    val file = readOptionFile {
-        it.loge()
-    } ?: return defaultOptionEntity
-    return try {
-        file.readText().parseObject<OptionEntity>().apply {
-            val newAdvOptionConfigurations = defaultOptionEntity.advOption
-            val newInterceptConfigurations = defaultOptionEntity.interceptOption
-            val newViewHideOptionConfigurations =
-                defaultOptionEntity.viewHideOption.homeOption.configurations
-            val newBookDetailOptionConfigurations =
-                defaultOptionEntity.viewHideOption.bookDetailOptions
-            val newAutomaticReceiveOptionConfigurations = defaultOptionEntity.automatizationOption
-            val newSearchOption = defaultOptionEntity.viewHideOption.searchOption
-            advOption = advOption.merge(
-                newAdvOptionConfigurations
-            )
-            interceptOption = interceptOption.merge(
-                newInterceptConfigurations
-            )
-
-            viewHideOption.homeOption.configurations =
-                viewHideOption.homeOption.configurations.merge(
-                    newViewHideOptionConfigurations
-                )
-            viewHideOption.bookDetailOptions = viewHideOption.bookDetailOptions.merge(
-                newBookDetailOptionConfigurations
-            )
-            automatizationOption = automatizationOption.merge(
-                newAutomaticReceiveOptionConfigurations
-            )
-            viewHideOption.searchOption = viewHideOption.searchOption.merge(
-                newSearchOption
-            )
-        }
-    } catch (e: Throwable) {
-        e.loge()
-        defaultOptionEntity
-    }
-}
-
-/**
- * 写入选项
- * @param [optionEntity] 期权实体
- * @suppress Generate Documentation
- */
-fun writeOptionFile(optionEntity: OptionEntity) = try {
-    readOptionFile()?.writeText(optionEntity.toJSONString()) ?: false
-    true
-} catch (e: Throwable) {
-    e.loge()
-    false
-}
-
-/**
- * 更新选项实体
- * @return [Boolean]
- * @suppress Generate Documentation
- */
-fun updateOptionEntity(): Boolean = writeOptionFile(HookEntry.optionEntity)
-
-/**
- * 默认选项实体
- * @suppress Generate Documentation
- */
-val defaultOptionEntity by lazy {
-    OptionEntity()
-}
-
-/**
- * 默认空列表
- * @suppress Generate Documentation
- */
-val defaultEmptyList by lazy { mutableListOf<SelectedModel>() }

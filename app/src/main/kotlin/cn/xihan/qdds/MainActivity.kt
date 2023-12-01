@@ -452,17 +452,6 @@ private fun MainScreen(
                 })
             }
 
-            val enableRedirectReadingPageBackgroundPath =
-                rememberMutableStateOf(value = Option.optionEntity.readPageOption.enableRedirectReadingPageBackgroundPath)
-
-            ItemWithSwitch(text = "重定向阅读页主题路径",
-                checked = enableRedirectReadingPageBackgroundPath,
-                onCheckedChange = {
-                    Option.optionEntity.readPageOption.enableRedirectReadingPageBackgroundPath =
-                        it
-                })
-
-
         }
 
         PrimaryCard("启动图设置") {
