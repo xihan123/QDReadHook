@@ -98,13 +98,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import cn.xihan.qdds.Option.deleteAll
+import cn.xihan.qdds.Option.resetOptionEntity
+import cn.xihan.qdds.Option.updateOptionEntity
 import coil.compose.rememberAsyncImagePainter
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppCompatActivity
-import com.hjq.permissions.Permission
-import com.hjq.permissions.XXPermissions
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -136,18 +137,10 @@ class MainActivity : ModuleAppCompatActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @Composable
     private fun ComposeContent() {
-        val context = LocalContext.current
-        val permission = rememberMutableStateOf(
-            value = XXPermissions.isGranted(
-                context, if (this.applicationInfo.targetSdkVersion > 30) arrayOf(
-                    Permission.MANAGE_EXTERNAL_STORAGE, Permission.REQUEST_INSTALL_PACKAGES
-                ) else Permission.Group.STORAGE.plus(Permission.REQUEST_INSTALL_PACKAGES)
-            )
-        )
         val navController = rememberNavController()
-        var allowDisclaimers by rememberMutableStateOf(value = HookEntry.optionEntity.allowDisclaimers)
-        var currentDisclaimersVersionCode by rememberMutableStateOf(value = HookEntry.optionEntity.currentDisclaimersVersionCode)
-        val latestDisclaimersVersionCode by rememberMutableStateOf(value = HookEntry.optionEntity.latestDisclaimersVersionCode)
+        var allowDisclaimers by rememberMutableStateOf(value = Option.optionEntity.allowDisclaimers)
+        var currentDisclaimersVersionCode by rememberMutableStateOf(value = Option.optionEntity.currentDisclaimersVersionCode)
+        val latestDisclaimersVersionCode by rememberMutableStateOf(value = Option.optionEntity.latestDisclaimersVersionCode)
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             topBar = {
@@ -179,8 +172,6 @@ class MainActivity : ModuleAppCompatActivity() {
                     .windowInsetsPadding(WindowInsets.navigationBars)
                     .padding(top = paddingValues.calculateTopPadding()),
                 startDestination = when {
-                    permission.value.not() && allowDisclaimers.not() -> "route_permission_request"
-                    permission.value.not() -> "route_permission_request"
                     allowDisclaimers.not() -> "route_disclaimers"
                     else -> "top_level_route"
                 },
@@ -257,8 +248,8 @@ class MainActivity : ModuleAppCompatActivity() {
                     Disclaimers(onAgreeClick = {
                         allowDisclaimers = true
                         currentDisclaimersVersionCode = latestDisclaimersVersionCode
-                        HookEntry.optionEntity.allowDisclaimers = true
-                        HookEntry.optionEntity.currentDisclaimersVersionCode =
+                        Option.optionEntity.allowDisclaimers = true
+                        Option.optionEntity.currentDisclaimersVersionCode =
                             latestDisclaimersVersionCode
                         updateOptionEntity()
                     }, onDisagreeClick = {
@@ -266,32 +257,6 @@ class MainActivity : ModuleAppCompatActivity() {
                     })
                 }
 
-                composable("route_permission_request") {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-
-                        Text(
-                            "起点和模块都需要存储以及安装未知应用权限\n存储权限:用来管理位于外部存储的配置文件\n安装未知应用权限:Android 11及以上读取其他应用版本号",
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold
-                        )
-
-                        Button(onClick = {
-                            requestPermissionDialog(onGranted = {
-                                permission.value = true
-                                restartApplication()
-                            }, onDenied = {
-                                permission.value = false
-                                jumpToPermission()
-                            })
-                        }) {
-                            Text("点我请求权限")
-                        }
-                    }
-
-                }
             }
         }
     }
@@ -328,89 +293,89 @@ private fun MainScreen(
 
             ItemWithSwitch(text = "启用启动时检查权限",
                 modifier = itemModifier,
-                checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableStartCheckingPermissions),
+                checked = rememberMutableStateOf(value = Option.optionEntity.mainOption.enableStartCheckingPermissions),
                 onCheckedChange = {
-                    HookEntry.optionEntity.mainOption.enableStartCheckingPermissions = it
+                    Option.optionEntity.mainOption.enableStartCheckingPermissions = it
                 })
 
             ItemWithSwitch(text = "发帖上传图片显示直链",
                 modifier = itemModifier,
-                checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enablePostToShowImageUrl),
+                checked = rememberMutableStateOf(value = Option.optionEntity.mainOption.enablePostToShowImageUrl),
                 onCheckedChange = {
-                    HookEntry.optionEntity.mainOption.enablePostToShowImageUrl = it
+                    Option.optionEntity.mainOption.enablePostToShowImageUrl = it
                 })
 
             ItemWithSwitch(text = "免广告领取奖励",
                 modifier = itemModifier,
-                checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableFreeAdReward),
+                checked = rememberMutableStateOf(value = Option.optionEntity.mainOption.enableFreeAdReward),
                 onCheckedChange = {
-                    HookEntry.optionEntity.mainOption.enableFreeAdReward = it
+                    Option.optionEntity.mainOption.enableFreeAdReward = it
                 })
 
             ItemWithSwitch(text = "忽略限时免费批量订阅限制",
                 modifier = itemModifier,
-                checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableIgnoreFreeSubscribeLimit),
+                checked = rememberMutableStateOf(value = Option.optionEntity.mainOption.enableIgnoreFreeSubscribeLimit),
                 onCheckedChange = {
-                    HookEntry.optionEntity.mainOption.enableIgnoreFreeSubscribeLimit = it
+                    Option.optionEntity.mainOption.enableIgnoreFreeSubscribeLimit = it
                 })
 
             ItemWithSwitch(text = "解锁会员卡专属背景",
                 modifier = itemModifier,
-                checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableUnlockMemberBackground),
+                checked = rememberMutableStateOf(value = Option.optionEntity.mainOption.enableUnlockMemberBackground),
                 onCheckedChange = {
-                    HookEntry.optionEntity.mainOption.enableUnlockMemberBackground = it
+                    Option.optionEntity.mainOption.enableUnlockMemberBackground = it
                 })
 
             ItemWithSwitch(text = "一键导出表情包",
                 modifier = itemModifier,
-                checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableExportEmoji),
+                checked = rememberMutableStateOf(value = Option.optionEntity.mainOption.enableExportEmoji),
                 onCheckedChange = {
-                    HookEntry.optionEntity.mainOption.enableExportEmoji = it
+                    Option.optionEntity.mainOption.enableExportEmoji = it
                 })
 
             ItemWithSwitch(text = "启用旧版每日导读",
                 modifier = itemModifier,
-                checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableOldDailyRead),
+                checked = rememberMutableStateOf(value = Option.optionEntity.mainOption.enableOldDailyRead),
                 onCheckedChange = {
-                    HookEntry.optionEntity.mainOption.enableOldDailyRead = it
+                    Option.optionEntity.mainOption.enableOldDailyRead = it
                 })
 
         }
 
         PrimaryCard("自动化设置") {
             ItemWithNewPage(text = "自动化设置列表", modifier = itemModifier, onClick = {
-                context.multiChoiceSelector(HookEntry.optionEntity.automatizationOption)
+                context.multiChoiceSelector(Option.optionEntity.automatizationOption)
             })
         }
 
         PrimaryCard("书架设置") {
 
             val enableCustomBookShelfTopImage =
-                rememberMutableStateOf(value = HookEntry.optionEntity.bookshelfOption.enableCustomBookShelfTopImage)
+                rememberMutableStateOf(value = Option.optionEntity.bookshelfOption.enableCustomBookShelfTopImage)
 
             ItemWithSwitch(text = "启用自定义书架顶部图片",
                 modifier = itemModifier,
                 checked = enableCustomBookShelfTopImage,
                 onCheckedChange = {
-                    HookEntry.optionEntity.bookshelfOption.enableCustomBookShelfTopImage = it
+                    Option.optionEntity.bookshelfOption.enableCustomBookShelfTopImage = it
                 })
 
             if (enableCustomBookShelfTopImage.value) {
                 val enableSameNightAndDay =
-                    rememberMutableStateOf(value = HookEntry.optionEntity.bookshelfOption.enableSameNightAndDay)
+                    rememberMutableStateOf(value = Option.optionEntity.bookshelfOption.enableSameNightAndDay)
 
                 ItemWithSwitch(text = "启用夜间和日间相同",
                     modifier = itemModifier,
                     checked = enableSameNightAndDay,
                     onCheckedChange = {
-                        HookEntry.optionEntity.bookshelfOption.enableSameNightAndDay = it
+                        Option.optionEntity.bookshelfOption.enableSameNightAndDay = it
                     })
 
                 CustomBookShelfTopImageOption(title = "白天模式",
 //                    modifier = itemModifier,
-                    customBookShelfTopImageModel = HookEntry.optionEntity.bookshelfOption.lightModeCustomBookShelfTopImageModel,
+                    customBookShelfTopImageModel = Option.optionEntity.bookshelfOption.lightModeCustomBookShelfTopImageModel,
                     onValueChange = {
-                        HookEntry.optionEntity.bookshelfOption.lightModeCustomBookShelfTopImageModel =
+                        Option.optionEntity.bookshelfOption.lightModeCustomBookShelfTopImageModel =
                             it
                         updateOptionEntity()
                     })
@@ -418,9 +383,9 @@ private fun MainScreen(
                 if (!enableSameNightAndDay.value) {
                     CustomBookShelfTopImageOption(title = "夜间模式",
 //                        modifier = itemModifier,
-                        customBookShelfTopImageModel = HookEntry.optionEntity.bookshelfOption.darkModeCustomBookShelfTopImageModel,
+                        customBookShelfTopImageModel = Option.optionEntity.bookshelfOption.darkModeCustomBookShelfTopImageModel,
                         onValueChange = {
-                            HookEntry.optionEntity.bookshelfOption.darkModeCustomBookShelfTopImageModel =
+                            Option.optionEntity.bookshelfOption.darkModeCustomBookShelfTopImageModel =
                                 it
                             updateOptionEntity()
                         })
@@ -435,65 +400,65 @@ private fun MainScreen(
 
             ItemWithSwitch(text = "阅读页章评图片长按保存原图",
                 modifier = itemModifier,
-                checked = rememberMutableStateOf(value = HookEntry.optionEntity.readPageOption.enableShowReaderPageChapterSaveRawPicture),
+                checked = rememberMutableStateOf(value = Option.optionEntity.readPageOption.enableShowReaderPageChapterSaveRawPicture),
                 onCheckedChange = {
-                    HookEntry.optionEntity.readPageOption.enableShowReaderPageChapterSaveRawPicture =
+                    Option.optionEntity.readPageOption.enableShowReaderPageChapterSaveRawPicture =
                         it
                 })
 
             ItemWithSwitch(text = "阅读页章评评论长按复制",
                 modifier = itemModifier,
-                checked = rememberMutableStateOf(value = HookEntry.optionEntity.readPageOption.enableCopyReaderPageChapterComment),
+                checked = rememberMutableStateOf(value = Option.optionEntity.readPageOption.enableCopyReaderPageChapterComment),
                 onCheckedChange = {
-                    HookEntry.optionEntity.readPageOption.enableCopyReaderPageChapterComment = it
+                    Option.optionEntity.readPageOption.enableCopyReaderPageChapterComment = it
                 })
 
             ItemWithSwitch(text = "阅读页章评图片保存原图对话框",
                 modifier = itemModifier,
-                checked = rememberMutableStateOf(value = HookEntry.optionEntity.readPageOption.enableShowReaderPageChapterSavePictureDialog),
+                checked = rememberMutableStateOf(value = Option.optionEntity.readPageOption.enableShowReaderPageChapterSavePictureDialog),
                 onCheckedChange = {
-                    HookEntry.optionEntity.readPageOption.enableShowReaderPageChapterSavePictureDialog =
+                    Option.optionEntity.readPageOption.enableShowReaderPageChapterSavePictureDialog =
                         it
                 })
 
             ItemWithSwitch(text = "阅读页章评音频导出对话框",
                 modifier = itemModifier,
-                checked = rememberMutableStateOf(value = HookEntry.optionEntity.readPageOption.enableShowReaderPageChapterSaveAudioDialog),
+                checked = rememberMutableStateOf(value = Option.optionEntity.readPageOption.enableShowReaderPageChapterSaveAudioDialog),
                 onCheckedChange = {
-                    HookEntry.optionEntity.readPageOption.enableShowReaderPageChapterSaveAudioDialog =
+                    Option.optionEntity.readPageOption.enableShowReaderPageChapterSaveAudioDialog =
                         it
                 })
 
             val enableReadTimeFactor =
-                rememberMutableStateOf(value = HookEntry.optionEntity.readPageOption.enableReadTimeFactor)
+                rememberMutableStateOf(value = Option.optionEntity.readPageOption.enableReadTimeFactor)
 
             ItemWithSwitch(text = "阅读时间加倍",
                 modifier = itemModifier,
                 checked = enableReadTimeFactor,
                 onCheckedChange = {
-                    HookEntry.optionEntity.readPageOption.enableReadTimeFactor = it
+                    Option.optionEntity.readPageOption.enableReadTimeFactor = it
                 })
 
             if (enableReadTimeFactor.value) {
                 val speedFactor =
-                    rememberMutableStateOf(value = HookEntry.optionEntity.readPageOption.speedFactor.toString())
+                    rememberMutableStateOf(value = Option.optionEntity.readPageOption.speedFactor.toString())
 
                 ItemWithEditText(title = "时间加倍系数", text = speedFactor, onTextChange = {
                     if (it.isNotBlank()) {
                         runAndCatch {
-                            HookEntry.optionEntity.readPageOption.speedFactor = it.toInt()
+                            Option.optionEntity.readPageOption.speedFactor = it.toInt()
                         }
                     }
                 })
             }
 
             val enableRedirectReadingPageBackgroundPath =
-                rememberMutableStateOf(value = HookEntry.optionEntity.readPageOption.enableRedirectReadingPageBackgroundPath)
+                rememberMutableStateOf(value = Option.optionEntity.readPageOption.enableRedirectReadingPageBackgroundPath)
 
             ItemWithSwitch(text = "重定向阅读页主题路径",
                 checked = enableRedirectReadingPageBackgroundPath,
                 onCheckedChange = {
-                    HookEntry.optionEntity.readPageOption.enableRedirectReadingPageBackgroundPath =
+                    Option.optionEntity.readPageOption.enableRedirectReadingPageBackgroundPath =
                         it
                 })
 
@@ -503,32 +468,26 @@ private fun MainScreen(
         PrimaryCard("启动图设置") {
 
             val enableCustomStartImage =
-                rememberMutableStateOf(value = HookEntry.optionEntity.startImageOption.enableCustomStartImage)
+                rememberMutableStateOf(value = Option.optionEntity.startImageOption.enableCustomStartImage)
 
             ItemWithSwitch(
                 text = "启用自定义启动图",
                 checked = enableCustomStartImage,
                 onCheckedChange = {
-                    HookEntry.optionEntity.startImageOption.enableCustomStartImage = it
+                    Option.optionEntity.startImageOption.enableCustomStartImage = it
                 })
             if (enableCustomStartImage.value) {
                 val enableCaptureTheOfficialLaunchMapList =
-                    rememberMutableStateOf(value = HookEntry.optionEntity.startImageOption.enableCaptureTheOfficialLaunchMapList)
+                    rememberMutableStateOf(value = Option.optionEntity.startImageOption.enableCaptureTheOfficialLaunchMapList)
 
                 ItemWithSwitch(text = "启用抓取官方启动图",
                     checked = enableCaptureTheOfficialLaunchMapList,
                     onCheckedChange = {
-                        HookEntry.optionEntity.startImageOption.enableCaptureTheOfficialLaunchMapList =
+                        Option.optionEntity.startImageOption.enableCaptureTheOfficialLaunchMapList =
                             it
                     })
 
-                ItemWithSwitch(text = "启用重定向本地启动图",
-                    checked = rememberMutableStateOf(value = HookEntry.optionEntity.startImageOption.enableRedirectLocalStartImage),
-                    onCheckedChange = {
-                        HookEntry.optionEntity.startImageOption.enableRedirectLocalStartImage = it
-                    })
-
-                if (HookEntry.optionEntity.startImageOption.officialLaunchMapList.isNotEmpty()) {
+                if (Option.optionEntity.startImageOption.officialLaunchMapList.isNotEmpty()) {
                     val enableCaptureTheOfficialLaunchMapListExpand =
                         rememberMutableStateOf(value = false)
                     val expandIcon =
@@ -542,7 +501,7 @@ private fun MainScreen(
                         }
                         .padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "官方启动图列表: ${HookEntry.optionEntity.startImageOption.officialLaunchMapList.size}张"
+                            text = "官方启动图列表: ${Option.optionEntity.startImageOption.officialLaunchMapList.size}张"
                         )
 
                         Text(
@@ -567,7 +526,7 @@ private fun MainScreen(
                             color = Color.Transparent
                         ) {
                             val list =
-                                remember { HookEntry.optionEntity.startImageOption.officialLaunchMapList }
+                                remember { Option.optionEntity.startImageOption.officialLaunchMapList }
                             val listSize = list.size
                             val height = (listSize / 3 + if (listSize % 3 == 0) 0 else 1) * 250
 
@@ -612,7 +571,7 @@ private fun MainScreen(
                 }
 
                 val customStartImageUrlList = rememberMutableStateOf(
-                    value = HookEntry.optionEntity.startImageOption.customStartImageUrlList.joinToString(
+                    value = Option.optionEntity.startImageOption.customStartImageUrlList.joinToString(
                         ";"
                     )
                 )
@@ -621,7 +580,7 @@ private fun MainScreen(
                     right = { Insert(list = customStartImageUrlList) },
                     text = customStartImageUrlList,
                     onTextChange = {
-                        HookEntry.optionEntity.startImageOption.customStartImageUrlList =
+                        Option.optionEntity.startImageOption.customStartImageUrlList =
                             parseKeyWordOption(it)
                     })
             }
@@ -652,32 +611,32 @@ private fun PurifyScreen(
 
         PrimaryCard("广告设置") {
             ItemWithNewPage(text = "广告设置列表", modifier = itemModifier, onClick = {
-                context.multiChoiceSelector(HookEntry.optionEntity.advOption)
+                context.multiChoiceSelector(Option.optionEntity.advOption)
             })
         }
 
         PrimaryCard("拦截设置") {
 
             ItemWithNewPage(text = "拦截设置列表", modifier = itemModifier, onClick = {
-                context.multiChoiceSelector(HookEntry.optionEntity.interceptOption)
+                context.multiChoiceSelector(Option.optionEntity.interceptOption)
             })
         }
 
         PrimaryCard("屏蔽设置") {
 
             ItemWithNewPage(text = "屏蔽选项列表", modifier = itemModifier, onClick = {
-                context.multiChoiceSelector(HookEntry.optionEntity.shieldOption.configurations)
+                context.multiChoiceSelector(Option.optionEntity.shieldOption.configurations)
             })
 
             ItemWithSwitch(text = "启用快速屏蔽弹窗",
                 modifier = itemModifier,
-                checked = rememberMutableStateOf(value = HookEntry.optionEntity.shieldOption.enableQuickShieldDialog),
+                checked = rememberMutableStateOf(value = Option.optionEntity.shieldOption.enableQuickShieldDialog),
                 onCheckedChange = {
-                    HookEntry.optionEntity.shieldOption.enableQuickShieldDialog = it
+                    Option.optionEntity.shieldOption.enableQuickShieldDialog = it
                 })
 
             val authorList = rememberMutableStateOf(
-                value = HookEntry.optionEntity.shieldOption.authorList.joinToString(
+                value = Option.optionEntity.shieldOption.authorList.joinToString(
                     ";"
                 ),
             )
@@ -685,11 +644,11 @@ private fun PurifyScreen(
             ItemWithEditText(title = "填入需要屏蔽的完整作者名称", text = authorList, right = {
                 Insert(authorList)
             }, onTextChange = {
-                HookEntry.optionEntity.shieldOption.authorList = parseKeyWordOption(it)
+                Option.optionEntity.shieldOption.authorList = parseKeyWordOption(it)
             })
 
             val bookNameList = rememberMutableStateOf(
-                value = HookEntry.optionEntity.shieldOption.bookNameList.joinToString(
+                value = Option.optionEntity.shieldOption.bookNameList.joinToString(
                     ";"
                 )
             )
@@ -697,24 +656,24 @@ private fun PurifyScreen(
             ItemWithEditText(title = "填入需要屏蔽的书名关键词", text = bookNameList, right = {
                 Insert(bookNameList)
             }, onTextChange = {
-                HookEntry.optionEntity.shieldOption.bookNameList = parseKeyWordOption(it)
+                Option.optionEntity.shieldOption.bookNameList = parseKeyWordOption(it)
             })
 
             ItemWithSwitch(text = "启用书类型增强屏蔽",
                 modifier = itemModifier,
-                checked = rememberMutableStateOf(value = HookEntry.optionEntity.shieldOption.enableBookTypeEnhancedBlocking),
+                checked = rememberMutableStateOf(value = Option.optionEntity.shieldOption.enableBookTypeEnhancedBlocking),
                 onCheckedChange = {
-                    HookEntry.optionEntity.shieldOption.enableBookTypeEnhancedBlocking = it
+                    Option.optionEntity.shieldOption.enableBookTypeEnhancedBlocking = it
                 })
 
             val bookTypeList = rememberMutableStateOf(
-                value = HookEntry.optionEntity.shieldOption.bookTypeList.joinToString(";")
+                value = Option.optionEntity.shieldOption.bookTypeList.joinToString(";")
             )
 
             ItemWithEditText(title = "填入需要屏蔽的书类型", text = bookTypeList, right = {
                 Insert(bookTypeList)
             }, onTextChange = {
-                HookEntry.optionEntity.shieldOption.bookTypeList = parseKeyWordOption(it)
+                Option.optionEntity.shieldOption.bookTypeList = parseKeyWordOption(it)
             })
 
         }
@@ -723,33 +682,33 @@ private fun PurifyScreen(
 
             ItemWithSwitch(text = "隐藏部分小红点",
                 modifier = itemModifier,
-                checked = rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.enableHideRedDot),
+                checked = rememberMutableStateOf(value = Option.optionEntity.viewHideOption.enableHideRedDot),
                 onCheckedChange = {
-                    HookEntry.optionEntity.viewHideOption.enableHideRedDot = it
+                    Option.optionEntity.viewHideOption.enableHideRedDot = it
                 })
 
             ItemWithSwitch(text = "隐藏我-右上角消息红点",
                 modifier = itemModifier,
-                checked = rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.accountOption.enableHideAccountRightTopRedDot),
+                checked = rememberMutableStateOf(value = Option.optionEntity.viewHideOption.accountOption.enableHideAccountRightTopRedDot),
                 onCheckedChange = {
-                    HookEntry.optionEntity.viewHideOption.accountOption.enableHideAccountRightTopRedDot =
+                    Option.optionEntity.viewHideOption.accountOption.enableHideAccountRightTopRedDot =
                         it
                 })
 
             ItemWithNewPage(text = "搜索配置列表", modifier = itemModifier, onClick = {
-                context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.searchOption)
+                context.multiChoiceSelector(Option.optionEntity.viewHideOption.searchOption)
             })
 
             ItemWithNewPage(text = "主页隐藏选项列表", modifier = itemModifier, onClick = {
-                context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.homeOption.configurations)
+                context.multiChoiceSelector(Option.optionEntity.viewHideOption.homeOption.configurations)
             })
             val enableCaptureBottomNavigation =
-                rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.homeOption.enableCaptureBottomNavigation)
+                rememberMutableStateOf(value = Option.optionEntity.viewHideOption.homeOption.enableCaptureBottomNavigation)
             ItemWithSwitch(text = "启用抓取底部导航栏",
                 modifier = itemModifier,
                 checked = enableCaptureBottomNavigation,
                 onCheckedChange = {
-                    HookEntry.optionEntity.viewHideOption.homeOption.enableCaptureBottomNavigation =
+                    Option.optionEntity.viewHideOption.homeOption.enableCaptureBottomNavigation =
                         it
                 })
 
@@ -757,129 +716,129 @@ private fun PurifyScreen(
                 ItemWithNewPage(text = "主页底部导航栏选项列表",
                     modifier = itemModifier,
                     onClick = {
-                        context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.homeOption.bottomNavigationConfigurations)
+                        context.multiChoiceSelector(Option.optionEntity.viewHideOption.homeOption.bottomNavigationConfigurations)
                     },
                     onLongClick = {
-                        HookEntry.optionEntity.viewHideOption.homeOption.bottomNavigationConfigurations =
+                        Option.optionEntity.viewHideOption.homeOption.bottomNavigationConfigurations =
                             defaultEmptyList
                         context.toast("已恢复默认")
                     })
             }
 
             val enableSelectedHide =
-                rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.selectedOption.enableSelectedHide)
+                rememberMutableStateOf(value = Option.optionEntity.viewHideOption.selectedOption.enableSelectedHide)
 
             ItemWithSwitch(text = "精选-启用选项屏蔽",
                 modifier = itemModifier,
                 checked = enableSelectedHide,
                 onCheckedChange = {
-                    HookEntry.optionEntity.viewHideOption.selectedOption.enableSelectedHide = it
+                    Option.optionEntity.viewHideOption.selectedOption.enableSelectedHide = it
                 })
 
             if (enableSelectedHide.value) {
                 ItemWithNewPage(text = "精选-隐藏控件列表", modifier = itemModifier, onClick = {
-                    context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.selectedOption.configurations)
+                    context.multiChoiceSelector(Option.optionEntity.viewHideOption.selectedOption.configurations)
                 }, onLongClick = {
-                    HookEntry.optionEntity.viewHideOption.selectedOption.configurations =
+                    Option.optionEntity.viewHideOption.selectedOption.configurations =
                         defaultEmptyList
                     context.toast("已恢复默认")
                 })
             }
 
             val enableSelectedTitleHide =
-                rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.selectedOption.enableSelectedTitleHide)
+                rememberMutableStateOf(value = Option.optionEntity.viewHideOption.selectedOption.enableSelectedTitleHide)
 
             ItemWithSwitch(text = "精选-标题启用选项屏蔽",
                 modifier = itemModifier,
                 checked = enableSelectedTitleHide,
                 onCheckedChange = {
-                    HookEntry.optionEntity.viewHideOption.selectedOption.enableSelectedTitleHide =
+                    Option.optionEntity.viewHideOption.selectedOption.enableSelectedTitleHide =
                         it
                 })
 
             if (enableSelectedTitleHide.value) {
                 ItemWithNewPage(text = "精选-标题隐藏控件列表", modifier = itemModifier, onClick = {
-                    context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.selectedOption.selectedTitleConfigurations)
+                    context.multiChoiceSelector(Option.optionEntity.viewHideOption.selectedOption.selectedTitleConfigurations)
                 }, onLongClick = {
-                    HookEntry.optionEntity.viewHideOption.selectedOption.selectedTitleConfigurations =
+                    Option.optionEntity.viewHideOption.selectedOption.selectedTitleConfigurations =
                         defaultEmptyList
                     context.toast("已恢复默认")
                 })
             }
 
             val hideAccount =
-                rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.accountOption.enableHideAccount)
+                rememberMutableStateOf(value = Option.optionEntity.viewHideOption.accountOption.enableHideAccount)
 
 
             ItemWithSwitch(text = "启用我-隐藏控件",
                 modifier = itemModifier,
                 checked = hideAccount,
                 onCheckedChange = {
-                    HookEntry.optionEntity.viewHideOption.accountOption.enableHideAccount = it
+                    Option.optionEntity.viewHideOption.accountOption.enableHideAccount = it
                 })
 
             if (hideAccount.value) {
                 ItemWithNewPage(text = "我-隐藏控件列表", modifier = itemModifier, onClick = {
-                    context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.accountOption.configurations)
+                    context.multiChoiceSelector(Option.optionEntity.viewHideOption.accountOption.configurations)
                 }, onLongClick = {
-                    HookEntry.optionEntity.viewHideOption.accountOption.configurations =
+                    Option.optionEntity.viewHideOption.accountOption.configurations =
                         defaultEmptyList
                     context.toast("已恢复默认")
                 })
             }
 
             val enableCaptureBookReadPageView =
-                rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.readPageOptions.enableCaptureBookReadPageView)
+                rememberMutableStateOf(value = Option.optionEntity.viewHideOption.readPageOptions.enableCaptureBookReadPageView)
 
             ItemWithSwitch(text = "启用阅读页抓取控件",
                 modifier = itemModifier,
                 checked = enableCaptureBookReadPageView,
                 onCheckedChange = {
-                    HookEntry.optionEntity.viewHideOption.readPageOptions.enableCaptureBookReadPageView =
+                    Option.optionEntity.viewHideOption.readPageOptions.enableCaptureBookReadPageView =
                         it
                 })
 
             if (enableCaptureBookReadPageView.value) {
                 ItemWithNewPage(text = "阅读页-隐藏控件列表", modifier = itemModifier, onClick = {
-                    context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.readPageOptions.configurations)
+                    context.multiChoiceSelector(Option.optionEntity.viewHideOption.readPageOptions.configurations)
                 }, onLongClick = {
-                    HookEntry.optionEntity.viewHideOption.readPageOptions.configurations =
+                    Option.optionEntity.viewHideOption.readPageOptions.configurations =
                         defaultEmptyList
                     context.toast("已恢复默认")
                 })
             }
 
             val hideDetail =
-                rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.enableHideBookDetail)
+                rememberMutableStateOf(value = Option.optionEntity.viewHideOption.enableHideBookDetail)
 
             ItemWithSwitch(text = "启用书籍详情-隐藏控件",
                 modifier = itemModifier,
                 checked = hideDetail,
                 onCheckedChange = {
-                    HookEntry.optionEntity.viewHideOption.enableHideBookDetail = it
+                    Option.optionEntity.viewHideOption.enableHideBookDetail = it
                 })
 
             if (hideDetail.value) {
                 ItemWithNewPage(text = "书籍详情-隐藏控件列表", modifier = itemModifier, onClick = {
-                    context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.bookDetailOptions)
+                    context.multiChoiceSelector(Option.optionEntity.viewHideOption.bookDetailOptions)
                 })
             }
 
             val enableHideLastPage =
-                rememberMutableStateOf(value = HookEntry.optionEntity.viewHideOption.enableHideLastPage)
+                rememberMutableStateOf(value = Option.optionEntity.viewHideOption.enableHideLastPage)
 
             ItemWithSwitch(text = "启用阅读页-最后一页-隐藏控件",
                 modifier = itemModifier,
                 checked = enableHideLastPage,
                 onCheckedChange = {
-                    HookEntry.optionEntity.viewHideOption.enableHideLastPage = it
+                    Option.optionEntity.viewHideOption.enableHideLastPage = it
                 })
 
             if (enableHideLastPage.value) {
                 ItemWithNewPage(text = "阅读页-最后一页-隐藏控件列表",
                     modifier = itemModifier,
                     onClick = {
-                        context.multiChoiceSelector(HookEntry.optionEntity.viewHideOption.bookLastPageOptions)
+                        context.multiChoiceSelector(Option.optionEntity.viewHideOption.bookLastPageOptions)
                     })
             }
 
@@ -905,22 +864,30 @@ private fun AboutScreen(
     }
     PrimaryCard(modifier = Modifier.padding(padding)) {
 
-        ItemWithSwitch(text = "隐藏桌面图标",
+//        ItemWithSwitch(text = "隐藏桌面图标",
+//            modifier = itemModifier,
+//            checked = rememberMutableStateOf(value = Option.optionEntity.mainOption.enableHideAppIcon),
+//            onCheckedChange = {
+//                Option.optionEntity.mainOption.enableHideAppIcon = it
+//                runAndCatch {
+//                    if (it) {
+//                        context.hideAppIcon()
+//                    } else {
+//                        context.showAppIcon()
+//                    }
+//                }
+//            })
+
+        ItemWithNewPage(
+            "清除起点所有缓存",
             modifier = itemModifier,
-            checked = rememberMutableStateOf(value = HookEntry.optionEntity.mainOption.enableHideAppIcon),
-            onCheckedChange = {
-                HookEntry.optionEntity.mainOption.enableHideAppIcon = it
-                runAndCatch {
-                    if (it) {
-                        context.hideAppIcon()
-                    } else {
-                        context.showAppIcon()
-                    }
-                }
-            })
+            onClick = {
+                deleteAll()
+            }
+        )
 
         ItemWithNewPage(text = "重置模块配置文件", modifier = itemModifier, onClick = {
-            writeOptionFile(OptionEntity())
+            resetOptionEntity()
             context.toast("重置成功,即将重启应用")
             context.safeCast<Activity>()?.restartApplication()
         })
@@ -1005,7 +972,7 @@ private fun AboutScreen(
  */
 @OptIn(ExperimentalTextApi::class)
 @Composable
-private fun Disclaimers(
+fun Disclaimers(
     modifier: Modifier = Modifier,
     onAgreeClick: () -> Unit = {},
     onDisagreeClick: () -> Unit = {},

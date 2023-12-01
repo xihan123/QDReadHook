@@ -8,8 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Parcelable
@@ -24,7 +22,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.view.forEach
-import cn.xihan.qdds.HookEntry.Companion.parseNeedShieldList
+import cn.xihan.qdds.Option.parseNeedShieldList
+import cn.xihan.qdds.Option.updateOptionEntity
 import com.alibaba.fastjson2.toJSONString
 import com.highcapable.yukihookapi.hook.factory.MembersType
 import com.highcapable.yukihookapi.hook.factory.constructor
@@ -35,11 +34,7 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
 import com.highcapable.yukihookapi.hook.type.java.ListClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
-import com.hjq.permissions.Permission
-import com.hjq.permissions.XXPermissions
 import de.robv.android.xposed.XposedHelpers
-import java.io.File
-import java.io.FilenameFilter
 import java.io.Serializable
 import java.util.Locale
 import java.util.Random
@@ -395,37 +390,6 @@ fun Any.printCallStack() {
 }
 
 /**
- * 写入文本文件
- * @param [fileName] 文件名
- * @suppress Generate Documentation
- */
-fun String.writeTextFile(fileName: String = "test") {
-    // 使用File类的构造函数，创建一个File对象
-    val file = File(basePath, "$fileName.txt")
-    // 使用generateSequence函数，创建一个序列，每次在文件名后面加上"-数字"
-    generateSequence(0) { it + 1 }
-        // 使用takeWhile函数，筛选出不存在的文件
-        .takeWhile {
-            !File(
-                file.parent, "${file.nameWithoutExtension}-$it.${file.extension}"
-            ).exists()
-        }
-        // 使用firstOrNull函数，获取第一个元素，或者返回-1
-        .firstOrNull() ?: (-1)
-        // 使用let函数，对File对象进行操作
-        .let {
-            // 如果序列中有元素，则在文件名后面加上"-数字"
-            file.renameTo(File(file.parent, "${file.nameWithoutExtension}-$it.${file.extension}"))
-            // 确保父目录存在
-            file.parentFile?.mkdirs()
-            // 如果文件不存在，则创建新文件
-            if (!file.exists()) file.createNewFile()
-            // 将字符串写入到文件中
-            file.writeText(this)
-        }
-}
-
-/**
  * 复制到剪贴板
  * @param [text] 发短信
  * @suppress Generate Documentation
@@ -457,36 +421,6 @@ fun Context.joinQQGroup(key: String): Boolean {
         // 未安装手Q或安装的版本不支持
         Toast.makeText(this, "未安装手Q或安装的版本不支持", Toast.LENGTH_SHORT).show()
         false
-    }
-}
-
-/**
- * 隐藏应用图标
- * @suppress Generate Documentation
- */
-fun Context.hideAppIcon() {
-    val componentName = ComponentName(this, MainActivity::class.java.name)
-    if (packageManager.getComponentEnabledSetting(componentName) != PackageManager.COMPONENT_ENABLED_STATE_DISABLED) {
-        packageManager.setComponentEnabledSetting(
-            componentName,
-            PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-            PackageManager.DONT_KILL_APP
-        )
-    }
-}
-
-/**
- * “显示应用”图标
- * @suppress Generate Documentation
- */
-fun Context.showAppIcon() {
-    val componentName = ComponentName(this, MainActivity::class.java.name)
-    if (packageManager.getComponentEnabledSetting(componentName) != PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
-        packageManager.setComponentEnabledSetting(
-            componentName,
-            PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-            PackageManager.DONT_KILL_APP
-        )
     }
 }
 
@@ -820,27 +754,6 @@ fun com.alibaba.fastjson2.JSONObject.getJSONArrayWithFallback(key: String): com.
 fun View.getName() = toString().substringAfter("/").replace("}", "")
 
 /**
- * 随机位图
- * @since 7.9.306-1030
- * @return [Bitmap?]
- * @suppress Generate Documentation
- */
-fun randomBitmap(): Bitmap? {
-    val filter = FilenameFilter { _, name ->
-        name.endsWith(".jpg", true) || name.endsWith(".png", true)
-    }
-    val files = File(splashPath).apply { if (!exists()) mkdirs() }
-    val list = files.listFiles(filter) ?: return null
-    val index = (list.indices).random()
-    return try {
-        BitmapFactory.decodeFile(list[index].absolutePath)
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
-    }
-}
-
-/**
  * 数据处理
  * @since 7.9.306-1030
  * @param [value] 价值
@@ -857,68 +770,6 @@ fun Context.dp(value: Int): Int = (value * resources.displayMetrics.density).toI
  * @suppress Generate Documentation
  */
 infix fun Int.x(other: Int): ViewGroup.LayoutParams = ViewGroup.LayoutParams(this, other)
-
-/**
- * 请求权限
- * @suppress Generate Documentation
- */
-fun Activity.requestPermissionDialog(
-    onGranted: () -> Unit = { restartApplication() },
-    onDenied: () -> Unit = { jumpToPermission() },
-) {
-    val permission = XXPermissions.isGranted(
-        this, if (this.applicationInfo.targetSdkVersion > 30) arrayOf(
-            Permission.MANAGE_EXTERNAL_STORAGE, Permission.REQUEST_INSTALL_PACKAGES
-        ) else Permission.Group.STORAGE.plus(Permission.REQUEST_INSTALL_PACKAGES)
-    )
-    if (permission) {
-        return
-    }
-    alertDialog {
-        title = "温馨提示"
-        message = "请授予以下权限,否则无法正常使用\n存储权限:用来管理位于外部存储的配置文件\n安装未知应用权限:Android 11及以上读取其他应用版本号"
-        positiveButton("授予") {
-            if (applicationInfo.targetSdkVersion > 30) {
-                XXPermissions.with(this@requestPermissionDialog).permission(
-                    Permission.MANAGE_EXTERNAL_STORAGE, Permission.REQUEST_INSTALL_PACKAGES
-                ).request { _, allGranted ->
-                    if (allGranted) {
-                        onGranted()
-                    } else {
-                        onDenied()
-                    }
-                }
-            } else {
-                XXPermissions.with(this@requestPermissionDialog)
-                    .permission(Permission.Group.STORAGE.plus(Permission.REQUEST_INSTALL_PACKAGES))
-                    .request { _, allGranted ->
-                        if (allGranted) {
-                            onGranted()
-                        } else {
-                            onDenied()
-                        }
-                    }
-            }
-        }
-        negativeButton("拒绝并退出") {
-            onDenied()
-        }
-        build()
-        show()
-    }
-}
-
-/**
- * 跳转到权限
- * @suppress Generate Documentation
- */
-fun Context.jumpToPermission() {
-    if (this.applicationInfo.targetSdkVersion > 30) {
-        XXPermissions.startPermissionActivity(this, Permission.MANAGE_EXTERNAL_STORAGE)
-    } else {
-        XXPermissions.startPermissionActivity(this, Permission.Group.STORAGE)
-    }
-}
 
 /**
  * return false
