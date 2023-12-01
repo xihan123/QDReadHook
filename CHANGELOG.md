@@ -1,4 +1,28 @@
 # Changelog
+## [3.0.4](https://github.com/xihan123/QDReadHook/compare/v3.0.3...v3.0.4) (2023-12-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* 移除桌面图标相关
+
+### Features
+
+* **关于:** 新增`导入配置`、`清除起点所有缓存(保留登录信息和模块配置)` ([ecd7499](https://github.com/xihan123/QDReadHook/commit/ecd74996fb89f0d49cbbdb903ee2e9a69a2e4b2a))
+* 提高版本号范围 ([2ef5aef](https://github.com/xihan123/QDReadHook/commit/2ef5aef7436881a6e5e50bba7d847d2ceab6265a))
+* 移除桌面图标相关 ([fdbfaf8](https://github.com/xihan123/QDReadHook/commit/fdbfaf8ae1845eadd78f66119a5caf93a1d40743))
+
+
+### Bug Fixes
+
+* **隐藏控件:** 修复 `阅读页隐藏控件列表` ([1d63a55](https://github.com/xihan123/QDReadHook/commit/1d63a550827560f4f05f43ff8bac030f72249d75))
+
+
+### Miscellaneous
+
+* 更新依赖 ([3a32180](https://github.com/xihan123/QDReadHook/commit/3a32180c601ddcb3412eed6084a5f313826e4c19))
+* 更新依赖 ([16cf96e](https://github.com/xihan123/QDReadHook/commit/16cf96e4d6fecd0dbc1f8a5881f56f67ee011bad))
+
 ## [3.0.3](https://github.com/xihan123/QDReadHook/compare/v3.0.2...v3.0.3) (2023-11-14)
 
 
