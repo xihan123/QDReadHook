@@ -130,9 +130,8 @@ dependencies {
     implementation(libs.compose.activity)
     implementation(libs.compose.lottie)
     implementation(libs.compose.navigation)
-    implementation(libs.kotlin.reflect)
+//    implementation(libs.kotlin.reflect)
     implementation(libs.dexkit)
-    implementation(libs.xxpermissions)
 
     implementation(libs.yukihook.api)
     ksp(libs.yukihook.ksp)

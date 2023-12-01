@@ -48,7 +48,7 @@ jobs:
           echo storeFile='${{ steps.write_file.outputs.filePath }}' >> keystore.properties
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -88,14 +88,7 @@ jobs:
         run: |
           if [ ! -z "${{ secrets.BOT_TOKEN }}" ]; then
             OUTPUT="app/build/outputs/ci/"
-            export arm32=$(find $OUTPUT -name "*arm32.apk")
-            export arm64=$(find $OUTPUT -name "*arm64.apk")
-            export armAll=$(find $OUTPUT -name "*armAll.apk")
-            export universal=$(find $OUTPUT -name "*universal.apk")
+            export apkRelease=$(find $OUTPUT -name "*universal.apk")
             ESCAPED=`python3 -c '''import requests,os;body = os.environ["description"]; r = requests.get("https://api.github.com/repos/${{github.repository}}/releases/latest"); tag_name = r.json()["tag_name"]; html_url = r.json()["html_url"]; change_log = "# 完整更新日志 " + "[" + tag_name + "](" + html_url + ")"; print(body + "\n\n" + change_log if len(body) <= 1024 else change_log)'''`
-            curl -v "https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup?chat_id=${CHANNEL_ID}&media=%5B%7B%22type%22%3A%22document%22%2C%20%22media%22%3A%22attach%3A%2F%2Farm64%22%7D%2C%7B%22type%22%3A%22document%22%2C%20%22media%22%3A%22attach%3A%2F%2Farm32%22%7D%2C%7B%22type%22%3A%22document%22%2C%20%22media%22%3A%22attach%3A%2F%2FarmAll%22%7D%2C%7B%22type%22%3A%22document%22%2C%20%22media%22%3A%22attach%3A%2F%2Funiversal%22%2C%22caption%22%3A%24%7BESCAPED%7D%7D%5D" \
-           -F arm32="@$arm32" \
-           -F arm64="@$arm64" \
-           -F armAll="@$armAll" \
-           -F universal="@$universal"
+            curl -v "https://api.telegram.org/bot${BOT_TOKEN}/sendDocument?chat_id=${CHANNEL_ID}" -F document="@$apkRelease" -F caption="${ESCAPED}"
           fi
