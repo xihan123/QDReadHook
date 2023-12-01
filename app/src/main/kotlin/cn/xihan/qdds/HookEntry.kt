@@ -7,8 +7,7 @@ import android.os.Environment
 import android.view.View
 import android.widget.RelativeLayout
 import android.widget.TextView
-import com.alibaba.fastjson2.parseObject
-import com.alibaba.fastjson2.toJSONString
+import cn.xihan.qdds.Option.optionEntity
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.factory.method
@@ -21,8 +20,6 @@ import com.highcapable.yukihookapi.hook.type.java.ListClass
 import com.highcapable.yukihookapi.hook.type.java.LongType
 import com.highcapable.yukihookapi.hook.type.java.UnitType
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
-import com.hjq.permissions.Permission
-import com.hjq.permissions.XXPermissions
 import org.json.JSONObject
 import org.luckypray.dexkit.DexKitBridge
 import java.lang.reflect.Modifier
@@ -38,9 +35,7 @@ import java.lang.reflect.Modifier
 class HookEntry : IYukiHookXposedInit {
 
     init {
-        if (optionEntity.allowDisclaimers) {
-            System.loadLibrary("dexkit")
-        }
+        System.loadLibrary("dexkit")
     }
 
     override fun onInit() = YukiHookAPI.configs {
@@ -54,45 +49,49 @@ class HookEntry : IYukiHookXposedInit {
 
         loadApp(name = QD_PACKAGE_NAME) {
 
-            if (optionEntity.allowDisclaimers) {
-                DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                    mainFunction(versionCode = versionCode, bridge = bridge)
-                }
-            }
-
-            if (optionEntity.mainOption.enableStartCheckingPermissions) {
-                startCheckingPermissions(versionCode)
-            }
-
-            "com.qidian.QDReader.ui.activity.MoreActivity".toClass().apply {
-                method {
-                    name = "initWidget"
-                    emptyParam()
-                    returnType = UnitType
-                }.hook().after {
-                    // 获取 MoreActivity 实例
-                    val readMoreSetting = instance.getView<RelativeLayout>("readMoreSetting")
-                    // 获取 readMoreSetting 子控件
-                    val readMoreSettingChild = readMoreSetting?.getChildAt(0).safeCast<TextView>()
-                    readMoreSettingChild?.text = "阅读设置/模块设置(长按)"
-
-                    readMoreSetting?.setOnLongClickListener {
-                        instance<Activity>().apply {
-                            startActivity(Intent(this, MainActivity::class.java))
+            onAppLifecycle {
+                onCreate {
+                    Option.initialize(this)
+                    if (optionEntity.allowDisclaimers) {
+                        DexKitBridge.create(appInfo.sourceDir).use { bridge ->
+                            mainFunction(versionCode = versionCode, bridge = bridge)
                         }
-                        true
+                    }
+
+                    "com.qidian.QDReader.ui.activity.MoreActivity".toClass().apply {
+                        method {
+                            name = "initWidget"
+                            emptyParam()
+                            returnType = UnitType
+                        }.hook().after {
+                            // 获取 MoreActivity 实例
+                            val readMoreSetting =
+                                instance.getView<RelativeLayout>("readMoreSetting")
+                            // 获取 readMoreSetting 子控件
+                            val readMoreSettingChild =
+                                readMoreSetting?.getChildAt(0).safeCast<TextView>()
+                            readMoreSettingChild?.text = "阅读设置/模块设置(长按)"
+
+                            readMoreSetting?.setOnLongClickListener {
+                                instance<Activity>().apply {
+                                    startActivity(Intent(this, MainActivity::class.java))
+                                }
+                                true
+                            }
+                        }
+
+                        method {
+                            name = "onCreate"
+                            param(BundleClass)
+                            returnType = UnitType
+                        }.hook().after {
+                            instance<Activity>().registerModuleAppActivities()
+                        }
+
                     }
                 }
-
-                method {
-                    name = "onCreate"
-                    param(BundleClass)
-                    returnType = UnitType
-                }.hook().after {
-                    instance<Activity>().registerModuleAppActivities()
-                }
-
             }
+
 
         }
     }
@@ -129,10 +128,6 @@ class HookEntry : IYukiHookXposedInit {
                 speedFactor = optionEntity.readPageOption.speedFactor,
                 bridge = bridge
             )
-        }
-
-        if (optionEntity.readPageOption.enableRedirectReadingPageBackgroundPath) {
-            redirectReadingPageBackgroundPath(versionCode, bridge)
         }
 
         advOption(versionCode, optionEntity.advOption, bridge)
@@ -257,10 +252,6 @@ class HookEntry : IYukiHookXposedInit {
             captureTheOfficialLaunchMapList(versionCode)
         }
 
-        if (optionEntity.startImageOption.enableRedirectLocalStartImage) {
-            customLocalStartImage(versionCode)
-        }
-
         if (optionEntity.bookshelfOption.enableCustomBookShelfTopImage) {
             customBookShelfTopImage(versionCode)
         }
@@ -278,298 +269,24 @@ class HookEntry : IYukiHookXposedInit {
 
     companion object {
         val QD_PACKAGE_NAME by lazy {
-            optionEntity.mainOption.packageName.ifBlank { "com.qidian.QDReader" }
+            "com.qidian.QDReader"
+//            optionEntity.mainOption.packageName.ifBlank { "com.qidian.QDReader" }
         }
 
         val versionCode by lazy { getSystemContext().getVersionCode(QD_PACKAGE_NAME) }
 
-        val optionEntity by lazy {
-            readOptionEntity()
-        }
-
-        /**
-         * 需要屏蔽的作者列表
-         */
-        private val authorList by lazy {
-            optionEntity.shieldOption.authorList
-        }
-
-        /**
-         * 需要屏蔽的书名关键词列表
-         */
-        private val bookNameList by lazy {
-            optionEntity.shieldOption.bookNameList
-        }
-
-        /**
-         * 需要屏蔽的书籍类型列表
-         */
-        private val bookTypeList by lazy {
-            optionEntity.shieldOption.bookTypeList
-        }
-
-        /**
-         * 判断是否需要屏蔽
-         * @param bookName 书名-可空
-         * @param authorName 作者名-可空
-         * @param bookType 书类型-可空
-         */
-        fun isNeedShield(
-            bookName: String? = null, authorName: String? = null, bookType: Set<String>? = null
-        ): Boolean {/*
-            if (BuildConfig.DEBUG) {
-                "bookName: $bookName\nauthorName:$authorName\nbookType:$bookType".loge()
-            }
-
-             */
-
-            bookNameList.takeIf { it.isNotEmpty() }?.let { bookNameList ->
-                bookName.takeUnless { it.isNullOrBlank() }?.let { bookName ->
-                    if (bookNameList.any { it in bookName }) {
-                        return true
-                    }
-                }
-            }
-
-            authorList.takeIf { it.isNotEmpty() }?.let { authorList ->
-                authorName.takeUnless { it.isNullOrBlank() }?.let { authorName ->
-                    if (authorName in authorList) {
-                        return true
-                    }
-                }
-            }
-
-            bookTypeList.takeIf { it.isNotEmpty() }?.let { list ->
-                bookType.takeUnless { it.isNullOrEmpty() }?.let { type ->
-                    val bookTypes = type.filter { it.isNotBlank() || it.length > 1 }.toSet()
-                    bookTypes.takeIf { it.isNotEmpty() }?.let { types ->
-                        if (optionEntity.shieldOption.enableBookTypeEnhancedBlocking) {
-                            if (types.any { list.any { it1 -> it1 in it } }) {
-                                return true
-                            }
-                        } else {
-                            if (types.any { it in list }) {
-                                return true
-                            }
-                        }
-                    }
-                }
-            }
-
-            return false
-        }
-
-        /**
-         * 解析需要屏蔽的书籍列表
-         */
-        fun parseNeedShieldList(list: MutableList<*>): List<*> {
-            val iterator = list.iterator()
-            while (iterator.hasNext()) {
-                runAndCatch {
-                    val jb = iterator.next().toJSONString().parseObject()
-                    val bookName =
-                        jb.getStringWithFallback("bookName") ?: jb.getStringWithFallback("itemName")
-                    val authorName = jb.getStringWithFallback("authorName")
-                    val categoryName = jb.getStringWithFallback("categoryName")
-                    val subCategoryName = jb.getStringWithFallback("subCategoryName")
-                        ?: jb.getStringWithFallback("itemSubName")
-                    val tagName = jb.getStringWithFallback("tagName")
-                    val array = jb.getJSONArrayWithFallback("AuthorTags")
-                        ?: jb.getJSONArrayWithFallback("tags")
-                        ?: jb.getJSONArrayWithFallback("tagList")
-                    val tip = jb.getStringWithFallback("tip")
-                    val bookTypeArray = mutableSetOf<String>()
-                    if (categoryName != null) {
-                        bookTypeArray += categoryName
-                    }
-                    if (subCategoryName != null) {
-                        bookTypeArray += subCategoryName
-                    }
-                    if (tagName != null) {
-                        bookTypeArray += tagName
-                    }
-                    if (tip != null) {
-                        bookTypeArray += tip
-                    }
-                    if (!array.isNullOrEmpty()) {
-                        for (i in array.indices) {
-                            val tag = array.getString(i)
-                            if ("{" in tag) {
-                                tag.parseObject()?.getStringWithFallback("tagName")?.let {
-                                    bookTypeArray += it
-                                }
-                            } else {
-                                array.getString(i)?.let {
-                                    bookTypeArray += it
-                                }
-                            }
-                        }
-                    }
-                    if (isNeedShield(bookName, authorName, bookTypeArray)) {
-                        iterator.remove()
-                    }
-                }
-            }
-            return list
-        }
-
-        /**
-         * 解析需要屏蔽的漫画列表
-         */
-        fun parseNeedShieldComicList(list: MutableList<*>): List<*> {
-            val iterator = list.iterator()
-            while (iterator.hasNext()) {
-                runAndCatch {
-                    val jb = iterator.next().toJSONString().parseObject()
-                    val comicName = jb.getStringWithFallback("comicName")
-                    val authorName =
-                        jb.getStringWithFallback("authorName") ?: jb.getStringWithFallback("Author")
-                    val categoryName = jb.getStringWithFallback("categoryName")
-                    val subCategoryName = jb.getStringWithFallback("subCategoryName")
-                    val tagName = jb.getStringWithFallback("tagName")
-                    val extraTag = jb.getStringWithFallback("extraTag")
-                    val array = jb.getJSONArrayWithFallback("authorTags")
-                        ?: jb.getJSONArrayWithFallback("tags")
-                        ?: jb.getJSONArrayWithFallback("tagList")
-                    val bookTypeArray = mutableSetOf<String>()
-                    if (categoryName != null) {
-                        bookTypeArray += categoryName
-                    }
-                    if (subCategoryName != null) {
-                        bookTypeArray += subCategoryName
-                    }
-                    if (tagName != null) {
-                        bookTypeArray += tagName
-                    }
-                    if (extraTag != null) {
-                        bookTypeArray += extraTag
-                    }
-                    if (!array.isNullOrEmpty()) {
-                        for (i in array.indices) {
-                            array.getString(i)?.let {
-                                bookTypeArray += it
-                            }
-                        }
-                    }
-                    if (isNeedShield(comicName, authorName, bookTypeArray)) {
-                        iterator.remove()
-                    }
-                }
-            }
-            return list
-        }
-
-        /**
-         * 解析精选标题返回需要删除的列表
-         */
-        fun getNeedShieldTitleList(): List<Int> {
-            val type = mapOf(
-                1000 to "男生",
-                1001 to "女生",
-                1002 to "胶囊",
-                1003 to "漫画",
-                1004 to "听书",
-                1005 to "完本",
-                1010 to "全部",
-                0x3F3 to "7-11岁",
-                0x3F4 to "12-15岁",
-                0x3F5 to "16-18岁",
-            )
-            val needShieldTitleList =
-                optionEntity.viewHideOption.selectedOption.selectedTitleConfigurations.filter {
-                    it.selected && it.title in type.values
-                }
-            return needShieldTitleList.mapNotNull { type.filterValues { it1 -> it1 == it.title }.keys.firstOrNull() }
-        }
-
-        /**
-         * 添加屏蔽的书名和作者 然后更新
-         * @param bookName 书名
-         * @param authorName 作者
-         */
-        fun addShieldBook(
-            bookName: String = "", authorName: String = ""
-        ) {
-            when {
-                bookName.isNotBlank() -> {
-                    optionEntity.shieldOption.bookNameList += bookName
-                }
-
-                authorName.isNotBlank() -> {
-                    optionEntity.shieldOption.authorList += authorName
-                }
-            }
-            updateOptionEntity()
-        }
-
     }
 
-}
-
-/**
- * 开始检查权限
- * @since 7.9.306-1030
- * @param [versionCode] 版本代码
- * @suppress Generate Documentation
- */
-fun PackageParam.startCheckingPermissions(versionCode: Int) {
-    when (versionCode) {
-        in 1030..1099 -> {
-            "com.qidian.QDReader.ui.activity.SplashActivity".toClass().apply {
-                val hook = method {
-                    name = "go2Where"
-                    emptyParam()
-                    returnType = UnitType
-                }.hook {
-                    replaceUnit {
-                        instance<Activity>().requestPermissionDialog()
-                    }
-                }
-
-                val hook2 = method {
-                    name = "go2Main"
-                    paramCount(1)
-                    returnType = UnitType
-                }.hook {
-                    replaceUnit {
-                        instance<Activity>().requestPermissionDialog()
-                    }
-                }
-
-                method {
-                    name = "onCreate"
-                    param(BundleClass)
-                    returnType = UnitType
-                }.hook().after {
-                    instance<Activity>().apply {
-                        // 判断权限
-                        val permission = XXPermissions.isGranted(
-                            this, if (this.applicationInfo.targetSdkVersion > 30) arrayOf(
-                                Permission.MANAGE_EXTERNAL_STORAGE,
-                                Permission.REQUEST_INSTALL_PACKAGES
-                            ) else Permission.Group.STORAGE.plus(Permission.REQUEST_INSTALL_PACKAGES)
-                        )
-                        if (permission) {
-                            hook.remove()
-                            hook2.remove()
-                        }
-                    }
-                }
-            }
-        }
-
-        else -> "startCheckingPermissions".printlnNotSupportVersion(versionCode)
-    }
 }
 
 /**
  * 解锁会员卡专属背景
- * @since 7.9.306-1030 ~ 1099
+ * @since 7.9.306-1030 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.unlockMemberBackground(versionCode: Int) {
     when (versionCode) {
-        in 1030..1099 -> {
+        in 1030..1199 -> {
             "com.qidian.QDReader.ui.activity.QDReaderThemeDetailActivity".toClass().method {
                 name = "updateViews"
                 param(ListClass)
@@ -597,12 +314,12 @@ fun PackageParam.unlockMemberBackground(versionCode: Int) {
 
 /**
  * 免广告领取奖励
- * @since 7.9.306-1030 ~ 1099
+ * @since 7.9.306-1030 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.freeAdReward(versionCode: Int) {
     when (versionCode) {
-        in 1030..1099 -> {
+        in 1030..1199 -> {
 
             "com.qidian.QDReader.framework.webview.g".toClass().method {
                 name = "judian"
@@ -646,12 +363,12 @@ fun PackageParam.freeAdReward(versionCode: Int) {
 
 /**
  * 忽略限免批量订阅限制
- * @since 7.9.306-1030 ~ 1099
+ * @since 7.9.306-1030 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
-        in 1030..1099 -> {
+        in 1030..1199 -> {
             bridge.findClass {
                 searchPackages = listOf("com.qidian.QDReader.component.bll.manager")
                 matcher {
@@ -665,7 +382,7 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int, bridge: DexKitBridge
                     usingStrings = listOf("IsFreeLimit", "HasCopyRight")
                 }
             }.firstNotNullOfOrNull { classData ->
-                classData.getMethods().findMethod {
+                classData.findMethod {
                     matcher {
                         returnType = "int"
                         paramTypes = listOf(
@@ -695,12 +412,12 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int, bridge: DexKitBridge
 
 /**
  * 一键导出表情包
- * @since 7.9.306-1030 ~ 1099
+ * @since 7.9.306-1030 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.exportEmoji(versionCode: Int) {
     when (versionCode) {
-        in 1030..1099 -> {
+        in 1030..1199 -> {
             "com.qidian.QDReader.ui.activity.QDStickersDetailActivity".toClass().method {
                 param(
                     "com.qidian.QDReader.ui.activity.QDStickersDetailActivity".toClass(),
@@ -800,12 +517,12 @@ private fun Context.exportEmojiDialog(
 
 /**
  * 发帖显示图片直链
- * @since 7.9.306-1030 ~ 1099
+ * @since 7.9.306-1030 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.postToShowImageUrl(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
-        in 1030..1099 -> {
+        in 1030..1199 -> {
             bridge.findClass {
                 searchPackages = listOf("com.qidian.QDReader.ui.dialog")
                 matcher {
@@ -866,12 +583,12 @@ private fun Context.showUrlListDialog(urls: List<String>) {
 
 /**
  * 启用旧版每日导读
- * @since 7.9.306-1050 ~ 1099
+ * @since 7.9.306-1050 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.oldDailyRead(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
-        in 1050..1099 -> {
+        in 1050..1199 -> {
 
             bridge.findClass {
                 searchPackages = listOf("com.qidian.QDReader.flutter")
@@ -880,7 +597,7 @@ fun PackageParam.oldDailyRead(versionCode: Int, bridge: DexKitBridge) {
                 }
             }.filter { "DailyReadingMainPageActivity" in it.name }
                 .firstNotNullOfOrNull { classData ->
-                    classData.getMethods().findMethod {
+                    classData.findMethod {
                         matcher {
                             modifiers = Modifier.PUBLIC
                             paramCount = 3

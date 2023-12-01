@@ -291,13 +291,6 @@ private fun MainScreen(
 
         PrimaryCard("主设置") {
 
-            ItemWithSwitch(text = "启用启动时检查权限",
-                modifier = itemModifier,
-                checked = rememberMutableStateOf(value = Option.optionEntity.mainOption.enableStartCheckingPermissions),
-                onCheckedChange = {
-                    Option.optionEntity.mainOption.enableStartCheckingPermissions = it
-                })
-
             ItemWithSwitch(text = "发帖上传图片显示直链",
                 modifier = itemModifier,
                 checked = rememberMutableStateOf(value = Option.optionEntity.mainOption.enablePostToShowImageUrl),
