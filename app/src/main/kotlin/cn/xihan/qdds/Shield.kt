@@ -3,9 +3,9 @@ package cn.xihan.qdds
 import android.content.Context
 import android.view.View
 import android.widget.TextView
-import cn.xihan.qdds.HookEntry.Companion.isNeedShield
-import cn.xihan.qdds.HookEntry.Companion.parseNeedShieldComicList
-import cn.xihan.qdds.HookEntry.Companion.parseNeedShieldList
+import cn.xihan.qdds.Option.isNeedShield
+import cn.xihan.qdds.Option.parseNeedShieldComicList
+import cn.xihan.qdds.Option.parseNeedShieldList
 import com.alibaba.fastjson2.parseObject
 import com.alibaba.fastjson2.toJSONString
 import com.highcapable.yukihookapi.hook.factory.method
@@ -57,7 +57,7 @@ fun PackageParam.shieldDailyReading(
     versionCode: Int, bridge: DexKitBridge
 ) {
     when (versionCode) {
-        in 1030..1099 -> {
+        in 1030..1199 -> {
 
             bridge.apply {
                 findClass {
@@ -68,7 +68,7 @@ fun PackageParam.shieldDailyReading(
                         )
                     }
                 }.firstNotNullOfOrNull { classData ->
-                    classData.getMethods().findMethod {
+                    classData.findMethod {
                         matcher {
                             modifiers = Modifier.PUBLIC
                             paramTypes = listOf("java.util.ArrayList")
@@ -105,7 +105,7 @@ fun PackageParam.shieldDailyReading(
                     }
                 }.firstNotNullOfOrNull { classData ->
                     "classData: $classData".loge()
-                    classData.getMethods().findMethod {
+                    classData.findMethod {
                         matcher {
                             name = "onSuccess"
                             paramTypes = listOf(
@@ -135,12 +135,12 @@ fun PackageParam.shieldDailyReading(
 
 /**
  * 屏蔽精选主页面
- * @since 7.9.306-1030 ~ 1099
+ * @since 7.9.306-1030 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.shieldMainPage(versionCode: Int) {
     when (versionCode) {
-        in 1030..1099 -> {
+        in 1030..1199 -> {
             shieldResult(
                 className = "com.qidian.QDReader.repository.entity.BookListData",
                 methodName = "getItems"
@@ -153,12 +153,12 @@ fun PackageParam.shieldMainPage(versionCode: Int) {
 
 /**
  * 屏蔽精选-分类
- * @since 7.9.306-1030 ~ 1099
+ * @since 7.9.306-1030 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.shieldCategory(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
-        in 1030..1099 -> {
+        in 1030..1199 -> {
 
             bridge.findClass {
                 searchPackages = listOf("com.qidian.QDReader.ui.adapter")
@@ -168,7 +168,7 @@ fun PackageParam.shieldCategory(versionCode: Int, bridge: DexKitBridge) {
                     )
                 }
             }.firstNotNullOfOrNull { classData ->
-                classData.getMethods().findMethod {
+                classData.findMethod {
                     matcher {
                         modifiers = Modifier.PUBLIC
                         paramTypes = listOf("int", "java.util.List")
@@ -206,12 +206,12 @@ fun PackageParam.shieldCategory(versionCode: Int, bridge: DexKitBridge) {
 
 /**
  * 屏蔽精选-分类-全部作品
- * @since 7.9.306-1030 ~ 1099
+ * @since 7.9.306-1030 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.shieldCategoryAllBook(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
-        in 1030..1099 -> {
+        in 1030..1199 -> {
 
             bridge.findClass {
                 searchPackages = listOf("com.qidian.QDReader.ui.fragment")
@@ -228,7 +228,7 @@ fun PackageParam.shieldCategoryAllBook(versionCode: Int, bridge: DexKitBridge) {
                     )
                 }
             }.firstNotNullOfOrNull { classData ->
-                classData.getMethods().findMethod {
+                classData.findMethod {
                     matcher {
                         modifiers = Modifier.PUBLIC
                         paramTypes = listOf("int", "java.util.ArrayList")
@@ -252,12 +252,12 @@ fun PackageParam.shieldCategoryAllBook(versionCode: Int, bridge: DexKitBridge) {
 
 /**
  * 屏蔽精选-免费-免费推荐
- * @since 7.9.306-1030 ~ 1099
+ * @since 7.9.306-1030 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.shieldFreeRecommend(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
-        in 1030..1099 -> {
+        in 1030..1199 -> {
 
             bridge.findClass {
                 excludePackages = listOf("com")
@@ -275,7 +275,7 @@ fun PackageParam.shieldFreeRecommend(versionCode: Int, bridge: DexKitBridge) {
                     }
                 }
             }.firstNotNullOfOrNull { classData ->
-                classData.getMethods().findMethod {
+                classData.findMethod {
                     matcher {
                         modifiers = Modifier.PUBLIC
                         paramTypes = listOf(
@@ -305,12 +305,12 @@ fun PackageParam.shieldFreeRecommend(versionCode: Int, bridge: DexKitBridge) {
 
 /**
  * 屏蔽精选-新书
- * @since 7.9.306-1030 ~ 1099
+ * @since 7.9.306-1030 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.shieldNewBook(versionCode: Int) {
     when (versionCode) {
-        in 1030..1099 -> {
+        in 1030..1199 -> {
             "com.qidian.QDReader.ui.adapter.newbook.BookTagViewHolder".toClass().method {
                 name = "updateUI"
                 param("com.qidian.QDReader.repository.entity.newbook.NewBookCard".toClass())
@@ -380,12 +380,12 @@ fun PackageParam.shieldNewBook(versionCode: Int) {
 
 /**
  * 屏蔽免费-新书入库
- * @since 7.9.306-1030 ~ 1099
+ * @since 7.9.306-1030 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.shieldFreeNewBook(versionCode: Int) {
     when (versionCode) {
-        in 1030..1099 -> {
+        in 1030..1199 -> {
             val list = listOf(
                 "com.qidian.QDReader.ui.fragment.QDNewBookInStoreFragment",
                 "com.qidian.QDReader.ui.activity.QDNewBookInStoreActivity"
@@ -420,12 +420,12 @@ fun PackageParam.shieldFreeNewBook(versionCode: Int) {
 
 /**
  * 屏蔽畅销精选、主编力荐等更多
- * @since 7.9.306-1030 ~ 1099
+ * @since 7.9.306-1030 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.shieldHotAndRecommend(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
-        in 1030..1099 -> {
+        in 1030..1199 -> {
 
             bridge.findClass {
                 searchPackages = listOf("com.qidian.QDReader.ui.adapter")
@@ -435,7 +435,7 @@ fun PackageParam.shieldHotAndRecommend(versionCode: Int, bridge: DexKitBridge) {
                     )
                 }
             }.firstNotNullOfOrNull { classData ->
-                classData.getMethods().findMethod {
+                classData.findMethod {
                     matcher {
                         modifiers = Modifier.PUBLIC
                         paramTypes = listOf(
@@ -459,12 +459,12 @@ fun PackageParam.shieldHotAndRecommend(versionCode: Int, bridge: DexKitBridge) {
 
 /**
  * 屏蔽新书强推、三江推荐
- * @since 7.9.306-1030 ~ 1099
+ * @since 7.9.306-1030 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.shieldNewBookAndRecommend(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
-        in 1030..1099 -> {
+        in 1030..1199 -> {
 
             bridge.findClass {
                 searchPackages = listOf("com.qidian.QDReader.ui.adapter")
@@ -481,7 +481,7 @@ fun PackageParam.shieldNewBookAndRecommend(versionCode: Int, bridge: DexKitBridg
                 }
             }.filter { "QDTeenagerBookStoreAdapter" !in it.name }
                 .firstNotNullOfOrNull { classData ->
-                    classData.getMethods().findMethod {
+                    classData.findMethod {
                         matcher {
                             modifiers = Modifier.PUBLIC
                             paramTypes = listOf(
@@ -546,12 +546,12 @@ fun PackageParam.shieldNewBookAndRecommend(versionCode: Int, bridge: DexKitBridg
 
 /**
  * 屏蔽精选-排行榜
- * @since 7.9.306-1030 ~ 1099
+ * @since 7.9.306-1030 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.shieldBookRank(versionCode: Int) {
     when (versionCode) {
-        in 1030..1099 -> {
+        in 1030..1199 -> {
             shieldResult(
                 className = "com.qidian.QDReader.repository.entity.RankListData",
                 methodName = "getRankBookList"
@@ -564,12 +564,12 @@ fun PackageParam.shieldBookRank(versionCode: Int) {
 
 /**
  * 屏蔽分类-小编力荐、本周强推等
- * @since 7.9.306-1030 ~ 1099
+ * @since 7.9.306-1030 ~ 1199
  *  @param [versionCode] 版本代码
  */
 fun PackageParam.shieldCategoryBookListReborn(versionCode: Int) {
     when (versionCode) {
-        in 1030..1099 -> {
+        in 1030..1199 -> {
             "com.qidian.QDReader.ui.view.BookItemView".toClass().method {
                 param(JSONArrayClass)
                 returnType = ListClass
@@ -586,12 +586,12 @@ fun PackageParam.shieldCategoryBookListReborn(versionCode: Int) {
 
 /**
  * 屏蔽-漫画
- *  @since 7.9.306-1030 ~ 1099
+ *  @since 7.9.306-1030 ~ 1199
  *  @param [versionCode] 版本代码
  */
 fun PackageParam.shieldComic(versionCode: Int) {
     when (versionCode) {
-        in 1030..1099 -> {
+        in 1030..1199 -> {
             "com.qidian.QDReader.repository.entity.ComicSquareItem".toClass().method {
                 name = "getComicSqureRecmdItems"
                 emptyParam()
@@ -609,12 +609,12 @@ fun PackageParam.shieldComic(versionCode: Int) {
 
 /**
  * 屏蔽-漫画-其他
- * @since 7.9.306-1030 ~ 1099
+ * @since 7.9.306-1030 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.shieldComicOther(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
-        in 1030..1099 -> {
+        in 1030..1199 -> {
 
             bridge.findClass {
                 searchPackages = listOf("com.qidian.QDReader.ui.adapter")
@@ -628,7 +628,7 @@ fun PackageParam.shieldComicOther(versionCode: Int, bridge: DexKitBridge) {
                     }
                 }
             }.firstNotNullOfOrNull { classData ->
-                classData.getMethods().findMethod {
+                classData.findMethod {
                     matcher {
                         modifiers = Modifier.PUBLIC
                         paramTypes = listOf(
@@ -657,12 +657,12 @@ fun PackageParam.shieldComicOther(versionCode: Int, bridge: DexKitBridge) {
 
 /**
  *  书籍详情-快速屏蔽
- *  @since 7.9.306-1030 ~ 1099
+ *  @since 7.9.306-1030 ~ 1199
  *  @param [versionCode] 版本代码
  */
 fun PackageParam.quickShield(versionCode: Int) {
     when (versionCode) {
-        in 1030..1099 -> {
+        in 1030..1199 -> {
             "com.qidian.QDReader.ui.activity.QDBookDetailActivity".toClass().method {
                 param(
                     "com.qidian.QDReader.ui.activity.QDBookDetailActivity".toClass(),
@@ -714,7 +714,7 @@ fun Context.showQuickShieldDialog(
             title = "编辑需要屏蔽的书名关键词?"
             customView = editText
             okButton {
-                HookEntry.addShieldBook(bookName = editText.editText.text.toString())
+                Option.addShieldBook(bookName = editText.editText.text.toString())
             }
             cancelButton {
                 it.dismiss()
@@ -730,7 +730,7 @@ fun Context.showQuickShieldDialog(
             title = "确认屏蔽该作者?"
             message = "作者: $author"
             okButton {
-                HookEntry.addShieldBook(authorName = author)
+                Option.addShieldBook(authorName = author)
             }
             cancelButton {
                 it.dismiss()

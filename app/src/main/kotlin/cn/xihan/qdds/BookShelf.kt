@@ -5,12 +5,12 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
 
 /**
  * 自定义书架顶部图片
- * @since 7.9.306-1030 ~ 1099
+ * @since 7.9.306-1030 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.customBookShelfTopImage(versionCode: Int) {
     when (versionCode) {
-        in 1030..1099 -> {
+        in 1030..1199 -> {
             "com.qidian.QDReader.repository.entity.config.BookshelfConfig".toClass().apply {
 
                 method {
@@ -19,7 +19,7 @@ fun PackageParam.customBookShelfTopImage(versionCode: Int) {
                     returnType =
                         "com.qidian.QDReader.repository.entity.config.ConfigColors".toClass()
                 }.hook().after {
-                    result?.setDayMode(HookEntry.optionEntity)
+                    result?.setDayMode(Option.optionEntity)
                 }
 
                 method {
@@ -28,10 +28,10 @@ fun PackageParam.customBookShelfTopImage(versionCode: Int) {
                     returnType =
                         "com.qidian.QDReader.repository.entity.config.ConfigColors".toClass()
                 }.hook().after {
-                    if (HookEntry.optionEntity.bookshelfOption.enableSameNightAndDay) {
-                        result?.setDayMode(HookEntry.optionEntity)
+                    if (Option.optionEntity.bookshelfOption.enableSameNightAndDay) {
+                        result?.setDayMode(Option.optionEntity)
                     } else {
-                        result?.setDarkMode(HookEntry.optionEntity)
+                        result?.setDarkMode(Option.optionEntity)
                     }
                 }
             }
