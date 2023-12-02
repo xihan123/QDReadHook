@@ -54,7 +54,7 @@
 
         1.1.2及以后则查看起点是否有存储权限，查看是否存在"/sdcard/QDReader/option.json"这个文件(没有就创建一个)
 
-        1.2.7+ 3.0.5配置文件路径为 "/sdcard/Download/QDReader",其他如上
+        1.2.7+ 3.0.5+配置文件路径为 "/sdcard/Download/QDReader",其他如上
 
         3.0.4 配置在起点私有目录
 
