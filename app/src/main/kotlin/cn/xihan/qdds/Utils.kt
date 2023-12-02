@@ -8,6 +8,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Parcelable
@@ -23,6 +25,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.view.forEach
 import cn.xihan.qdds.Option.parseNeedShieldList
+import cn.xihan.qdds.Option.splashPath
 import cn.xihan.qdds.Option.updateOptionEntity
 import com.alibaba.fastjson2.toJSONString
 import com.highcapable.yukihookapi.hook.factory.MembersType
@@ -34,7 +37,11 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
 import com.highcapable.yukihookapi.hook.type.java.ListClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
+import com.hjq.permissions.Permission
+import com.hjq.permissions.XXPermissions
 import de.robv.android.xposed.XposedHelpers
+import java.io.File
+import java.io.FilenameFilter
 import java.io.Serializable
 import java.util.Locale
 import java.util.Random
@@ -425,6 +432,85 @@ fun Context.joinQQGroup(key: String): Boolean {
 }
 
 /**
+ * 隐藏应用图标
+ * @suppress Generate Documentation
+ */
+fun Context.hideAppIcon() {
+    val componentName = ComponentName(this, MainActivity::class.java.name)
+    if (packageManager.getComponentEnabledSetting(componentName) != PackageManager.COMPONENT_ENABLED_STATE_DISABLED) {
+        packageManager.setComponentEnabledSetting(
+            componentName,
+            PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+            PackageManager.DONT_KILL_APP
+        )
+    }
+}
+
+/**
+ * “显示应用”图标
+ * @suppress Generate Documentation
+ */
+fun Context.showAppIcon() {
+    val componentName = ComponentName(this, MainActivity::class.java.name)
+    if (packageManager.getComponentEnabledSetting(componentName) != PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
+        packageManager.setComponentEnabledSetting(
+            componentName,
+            PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+            PackageManager.DONT_KILL_APP
+        )
+    }
+}
+
+/**
+ * 请求权限
+ * @suppress Generate Documentation
+ */
+fun Activity.requestPermissionDialog(
+    onGranted: () -> Unit = { restartApplication() },
+    onDenied: () -> Unit = { jumpToPermission() },
+) {
+    val permission = XXPermissions.isGranted(
+        this, Permission.MANAGE_EXTERNAL_STORAGE, Permission.REQUEST_INSTALL_PACKAGES
+    )
+    if (permission) {
+        return
+    }
+    alertDialog {
+        title = "温馨提示"
+        message =
+            "请授予以下权限,否则无法正常使用\n存储权限:用来管理位于外部存储的配置文件\n安装未知应用权限:Android 11及以上读取其他应用版本号"
+        positiveButton("授予") {
+            XXPermissions.with(this@requestPermissionDialog).permission(
+                Permission.MANAGE_EXTERNAL_STORAGE, Permission.REQUEST_INSTALL_PACKAGES
+            ).request { _, allGranted ->
+                if (allGranted) {
+                    onGranted()
+                } else {
+                    onDenied()
+                }
+            }
+        }
+        negativeButton("拒绝并退出") {
+            onDenied()
+        }
+        build()
+        show()
+    }
+}
+
+/**
+ * 跳转到权限
+ * @suppress Generate Documentation
+ */
+fun Context.jumpToPermission() {
+    if (this.applicationInfo.targetSdkVersion > 30) {
+        XXPermissions.startPermissionActivity(this, Permission.MANAGE_EXTERNAL_STORAGE)
+    } else {
+        XXPermissions.startPermissionActivity(this, Permission.Group.STORAGE)
+    }
+}
+
+/**
  * 打开url
  * @param [url] url
  * @suppress Generate Documentation
@@ -752,6 +838,27 @@ fun com.alibaba.fastjson2.JSONObject.getJSONArrayWithFallback(key: String): com.
  * @suppress Generate Documentation
  */
 fun View.getName() = toString().substringAfter("/").replace("}", "")
+
+/**
+ * 随机位图
+ * @since 7.9.306-1030
+ * @return [Bitmap?]
+ * @suppress Generate Documentation
+ */
+fun randomBitmap(): Bitmap? {
+    val filter = FilenameFilter { _, name ->
+        name.endsWith(".jpg", true) || name.endsWith(".png", true)
+    }
+    val files = File(splashPath).apply { if (!exists()) mkdirs() }
+    val list = files.listFiles(filter) ?: return null
+    val index = (list.indices).random()
+    return try {
+        BitmapFactory.decodeFile(list[index].absolutePath)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
+}
 
 /**
  * 数据处理

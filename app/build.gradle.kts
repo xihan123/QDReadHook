@@ -132,6 +132,7 @@ dependencies {
     implementation(libs.compose.navigation)
 //    implementation(libs.kotlin.reflect)
     implementation(libs.dexkit)
+    implementation(libs.xxpermissions)
 
     implementation(libs.yukihook.api)
     ksp(libs.yukihook.ksp)

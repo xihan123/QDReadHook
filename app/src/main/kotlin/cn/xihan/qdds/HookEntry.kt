@@ -20,6 +20,8 @@ import com.highcapable.yukihookapi.hook.type.java.ListClass
 import com.highcapable.yukihookapi.hook.type.java.LongType
 import com.highcapable.yukihookapi.hook.type.java.UnitType
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
+import com.hjq.permissions.Permission
+import com.hjq.permissions.XXPermissions
 import org.json.JSONObject
 import org.luckypray.dexkit.DexKitBridge
 import java.lang.reflect.Modifier
@@ -35,7 +37,9 @@ import java.lang.reflect.Modifier
 class HookEntry : IYukiHookXposedInit {
 
     init {
-        System.loadLibrary("dexkit")
+        if (optionEntity.allowDisclaimers) {
+            System.loadLibrary("dexkit")
+        }
     }
 
     override fun onInit() = YukiHookAPI.configs {
@@ -52,46 +56,47 @@ class HookEntry : IYukiHookXposedInit {
             onAppLifecycle {
                 onCreate {
                     Option.initialize(this)
-                    if (optionEntity.allowDisclaimers) {
-                        DexKitBridge.create(appInfo.sourceDir).use { bridge ->
-                            mainFunction(versionCode = versionCode, bridge = bridge)
-                        }
-                    }
-
-                    "com.qidian.QDReader.ui.activity.MoreActivity".toClass().apply {
-                        method {
-                            name = "initWidget"
-                            emptyParam()
-                            returnType = UnitType
-                        }.hook().after {
-                            // 获取 MoreActivity 实例
-                            val readMoreSetting =
-                                instance.getView<RelativeLayout>("readMoreSetting")
-                            // 获取 readMoreSetting 子控件
-                            val readMoreSettingChild =
-                                readMoreSetting?.getChildAt(0).safeCast<TextView>()
-                            readMoreSettingChild?.text = "阅读设置/模块设置(长按)"
-
-                            readMoreSetting?.setOnLongClickListener {
-                                instance<Activity>().apply {
-                                    startActivity(Intent(this, MainActivity::class.java))
-                                }
-                                true
-                            }
-                        }
-
-                        method {
-                            name = "onCreate"
-                            param(BundleClass)
-                            returnType = UnitType
-                        }.hook().after {
-                            instance<Activity>().registerModuleAppActivities()
-                        }
-
-                    }
                 }
             }
 
+            if (optionEntity.allowDisclaimers) {
+                DexKitBridge.create(appInfo.sourceDir).use { bridge ->
+                    mainFunction(versionCode = versionCode, bridge = bridge)
+                }
+            }
+
+            if (optionEntity.mainOption.enableStartCheckingPermissions) {
+                startCheckingPermissions(versionCode)
+            }
+
+            "com.qidian.QDReader.ui.activity.MoreActivity".toClass().apply {
+                method {
+                    name = "initWidget"
+                    emptyParam()
+                    returnType = UnitType
+                }.hook().after {
+                    // 获取 MoreActivity 实例
+                    val readMoreSetting = instance.getView<RelativeLayout>("readMoreSetting")
+                    // 获取 readMoreSetting 子控件
+                    val readMoreSettingChild = readMoreSetting?.getChildAt(0).safeCast<TextView>()
+                    readMoreSettingChild?.text = "阅读设置/模块设置(长按)"
+                    readMoreSetting?.setOnLongClickListener {
+                        instance<Activity>().apply {
+                            startActivity(Intent(this, MainActivity::class.java))
+                        }
+                        true
+                    }
+                }
+
+                method {
+                    name = "onCreate"
+                    param(BundleClass)
+                    returnType = UnitType
+                }.hook().after {
+                    instance<Activity>().registerModuleAppActivities()
+                }
+
+            }
 
         }
     }
@@ -128,6 +133,14 @@ class HookEntry : IYukiHookXposedInit {
                 speedFactor = optionEntity.readPageOption.speedFactor,
                 bridge = bridge
             )
+        }
+
+        if (optionEntity.readPageOption.enableRedirectReadingPageBackgroundPath) {
+            redirectReadingPageBackgroundPath(versionCode, bridge)
+        }
+
+        if (optionEntity.startImageOption.enableRedirectLocalStartImage) {
+            customLocalStartImage(versionCode)
         }
 
         advOption(versionCode, optionEntity.advOption, bridge)
@@ -278,6 +291,63 @@ class HookEntry : IYukiHookXposedInit {
     }
 
 }
+
+/**
+ * 开始检查权限
+ * @since 7.9.306-1030
+ * @param [versionCode] 版本代码
+ * @suppress Generate Documentation
+ */
+fun PackageParam.startCheckingPermissions(versionCode: Int) {
+    when (versionCode) {
+        in 1030..1199 -> {
+            "com.qidian.QDReader.ui.activity.SplashActivity".toClass().apply {
+                val hook = method {
+                    name = "go2Where"
+                    emptyParam()
+                    returnType = UnitType
+                }.hook {
+                    replaceUnit {
+                        instance<Activity>().requestPermissionDialog()
+                    }
+                }
+
+                val hook2 = method {
+                    name = "go2Main"
+                    paramCount(1)
+                    returnType = UnitType
+                }.hook {
+                    replaceUnit {
+                        instance<Activity>().requestPermissionDialog()
+                    }
+                }
+
+                method {
+                    name = "onCreate"
+                    param(BundleClass)
+                    returnType = UnitType
+                }.hook().after {
+                    instance<Activity>().apply {
+                        // 判断权限
+                        val permission = XXPermissions.isGranted(
+                            this, arrayOf(
+                                Permission.MANAGE_EXTERNAL_STORAGE,
+                                Permission.REQUEST_INSTALL_PACKAGES
+                            )
+                        )
+                        if (permission) {
+                            hook.remove()
+                            hook2.remove()
+                        }
+                    }
+                }
+            }
+        }
+
+        else -> "startCheckingPermissions".printlnNotSupportVersion(versionCode)
+    }
+}
+
 
 /**
  * 解锁会员卡专属背景

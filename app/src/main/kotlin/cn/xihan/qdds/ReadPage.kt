@@ -4,15 +4,54 @@ import android.content.Context
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
+import cn.xihan.qdds.Option.audioPath
+import cn.xihan.qdds.Option.redirectThemePath
 import com.alibaba.fastjson2.parseObject
 import com.alibaba.fastjson2.toJSONString
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.java.ListClass
+import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
 import org.luckypray.dexkit.DexKitBridge
 import java.io.File
 import java.lang.reflect.Modifier
+
+/**
+ * 重定向阅读页背景路径
+ * 重定向至: /storage/emulated/0/Download/QDReader/ReaderTheme
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
+ */
+fun PackageParam.redirectReadingPageBackgroundPath(versionCode: Int, bridge: DexKitBridge) {
+    when (versionCode) {
+        in 1030..1199 -> {
+            bridge.findClass {
+                excludePackages = listOf("com")
+                matcher {
+                    usingStrings =
+                        listOf("QDReaderAndroidUpdateNew.xml", "QDReader.apk", "ReaderTheme")
+                }
+            }.firstNotNullOfOrNull { classData ->
+                classData.findMethod {
+                    matcher {
+                        returnType = "java.lang.String"
+                        paramTypes = listOf("long")
+                        usingStrings = listOf("ReaderTheme")
+                    }
+                }.firstNotNullOfOrNull { methodData ->
+                    methodData.className.toClass().method {
+                        name = methodData.methodName
+                        paramCount(methodData.paramTypeNames.size)
+                        returnType = StringClass
+                    }.hook().replaceTo(redirectThemePath)
+                }
+            }
+        }
+
+        else -> "重定向阅读页背景路径".printlnNotSupportVersion(versionCode)
+    }
+}
 
 /**
  * 阅读页面章节相关
@@ -191,8 +230,24 @@ private fun Context.audioExportDialog(networkUrl: String, filePath: String) {
     alertDialog {
         title = "导出文件\n输入要保存的文件名"
         customView = linearLayout
-        positiveButton("浏览器打开") {
-            openUrl(networkUrl)
+        positiveButton("本地导出") {
+            val fileName = "${editText.editText.text}.m4a"
+            if (fileName.isBlank()) {
+                toast("文件名不能为空")
+                return@positiveButton
+            }
+            val saveFile = File(
+                audioPath, fileName
+            ).apply {
+                parentFile?.mkdirs()
+            }
+            if (saveFile.exists()) {
+                toast("文件已存在")
+                return@positiveButton
+            }
+            file.copyTo(saveFile)
+            toast("导出成功")
+            it.dismiss()
         }
         negativeButton("复制网络地址") {
             copyToClipboard(networkUrl)

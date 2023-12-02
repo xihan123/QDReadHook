@@ -1,8 +1,10 @@
 package cn.xihan.qdds
 
+import android.app.Activity
 import android.content.Context
 import android.os.Environment
 import androidx.annotation.Keep
+import androidx.core.content.ContextCompat.getExternalFilesDirs
 import cn.xihan.qdds.Option.optionPath
 import com.alibaba.fastjson2.parseObject
 import com.alibaba.fastjson2.toJSONString
@@ -25,13 +27,11 @@ val defaultEmptyList by lazy { mutableListOf<SelectedModel>() }
 
 /**
  * 读取选项
- * @param [errorAction] 错误操作
  * @return [File?]
  * @suppress Generate Documentation
  */
-private fun provideOptionFile(context: Context): File {
-    val filesDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-    return File(filesDir, optionPath).apply {
+private fun provideOptionFile(): File {
+    return File(optionPath).apply {
         parentFile?.mkdirs()
         if (!exists()) {
             createNewFile()
@@ -40,7 +40,14 @@ private fun provideOptionFile(context: Context): File {
     }
 }
 
-private fun provideOptionEntity(file: File): OptionEntity = try {
+/**
+ * 提供期权实体
+ * @since 7.9.306-1030
+ * @param [file] 文件
+ * @return [OptionEntity]
+ * @suppress Generate Documentation
+ */
+fun provideOptionEntity(file: File): OptionEntity = try {
     file.readText().parseObject<OptionEntity>().apply {
         val newAdvOptionConfigurations = defaultOptionEntity.advOption
         val newInterceptConfigurations = defaultOptionEntity.interceptOption
@@ -77,22 +84,51 @@ private fun provideOptionEntity(file: File): OptionEntity = try {
     defaultOptionEntity
 }
 
-//@SuppressLint("StaticFieldLeak")
 object Option {
 
     lateinit var context: WeakReference<Context>
-    lateinit var optionFile: File
-    lateinit var optionEntity: OptionEntity
+
+    val optionFile by lazy {
+        provideOptionFile()
+    }
+
+    val optionEntity by lazy {
+        provideOptionEntity(optionFile)
+    }
+
+    /**
+     * 基本路径
+     * @suppress Generate Documentation
+     */
+    val basePath =
+        "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/QDReader"
+
+    /**
+     * 重定向主题路径
+     * @suppress Generate Documentation
+     */
+    val redirectThemePath = "${basePath}/ReaderTheme/"
 
     /**
      * 选项路径
      * @suppress Generate Documentation
      */
-    const val optionPath = "option.json"
+    val optionPath = "${basePath}/option.json"
+
+    /**
+     * 闪屏图片路径
+     * @suppress Generate Documentation
+     */
+    val splashPath = "${basePath}/Splash/"
+
+    /**
+     * 音频路径
+     * @suppress Generate Documentation
+     */
+    val audioPath = "${basePath}/Audio/"
+
     fun initialize(context: Context) {
         this.context = WeakReference(context)
-        optionFile = provideOptionFile(context)
-        optionEntity = provideOptionEntity(optionFile)
     }
 
     /**
@@ -341,10 +377,10 @@ object Option {
      */
     fun deleteAll() =
         context.get()?.apply {
-            filesDir.listFiles()?.removeAll()
+            filesDir.parentFile?.listFiles()
+                ?.filterNot { it.isDirectory && it.name == "databases" }?.removeAll()
             getExternalFilesDirs(null).firstNotNullOfOrNull {
-                it.listFiles()?.filterNot { file -> file.isDirectory && file.name == "Download" }
-                    ?.removeAll()
+                it.listFiles()?.removeAll()
             }
         }
 
@@ -354,7 +390,7 @@ object Option {
         }
     }
 
-    private fun List<File>.removeAll() = runAndCatch {
+    fun List<File>.removeAll() = runAndCatch {
         forEach {
             it.deleteRecursively()
         }
@@ -506,7 +542,8 @@ data class OptionEntity(
         var enableUnlockMemberBackground: Boolean = false,
         var enableHideAppIcon: Boolean = false,
         var enableExportEmoji: Boolean = false,
-        var enableOldDailyRead: Boolean = false
+        var enableOldDailyRead: Boolean = false,
+        var enableStartCheckingPermissions: Boolean = true
     )
 
     /**
@@ -545,6 +582,7 @@ data class OptionEntity(
     /**
      * 启动图配置
      * @param enableCustomStartImage 启用自定义启动图
+     * @param enableRedirectLocalStartImage 启用重定向本地启动图
      * @param customStartImageUrlList 自定义启动图url列表
      * @param enableCaptureTheOfficialLaunchMapList 启用抓取官方启动图列表
      * @param officialLaunchMapList 官方启动图列表
@@ -552,6 +590,7 @@ data class OptionEntity(
     @Keep
     data class StartImageOption(
         var enableCustomStartImage: Boolean = false,
+        var enableRedirectLocalStartImage: Boolean = false,
         var enableCaptureTheOfficialLaunchMapList: Boolean = false,
         var customStartImageUrlList: Set<String> = emptySet(),
         var officialLaunchMapList: List<StartImageModel> = emptyList(),
@@ -574,6 +613,7 @@ data class OptionEntity(
 
     /**
      * 阅读页配置
+     * @param enableRedirectReadingPageBackgroundPath 启用自定义阅读页主题路径
      * @param enableCustomBookLastPage 启用自定义书籍最后一页
      * @param enableShowReaderPageChapterSaveRawPicture 启用显示阅读页章节保存原图
      * @param enableShowReaderPageChapterSavePictureDialog 启用显示阅读页章节保存图片对话框
@@ -584,6 +624,7 @@ data class OptionEntity(
      */
     @Keep
     data class ReadPageOption(
+        var enableRedirectReadingPageBackgroundPath: Boolean = false,
         var enableCustomBookLastPage: Boolean = false,
         var enableShowReaderPageChapterSaveRawPicture: Boolean = false,
         var enableShowReaderPageChapterSavePictureDialog: Boolean = false,

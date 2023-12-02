@@ -852,7 +852,6 @@ fun PackageParam.hideReadPage(versionCode: Int, bridge: DexKitBridge) {
                             while (iterator.hasNext()) {
                                 val view = iterator.next()
                                 val name = view.getName()
-                                "name: $name".loge()
                                 Option.optionEntity.viewHideOption.readPageOptions.configurations.findOrPlus(
                                     name
                                 ) {

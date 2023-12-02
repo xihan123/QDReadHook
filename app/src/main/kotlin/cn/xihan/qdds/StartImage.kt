@@ -1,14 +1,17 @@
 package cn.xihan.qdds
 
 import cn.xihan.qdds.Option.optionEntity
+import cn.xihan.qdds.Option.splashPath
 import cn.xihan.qdds.Option.updateOptionEntity
 import com.highcapable.yukihookapi.hook.factory.constructor
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.highcapable.yukihookapi.hook.type.android.BitmapClass
 import com.highcapable.yukihookapi.hook.type.java.IntType
 import com.highcapable.yukihookapi.hook.type.java.LongType
 import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
+
 
 /**
  * 自定义启动图
@@ -132,4 +135,39 @@ fun PackageParam.captureTheOfficialLaunchMapList(versionCode: Int) {
         else -> "抓取官方启动图列表".printlnNotSupportVersion(versionCode)
     }
 
+}
+
+/**
+ * 自定义本地启动图
+ * @since 7.9.306-1030 ~ 1099
+ * @param [versionCode] 版本代码
+ */
+fun PackageParam.customLocalStartImage(versionCode: Int) {
+    when (versionCode) {
+        in 1030..1199 -> {
+            val list = listOf(
+                "com.qidian.QDReader.ui.activity.SplashActivity\$a",
+                "com.qidian.QDReader.ui.activity.SplashActivity\$judian",
+                "com.qidian.QDReader.ui.activity.SplashActivity\$cihai"
+            )
+            list.forEach {
+                it.toClass().method {
+                    name = "onSuccess"
+                    param(BitmapClass)
+                    returnType = UnitType
+                }.hook().before {
+                    randomBitmap()?.let { bitmap ->
+                        args(0).set(bitmap)
+                    }
+                }
+            }
+
+            "com.qidian.QDReader.util.SplashDownloadUtil".toClass().method {
+                name = "cihai"
+                emptyParam()
+                returnType = StringClass
+            }.hook().replaceTo(splashPath)
+
+        }
+    }
 }
