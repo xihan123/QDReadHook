@@ -1,4 +1,11 @@
 # Changelog
+## [3.0.6](https://github.com/xihan123/QDReadHook/compare/v3.0.6...v3.0.6) (2023-12-04)
+
+
+### Bug Fixes
+
+* build.yml error ([d14984e](https://github.com/xihan123/QDReadHook/commit/d14984ef5cda2c6cd9ca7f44c696ca55f1ecd218))
+
 ## [3.0.6](https://github.com/xihan123/QDReadHook/compare/v3.0.5...v3.0.6) (2023-12-04)
 
 
