@@ -18,8 +18,8 @@ import java.io.File
 import java.lang.reflect.Modifier
 
 /**
- * 重定向阅读页背景路径
- * 重定向至: /storage/emulated/0/Download/QDReader/ReaderTheme
+ * # 重定向阅读页背景路径
+ * * 重定向至: /storage/emulated/0/Download/QDReader/ReaderTheme
  * @since 7.9.318-1106 ~ 1099
  * @param [versionCode] 版本代码
  */
@@ -55,6 +55,16 @@ fun PackageParam.redirectReadingPageBackgroundPath(versionCode: Int, bridge: Dex
 
 /**
  * 阅读页面章节相关
+ * # 阅读页章评图片长按保存原图
+ * * 进入图片详情后长按图片会弹出保存原图
+ * # 阅读页章评评论长按复制
+ * * 会覆盖官方默认弹框
+ * # 阅读页章评图片保存原图对话框
+ * * 长按图片可显示图片直链
+ * # 阅读页章评音频导出对话框
+ * * 在配音条播放成功后长按即会弹出导出对话框
+ * * 编辑框的内容是文件名
+ * * 导出至 /Sdcard/storage/emulated/0/Download/QDReader/Audio
  * @since 7.9.318-1106 ~ 1199
  * @param [versionCode] 版本代码
  * @param [enableShowReaderPageChapterSaveRawPictures] 启用显示阅读器页面章节保存原始图片
@@ -261,7 +271,7 @@ private fun Context.audioExportDialog(networkUrl: String, filePath: String) {
 
 /**
  * 阅读时间加倍
- * 随缘生效
+ * * 随缘生效,默认为5倍,建议倍速不要太大，开大了到时候号没了后果自负
  * @since 7.9.318-1106 ~ 1199
  * @param [versionCode] 版本代码
  * @param [speedFactor] 速度系数

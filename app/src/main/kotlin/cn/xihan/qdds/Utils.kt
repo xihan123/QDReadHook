@@ -863,9 +863,10 @@ fun randomBitmap(): Bitmap? {
 }
 
 /**
- * 移动到私有存储
- * 将位于 "/sdcard/Download/QDReader/Font" 的字体文件替换到 "/data/user/0/com.qidian.QDReader/files/fulltype_fonts/"和"/data/user/0/com.qidian.QDReader/files/truetype_fonts/"
- * 启用后阅读页设置字体选择 汉仪楷体
+ * # 移动到私有存储
+ * * 将位于 "/sdcard/Download/QDReader/Font" 的字体文件替换到 "/data/user/0/com.qidian.QDReader/files/fulltype_fonts/"和"/data/user/0/com.qidian.QDReader/files/truetype_fonts/"
+ * * 启用后阅读页设置字体选择 汉仪楷体
+ * * ps: 无需改名并且仅一个生效
  * @since 7.9.318-1106
  * @param [context] 上下文
  */

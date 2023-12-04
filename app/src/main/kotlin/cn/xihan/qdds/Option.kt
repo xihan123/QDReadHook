@@ -119,6 +119,12 @@ object Option {
     val splashPath = "${basePath}/Splash/"
 
     /**
+     * 图片路径
+     * @suppress Generate Documentation
+     */
+    val picturesPath = "${basePath}/Pictures"
+
+    /**
      * 音频路径
      * @suppress Generate Documentation
      */

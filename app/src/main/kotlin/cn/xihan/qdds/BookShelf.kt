@@ -5,6 +5,12 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
 
 /**
  * 自定义书架顶部图片
+ * # 官方默认图片地址
+ *
+ * [地址1](https://qidian.qpic.cn/qidian_common/349573/35838f8b9f9182b379490a3e0e5f70b9/0)
+ *
+ * [地址2](https://imgservices-1252317822.image.myqcloud.com/image/20210507/q2bvc3z5vd.jpg)
+ * ## 建议分辨率为 1125*504
  * @since 7.9.318-1106 ~ 1199
  * @param [versionCode] 版本代码
  */

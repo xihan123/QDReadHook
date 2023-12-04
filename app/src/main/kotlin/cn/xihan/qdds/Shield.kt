@@ -699,7 +699,10 @@ fun PackageParam.quickShield(versionCode: Int) {
 }
 
 /**
- * 显示快速屏蔽对话框
+ * # 显示快速屏蔽对话框
+ * * 书籍详情页长按作者名或者书名即可弹出屏蔽框
+ *
+ *          ps: 书名和作者名挨在一起的位置
  * @since 7.9.318-1106
  * @param [name] 名称
  * @param [author] 著者

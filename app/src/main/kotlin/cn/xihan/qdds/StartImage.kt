@@ -14,7 +14,13 @@ import com.highcapable.yukihookapi.hook.type.java.UnitType
 
 
 /**
- * 自定义启动图
+ * # 自定义启动图
+ * * 填入网络图片直链
+ *
+ *      ps:可填写自定义的图片直链地址
+ *
+ *      ps2:使用英文的分号(引号内的符号)";"分隔
+ *
  * @since 7.9.318-1106 ~ 1199
  * @param versionCode 版本号
  */
@@ -81,12 +87,15 @@ fun PackageParam.customStartImage(versionCode: Int) {
 
         else -> "自定义启动图".printlnNotSupportVersion(versionCode)
     }
-
 }
 
 /**
- * 获取官方启动图列表
- * 开启后去启动图页面滑倒底部，后续关闭该功能
+ * # 抓取官方启动图
+ * * 启用后到 我的装扮->启动屏幕 滑动到最底部 然后回到管理页面查看
+ *
+ *      ps:如果没有记得检查存储权限并重启起点/模块后再看
+ *
+ *      ps2:如需查看所有官方图片地址可在配置文件中找到
  * @since 7.9.318-1106 ~ 1199
  * @param [versionCode] 版本代码
  */
@@ -138,7 +147,8 @@ fun PackageParam.captureTheOfficialLaunchMapList(versionCode: Int) {
 }
 
 /**
- * 自定义本地启动图
+ * # 自定义本地启动图
+ * * 启用后放置于/storage/emulated/0/Download/QDReader/Splash
  * @since 7.9.318-1106 ~ 1099
  * @param [versionCode] 版本代码
  */

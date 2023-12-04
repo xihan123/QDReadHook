@@ -17,7 +17,7 @@
 
 * 设置页面在:起点->我的->左上角设置->阅读设置/模块设置(长按)(1.1.2+)
 
-* 目前支持起点版本 ~~758~768、772、776、780、784、788、792、796、800、804、808、812、827、834、842、843、850、854、858、860、868、872、878、884、890、896、900、906、916、924、932、938、944、950、958、970、980、994、1005、1020~~ 1030 ~ 1199版本
+* 目前支持起点版本 ~~758~768、772、776、780、784、788、792、796、800、804、808、812、827、834、842、843、850、854、858、860、868、872、878、884、890、896、900、906、916、924、932、938、944、950、958、970、980、994、1005、1020、1030 ~ 1105~~ 1106 ~ 1199版本
 
 * 暂时提高版本号范围以支持一些不容易改变的类
 
@@ -39,9 +39,11 @@
 
 * QD模块交流群: [727983520](https://qm.qq.com/cgi-bin/qm/qr?k=JT0K0sZEJHm4CnsRjRTKxY3uL-xoO6CG&jump_from=webapi&authKey=yGg3h07NWBGGF4TmxtRNykIQ4HLM4t/uxrAtqHx15zgRmIR4sC14HxKYOq376ekt) <a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=JT0K0sZEJHm4CnsRjRTKxY3uL-xoO6CG&jump_from=webapi&authKey=yGg3h07NWBGGF4TmxtRNykIQ4HLM4t/uxrAtqHx15zgRmIR4sC14HxKYOq376ekt"><img border="0" src="https://pub.idqqimg.com/wpa/images/group.png" alt="QD模块交流群" title="QD模块交流群"></a>
 
+### [大部分功能和介绍列表](https://xihan123.github.io/QDReadHook/app/cn.xihan.qdds/index.html)
+
 ## 常见问题
 
-* 如提示 "**Manifest文件中Activity/Service/Permission的声明有问题或者Permission权限未授予**"、"初始化错误"、"初始化失败"
+* 如提示 "**Manifest文件中Activity/Service/Permission的声明有问题或者Permission权限未授予**"、"**初始化错误**"、"**初始化失败**"
 把 "**广告配置**" 中 "**GDT(TX)广告**" 去掉勾选
 
 * 如提示 "**激励广告拉取失败,详细错误码:50000**" 则检查设备网络，**DNS**或者**Hosts** 是否拦截了"**e.qq.com**"、"**gdt.qq.com**"、"**gtimg.cn**"、"**gdtimg.com**"域名
@@ -121,6 +123,9 @@
       3.0.0之后的版本
       1.清除起点数据
       2.首次启动启动拒绝隐私策略并在弹框授予存储权限和安装未知应用权限
+
+      3.0.5之后的版本 无法授予存储权限
+      1.检查起点版本是否高于7.9.318-1106
 
       MIUI 可以尝试关闭MIUI优化，有接到反馈关闭该功能就正常了
       

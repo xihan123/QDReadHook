@@ -3,11 +3,11 @@ package cn.xihan.qdds
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.os.Environment
 import android.view.View
 import android.widget.RelativeLayout
 import android.widget.TextView
 import cn.xihan.qdds.Option.optionEntity
+import cn.xihan.qdds.Option.picturesPath
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.factory.method
@@ -567,7 +567,7 @@ private fun Context.exportEmojiDialog(
                 }.get(yWImageLoader).call(
                     context,
                     imageUrl,
-                    "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/QDReader/Pictures",
+                    picturesPath,
                     "",
                     true,
                     null
