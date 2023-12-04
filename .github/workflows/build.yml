@@ -80,15 +80,25 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           excludes: prerelease, draft
 
+      - name: Get latest release
+        id: get_latest_release
+        run: |
+          curl --silent "https://api.github.com/repos/${{github.repository}}/releases/latest" > latest_release.json
+          echo "::set-output name=description::$(jq -r '.body' latest_release.json)"
+          echo "::set-output name=html_url::$(jq -r '.html_url' latest_release.json)"
+
       - name: Telegram Notify
         env:
           CHANNEL_ID: ${{ secrets.CHANGELOG_CHANNEL_ID }}
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           description: ${{ steps.get_latest_release.outputs.description }}
+          html_url: ${{ steps.get_latest_release.outputs.html_url }}
         run: |
           if [ ! -z "${{ secrets.BOT_TOKEN }}" ]; then
             OUTPUT="app/build/outputs/ci/"
             export apkRelease=$(find $OUTPUT -name "*universal.apk")
-            ESCAPED=`python3 -c '''import requests,os;body = os.environ["description"]; r = requests.get("https://api.github.com/repos/${{github.repository}}/releases/latest"); tag_name = r.json()["tag_name"]; html_url = r.json()["html_url"]; change_log = "# 完整更新日志 " + "[" + tag_name + "](" + html_url + ")"; print(body + "\n\n" + change_log if len(body) <= 1024 else change_log)'''`
-            curl -v "https://api.telegram.org/bot${BOT_TOKEN}/sendDocument?chat_id=${CHANNEL_ID}" -F document="@$apkRelease" -F caption="${ESCAPED}"
+            if [ ${#description} -gt 1024 ]; then
+              description="# 完整更新日志: $html_url"
+            fi
+            curl -v "https://api.telegram.org/bot${BOT_TOKEN}/sendDocument?chat_id=${CHANNEL_ID}" -F document="@$apkRelease" -F caption="${description}"
           fi
