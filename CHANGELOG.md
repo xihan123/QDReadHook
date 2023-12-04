@@ -1,4 +1,26 @@
 # Changelog
+## [3.0.6](https://github.com/xihan123/QDReadHook/compare/v3.0.5...v3.0.6) (2023-12-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* 提高最低支持版本为 `7.9.318-1106`,低于此版本的勿更新！！！
+
+### Features
+
+* 提高最低支持版本为 `7.9.318-1106`,低于此版本的勿更新！！！ ([baaa8c3](https://github.com/xihan123/QDReadHook/commit/baaa8c3ce9897752309e16dac40928900b7b1e2f))
+* **阅读页设置:** 新增 `阅读页字体自动替换` ([3083163](https://github.com/xihan123/QDReadHook/commit/3083163e23866364c61f360e216d7af7e2c5e903))
+
+
+### Bug Fixes
+
+* `自动领取章末红包` 弹2次 ([47c8080](https://github.com/xihan123/QDReadHook/commit/47c808027ebdbde28014ba7c38ec6f7a60914ab3))
+
+
+### Miscellaneous
+
+* 更新依赖 ([aa338a5](https://github.com/xihan123/QDReadHook/commit/aa338a50aa4b9f3899f19684fb9b0b057048f734))
+
 ## [3.0.4](https://github.com/xihan123/QDReadHook/compare/v3.0.3...v3.0.4) (2023-12-01)
 
 
