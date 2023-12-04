@@ -24,9 +24,10 @@ import java.lang.reflect.Modifier
 
 /**
  * 主页配置列表
- * @since 7.9.306-1030
+ * @since 7.9.318-1106 ~ 1199
  * @param [versionCode] 版本代码
  * @param [configurations] 配置
+ * @suppress Generate Documentation
  */
 fun PackageParam.homeOption(
     versionCode: Int, configurations: List<SelectedModel>, bridge: DexKitBridge
@@ -44,15 +45,16 @@ fun PackageParam.homeOption(
 
 /**
  * 搜索选项
- * @since 7.9.306-1030
+ * @since 7.9.318-1106 ~ 1199
  * @param [versionCode] 版本代码
  * @param [configurations] 配置
+ * @suppress Generate Documentation
  */
 fun PackageParam.searchOption(
     versionCode: Int, configurations: List<SelectedModel>, bridge: DexKitBridge
 ) {
     when (versionCode) {
-        in 1030..1199 -> {
+        in 1106..1199 -> {
             val map = mapOf(
                 "搜索历史" to 1, "搜索发现" to 2, "搜索排行榜" to 3, "为你推荐" to 4
             ).filterKeys { key -> configurations.any { it.selected && it.title == key } }
@@ -97,12 +99,12 @@ fun PackageParam.searchOption(
 
 /**
  * 精选-隐藏配置
- * @since 7.9.306-1030 ~ 1199
+ * @since 7.9.318-1106 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.selectedOption(versionCode: Int) {
     when (versionCode) {
-        in 1030..1199 -> {
+        in 1106..1199 -> {
 
             "com.qidian.QDReader.ui.modules.bookstore.BookStoreRebornFragment".toClass().method {
                 name = "updateUI"
@@ -237,12 +239,12 @@ fun PackageParam.selectedOption(versionCode: Int) {
 
 /**
  * 精选-标题隐藏配置
- * @since 7.9.306-1030 ~ 1199
+ * @since 7.9.318-1106 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.selectedTitleOption(versionCode: Int) {
     when (versionCode) {
-        in 1030..1199 -> {
+        in 1106..1199 -> {
             "com.qidian.QDReader.ui.fragment.QDStorePagerFragment".toClass().method {
                 name = "onViewInject"
                 param(ViewClass)
@@ -314,12 +316,12 @@ fun PackageParam.selectedTitleOption(versionCode: Int) {
 
 /**
  * 隐藏主页面-顶部宝箱提示
- * @since 7.9.306-1030 ~ 1199
+ * @since 7.9.318-1106 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.hideMainTopBox(versionCode: Int) {
     when (versionCode) {
-        in 1030..1199 -> {
+        in 1106..1199 -> {
             intercept(
                 className = "com.qidian.QDReader.ui.activity.MainGroupActivity",
                 methodName = "getGlobalMsg"
@@ -332,7 +334,7 @@ fun PackageParam.hideMainTopBox(versionCode: Int) {
 
 /**
  * 隐藏主页面-顶部战力提示
- * @since 7.9.306-1030 ~ 1199
+ * @since 7.9.318-1106 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.hideMainTopPower(versionCode: Int) {
@@ -350,12 +352,12 @@ fun PackageParam.hideMainTopPower(versionCode: Int) {
 
 /**
  * 隐藏书架-每日导读
- * @since 7.9.306-1030 ~ 1199
+ * @since 7.9.318-1106 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.hideBookshelfDailyReading(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
-        in 1030..1199 -> {
+        in 1106..1199 -> {
 
             bridge.apply {
                 findClass {
@@ -418,12 +420,12 @@ fun PackageParam.hideBookshelfDailyReading(versionCode: Int, bridge: DexKitBridg
 
 /**
  * 隐藏书架-去找书
- * @since 7.9.306-1030
+ * @since 7.9.318-1106
  * @param [versionCode] 版本代码
  */
 fun PackageParam.hideBookshelfFindBook(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
-        in 1030..1199 -> {
+        in 1106..1199 -> {
 
             bridge.findClass {
                 searchPackages = listOf("com.qidian.QDReader.ui.viewholder.bookshelf")
@@ -457,13 +459,13 @@ fun PackageParam.hideBookshelfFindBook(versionCode: Int, bridge: DexKitBridge) {
 
 /**
  * 隐藏书架顶部标题
- * @since 7.9.306-1030
+ * @since 7.9.318-1106
  * @param [versionCode] 版本代码
  * @suppress Generate Documentation
  */
 fun PackageParam.hideBookshelfTopTitle(versionCode: Int) {
     when (versionCode) {
-        in 1030..1199 -> {
+        in 1106..1199 -> {
             "com.qidian.QDReader.ui.modules.bookshelf.adapter.BaseBooksAdapter".toClass().method {
                 name = "getHeaderItemCount"
                 emptyParam()
@@ -475,8 +477,9 @@ fun PackageParam.hideBookshelfTopTitle(versionCode: Int) {
 
 /**
  * 隐藏底部导航栏红点
- * @since 7.9.306-1030 ~ 1199
+ * @since 7.9.318-1106 ~ 1199
  * @param [versionCode] 版本代码
+ * @suppress Generate Documentation
  */
 fun PackageParam.hideBottom(
     versionCode: Int,
@@ -485,7 +488,7 @@ fun PackageParam.hideBottom(
     bridge: DexKitBridge
 ) {
     when (versionCode) {
-        in 1030..1199 -> {
+        in 1106..1199 -> {
 
             bridge.findClass {
                 searchPackages = listOf("com.qidian.QDReader.ui.widget.maintab")
@@ -549,14 +552,14 @@ fun PackageParam.hideBottom(
 
 /**
  * 我-隐藏控件
- * @since 7.9.306-1030 ~ 1199
+ * @since 7.9.318-1106 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.accountViewHide(
     versionCode: Int,
 ) {
     when (versionCode) {
-        in 1030..1199 -> {
+        in 1106..1199 -> {
 
             "com.qidian.QDReader.ui.fragment.main_group.QDUserAccountRebornFragment".toClass()
                 .method {
@@ -624,12 +627,12 @@ fun PackageParam.accountViewHide(
 
 /**
  * 隐藏我-右上角消息红点
- * @since 7.9.306-1030 ~ 1199
+ * @since 7.9.318-1106 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.accountRightTopRedDot(versionCode: Int) {
     when (versionCode) {
-        in 1030..1199 -> {
+        in 1106..1199 -> {
             returnFalse(
                 className = "com.qidian.QDReader.component.config.QDAppConfigHelper\$Companion",
                 methodName = "isEnableUniteMessage"
@@ -667,7 +670,7 @@ fun PackageParam.accountRightTopRedDot(versionCode: Int) {
 
 /**
  * 书籍详情-隐藏控件
- * @since 7.9.306-1030 ~ 1199
+ * @since 7.9.318-1106 ~ 1199
  * @param versionCode 版本号
  * @param isNeedHideCqzs 是否需要隐藏出圈指数
  * @param isNeedHideRybq 是否需要隐藏荣誉标签
@@ -694,7 +697,7 @@ fun PackageParam.bookDetailHide(
     isNeedHideBookRecommend2: Boolean = false,
 ) {
     when (versionCode) {
-        in 1030..1199 -> {
+        in 1106..1199 -> {
             "com.qidian.QDReader.ui.activity.QDBookDetailActivity".toClass().apply {
                 method {
                     name = "notifyData"
@@ -823,12 +826,12 @@ fun PackageParam.bookDetailHide(
 
 /**
  * 阅读页面-隐藏控件
- * @since 7.9.306-1030 ~ 1199
+ * @since 7.9.318-1106 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.hideReadPage(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
-        in 1030..1199 -> {
+        in 1106..1199 -> {
             bridge.findClass {
                 searchPackages = listOf("com.qidian.QDReader.readerengine.view.menu")
                 matcher {
@@ -870,7 +873,7 @@ fun PackageParam.hideReadPage(versionCode: Int, bridge: DexKitBridge) {
 
 /**
  * 隐藏红点
- * @since 7.9.306-1030
+ * @since 7.9.318-1106
  * @param [versionCode] 版本代码
  */
 fun PackageParam.hideRedDot(versionCode: Int) {

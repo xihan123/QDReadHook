@@ -42,7 +42,7 @@ private fun provideOptionFile(): File {
 
 /**
  * 提供期权实体
- * @since 7.9.306-1030
+ * @since 7.9.318-1106
  * @param [file] 文件
  * @return [OptionEntity]
  * @suppress Generate Documentation

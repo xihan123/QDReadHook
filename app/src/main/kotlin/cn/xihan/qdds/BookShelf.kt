@@ -5,12 +5,12 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
 
 /**
  * 自定义书架顶部图片
- * @since 7.9.306-1030 ~ 1199
+ * @since 7.9.318-1106 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.customBookShelfTopImage(versionCode: Int) {
     when (versionCode) {
-        in 1030..1199 -> {
+        in 1106..1199 -> {
             "com.qidian.QDReader.repository.entity.config.BookshelfConfig".toClass().apply {
 
                 method {

@@ -20,12 +20,12 @@ import java.lang.reflect.Modifier
 /**
  * 重定向阅读页背景路径
  * 重定向至: /storage/emulated/0/Download/QDReader/ReaderTheme
- * @since 7.9.306-1030 ~ 1099
+ * @since 7.9.318-1106 ~ 1099
  * @param [versionCode] 版本代码
  */
 fun PackageParam.redirectReadingPageBackgroundPath(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
-        in 1030..1199 -> {
+        in 1106..1199 -> {
             bridge.findClass {
                 excludePackages = listOf("com")
                 matcher {
@@ -55,12 +55,13 @@ fun PackageParam.redirectReadingPageBackgroundPath(versionCode: Int, bridge: Dex
 
 /**
  * 阅读页面章节相关
- * @since 7.9.306-1030 ~ 1199
+ * @since 7.9.318-1106 ~ 1199
  * @param [versionCode] 版本代码
  * @param [enableShowReaderPageChapterSaveRawPictures] 启用显示阅读器页面章节保存原始图片
  * @param [enableShowReaderPageChapterSavePictureDialog] 启用显示阅读器页面章节保存图片对话框
  * @param [enableShowReaderPageChapterSaveAudioDialog] 启用“显示阅读器页面”章节“保存音频”对话框
  * @param [enableCopyReaderPageChapterComment] 启用副本阅读器页面章节注释
+ * @suppress Generate Documentation
  */
 fun PackageParam.readingPageChapterCorrelation(
     versionCode: Int,
@@ -71,7 +72,7 @@ fun PackageParam.readingPageChapterCorrelation(
     bridge: DexKitBridge
 ) {
     when (versionCode) {
-        in 1030..1199 -> {
+        in 1106..1199 -> {
             if (enableShowReaderPageChapterSaveRawPictures) {
                 "com.qd.ui.component.modules.imagepreivew.QDUIGalleryActivity".toClass().method {
                     name = "initView"
@@ -261,7 +262,7 @@ private fun Context.audioExportDialog(networkUrl: String, filePath: String) {
 /**
  * 阅读时间加倍
  * 随缘生效
- * @since 7.9.306-1030 ~ 1199
+ * @since 7.9.318-1106 ~ 1199
  * @param [versionCode] 版本代码
  * @param [speedFactor] 速度系数
  */
@@ -269,7 +270,7 @@ fun PackageParam.readingTimeSpeedFactor(
     versionCode: Int, speedFactor: Int = 5, bridge: DexKitBridge
 ) {
     when (versionCode) {
-        in 1030..1199 -> {
+        in 1106..1199 -> {
 
             bridge.findClass {
                 excludePackages = listOf("com")
@@ -317,7 +318,7 @@ fun PackageParam.readingTimeSpeedFactor(
 
 /**
  * 阅读页最后一页
- * @since 7.9.306-1030
+ * @since 7.9.318-1106
  * @param [versionCode] 版本代码
  * @param [shieldAlsoRead] 屏蔽推荐
  * @param [shieldRecommendation] 屏蔽推荐
@@ -344,7 +345,7 @@ fun PackageParam.readBookLastPage(
     hideAdView: Boolean = false
 ) {
     when (versionCode) {
-        in 1030..1199 -> {
+        in 1106..1199 -> {
             "com.qidian.QDReader.ui.view.lastpage.LastPageRoleView".toClass().method {
                 param("com.qidian.QDReader.repository.entity.BookLastPage".toClass())
                 returnType = UnitType

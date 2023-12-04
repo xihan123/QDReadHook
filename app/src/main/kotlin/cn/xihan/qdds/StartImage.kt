@@ -15,12 +15,12 @@ import com.highcapable.yukihookapi.hook.type.java.UnitType
 
 /**
  * 自定义启动图
- * @since 7.9.306-1030 ~ 1199
+ * @since 7.9.318-1106 ~ 1199
  * @param versionCode 版本号
  */
 fun PackageParam.customStartImage(versionCode: Int) {
     when (versionCode) {
-        in 1030..1199 -> {
+        in 1106..1199 -> {
             "com.qidian.QDReader.repository.entity.config.AppConfigBean".toClass().method {
                 name = "getBootWallPapers"
                 emptyParam()
@@ -87,12 +87,12 @@ fun PackageParam.customStartImage(versionCode: Int) {
 /**
  * 获取官方启动图列表
  * 开启后去启动图页面滑倒底部，后续关闭该功能
- * @since 7.9.306-1030 ~ 1199
+ * @since 7.9.318-1106 ~ 1199
  * @param [versionCode] 版本代码
  */
 fun PackageParam.captureTheOfficialLaunchMapList(versionCode: Int) {
     when (versionCode) {
-        in 1030..1199 -> {
+        in 1106..1199 -> {
             "com.qidian.QDReader.ui.activity.splash_config.QDSplashConfigFragment".toClass()
                 .method {
                     name = "loadData"
@@ -139,23 +139,22 @@ fun PackageParam.captureTheOfficialLaunchMapList(versionCode: Int) {
 
 /**
  * 自定义本地启动图
- * @since 7.9.306-1030 ~ 1099
+ * @since 7.9.318-1106 ~ 1099
  * @param [versionCode] 版本代码
  */
 fun PackageParam.customLocalStartImage(versionCode: Int) {
     when (versionCode) {
-        in 1030..1199 -> {
+        in 1106..1199 -> {
             val list = listOf(
                 "com.qidian.QDReader.ui.activity.SplashActivity\$a",
-                "com.qidian.QDReader.ui.activity.SplashActivity\$judian",
                 "com.qidian.QDReader.ui.activity.SplashActivity\$cihai"
             )
             list.forEach {
-                it.toClass().method {
+                it.toClassOrNull()?.method {
                     name = "onSuccess"
                     param(BitmapClass)
                     returnType = UnitType
-                }.hook().before {
+                }?.hook()?.before {
                     randomBitmap()?.let { bitmap ->
                         args(0).set(bitmap)
                     }
