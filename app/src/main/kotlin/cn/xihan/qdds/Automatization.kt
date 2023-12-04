@@ -210,8 +210,8 @@ fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
 }
 
 /**
- * 自动领取章末红包
- * 需在阅读页面打开章末红包，如果有红包则自动领取
+ * # 自动领取章末红包
+ * * 需在阅读页面打开章末红包，如果有红包则自动领取
  * @since 7.9.318-1106 ~ 1199
  * @param [versionCode] 版本代码
  */
@@ -225,13 +225,12 @@ fun PackageParam.receivedReadingPageEndHongBaoAutomatically(versionCode: Int) {
             }.hook().after {
                 val data = instance.getParam<Any>("mHongBaoData")?.getParam<Any>("hongBaoData")
                     ?.getParam<MutableList<*>>("data") ?: return@after
-                data.forEach { _ ->
-                    instanceClass?.method {
-                        name = "showRewardVideo"
-                        emptyParam()
-                        returnType = UnitType
-                    }?.get(instance)?.call()
-                }
+                if (data.isEmpty()) return@after
+                instanceClass?.method {
+                    name = "showRewardVideo"
+                    emptyParam()
+                    returnType = UnitType
+                }?.get(instance)?.call()
             }
         }
 
