@@ -72,14 +72,6 @@ jobs:
           allow_override: true
           gzip: false
 
-      - name: Get Latest Release
-        id: get_latest_release
-        uses: pozetroninc/github-action-get-latest-release@v0.7.0
-        with:
-          repository: ${{ github.repository }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          excludes: prerelease, draft
-
       - name: Get latest release
         id: get_latest_release
         run: |
