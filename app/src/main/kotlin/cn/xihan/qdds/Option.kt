@@ -1,13 +1,13 @@
 package cn.xihan.qdds
 
-import android.app.Activity
 import android.content.Context
 import android.os.Environment
 import androidx.annotation.Keep
-import androidx.core.content.ContextCompat.getExternalFilesDirs
 import cn.xihan.qdds.Option.optionPath
 import com.alibaba.fastjson2.parseObject
 import com.alibaba.fastjson2.toJSONString
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.lang.ref.WeakReference
 
@@ -53,10 +53,8 @@ fun provideOptionEntity(file: File): OptionEntity = try {
         val newInterceptConfigurations = defaultOptionEntity.interceptOption
         val newViewHideOptionConfigurations =
             defaultOptionEntity.viewHideOption.homeOption.configurations
-        val newBookDetailOptionConfigurations =
-            defaultOptionEntity.viewHideOption.bookDetailOptions
-        val newAutomaticReceiveOptionConfigurations =
-            defaultOptionEntity.automatizationOption
+        val newBookDetailOptionConfigurations = defaultOptionEntity.viewHideOption.bookDetailOptions
+        val newAutomaticReceiveOptionConfigurations = defaultOptionEntity.automatizationOption
         val newSearchOption = defaultOptionEntity.viewHideOption.searchOption
         advOption = advOption.merge(
             newAdvOptionConfigurations
@@ -65,10 +63,9 @@ fun provideOptionEntity(file: File): OptionEntity = try {
             newInterceptConfigurations
         )
 
-        viewHideOption.homeOption.configurations =
-            viewHideOption.homeOption.configurations.merge(
-                newViewHideOptionConfigurations
-            )
+        viewHideOption.homeOption.configurations = viewHideOption.homeOption.configurations.merge(
+            newViewHideOptionConfigurations
+        )
         viewHideOption.bookDetailOptions = viewHideOption.bookDetailOptions.merge(
             newBookDetailOptionConfigurations
         )
@@ -127,8 +124,16 @@ object Option {
      */
     val audioPath = "${basePath}/Audio/"
 
+    /**
+     * 字体路径
+     */
+    val fontPath = "${basePath}/Font/"
+
     fun initialize(context: Context) {
         this.context = WeakReference(context)
+        if (optionEntity.readPageOption.enableCustomFont) {
+            moveToPrivateStorage(context)
+        }
     }
 
     /**
@@ -218,8 +223,8 @@ object Option {
                 val subCategoryName = jb.getStringWithFallback("subCategoryName")
                     ?: jb.getStringWithFallback("itemSubName")
                 val tagName = jb.getStringWithFallback("tagName")
-                val array = jb.getJSONArrayWithFallback("AuthorTags")
-                    ?: jb.getJSONArrayWithFallback("tags")
+                val array =
+                    jb.getJSONArrayWithFallback("AuthorTags") ?: jb.getJSONArrayWithFallback("tags")
                     ?: jb.getJSONArrayWithFallback("tagList")
                 val tip = jb.getStringWithFallback("tip")
                 val bookTypeArray = mutableSetOf<String>()
@@ -272,8 +277,8 @@ object Option {
                 val subCategoryName = jb.getStringWithFallback("subCategoryName")
                 val tagName = jb.getStringWithFallback("tagName")
                 val extraTag = jb.getStringWithFallback("extraTag")
-                val array = jb.getJSONArrayWithFallback("authorTags")
-                    ?: jb.getJSONArrayWithFallback("tags")
+                val array =
+                    jb.getJSONArrayWithFallback("authorTags") ?: jb.getJSONArrayWithFallback("tags")
                     ?: jb.getJSONArrayWithFallback("tagList")
                 val bookTypeArray = mutableSetOf<String>()
                 if (categoryName != null) {
@@ -375,14 +380,13 @@ object Option {
     /**
      * 删除起点目录下所有文件
      */
-    fun deleteAll() =
-        context.get()?.apply {
-            filesDir.parentFile?.listFiles()
-                ?.filterNot { it.isDirectory && it.name == "databases" }?.removeAll()
-            getExternalFilesDirs(null).firstNotNullOfOrNull {
-                it.listFiles()?.removeAll()
-            }
+    fun deleteAll() = context.get()?.apply {
+        filesDir.parentFile?.listFiles()?.filterNot { it.isDirectory && it.name == "databases" }
+            ?.removeAll()
+        getExternalFilesDirs(null).firstNotNullOfOrNull {
+            it.listFiles()?.removeAll()
         }
+    }
 
     private fun Array<File>.removeAll() = runAndCatch {
         forEach {
@@ -395,7 +399,6 @@ object Option {
             it.deleteRecursively()
         }
     }
-
 
     /**
      * 写入文本文件
@@ -420,8 +423,7 @@ object Option {
                 // 如果序列中有元素，则在文件名后面加上"-数字"
                 file.renameTo(
                     File(
-                        file.parent,
-                        "${file.nameWithoutExtension}-$it.${file.extension}"
+                        file.parent, "${file.nameWithoutExtension}-$it.${file.extension}"
                     )
                 )
                 // 确保父目录存在
@@ -630,6 +632,7 @@ data class OptionEntity(
         var enableShowReaderPageChapterSavePictureDialog: Boolean = false,
         var enableShowReaderPageChapterSaveAudioDialog: Boolean = false,
         var enableCopyReaderPageChapterComment: Boolean = false,
+        var enableCustomFont: Boolean = true,
         var enableReadTimeFactor: Boolean = false,
         var speedFactor: Int = 5
     )

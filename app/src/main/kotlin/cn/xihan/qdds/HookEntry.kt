@@ -282,8 +282,7 @@ class HookEntry : IYukiHookXposedInit {
 
     companion object {
         val QD_PACKAGE_NAME by lazy {
-            "com.qidian.QDReader"
-//            optionEntity.mainOption.packageName.ifBlank { "com.qidian.QDReader" }
+            optionEntity.mainOption.packageName.ifBlank { "com.qidian.QDReader" }
         }
 
         val versionCode by lazy { getSystemContext().getVersionCode(QD_PACKAGE_NAME) }
