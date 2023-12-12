@@ -23,7 +23,7 @@ yukihook-api = { module = "com.highcapable.yukihookapi:api", version.ref = "yuki
 yukihook-ksp = { module = "com.highcapable.yukihookapi:ksp-xposed", version.ref = "yuki" }
 #kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 #https://github.com/LuckyPray/DexKit
-dexkit = { module = "org.luckypray:dexkit", version = "2.0.0-rc9" }
+dexkit = { module = "org.luckypray:dexkit", version = "2.0.0" }
 xxpermissions = { module = "com.github.getActivity:XXPermissions", version = "18.5" }
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
