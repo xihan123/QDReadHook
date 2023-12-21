@@ -1,6 +1,6 @@
 [versions]
 agp = "8.2.0"
-kotlin = "1.9.21"
+kotlin = "1.9.22"
 ksp = "1.9.21-1.0.15"
 yuki = "1.2.0"
 compose-compiler = "1.5.5-dev-k1.9.21-163bb051fe5"
