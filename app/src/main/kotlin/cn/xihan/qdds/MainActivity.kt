@@ -302,7 +302,7 @@ class MainActivity : ModuleAppCompatActivity() {
 
     /**
      * 主屏幕
-     * @since 7.9.318-1106
+     * @since 7.9.318-1146
      * @param [versionCode] 版本代码
      * @param [context] 上下文
      * @suppress Generate Documentation
@@ -992,7 +992,11 @@ class MainActivity : ModuleAppCompatActivity() {
             })
 
             ItemWithNewPage(text = "常见问题", modifier = itemModifier, onClick = {
-                context.openUrl("https://jihulab.com/xihan123/QDReadHook/-/wikis/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98")
+                context.openUrl("https://github.com/xihan123/QDReadHook#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98")
+            })
+
+            ItemWithNewPage(text = "功能列表", modifier = itemModifier, onClick = {
+                context.openUrl("https://xihan123.github.io/QDReadHook/app/cn.xihan.qdds/index.html")
             })
 
             ItemWithNewPage(
@@ -1034,7 +1038,7 @@ class MainActivity : ModuleAppCompatActivity() {
 
 /**
  * 免责声明
- * @since 7.9.318-1106
+ * @since 7.9.318-1146
  * @param [modifier] 修饰符
  * @param [onAgreeClick] 点击同意
  * @param [onDisagreeClick] 点击不同意
@@ -1519,7 +1523,7 @@ private fun CustomBookShelfTopImageOption(
 
 /**
  * 启动图像项目
- * @since 7.9.318-1106
+ * @since 7.9.318-1146
  * @param [startImageModel] 启动图像模型
  * @param [modifier] 修饰符
  * @suppress Generate Documentation
@@ -1586,7 +1590,7 @@ private fun StartImageItem(
 
 /**
  * 插入
- * @since 7.9.318-1106
+ * @since 7.9.318-1146
  * @param [list] 列表
  * @suppress Generate Documentation
  */
