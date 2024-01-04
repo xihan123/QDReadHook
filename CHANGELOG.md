@@ -1,4 +1,21 @@
 # Changelog
+## [3.0.7](https://github.com/xihan123/QDReadHook/compare/v3.0.6...v3.0.7) (2024-01-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* 提高最低支持版本为 `7.9.326-1146`,低于此版本的勿更新！！！
+
+### Features
+
+* 提高最低支持版本为 `7.9.326-1146`,低于此版本的勿更新！！！ ([d1c0fa3](https://github.com/xihan123/QDReadHook/commit/d1c0fa3771d5a3d808db98cb2bb62811df05e8f0))
+
+
+### Miscellaneous
+
+* **master:** release 3.0.6 ([1b90247](https://github.com/xihan123/QDReadHook/commit/1b90247ffcdaea9c6191d70fb631e74c640b4c3e))
+* 更新依赖 ([8a9b6ae](https://github.com/xihan123/QDReadHook/commit/8a9b6aecd1947be78f75cd561add4cc16c3ffd4e))
+
 ## [3.0.6](https://github.com/xihan123/QDReadHook/compare/v3.0.6...v3.0.6) (2023-12-04)
 
 
