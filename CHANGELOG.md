@@ -1,4 +1,16 @@
 # Changelog
+## [3.0.8](https://github.com/xihan123/QDReadHook/compare/v3.0.7...v3.0.8) (2024-01-18)
+
+
+### Bug Fixes
+
+* `忽略限免批量订阅限制` 失效 ([14e2447](https://github.com/xihan123/QDReadHook/commit/14e2447b9492bf6ea3974175de9350bdd4cf5b35))
+
+
+### Miscellaneous
+
+* 更新依赖 ([8252293](https://github.com/xihan123/QDReadHook/commit/8252293ee23245697deb9d23fb704be93efbccdb))
+
 ## [3.0.7](https://github.com/xihan123/QDReadHook/compare/v3.0.6...v3.0.7) (2024-01-04)
 
 
