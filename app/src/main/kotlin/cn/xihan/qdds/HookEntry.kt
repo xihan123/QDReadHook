@@ -466,7 +466,10 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int, bridge: DexKitBridge
                         returnType = IntType
                     }.hook().before {
                         val jb = args[1].safeCast<JSONObject>()
-                        jb?.optJSONObject("Data")?.put("IsFreeLimit", -1)
+                        jb?.optJSONObject("Data")?.apply {
+                            put("BoolBatchSubscribe", true)
+                            put("IsFreeLimit", -1)
+                        }
                         args(1).set(jb)
                     }
                 }
