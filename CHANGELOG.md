@@ -1,4 +1,16 @@
 # Changelog
+## [3.0.9](https://github.com/xihan123/QDReadHook/compare/v3.0.8...v3.0.9) (2024-01-28)
+
+
+### Features
+
+* **主设置:** 新增 `启用默认IMEI` ([aae212e](https://github.com/xihan123/QDReadHook/commit/aae212e9a5871bd70181729b8a7a1bfe7fc6788c))
+
+
+### Miscellaneous
+
+* 更新依赖 ([93c942f](https://github.com/xihan123/QDReadHook/commit/93c942f7399db9b2273b50278924b4dd576fb409))
+
 ## [3.0.8](https://github.com/xihan123/QDReadHook/compare/v3.0.7...v3.0.8) (2024-01-18)
 
 
