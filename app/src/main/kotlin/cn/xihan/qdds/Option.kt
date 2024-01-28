@@ -540,6 +540,7 @@ data class OptionEntity(
      * @param enableHideAppIcon 启用隐藏应用图标
      * @param enableExportEmoji 启用导出表情包
      * @param enableOldDailyRead 启用旧的每日阅读
+     * @param enableDefaultImei 启用默认IMEI
      */
     @Keep
     data class MainOption(
@@ -551,7 +552,8 @@ data class OptionEntity(
         var enableHideAppIcon: Boolean = false,
         var enableExportEmoji: Boolean = false,
         var enableOldDailyRead: Boolean = false,
-        var enableStartCheckingPermissions: Boolean = true
+        var enableStartCheckingPermissions: Boolean = true,
+        var enableDefaultImei: Boolean = true
     )
 
     /**

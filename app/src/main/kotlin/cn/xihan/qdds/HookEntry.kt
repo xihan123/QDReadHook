@@ -18,6 +18,7 @@ import com.highcapable.yukihookapi.hook.type.android.BundleClass
 import com.highcapable.yukihookapi.hook.type.java.IntType
 import com.highcapable.yukihookapi.hook.type.java.ListClass
 import com.highcapable.yukihookapi.hook.type.java.LongType
+import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import com.hjq.permissions.Permission
@@ -125,6 +126,10 @@ class HookEntry : IYukiHookXposedInit {
 
         if (optionEntity.mainOption.enableOldDailyRead) {
             oldDailyRead(versionCode, bridge)
+        }
+
+        if (optionEntity.mainOption.enableDefaultImei) {
+            defaultIMEI(versionCode, bridge)
         }
 
         if (optionEntity.readPageOption.enableReadTimeFactor) {
@@ -695,5 +700,39 @@ fun PackageParam.oldDailyRead(versionCode: Int, bridge: DexKitBridge) {
 
 
         else -> "启用旧版每日导读".printlnNotSupportVersion(versionCode)
+    }
+}
+
+/**
+ * 启用默认imei
+ * @since 7.9.306-1050 ~ 1299
+ * @param [versionCode] 版本代码
+ */
+fun PackageParam.defaultIMEI(versionCode: Int, bridge: DexKitBridge) {
+    when (versionCode) {
+        in 1050..1299 -> {
+            bridge.findClass {
+                searchPackages = listOf("com.qidian.common.lib.util")
+                matcher {
+                    usingStrings = listOf("SIMSERIAL_release", "imei_release", "imei2_release")
+                }
+            }.firstNotNullOfOrNull { classData ->
+                classData.findMethod {
+                    matcher {
+                        modifiers = Modifier.PUBLIC
+                        returnType = "java.lang.String"
+                        usingStrings = listOf("phone")
+                    }
+                }.forEach { methodData ->
+                    methodData.className.toClass().method {
+                        name = methodData.methodName
+                        emptyParam()
+                        returnType = StringClass
+                    }.hook().replaceTo("cc51cce4aafd4d0e0fd61031100014816b02")
+                }
+            }
+        }
+
+        else -> "启用默认IMEI".printlnNotSupportVersion(versionCode)
     }
 }

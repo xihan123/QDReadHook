@@ -377,6 +377,13 @@ class MainActivity : ModuleAppCompatActivity() {
                         optionEntity.mainOption.enableOldDailyRead = it
                     })
 
+                ItemWithSwitch(text = "启用默认IMEI",
+                    modifier = itemModifier,
+                    checked = rememberMutableStateOf(value = optionEntity.mainOption.enableDefaultImei),
+                    onCheckedChange = {
+                        optionEntity.mainOption.enableDefaultImei = it
+                    })
+
             }
 
             PrimaryCard("自动化设置") {
