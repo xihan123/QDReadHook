@@ -502,25 +502,25 @@ data class OptionEntity(
     var currentDisclaimersVersionCode: Int = 0,
     var latestDisclaimersVersionCode: Int = 2,
     var advOption: List<SelectedModel> = listOf(
-        SelectedModel("闪屏广告"),
-        SelectedModel("GDT广告"),
-        SelectedModel("主页-每日阅读广告"),
-        SelectedModel("主页-书架顶部广告"),
-        SelectedModel("主页-书架活动弹框"),
-        SelectedModel("主页-书架浮窗活动"),
-        SelectedModel("主页-书架底部导航栏广告"),
-        SelectedModel("我-中间广告"),
-        SelectedModel("阅读页-浮窗广告"),
+        SelectedModel("闪屏广告", true),
+        SelectedModel("GDT广告", true),
+        SelectedModel("主页-每日阅读广告", true),
+        SelectedModel("主页-书架顶部广告", true),
+        SelectedModel("主页-书架活动弹框", true),
+        SelectedModel("主页-书架浮窗活动", true),
+        SelectedModel("主页-书架底部导航栏广告", true),
+        SelectedModel("我-中间广告", true),
+        SelectedModel("阅读页-浮窗广告", true),
 //        SelectedModel("阅读页-打赏小剧场"),
         SelectedModel("阅读页-章末一刀切"),
         SelectedModel("阅读页-章末新人推书"),
         SelectedModel("阅读页-章末本章说"),
         SelectedModel("阅读页-章末福利"),
-        SelectedModel("阅读页-章末广告"),
+        SelectedModel("阅读页-章末广告", true),
         SelectedModel("阅读页-章末求票"),
         SelectedModel("阅读页-章末底部月票打赏红包"),
-        SelectedModel("阅读页-最后一页-中间广告"),
-        SelectedModel("阅读页-最后一页-弹框广告")
+        SelectedModel("阅读页-最后一页-中间广告", true),
+        SelectedModel("阅读页-最后一页-弹框广告", true)
     ),
     var mainOption: MainOption = MainOption(),
     var cookieOption: CookieOption = CookieOption(),
@@ -529,34 +529,52 @@ data class OptionEntity(
     var bookshelfOption: BookshelfOption = BookshelfOption(),
     var readPageOption: ReadPageOption = ReadPageOption(),
     var interceptOption: List<SelectedModel> = listOf(
-        SelectedModel("检测更新"),
-        SelectedModel("隐私政策更新弹框"),
-        SelectedModel("同意隐私政策弹框"),
-        SelectedModel("WebSocket"),
-        SelectedModel("青少年模式请求"),
-        SelectedModel("青少年模式弹框"),
-        SelectedModel("阅读页水印"),
-        SelectedModel("发帖图片水印"),
-        SelectedModel("自动跳转精选"),
-        SelectedModel("首次安装分析"),
-        SelectedModel("异步主GDT广告任务|com.qidian.QDReader.start.AsyncMainGDTTask"),
-        SelectedModel("异步主游戏广告SDK任务|com.qidian.QDReader.start.AsyncMainGameADSDKTask"),
-        SelectedModel("异步主游戏下载任务|com.qidian.QDReader.start.AsyncMainGameDownloadTask"),
-        SelectedModel("异步子屏幕截图任务|com.qidian.QDReader.start.AsyncChildScreenShotTask"),
-        SelectedModel("异步主用户操作任务|com.qidian.QDReader.start.AsyncMainUserActionTask"),
-        SelectedModel("异步有赞-SDK任务|com.qidian.QDReader.start.AsyncChildYouZanTask"),
-        SelectedModel("异步初始化KNOBS-SDK任务|com.qidian.QDReader.start.AsyncInitKnobsTask"),
-        SelectedModel("异步子更新设备任务|com.qidian.QDReader.start.AsyncChildUpdateDeviceTask"),
-        SelectedModel("异步子崩溃任务|com.qidian.QDReader.start.AsyncChildCrashTask"),
-        SelectedModel("异步子点播上传任务|com.qidian.QDReader.start.AsyncChildVODUploadTask"),
-        SelectedModel("异步子青少年和网络回调任务|com.qidian.QDReader.start.AsyncChildTeenagerAndNetCallbackTask"),
-        SelectedModel("异步主下载Sdk任务|com.qidian.QDReader.start.AsyncMainDownloadSdkTask"),
-        SelectedModel("异步子自动跟踪器初始化任务|com.qidian.QDReader.start.AsyncChildAutoTrackerInitTask"),
-        SelectedModel("异步子表情符号任务|com.qidian.QDReader.start.AsyncChildEmojiTask"),
-        SelectedModel("同步推送任务|com.qidian.QDReader.start.SyncPushTask"),
-        SelectedModel("同步Bugly-APM任务|com.qidian.QDReader.start.SyncBuglyApmTask"),
-        SelectedModel("同步挂钩通道任务|com.qidian.QDReader.start.SyncHookChannelTask"),
-        SelectedModel("同步正确任务|com.qidian.QDReader.start.SyncRightlyTask")
+        SelectedModel("检测更新", true),
+        SelectedModel("隐私政策更新弹框", true),
+        SelectedModel("同意隐私政策弹框", true),
+        SelectedModel("WebSocket", true),
+        SelectedModel("青少年模式请求", true),
+        SelectedModel("青少年模式弹框", true),
+        SelectedModel("阅读页水印", true),
+        SelectedModel("发帖图片水印", true),
+        SelectedModel("自动跳转精选", true),
+        SelectedModel("首次安装分析", true),
+        SelectedModel("异步主GDT广告任务|com.qidian.QDReader.start.AsyncMainGDTTask", true),
+        SelectedModel(
+            "异步主游戏广告SDK任务|com.qidian.QDReader.start.AsyncMainGameADSDKTask",
+            true
+        ),
+        SelectedModel(
+            "异步主游戏下载任务|com.qidian.QDReader.start.AsyncMainGameDownloadTask",
+            true
+        ),
+        SelectedModel(
+            "异步子屏幕截图任务|com.qidian.QDReader.start.AsyncChildScreenShotTask",
+            true
+        ),
+        SelectedModel("异步主用户操作任务|com.qidian.QDReader.start.AsyncMainUserActionTask", true),
+        SelectedModel("异步有赞-SDK任务|com.qidian.QDReader.start.AsyncChildYouZanTask", true),
+        SelectedModel("异步初始化KNOBS-SDK任务|com.qidian.QDReader.start.AsyncInitKnobsTask", true),
+        SelectedModel(
+            "异步子更新设备任务|com.qidian.QDReader.start.AsyncChildUpdateDeviceTask",
+            true
+        ),
+        SelectedModel("异步子崩溃任务|com.qidian.QDReader.start.AsyncChildCrashTask", true),
+        SelectedModel("异步子点播上传任务|com.qidian.QDReader.start.AsyncChildVODUploadTask", true),
+        SelectedModel(
+            "异步子青少年和网络回调任务|com.qidian.QDReader.start.AsyncChildTeenagerAndNetCallbackTask",
+            true
+        ),
+        SelectedModel("异步主下载Sdk任务|com.qidian.QDReader.start.AsyncMainDownloadSdkTask", true),
+        SelectedModel(
+            "异步子自动跟踪器初始化任务|com.qidian.QDReader.start.AsyncChildAutoTrackerInitTask",
+            true
+        ),
+        SelectedModel("异步子表情符号任务|com.qidian.QDReader.start.AsyncChildEmojiTask", true),
+        SelectedModel("同步推送任务|com.qidian.QDReader.start.SyncPushTask", true),
+        SelectedModel("同步Bugly-APM任务|com.qidian.QDReader.start.SyncBuglyApmTask", true),
+        SelectedModel("同步挂钩通道任务|com.qidian.QDReader.start.SyncHookChannelTask", true),
+        SelectedModel("同步正确任务|com.qidian.QDReader.start.SyncRightlyTask", true)
     ),
     var viewHideOption: ViewHideOption = ViewHideOption(),
     var automatizationOption: List<SelectedModel> = listOf(
@@ -618,19 +636,19 @@ data class OptionEntity(
         var bookNameList: MutableSet<String> = mutableSetOf(),
         var bookTypeList: Set<String> = setOf(),
         var configurations: List<SelectedModel> = listOf(
-            SelectedModel("精选-主页面"),
-            SelectedModel("精选-分类"),
-            SelectedModel("精选-分类-全部作品"),
-            SelectedModel("精选-免费-免费推荐"),
-            SelectedModel("精选-免费-新书入库"),
-            SelectedModel("精选-畅销精选、主编力荐等更多"),
-            SelectedModel("精选-新书强推、三江推荐"),
-            SelectedModel("精选-排行榜"),
-            SelectedModel("精选-新书"),
-            SelectedModel("每日导读"),
-            SelectedModel("精选-漫画"),
-            SelectedModel("精选-漫画-其他"),
-            SelectedModel("分类-小编力荐、本周强推等更多")
+            SelectedModel("精选-主页面", true),
+            SelectedModel("精选-分类", true),
+            SelectedModel("精选-分类-全部作品", true),
+            SelectedModel("精选-免费-免费推荐", true),
+            SelectedModel("精选-免费-新书入库", true),
+            SelectedModel("精选-畅销精选、主编力荐等更多", true),
+            SelectedModel("精选-新书强推、三江推荐", true),
+            SelectedModel("精选-排行榜", true),
+            SelectedModel("精选-新书", true),
+            SelectedModel("每日导读", true),
+            SelectedModel("精选-漫画", true),
+            SelectedModel("精选-漫画-其他", true),
+            SelectedModel("分类-小编力荐、本周强推等更多", true)
         ),
         var enableBookTypeEnhancedBlocking: Boolean = false,
     )
@@ -750,11 +768,11 @@ data class OptionEntity(
         data class HomeOption(
             var enableCaptureBottomNavigation: Boolean = false,
             var configurations: List<SelectedModel> = listOf(
-                SelectedModel("主页顶部宝箱提示"),
+                SelectedModel("主页顶部宝箱提示", true),
 //                SelectedModel("主页顶部战力提示"),
-                SelectedModel("书架每日导读"),
-                SelectedModel("书架顶部标题"),
-                SelectedModel("书架去找书")
+                SelectedModel("书架每日导读", true),
+                SelectedModel("书架顶部标题", true),
+                SelectedModel("书架去找书", true)
             ),
             var bottomNavigationConfigurations: MutableList<SelectedModel> = mutableListOf()
         )
