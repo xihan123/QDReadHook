@@ -2,12 +2,12 @@ package cn.xihan.qdds
 
 import android.content.Context
 import android.os.Environment
+import android.widget.Toast
 import androidx.annotation.Keep
+import cn.xihan.qdds.Option.logPath
 import cn.xihan.qdds.Option.optionPath
 import com.alibaba.fastjson2.parseObject
 import com.alibaba.fastjson2.toJSONString
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.lang.ref.WeakReference
 
@@ -36,6 +36,20 @@ private fun provideOptionFile(): File {
         if (!exists()) {
             createNewFile()
             writeText(defaultOptionEntity.toJSONString())
+        }
+    }
+}
+
+/**
+ * 读取日志
+ * @return File
+ * @suppress Generate Documentation
+ */
+private fun provideLogFile(): File {
+    return File(logPath).apply {
+        parentFile?.mkdirs()
+        if (!exists()) {
+            createNewFile()
         }
     }
 }
@@ -89,6 +103,10 @@ object Option {
         provideOptionFile()
     }
 
+    val logFile by lazy {
+        provideLogFile()
+    }
+
     val optionEntity by lazy {
         provideOptionEntity(optionFile)
     }
@@ -111,6 +129,12 @@ object Option {
      * @suppress Generate Documentation
      */
     val optionPath = "${basePath}/option.json"
+
+    /**
+     * 日志路径
+     * @suppress Generate Documentation
+     */
+    val logPath = "${basePath}/log.txt"
 
     /**
      * 闪屏图片路径
@@ -441,6 +465,18 @@ object Option {
             }
     }
 
+    /**
+     * 将文本写入到文件末尾
+     */
+    fun String.writeTextFile() = logFile.appendText("\n$this")
+
+    fun cleanLog(context: Context) {
+        logFile.writeText("")
+        context.toast("日志已清空")
+    }
+
+    fun Context.toast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+
 }
 
 /**
@@ -475,7 +511,7 @@ data class OptionEntity(
         SelectedModel("主页-书架底部导航栏广告"),
         SelectedModel("我-中间广告"),
         SelectedModel("阅读页-浮窗广告"),
-        SelectedModel("阅读页-打赏小剧场"),
+//        SelectedModel("阅读页-打赏小剧场"),
         SelectedModel("阅读页-章末一刀切"),
         SelectedModel("阅读页-章末新人推书"),
         SelectedModel("阅读页-章末本章说"),
@@ -487,6 +523,7 @@ data class OptionEntity(
         SelectedModel("阅读页-最后一页-弹框广告")
     ),
     var mainOption: MainOption = MainOption(),
+    var cookieOption: CookieOption = CookieOption(),
     var shieldOption: ShieldOption = ShieldOption(),
     var startImageOption: StartImageOption = StartImageOption(),
     var bookshelfOption: BookshelfOption = BookshelfOption(),
@@ -554,6 +591,15 @@ data class OptionEntity(
         var enableOldDailyRead: Boolean = false,
         var enableStartCheckingPermissions: Boolean = true,
         var enableDefaultImei: Boolean = true
+    )
+
+    @Keep
+    data class CookieOption(
+        var enableCookie: Boolean = false,
+        var enableDebug: Boolean = false,
+        var uid: Int = 0,
+        var ua: String = "",
+        var cookie: String = ""
     )
 
     /**
@@ -705,7 +751,7 @@ data class OptionEntity(
             var enableCaptureBottomNavigation: Boolean = false,
             var configurations: List<SelectedModel> = listOf(
                 SelectedModel("主页顶部宝箱提示"),
-                SelectedModel("主页顶部战力提示"),
+//                SelectedModel("主页顶部战力提示"),
                 SelectedModel("书架每日导读"),
                 SelectedModel("书架顶部标题"),
                 SelectedModel("书架去找书")

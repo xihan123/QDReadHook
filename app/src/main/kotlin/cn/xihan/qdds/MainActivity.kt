@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -50,6 +51,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -97,12 +99,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import cn.xihan.qdds.Option.cleanLog
 import cn.xihan.qdds.Option.deleteAll
 import cn.xihan.qdds.Option.optionEntity
-import cn.xihan.qdds.Option.removeAll
 import cn.xihan.qdds.Option.resetOptionEntity
 import cn.xihan.qdds.Option.updateOptionEntity
-import cn.xihan.qdds.Option.writeTextFile
 import coil.compose.rememberAsyncImagePainter
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -154,7 +155,9 @@ class MainActivity : ModuleAppCompatActivity() {
         var currentDisclaimersVersionCode by rememberMutableStateOf(value = optionEntity.currentDisclaimersVersionCode)
         val latestDisclaimersVersionCode by rememberMutableStateOf(value = optionEntity.latestDisclaimersVersionCode)
         Scaffold(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .systemBarsPadding(),
             topBar = {
                 CenterAlignedTopAppBar(
                     title = { Text(text = "QDReadHook") },
@@ -383,6 +386,26 @@ class MainActivity : ModuleAppCompatActivity() {
                     onCheckedChange = {
                         optionEntity.mainOption.enableDefaultImei = it
                     })
+
+                ItemWithSwitch(text = "启用抓取cookie",
+                    modifier = itemModifier,
+                    checked = rememberMutableStateOf(value = optionEntity.cookieOption.enableCookie),
+                    onCheckedChange = {
+                        optionEntity.cookieOption.enableCookie = it
+                    })
+
+                ItemWithSwitch(
+                    text = "启用调试日志",
+                    modifier = itemModifier,
+                    checked = rememberMutableStateOf(value = optionEntity.cookieOption.enableDebug),
+                    onCheckedChange = {
+                        optionEntity.cookieOption.enableDebug = it
+                    },
+                    onLongClick = {
+                        cleanLog(context)
+                    }
+                )
+
 
             }
 
@@ -1031,6 +1054,61 @@ class MainActivity : ModuleAppCompatActivity() {
                 }
             }
 
+            var cookieDialog by rememberMutableStateOf(value = false)
+
+            ItemWithNewPage(
+                text = "查看Cookie",
+                modifier = itemModifier,
+                onClick = { cookieDialog = true })
+
+            if (cookieDialog) {
+
+                AlertDialog(
+                    onDismissRequest = {
+                        cookieDialog = false
+                    },
+                    title = {
+                        TextButton(onClick = {
+                            context.copyToClipboard("${optionEntity.cookieOption.uid}")
+                            context.toast("已复制UID")
+                        }) {
+                            Text(text = "${optionEntity.cookieOption.uid}")
+                        }
+
+                    },
+                    text = {
+                        Column {
+                            TextButton(onClick = {
+                                context.copyToClipboard("${optionEntity.cookieOption.ua}")
+                                context.toast("已复制UA")
+                            }) {
+                                Text(
+                                    text = "ua: ${optionEntity.cookieOption.ua}",
+                                    maxLines = 2
+                                )
+                            }
+
+                            TextButton(onClick = {
+                                context.copyToClipboard("${optionEntity.cookieOption.cookie}")
+                                context.toast("已复制Cookie")
+                            }) {
+                                Text(
+                                    text = "cookie: ${optionEntity.cookieOption.cookie}",
+                                    maxLines = 2
+                                )
+                            }
+                        }
+
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { cookieDialog = false }) {
+                            Text("关闭")
+                        }
+                    })
+
+
+            }
+
             ItemWithNewPage(
                 text = "起点内部版本号: $versionCode\n模块版本: ${BuildConfig.VERSION_NAME}-${BuildConfig.VERSION_CODE}",
                 modifier = itemModifier
@@ -1178,6 +1256,7 @@ private fun PrimaryCard(
         })
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ItemWithSwitch(
     text: String,
@@ -1185,17 +1264,21 @@ private fun ItemWithSwitch(
     modifier: Modifier = Modifier,
     onCheckedChange: (Boolean) -> Unit,
     enabled: Boolean = true,
+    onLongClick: () -> Unit = {},
 ) {
     Box(
         modifier = modifier
 //            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .clickable {
-                if (enabled) {
-                    checked.value = !checked.value
-                    onCheckedChange(checked.value)
-                    updateOptionEntity()
-                }
-            }
+            .combinedClickable(
+                onClick = {
+                    if (enabled) {
+                        checked.value = !checked.value
+                        onCheckedChange(checked.value)
+                        updateOptionEntity()
+                    }
+                },
+                onLongClick = onLongClick
+            )
             .padding(horizontal = 15.dp),
         contentAlignment = Alignment.Center,
     ) {

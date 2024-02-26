@@ -8,6 +8,8 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import cn.xihan.qdds.Option.optionEntity
 import cn.xihan.qdds.Option.picturesPath
+import cn.xihan.qdds.Option.updateOptionEntity
+import cn.xihan.qdds.Option.writeTextFile
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.factory.method
@@ -18,6 +20,7 @@ import com.highcapable.yukihookapi.hook.type.android.BundleClass
 import com.highcapable.yukihookapi.hook.type.java.IntType
 import com.highcapable.yukihookapi.hook.type.java.ListClass
 import com.highcapable.yukihookapi.hook.type.java.LongType
+import com.highcapable.yukihookapi.hook.type.java.MapClass
 import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
@@ -26,6 +29,7 @@ import com.hjq.permissions.XXPermissions
 import org.json.JSONObject
 import org.luckypray.dexkit.DexKitBridge
 import java.lang.reflect.Modifier
+
 
 /**
  * @项目名 : QDReadHook
@@ -99,6 +103,14 @@ class HookEntry : IYukiHookXposedInit {
 
             }
 
+//            findMethodAndPrint("a.c")
+//
+//            findMethodAndPrint("com.qidian.common.lib.util.c")
+//
+//            findMethodAndPrint("com.yuewen.fock.Fock")
+//
+//            findMethodAndPrint("uj.b")
+
         }
     }
 
@@ -130,6 +142,14 @@ class HookEntry : IYukiHookXposedInit {
 
         if (optionEntity.mainOption.enableDefaultImei) {
             defaultIMEI(versionCode, bridge)
+        }
+
+        if (optionEntity.cookieOption.enableCookie) {
+            cookie(versionCode, bridge)
+        }
+
+        if (optionEntity.cookieOption.enableDebug) {
+            debug(versionCode, bridge)
         }
 
         if (optionEntity.readPageOption.enableReadTimeFactor) {
@@ -571,12 +591,7 @@ private fun Context.exportEmojiDialog(
                     paramCount(6)
                     returnType = UnitType
                 }.get(yWImageLoader).call(
-                    context,
-                    imageUrl,
-                    picturesPath,
-                    "",
-                    true,
-                    null
+                    context, imageUrl, picturesPath, "", true, null
                 )
             }
             toast("导出成功")
@@ -734,5 +749,78 @@ fun PackageParam.defaultIMEI(versionCode: Int, bridge: DexKitBridge) {
         }
 
         else -> "启用默认IMEI".printlnNotSupportVersion(versionCode)
+    }
+}
+
+fun PackageParam.cookie(versionCode: Int, bridge: DexKitBridge) {
+    when (versionCode) {
+        in 1050..1299 -> {
+            "com.qidian.QDReader.repository.entity.user_account.UserAccountItemBean".toClass()
+                .method {
+                    name = "getUserBasicInfo"
+                    emptyParam()
+                    returnType =
+                        "com.qidian.QDReader.repository.entity.user_account.UserBasicInfo".toClass()
+                }.hook().after {
+                    val userId = result?.getParam<Int>("userId")
+                    if (userId != null && userId > 0) {
+                        optionEntity.cookieOption.uid = userId
+                        updateOptionEntity()
+                    }
+                }
+
+            "com.qidian.QDReader.component.util.FockUtil".toClass().method {
+                name = "getH"
+                paramCount(3)
+                returnType = MapClass
+            }.hook().after {
+                val map = result?.safeCast<Map<*, *>>()
+                if (map != null) {
+                    map["Cookie"].safeCast<String>()?.let {
+                        optionEntity.cookieOption.cookie = it
+                        updateOptionEntity()
+                    }
+                    map["User-Agent"].safeCast<String>()?.let {
+                        optionEntity.cookieOption.ua = it
+                        updateOptionEntity()
+                    }
+                }
+            }
+        }
+    }
+}
+
+fun PackageParam.debug(versionCode: Int, bridge: DexKitBridge) {
+    when (versionCode) {
+        in 1050..1299 -> {
+            "com.yuewen.fock.Fock".toClass().method {
+                name = "sign"
+                paramCount(1)
+                returnType = StringClass
+            }.hook().after {
+                "参数: ${
+                    args.first().safeCast<String>()
+                }, 返回值: ${result.safeCast<String>()}".writeTextFile()
+            }
+
+            "a.c".toClass().method {
+                name = "signParams"
+                paramCount(8)
+            }.hook().after {
+                StringBuilder().apply {
+                    append("参数: ${args[1].safeCast<String>()?.ifBlank { "空" }}")
+                    append(", 时间戳: ${args[2].safeCast<String>()?.ifBlank { "空" }}")
+                    append(", UID: ${args[3].safeCast<String>()?.ifBlank { "空" }}")
+                    append(", QIMEI: ${args[4].safeCast<String>()?.ifBlank { "空" }}")
+                    append(", Type: ${args[6].safeCast<Int>()}")
+                    append(
+                        ", 返回值: ${
+                            result.safeCast<ByteArray>()
+                                ?.let { com.qidian.common.lib.util.c.search(it) }
+                        }"
+                    )
+                }.toString().writeTextFile()
+            }
+        }
     }
 }
