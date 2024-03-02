@@ -700,14 +700,13 @@ fun PackageParam.oldDailyRead(versionCode: Int, bridge: DexKitBridge) {
                             returnType = UnitType
                         }.hook().replaceUnit {
                             val context = args[0].safeCast<Context>() ?: return@replaceUnit
-                            val stringArray =
-                                args[2].safeCast<Array<String>>() ?: return@replaceUnit
+                            val map = args[2].safeCast<Map<String, String>>() ?: return@replaceUnit
                             val instance by lazyClassOrNull("com.qidian.QDReader.ui.activity.DailyReadingActivity")
                             instance?.method {
                                 name = "openDailyReading"
                                 paramCount(2)
                                 returnType = UnitType
-                            }?.get(instance)?.call(context, stringArray.first().toLong())
+                            }?.get(instance)?.call(context, map.values.first().toLong())
                         }
                     }
                 }
