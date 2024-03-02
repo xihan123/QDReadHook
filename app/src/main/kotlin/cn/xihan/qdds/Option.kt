@@ -63,6 +63,9 @@ private fun provideLogFile(): File {
  */
 fun provideOptionEntity(file: File): OptionEntity = try {
     file.readText().parseObject<OptionEntity>().apply {
+        if (currentDisclaimersVersionCode < defaultOptionEntity.latestDisclaimersVersionCode) {
+            allowDisclaimers = false
+        }
         val newAdvOptionConfigurations = defaultOptionEntity.advOption
         val newInterceptConfigurations = defaultOptionEntity.interceptOption
         val newViewHideOptionConfigurations =
@@ -500,7 +503,7 @@ object Option {
 data class OptionEntity(
     var allowDisclaimers: Boolean = false,
     var currentDisclaimersVersionCode: Int = 0,
-    var latestDisclaimersVersionCode: Int = 2,
+    var latestDisclaimersVersionCode: Int = 3,
     var advOption: List<SelectedModel> = listOf(
         SelectedModel("闪屏广告", true),
         SelectedModel("GDT广告", true),

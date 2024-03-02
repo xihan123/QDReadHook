@@ -69,7 +69,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -92,6 +91,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -1219,6 +1219,14 @@ fun Disclaimers(
             }
 
             append(" 查看")
+
+            withStyle(
+                style = SpanStyle(
+                    color = Color.Red, fontWeight = FontWeight.Bold, fontSize = 20.sp
+                )
+            ) {
+                appendLine("\n\n免费软件,如果是付费购买请立即联系卖家退款并举报!!!")
+            }
         }
 
         ClickableText(text = text, style = TextStyle(
