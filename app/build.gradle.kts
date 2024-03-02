@@ -118,6 +118,8 @@ android {
 
 dependencies {
 
+    implementation(fileTree("dir" to file("libs"), "include" to listOf("*.jar")))
+
     implementation(libs.core.ktx)
     implementation(libs.fast.json)
     implementation(libs.android.material)
