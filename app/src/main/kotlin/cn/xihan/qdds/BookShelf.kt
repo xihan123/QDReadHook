@@ -11,12 +11,12 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
  *
  * [地址2](https://imgservices-1252317822.image.myqcloud.com/image/20210507/q2bvc3z5vd.jpg)
  * ## 建议分辨率为 1125*504
- * @since 7.9.318-1146 ~ 1299
+ * @since 7.9.334-1196 ~ 1299
  * @param [versionCode] 版本代码
  */
 fun PackageParam.customBookShelfTopImage(versionCode: Int) {
     when (versionCode) {
-        in 1146..1299 -> {
+        in 1196..1299 -> {
             "com.qidian.QDReader.repository.entity.config.BookshelfConfig".toClass().apply {
 
                 method {

@@ -309,7 +309,7 @@ class MainActivity : ModuleAppCompatActivity() {
 
     /**
      * 主屏幕
-     * @since 7.9.318-1146
+     * @since 7.9.334-1196
      * @param [versionCode] 版本代码
      * @param [context] 上下文
      * @suppress Generate Documentation
@@ -1127,7 +1127,7 @@ class MainActivity : ModuleAppCompatActivity() {
 
 /**
  * 免责声明
- * @since 7.9.318-1146
+ * @since 7.9.334-1196
  * @param [modifier] 修饰符
  * @param [onAgreeClick] 点击同意
  * @param [onDisagreeClick] 点击不同意
@@ -1628,7 +1628,7 @@ private fun CustomBookShelfTopImageOption(
 
 /**
  * 启动图像项目
- * @since 7.9.318-1146
+ * @since 7.9.334-1196
  * @param [startImageModel] 启动图像模型
  * @param [modifier] 修饰符
  * @suppress Generate Documentation
@@ -1695,7 +1695,7 @@ private fun StartImageItem(
 
 /**
  * 插入
- * @since 7.9.318-1146
+ * @since 7.9.334-1196
  * @param [list] 列表
  * @suppress Generate Documentation
  */

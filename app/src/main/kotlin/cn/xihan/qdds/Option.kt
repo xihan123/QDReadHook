@@ -56,7 +56,7 @@ private fun provideLogFile(): File {
 
 /**
  * 提供期权实体
- * @since 7.9.318-1146
+ * @since 7.9.334-1196
  * @param [file] 文件
  * @return [OptionEntity]
  * @suppress Generate Documentation
