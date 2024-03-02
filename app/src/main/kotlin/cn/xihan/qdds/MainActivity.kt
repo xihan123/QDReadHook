@@ -91,7 +91,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -155,9 +154,9 @@ class MainActivity : ModuleAppCompatActivity() {
             )
         )
         val navController = rememberNavController()
-        var allowDisclaimers by rememberMutableStateOf(value = optionEntity.allowDisclaimers)
+        var allowDisclaimers by rememberMutableStateOf(value = optionEntity.allowDisclaimers && optionEntity.currentDisclaimersVersionCode >= defaultOptionEntity.latestDisclaimersVersionCode)
         var currentDisclaimersVersionCode by rememberMutableStateOf(value = optionEntity.currentDisclaimersVersionCode)
-        val latestDisclaimersVersionCode by rememberMutableStateOf(value = optionEntity.latestDisclaimersVersionCode)
+        val latestDisclaimersVersionCode by rememberMutableStateOf(value = defaultOptionEntity.latestDisclaimersVersionCode)
         Scaffold(
             modifier = Modifier
                 .fillMaxSize()
