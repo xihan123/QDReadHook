@@ -1,4 +1,34 @@
 # Changelog
+## [3.0.9](https://github.com/xihan123/QDReadHook/compare/v3.0.9...v3.0.9) (2024-03-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* 提高最低支持版本为 `7.9.334-1196`,低于此版本的勿更新！！！
+
+### Features
+
+* **主设置:** 新增 `抓取Cookie`、`调试日志` ([4ceb2b8](https://github.com/xihan123/QDReadHook/commit/4ceb2b8cfc52319862f984d3bdaecbd0067993d6))
+* 共存版支持 ([6b9bd89](https://github.com/xihan123/QDReadHook/commit/6b9bd894f313081d84e841ac2f89ad9ea991f244))
+* 提高最低支持版本为 `7.9.334-1196`,低于此版本的勿更新！！！ ([881571c](https://github.com/xihan123/QDReadHook/commit/881571c82faf7ea3e0ce7711f6dc4fca2b32679f))
+
+
+### Bug Fixes
+
+* `1196` 版本 `旧版每日导读` 参数类型变更 ([f75e9bb](https://github.com/xihan123/QDReadHook/commit/f75e9bb5f9b0171f57547a247063e7842bb7382e))
+* 倒计时有概率不动[[#206](https://github.com/xihan123/QDReadHook/issues/206)]([#206](https://github.com/xihan123/QDReadHook/issues/206)) ([975ce87](https://github.com/xihan123/QDReadHook/commit/975ce87f3580448608c98282793209a3be6905f0))
+
+
+### Feature Improvements
+
+* 改善默认配置 ([2936059](https://github.com/xihan123/QDReadHook/commit/29360595b80515ed19daa50d94bf85063ec8b999))
+* 新增温馨提示 ([3cd7e53](https://github.com/xihan123/QDReadHook/commit/3cd7e53296f5ca6e61a8ccc377f0506a420ed46a))
+
+
+### Miscellaneous
+
+* 更新依赖 ([b6e7592](https://github.com/xihan123/QDReadHook/commit/b6e759271f422e1c4dc53bce089ed28bd7a32ec4))
+
 ## [3.0.9](https://github.com/xihan123/QDReadHook/compare/v3.0.8...v3.0.9) (2024-01-28)
 
 
