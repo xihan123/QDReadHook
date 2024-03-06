@@ -13,7 +13,7 @@ compose-bom = { module = "dev.chrisbanes.compose:compose-bom", version = "2024.0
 compose-ui = { module = "androidx.compose.ui:ui" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
 compose-runtime = { module = "androidx.compose.runtime:runtime" }
-compose-material3 = { module = "androidx.compose.material3:material3", version = "1.2.0" }
+compose-material3 = { module = "androidx.compose.material3:material3", version = "1.2.1" }
 compose-coil = { module = "io.coil-kt:coil-compose", version = "2.6.0" }
 compose-navigation = { module = "androidx.navigation:navigation-compose", version = "2.7.7" }
 compose-lottie = { module = "com.airbnb.android:lottie-compose", version = "6.3.0" }
