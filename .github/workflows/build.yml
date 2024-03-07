@@ -3,26 +3,13 @@ name: Android CI
 on:
   workflow_dispatch:
   push:
-    tags:
-      - "v*"
 
 jobs:
   build:
-    name: Build on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ ubuntu-latest ]
+    name: Build on Linux
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Check Commit Message [skip CI]
-        env:
-          COMMIT_FILTER: "[skip ci]"
-        if: contains(github.event.head_commit.message, '[skip ci]')
-        run: |
-          echo "no 'skip ci' in commit message"
-          exit 2
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,67 +17,18 @@ jobs:
           submodules: 'recursive'
           fetch-depth: 0
 
-      - name: base64-to-file
-        id: write_file
-        uses: timheuer/base64-to-file@v1.2
-        if: ${{ ( github.event_name != 'pull_request' && github.ref == 'refs/heads/master' ) || github.ref_type == 'tag' }}
-        with:
-          fileName: 'key.jks'
-          encodedString: ${{ secrets.SIGNING_KEY }}
-
-      - name: Write key
-        if: ${{ ( github.event_name != 'pull_request' && github.ref == 'refs/heads/master' ) || github.ref_type == 'tag' }}
-        run: |
-          touch keystore.properties
-          echo storePassword='${{ secrets.KEY_STORE_PASSWORD }}' >> keystore.properties
-          echo keyAlias='${{ secrets.ALIAS }}' >> keystore.properties
-          echo keyPassword='${{ secrets.KEY_PASSWORD }}' >> keystore.properties
-          echo storeFile='${{ steps.write_file.outputs.filePath }}' >> keystore.properties
-
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'gradle'
 
       - name: Build with Gradle
         run: |
-          [ $(du -s ~/.gradle/wrapper | awk '{ print $1 }') -gt 250000 ] && rm -rf ~/.gradle/wrapper/* || true
-          chmod +x gradlew
-          ./gradlew :app:synthesizeDistReleaseApksCI
-          echo "APK_FILE_ARM32=$(find app/build/outputs/ci -name '*arm32.apk')" >> $GITHUB_ENV
-          echo "APK_FILE_ARM64=$(find app/build/outputs/ci -name '*arm64.apk')" >> $GITHUB_ENV
-          echo "APK_FILE_ARMALL=$(find app/build/outputs/ci -name '*armAll.apk')" >> $GITHUB_ENV
-          echo "APK_FILE_UNIVERSAL=$(find app/build/outputs/ci -name '*universal.apk')" >> $GITHUB_ENV
+          ./gradlew :app:aR
 
-      - name: Upload assets to a Release
-        uses: meeDamian/github-release@v2.0.3
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
         with:
-          files: app/build/outputs/ci/*.apk
-          token: ${{ secrets.RELEASE_TOKEN }}
-          allow_override: true
-          gzip: false
-
-      - name: Get latest release
-        id: get_latest_release
-        run: |
-          curl --silent "https://api.github.com/repos/${{github.repository}}/releases/latest" > latest_release.json
-          echo "::set-output name=description::$(jq -r '.body' latest_release.json)"
-          echo "::set-output name=html_url::$(jq -r '.html_url' latest_release.json)"
-
-      - name: Telegram Notify
-        env:
-          CHANNEL_ID: ${{ secrets.CHANGELOG_CHANNEL_ID }}
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          description: ${{ steps.get_latest_release.outputs.description }}
-          html_url: ${{ steps.get_latest_release.outputs.html_url }}
-        run: |
-          if [ ! -z "${{ secrets.BOT_TOKEN }}" ]; then
-            OUTPUT="app/build/outputs/ci/"
-            export apkRelease=$(find $OUTPUT -name "*universal.apk")
-            if [ ${#description} -gt 1024 ]; then
-              description="# 完整更新日志: $html_url"
-            fi
-            curl -v "https://api.telegram.org/bot${BOT_TOKEN}/sendDocument?chat_id=${CHANNEL_ID}" -F document="@$apkRelease" -F caption="${description}"
-          fi
+          name: outputs
+          path: app/build/outputs

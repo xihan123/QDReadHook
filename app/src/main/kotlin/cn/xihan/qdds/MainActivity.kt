@@ -1057,14 +1057,6 @@ class MainActivity : ModuleAppCompatActivity() {
                 context.openUrl("https://xihan123.github.io/QDReadHook/app/cn.xihan.qdds/index.html")
             })
 
-            ItemWithNewPage(
-                text = "编译时间: ${
-                    SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(
-                        BuildConfig.BUILD_TIMESTAMP
-                    )
-                }", modifier = itemModifier
-            )
-
             var openDialog by rememberMutableStateOf(value = false)
 
             ItemWithNewPage(
