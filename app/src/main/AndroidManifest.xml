@@ -2,15 +2,23 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <permission
+    android:name="${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+    android:protectionLevel="signature"
+    tools:node="remove" />
+
+    <uses-permission
+    android:name="${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+    tools:node="remove" />
+
     <application
         android:allowBackup="true"
         android:label="QDReadHook"
         android:supportsRtl="true"
-        android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:networkSecurityConfig="@xml/network_security_config"
-        android:theme="@style/Theme.Material3.DayNight.NoActionBar">
+        android:theme="@style/Theme.Material3.DayNight.NoActionBar"
+        tools:remove="android:appComponentFactory">
 
         <meta-data
             android:name="xposedmodule"
@@ -22,46 +30,20 @@
             android:name="xposedminversion"
             android:value="90" />
         <meta-data
-            android:name="xposedsharedprefs"
-            android:value="true" />
-        <meta-data
             android:name="xposedscope"
             android:value="com.qidian.QDReader" />
 
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:showForAllUsers="true"
-            android:launchMode="singleInstance">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="de.robv.android.xposed.category.MODULE_SETTINGS" />
-            </intent-filter>
-        </activity>
-
-        <activity-alias
-            android:name=".MainActivityAlias"
-            android:targetActivity=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="de.robv.android.xposed.category.MODULE_SETTINGS" />
-            </intent-filter>
-        </activity-alias>
-
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:ignore="MissingClass"
+            tools:node="remove" />
+        <receiver
+            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+            android:exported="false"
+            tools:ignore="MissingClass"
+            tools:node="remove" />
 
     </application>
-
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission
-        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
-        tools:ignore="ScopedStorage" />
-    <uses-permission
-        android:name="android.permission.QUERY_ALL_PACKAGES"
-        tools:ignore="QueryAllPackagesPermission" />
 </manifest>

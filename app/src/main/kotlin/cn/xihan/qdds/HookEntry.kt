@@ -25,8 +25,6 @@ import com.highcapable.yukihookapi.hook.type.java.MapClass
 import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
-import com.hjq.permissions.Permission
-import com.hjq.permissions.XXPermissions
 import org.json.JSONObject
 import org.luckypray.dexkit.DexKitBridge
 import java.io.File
@@ -57,7 +55,7 @@ class HookEntry : IYukiHookXposedInit {
     }
 
     override fun onHook() = YukiHookAPI.encase {
-        if ("com.qidian.QDReader" !in packageName) return@encase
+        if ("com.qidian.QDReader" != packageName) return@encase
         loadApp(name = packageName) {
 
             onAppLifecycle {
@@ -350,11 +348,7 @@ fun PackageParam.startCheckingPermissions(versionCode: Int) {
                 }.hook().after {
                     instance<Activity>().apply {
                         // 判断权限
-                        val permission = XXPermissions.isGranted(
-                            this, arrayOf(
-                                Permission.MANAGE_EXTERNAL_STORAGE
-                            )
-                        )
+                        val permission = true
                         if (permission) {
                             hook.remove()
                             hook2.remove()

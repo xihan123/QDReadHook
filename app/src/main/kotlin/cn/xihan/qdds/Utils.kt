@@ -37,8 +37,6 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
 import com.highcapable.yukihookapi.hook.type.java.ListClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
-import com.hjq.permissions.Permission
-import com.hjq.permissions.XXPermissions
 import de.robv.android.xposed.XposedHelpers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -471,32 +469,9 @@ fun Activity.requestPermissionDialog(
     onGranted: () -> Unit = { restartApplication() },
     onDenied: () -> Unit = { jumpToPermission() },
 ) {
-    val permission = XXPermissions.isGranted(
-        this, Permission.MANAGE_EXTERNAL_STORAGE
-    )
+    val permission = true
     if (permission) {
         return
-    }
-    alertDialog {
-        title = "温馨提示"
-        message =
-            "请授予以下权限,否则无法正常使用\n存储权限:用来管理位于外部存储的配置文件"
-        positiveButton("授予") {
-            XXPermissions.with(this@requestPermissionDialog).permission(
-                Permission.MANAGE_EXTERNAL_STORAGE, Permission.REQUEST_INSTALL_PACKAGES
-            ).request { _, allGranted ->
-                if (allGranted) {
-                    onGranted()
-                } else {
-                    onDenied()
-                }
-            }
-        }
-        negativeButton("拒绝并退出") {
-            onDenied()
-        }
-        build()
-        show()
     }
 }
 
@@ -505,11 +480,6 @@ fun Activity.requestPermissionDialog(
  * @suppress Generate Documentation
  */
 fun Context.jumpToPermission() {
-    if (this.applicationInfo.targetSdkVersion > 30) {
-        XXPermissions.startPermissionActivity(this, Permission.MANAGE_EXTERNAL_STORAGE)
-    } else {
-        XXPermissions.startPermissionActivity(this, Permission.Group.STORAGE)
-    }
 }
 
 /**

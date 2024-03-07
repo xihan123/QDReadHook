@@ -116,7 +116,7 @@ object Option {
      * @suppress Generate Documentation
      */
     val basePath =
-        "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/QDReader"
+        "/storage/emulated/${(android.system.Os.getuid() / 100000)}/Android/data/com.qidian.QDReader/files/Download"
 
     /**
      * 重定向主题路径

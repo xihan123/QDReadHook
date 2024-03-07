@@ -111,8 +111,6 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppCompatActivity
-import com.hjq.permissions.Permission
-import com.hjq.permissions.XXPermissions
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -147,9 +145,7 @@ class MainActivity : ModuleAppCompatActivity() {
     fun ComposeContent() {
         val context = LocalContext.current
         val permission = rememberMutableStateOf(
-            value = XXPermissions.isGranted(
-                context, arrayOf(Permission.MANAGE_EXTERNAL_STORAGE)
-            )
+            value = true
         )
         val navController = rememberNavController()
         var allowDisclaimers by rememberMutableStateOf(value = optionEntity.allowDisclaimers && optionEntity.currentDisclaimersVersionCode >= defaultOptionEntity.latestDisclaimersVersionCode)
@@ -331,13 +327,6 @@ class MainActivity : ModuleAppCompatActivity() {
         ) {
 
             PrimaryCard("主设置") {
-
-                ItemWithSwitch(text = "启用启动时检查权限",
-                    modifier = itemModifier,
-                    checked = rememberMutableStateOf(value = optionEntity.mainOption.enableStartCheckingPermissions),
-                    onCheckedChange = {
-                        optionEntity.mainOption.enableStartCheckingPermissions = it
-                    })
 
                 ItemWithSwitch(text = "发帖上传图片显示直链",
                     modifier = itemModifier,
@@ -985,20 +974,6 @@ class MainActivity : ModuleAppCompatActivity() {
                 .height(if (isTablet) 58.dp else 38.dp)
         }
         PrimaryCard(modifier = Modifier.padding(padding)) {
-
-            ItemWithSwitch(text = "隐藏桌面图标",
-                modifier = itemModifier,
-                checked = rememberMutableStateOf(value = optionEntity.mainOption.enableHideAppIcon),
-                onCheckedChange = {
-                    optionEntity.mainOption.enableHideAppIcon = it
-                    runAndCatch {
-                        if (it) {
-                            context.hideAppIcon()
-                        } else {
-                            context.showAppIcon()
-                        }
-                    }
-                })
 
             ItemWithNewPage(
                 "清除起点所有缓存",
