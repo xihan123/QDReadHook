@@ -355,8 +355,7 @@ fun PackageParam.startCheckingPermissions(versionCode: Int) {
                         // 判断权限
                         val permission = XXPermissions.isGranted(
                             this, arrayOf(
-                                Permission.MANAGE_EXTERNAL_STORAGE,
-                                Permission.REQUEST_INSTALL_PACKAGES
+                                Permission.MANAGE_EXTERNAL_STORAGE
                             )
                         )
                         if (permission) {

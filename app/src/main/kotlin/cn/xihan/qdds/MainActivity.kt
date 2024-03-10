@@ -148,9 +148,7 @@ class MainActivity : ModuleAppCompatActivity() {
         val context = LocalContext.current
         val permission = rememberMutableStateOf(
             value = XXPermissions.isGranted(
-                context, arrayOf(
-                    Permission.MANAGE_EXTERNAL_STORAGE, Permission.REQUEST_INSTALL_PACKAGES
-                )
+                context, arrayOf(Permission.MANAGE_EXTERNAL_STORAGE)
             )
         )
         val navController = rememberNavController()
@@ -281,7 +279,7 @@ class MainActivity : ModuleAppCompatActivity() {
                     ) {
 
                         Text(
-                            "起点和模块都需要存储以及安装未知应用权限\n存储权限:用来管理位于外部存储的配置文件\n安装未知应用权限:Android 11及以上读取其他应用版本号",
+                            "起点和模块都需要存储权限\nps:用来管理位于外部存储的配置文件",
                             modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.Bold

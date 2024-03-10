@@ -472,7 +472,7 @@ fun Activity.requestPermissionDialog(
     onDenied: () -> Unit = { jumpToPermission() },
 ) {
     val permission = XXPermissions.isGranted(
-        this, Permission.MANAGE_EXTERNAL_STORAGE, Permission.REQUEST_INSTALL_PACKAGES
+        this, Permission.MANAGE_EXTERNAL_STORAGE
     )
     if (permission) {
         return
@@ -480,7 +480,7 @@ fun Activity.requestPermissionDialog(
     alertDialog {
         title = "温馨提示"
         message =
-            "请授予以下权限,否则无法正常使用\n存储权限:用来管理位于外部存储的配置文件\n安装未知应用权限:Android 11及以上读取其他应用版本号"
+            "请授予以下权限,否则无法正常使用\n存储权限:用来管理位于外部存储的配置文件"
         positiveButton("授予") {
             XXPermissions.with(this@requestPermissionDialog).permission(
                 Permission.MANAGE_EXTERNAL_STORAGE, Permission.REQUEST_INSTALL_PACKAGES
