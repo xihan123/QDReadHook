@@ -503,7 +503,7 @@ data class OptionEntity(
     var latestDisclaimersVersionCode: Int = 3,
     var advOption: List<SelectedModel> = listOf(
         SelectedModel("闪屏广告", true),
-        SelectedModel("GDT广告", true),
+        SelectedModel("GDT广告", false),
         SelectedModel("主页-每日阅读广告", true),
         SelectedModel("主页-书架顶部广告", true),
         SelectedModel("主页-书架活动弹框", true),
