@@ -769,10 +769,8 @@ data class OptionEntity(
             var enableCaptureBottomNavigation: Boolean = false,
             var configurations: List<SelectedModel> = listOf(
                 SelectedModel("主页顶部宝箱提示", true),
-//                SelectedModel("主页顶部战力提示"),
                 SelectedModel("书架每日导读", true),
-                SelectedModel("书架顶部标题", true),
-                SelectedModel("书架去找书", true)
+                SelectedModel("书架顶部标题", true)
             ),
             var bottomNavigationConfigurations: MutableList<SelectedModel> = mutableListOf()
         )

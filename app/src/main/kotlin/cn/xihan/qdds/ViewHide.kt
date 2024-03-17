@@ -38,7 +38,6 @@ fun PackageParam.homeOption(
             "主页顶部战力提示" -> hideMainTopPower(versionCode)
             "书架每日导读" -> hideBookshelfDailyReading(versionCode, bridge)
             "书架顶部标题" -> hideBookshelfTopTitle(versionCode)
-            "书架去找书" -> hideBookshelfFindBook(versionCode, bridge)
         }
     }
 }
@@ -396,45 +395,6 @@ fun PackageParam.hideBookshelfDailyReading(versionCode: Int, bridge: DexKitBridg
         }
 
         else -> "书架-每日导读".printlnNotSupportVersion(versionCode)
-    }
-}
-
-/**
- * 隐藏书架-去找书
- * @since 7.9.334-1196
- * @param [versionCode] 版本代码
- */
-fun PackageParam.hideBookshelfFindBook(versionCode: Int, bridge: DexKitBridge) {
-    when (versionCode) {
-        in 1196..1299 -> {
-
-            bridge.findClass {
-                searchPackages = listOf("com.qidian.QDReader.ui.viewholder.bookshelf")
-                matcher {
-                    usingStrings = listOf("QDBookShelfBrowserRecordHolder", "itemView")
-                }
-            }.firstNotNullOfOrNull { classData ->
-                classData.findMethod {
-                    matcher {
-                        paramTypes = listOf("android.view.View", "android.content.Context")
-                    }
-                }.firstNotNullOfOrNull { methodData ->
-                    methodData.className.toClass().constructor {
-                        paramCount(methodData.paramTypeNames.size)
-                    }.hook().after {
-                        args[0]?.safeCast<View>()?.setVisibilityIfNotEqual()
-                    }
-                }
-            }
-
-            "com.qidian.QDReader.ui.modules.bookshelf.adapter.BaseBooksAdapter".toClass().method {
-                name = "getFooterItemCount"
-                emptyParam()
-                returnType = IntType
-            }.hook().replaceTo(0)
-        }
-
-        else -> "书架-去找书".printlnNotSupportVersion(versionCode)
     }
 }
 
