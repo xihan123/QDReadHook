@@ -358,7 +358,6 @@ fun PackageParam.hideMainTopPower(versionCode: Int) {
 fun PackageParam.hideBookshelfDailyReading(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
         in 1196..1299 -> {
-
             bridge.apply {
                 findClass {
                     matcher {
@@ -388,29 +387,11 @@ fun PackageParam.hideBookshelfDailyReading(versionCode: Int, bridge: DexKitBridg
                     }
                 }
 
-                findClass {
-                    searchPackages = listOf("com.qidian.QDReader.ui.modules.bookshelf.view")
-                    matcher {
-                        usingStrings =
-                            listOf("it.CategoryName", "it.SubCategoryName", "it.AuthorTags")
-                    }
-                }.firstNotNullOfOrNull { classData ->
-                    classData.findMethod {
-                        matcher {
-                            paramTypes =
-                                listOf("com.qidian.QDReader.repository.entity.DailyReadingItem")
-                            returnType = "void"
-                            usingStrings =
-                                listOf("it.CategoryName", "it.SubCategoryName", "it.AuthorTags")
-                        }
-                    }.firstNotNullOfOrNull { methodData ->
-                        intercept(
-                            className = methodData.className,
-                            methodName = methodData.methodName,
-                            paramCount = methodData.paramTypeNames.size
-                        )
-                    }
-                }
+                intercept(
+                    className = "com.qidian.QDReader.ui.modules.bookshelf.BookShelfViewModel",
+                    methodName = "fetchDailyReading",
+                    paramCount = 2
+                )
             }
         }
 
