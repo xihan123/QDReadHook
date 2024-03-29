@@ -1,4 +1,16 @@
 # Changelog
+## [3.1.2](https://github.com/xihan123/QDReadHook/compare/v3.1.1...v3.1.2) (2024-03-29)
+
+
+### Features
+
+* **主设置:** 新增测试功能 `自定义IMEI` ([5212b38](https://github.com/xihan123/QDReadHook/commit/5212b389b395b93538b0898f3f6a90ae4dd7284c))
+
+
+### Miscellaneous
+
+* 更新依赖 ([caeec12](https://github.com/xihan123/QDReadHook/commit/caeec129659002531b2c6249f4237ca62c56c352))
+
 ## [3.1.1](https://github.com/xihan123/QDReadHook/compare/v3.1.0...v3.1.1) (2024-03-17)
 
 ### ⚠ BREAKING CHANGES
