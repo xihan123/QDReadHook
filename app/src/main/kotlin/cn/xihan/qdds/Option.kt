@@ -541,23 +541,19 @@ data class OptionEntity(
         SelectedModel("首次安装分析", true),
         SelectedModel("异步主GDT广告任务|com.qidian.QDReader.start.AsyncMainGDTTask", true),
         SelectedModel(
-            "异步主游戏广告SDK任务|com.qidian.QDReader.start.AsyncMainGameADSDKTask",
-            true
+            "异步主游戏广告SDK任务|com.qidian.QDReader.start.AsyncMainGameADSDKTask", true
         ),
         SelectedModel(
-            "异步主游戏下载任务|com.qidian.QDReader.start.AsyncMainGameDownloadTask",
-            true
+            "异步主游戏下载任务|com.qidian.QDReader.start.AsyncMainGameDownloadTask", true
         ),
         SelectedModel(
-            "异步子屏幕截图任务|com.qidian.QDReader.start.AsyncChildScreenShotTask",
-            true
+            "异步子屏幕截图任务|com.qidian.QDReader.start.AsyncChildScreenShotTask", true
         ),
         SelectedModel("异步主用户操作任务|com.qidian.QDReader.start.AsyncMainUserActionTask", true),
         SelectedModel("异步有赞-SDK任务|com.qidian.QDReader.start.AsyncChildYouZanTask", true),
         SelectedModel("异步初始化KNOBS-SDK任务|com.qidian.QDReader.start.AsyncInitKnobsTask", true),
         SelectedModel(
-            "异步子更新设备任务|com.qidian.QDReader.start.AsyncChildUpdateDeviceTask",
-            true
+            "异步子更新设备任务|com.qidian.QDReader.start.AsyncChildUpdateDeviceTask", true
         ),
         SelectedModel("异步子崩溃任务|com.qidian.QDReader.start.AsyncChildCrashTask", true),
         SelectedModel("异步子点播上传任务|com.qidian.QDReader.start.AsyncChildVODUploadTask", true),
@@ -595,7 +591,7 @@ data class OptionEntity(
      * @param enableHideAppIcon 启用隐藏应用图标
      * @param enableExportEmoji 启用导出表情包
      * @param enableOldDailyRead 启用旧的每日阅读
-     * @param enableDefaultImei 启用默认IMEI
+     * @param enableCustomIMEI 启用自定义IMEI
      */
     @Keep
     data class MainOption(
@@ -608,7 +604,8 @@ data class OptionEntity(
         var enableExportEmoji: Boolean = false,
         var enableOldDailyRead: Boolean = false,
         var enableStartCheckingPermissions: Boolean = true,
-        var enableDefaultImei: Boolean = true
+        var enableCustomIMEI: Boolean = true,
+        var qimei: String = ""
     )
 
     @Keep

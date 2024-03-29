@@ -381,12 +381,29 @@ class MainActivity : ModuleAppCompatActivity() {
                         optionEntity.mainOption.enableOldDailyRead = it
                     })
 
-                ItemWithSwitch(text = "启用默认IMEI",
+                val enableCustomIMEI =
+                    rememberMutableStateOf(value = optionEntity.mainOption.enableCustomIMEI)
+
+                ItemWithSwitch(text = "启用自定义IMEI",
                     modifier = itemModifier,
-                    checked = rememberMutableStateOf(value = optionEntity.mainOption.enableDefaultImei),
+                    checked = enableCustomIMEI,
                     onCheckedChange = {
-                        optionEntity.mainOption.enableDefaultImei = it
+                        optionEntity.mainOption.enableCustomIMEI = it
                     })
+
+                if (enableCustomIMEI.value) {
+                    val defaultQImei =
+                        rememberMutableStateOf(value = optionEntity.mainOption.qimei)
+
+                    ItemWithEditText(title = "QIMEI", text = defaultQImei, onTextChange = {
+                        if (it.isNotBlank()) {
+                            runAndCatch {
+                                optionEntity.mainOption.qimei = it
+                            }
+                        }
+                    })
+                }
+
 
                 ItemWithSwitch(text = "启用抓取cookie",
                     modifier = itemModifier,

@@ -17,6 +17,7 @@ import com.highcapable.yukihookapi.hook.factory.registerModuleAppActivities
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.android.BundleClass
+import com.highcapable.yukihookapi.hook.type.android.ContextClass
 import com.highcapable.yukihookapi.hook.type.java.IntType
 import com.highcapable.yukihookapi.hook.type.java.ListClass
 import com.highcapable.yukihookapi.hook.type.java.LongType
@@ -140,8 +141,8 @@ class HookEntry : IYukiHookXposedInit {
             oldDailyRead(versionCode, bridge)
         }
 
-        if (optionEntity.mainOption.enableDefaultImei) {
-            defaultIMEI(versionCode, bridge)
+        if (optionEntity.mainOption.enableCustomIMEI) {
+            customIMEI(versionCode, bridge)
         }
 
         if (optionEntity.cookieOption.enableCookie) {
@@ -717,31 +718,74 @@ fun PackageParam.oldDailyRead(versionCode: Int, bridge: DexKitBridge) {
 }
 
 /**
- * 启用默认imei
+ * 启用自定义imei
  * @since 7.9.334-1196 ~ 1299
  * @param [versionCode] 版本代码
  */
-fun PackageParam.defaultIMEI(versionCode: Int, bridge: DexKitBridge) {
+fun PackageParam.customIMEI(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
         in 1196..1299 -> {
-            bridge.findClass {
-                searchPackages = listOf("com.qidian.common.lib.util")
-                matcher {
-                    usingStrings = listOf("SIMSERIAL_release", "imei_release", "imei2_release")
-                }
-            }.firstNotNullOfOrNull { classData ->
-                classData.findMethod {
+            bridge.apply {
+
+                findClass {
+                    searchPackages = listOf("com.tencent.nywbeacon.qimei")
                     matcher {
-                        modifiers = Modifier.PUBLIC
-                        returnType = "java.lang.String"
-                        usingStrings = listOf("phone")
+                        usingStrings = listOf(
+                            "QIMEI_DENGTA",
+                            "qimei_v2",
+                            "Q_V3",
+                            "local_qimei use qimei local: null"
+                        )
                     }
-                }.forEach { methodData ->
-                    methodData.className.toClass().method {
-                        name = methodData.methodName
-                        emptyParam()
-                        returnType = StringClass
-                    }.hook().replaceTo("cc51cce4aafd4d0e0fd61031100014816b02")
+                }.firstNotNullOfOrNull { classData ->
+                    classData.findMethod {
+                        matcher {
+                            returnType = "java.lang.String"
+                            usingStrings =
+                                listOf(
+                                    "QIMEI_DENGTA",
+                                    "qimei_v2",
+                                    "Q_V3",
+                                    "local_qimei use qimei local: null"
+                                )
+                        }
+                    }.firstNotNullOfOrNull { methodData ->
+                        methodData.className.toClass().method {
+                            name = methodData.methodName
+                            param(ContextClass)
+                            returnType = StringClass
+                        }.hook()
+                            .replaceTo("""{"A3":"${optionEntity.mainOption.qimei}","A153":"${optionEntity.mainOption.qimei}"}""")
+                    }
+                }
+
+                findClass {
+                    matcher {
+                        usingStrings = listOf(
+                            "HUAWEI_OAID",
+                            "0821CAAD409B8402",
+                            "BEACON_QIMEI",
+                            "BEACON_QIMEI_36"
+                        )
+                    }
+                }.firstNotNullOfOrNull { classData ->
+                    classData.findMethod {
+                        matcher {
+                            returnType = "java.lang.String"
+                            usingStrings =
+                                listOf(
+                                    "BEACON_QIMEI",
+                                    "BEACON_QIMEI_36"
+                                )
+                        }
+                    }.forEach { methodData ->
+                        methodData.className.toClass().method {
+                            name = methodData.methodName
+                            emptyParam()
+                            returnType = StringClass
+                        }.hook()
+                            .replaceTo(optionEntity.mainOption.qimei)
+                    }
                 }
             }
         }
