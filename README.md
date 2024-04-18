@@ -41,6 +41,8 @@
 
 * QD模块交流群: [727983520](https://qm.qq.com/cgi-bin/qm/qr?k=JT0K0sZEJHm4CnsRjRTKxY3uL-xoO6CG&jump_from=webapi&authKey=yGg3h07NWBGGF4TmxtRNykIQ4HLM4t/uxrAtqHx15zgRmIR4sC14HxKYOq376ekt) <a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=JT0K0sZEJHm4CnsRjRTKxY3uL-xoO6CG&jump_from=webapi&authKey=yGg3h07NWBGGF4TmxtRNykIQ4HLM4t/uxrAtqHx15zgRmIR4sC14HxKYOq376ekt"><img border="0" src="https://pub.idqqimg.com/wpa/images/group.png" alt="QD模块交流群" title="QD模块交流群"></a>
 
+* 由于 [极狐Gitlab](https://jihulab.com/) 突然封禁导致 [极狐Gitlab-QDReadHook](https://jihulab.com/xihan123/QDReadHook) 我已无权限更改，该仓库内容已过时
+
 ### [大部分功能和介绍列表](https://xihan123.github.io/QDReadHook/app/cn.xihan.qdds/index.html)
 
 ## 常见问题
@@ -219,10 +221,10 @@
 
 <tr>
 <td>
-<img src="https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/zfb.jpg" width=270 >
+<img src="https://github.moeyy.xyz/https://raw.githubusercontent.com/xihan123/QDReadHook/master/Screenshots/zfb.jpg" width=270 >
 </td>
 <td>
-<img src="https://jihulab.com/xihan123/QDReadHook/-/raw/master/Screenshots/wx.png" width=270 >
+<img src="https://github.moeyy.xyz/https://raw.githubusercontent.com/xihan123/QDReadHook/master/Screenshots/wx.png" width=270 >
 </td>
 </tr>
 
