@@ -17,10 +17,10 @@
             android:value="true" />
         <meta-data
             android:name="xposeddescription"
-            android:value="起点阅读增强功能 目前仅支持:7.9.334-1096 + 正式版本" />
+            android:value="起点阅读增强功能 目前仅支持:7.9.334-1196 + 正式版本" />
         <meta-data
             android:name="xposedminversion"
-            android:value="90+" />
+            android:value="90" />
         <meta-data
             android:name="xposedsharedprefs"
             android:value="true" />
