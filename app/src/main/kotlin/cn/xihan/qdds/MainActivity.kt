@@ -1235,13 +1235,13 @@ fun Disclaimers(
             }
 
             append(" 或者 ")
-            withLink(TextDefaults.Url("https://jihulab.com/xihan123/QDReadHook#%E5%85%8D%E8%B4%A3%E5%A3%B0%E6%98%8E")) {
+            withLink(TextDefaults.Url("https://gitee.com/xihan123/QDReadHook#%E5%85%8D%E8%B4%A3%E5%A3%B0%E6%98%8E")) {
                 withStyle(
                     style = SpanStyle(
                         color = Color(0xFF0E9FF2), fontWeight = FontWeight.W900
                     )
                 ) {
-                    append("极狐GitLab")
+                    append("Gitee")
                 }
             }
 
