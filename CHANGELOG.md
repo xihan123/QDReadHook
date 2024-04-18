@@ -1,6 +1,9 @@
 # Changelog
 ## [3.1.3](https://github.com/xihan123/QDReadHook/compare/v3.1.2...v3.1.3) (2024-04-18)
 
+### Features
+
+* **主设置:** `1196` + 新增 修复抖音分享,启用后可以修复抖音分享视频显示`文件不存在` ([0a6b671](https://github.com/xihan123/QDReadHook/commit/0a6b671f6a432fdb780c75994f8a44723f5f5f88))
 
 ### Miscellaneous
 
