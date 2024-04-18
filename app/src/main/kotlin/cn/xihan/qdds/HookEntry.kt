@@ -29,6 +29,7 @@ import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
 import org.json.JSONObject
 import org.luckypray.dexkit.DexKitBridge
+import java.io.File
 import java.lang.reflect.Modifier
 
 
@@ -104,14 +105,6 @@ class HookEntry : IYukiHookXposedInit {
 
             }
 
-//            findMethodAndPrint("a.c")
-//
-//            findMethodAndPrint("com.qidian.common.lib.util.c")
-//
-//            findMethodAndPrint("com.yuewen.fock.Fock")
-//
-//            findMethodAndPrint("uj.b")
-
         }
     }
 
@@ -143,6 +136,10 @@ class HookEntry : IYukiHookXposedInit {
 
         if (optionEntity.mainOption.enableCustomIMEI) {
             customIMEI(versionCode, bridge)
+        }
+
+        if (optionEntity.mainOption.enableFixDouYinShare) {
+            fixDouYinShare(versionCode, bridge)
         }
 
         if (optionEntity.cookieOption.enableCookie) {
@@ -862,6 +859,62 @@ fun PackageParam.debug(versionCode: Int, bridge: DexKitBridge) {
                         }"
                     )
                 }.toString().writeTextFile()
+            }
+        }
+    }
+}
+
+/**
+ * 修复抖音分享
+ * @param versionCode Int
+ * @param bridge DexKitBridge
+ * @since 7.9.334-1196 ~ 1299
+ *
+ */
+fun PackageParam.fixDouYinShare(versionCode: Int, bridge: DexKitBridge) {
+    when (versionCode) {
+        in 1196..1299 -> {
+            bridge.findClass {
+                searchPackages = listOf("com.qidian.QDReader.util")
+                matcher {
+                    usingStrings = listOf(
+                        "awamlwk7qtxrss9v",
+                        "dyAuthorCallback",
+                    )
+                }
+            }.firstNotNullOfOrNull { classData ->
+                classData.findMethod {
+                    matcher {
+                        paramTypes = listOf(
+                            "java.lang.String",
+                            "org.json.JSONObject",
+                            "android.app.Activity"
+                        )
+                        returnType = "void"
+                        usingStrings = listOf(
+                            "hashTags",
+                            "openID"
+                        )
+                    }
+                }.firstNotNullOfOrNull { methodData ->
+                    methodData.className.toClass().method {
+                        name = methodData.methodName
+                        paramCount(methodData.paramTypeNames.size)
+                        returnType = UnitType
+                    }.hook().before {
+                        val path =
+                            args.first().safeCast<String>()
+                                ?: run { "路径为空".loge();return@before }
+                        val file = File(path)
+                        val newFile = File(
+                            file.parent,
+                            "video.mp4"
+                        )
+                        file.renameTo(newFile)
+                        args(0).set(newFile.absolutePath)
+                    }
+                }
+
             }
         }
     }

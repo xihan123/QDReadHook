@@ -38,7 +38,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
@@ -66,6 +65,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextDefaults
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -81,21 +81,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.UrlAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -380,6 +380,15 @@ class MainActivity : ModuleAppCompatActivity() {
                     onCheckedChange = {
                         optionEntity.mainOption.enableOldDailyRead = it
                     })
+
+                ItemWithSwitch(
+                    text = "启用修复抖音分享",
+                    modifier = itemModifier,
+                    checked = rememberMutableStateOf(value = optionEntity.mainOption.enableFixDouYinShare),
+                    onCheckedChange = {
+                        optionEntity.mainOption.enableFixDouYinShare = it
+                    }
+                )
 
                 val enableCustomIMEI =
                     rememberMutableStateOf(value = optionEntity.mainOption.enableCustomIMEI)
@@ -1158,7 +1167,6 @@ fun Disclaimers(
 ) {
     var remainingTime by rememberSavableMutableStateOf(value = 30L)
     val coroutineScope = rememberCoroutineScope()
-    val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     if (displayButton) {
         DisposableEffect(lifecycleOwner) {
@@ -1202,34 +1210,39 @@ fun Disclaimers(
             appendLine("        4.开发者保留对该Xposed模块的更新、修改、暂停、终止等权利，使用者应该自行确认其使用版本的安全性和稳定性。\n\n")
             append("        本模块仅供学习交流，请在下载24小时内删除。在使用该Xposed模块之前认真审慎阅读、充分理解 ")
 
-            pushUrlAnnotation(UrlAnnotation("https://acts.qidian.com/pact/user_pact.html"))
-            withStyle(
-                style = SpanStyle(
-                    color = Color(0xFF0E9FF2), fontWeight = FontWeight.W900
-                )
-            ) {
-                append("起点读书用户服务协议")
+            withLink(TextDefaults.Url("https://acts.qidian.com/pact/user_pact.html")) {
+                withStyle(
+                    style = SpanStyle(
+                        color = Color(0xFF0E9FF2), fontWeight = FontWeight.W900
+                    )
+                ) {
+                    append("起点读书用户服务协议")
+                }
             }
 
             append("以及上述 免责声明，如有异议请勿使用。如果您使用了该Xposed模块，即代表您已经完全接受本免责声明。\n\n")
 
             append("详细信息请到 ")
-            pushUrlAnnotation(UrlAnnotation("https://github.com/xihan123/QDReadHook#%E5%85%8D%E8%B4%A3%E5%A3%B0%E6%98%8E"))
-            withStyle(
-                style = SpanStyle(
-                    color = Color(0xFF0E9FF2), fontWeight = FontWeight.W900
-                )
-            ) {
-                append("Github")
+
+            withLink(TextDefaults.Url("https://github.com/xihan123/QDReadHook#%E5%85%8D%E8%B4%A3%E5%A3%B0%E6%98%8E")) {
+                withStyle(
+                    style = SpanStyle(
+                        color = Color(0xFF0E9FF2), fontWeight = FontWeight.W900
+                    )
+                ) {
+                    append("Github")
+                }
             }
+
             append(" 或者 ")
-            pushUrlAnnotation(UrlAnnotation("https://jihulab.com/xihan123/QDReadHook#%E5%85%8D%E8%B4%A3%E5%A3%B0%E6%98%8E"))
-            withStyle(
-                style = SpanStyle(
-                    color = Color(0xFF0E9FF2), fontWeight = FontWeight.W900
-                )
-            ) {
-                append("极狐GitLab")
+            withLink(TextDefaults.Url("https://jihulab.com/xihan123/QDReadHook#%E5%85%8D%E8%B4%A3%E5%A3%B0%E6%98%8E")) {
+                withStyle(
+                    style = SpanStyle(
+                        color = Color(0xFF0E9FF2), fontWeight = FontWeight.W900
+                    )
+                ) {
+                    append("极狐GitLab")
+                }
             }
 
             append(" 查看")
@@ -1243,14 +1256,12 @@ fun Disclaimers(
             }
         }
 
-        ClickableText(text = text, style = TextStyle(
-            color = MaterialTheme.colorScheme.onSurface
-        ), onClick = { offset ->
-            text.getUrlAnnotations(start = offset, end = offset).map { it.item.url }
-                .forEach { url ->
-                    url.takeUnless { url.isBlank() }?.let { context.openUrl(url) }
-                }
-        })
+        Text(
+            text = text,
+            style = TextStyle(
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        )
 
         if (displayButton) {
             Spacer(modifier = Modifier.height(16.dp))

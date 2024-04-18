@@ -592,6 +592,7 @@ data class OptionEntity(
      * @param enableExportEmoji 启用导出表情包
      * @param enableOldDailyRead 启用旧的每日阅读
      * @param enableCustomIMEI 启用自定义IMEI
+     * @param enableFixDouYinShare 启用修复抖音分享
      */
     @Keep
     data class MainOption(
@@ -605,7 +606,8 @@ data class OptionEntity(
         var enableOldDailyRead: Boolean = false,
         var enableStartCheckingPermissions: Boolean = true,
         var enableCustomIMEI: Boolean = true,
-        var qimei: String = ""
+        var qimei: String = "",
+        var enableFixDouYinShare: Boolean = false
     )
 
     @Keep
