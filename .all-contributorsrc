@@ -1,16 +1,27 @@
 {
-	"files": [
-		"README.md"
-	],
-	"imageSize": 100,
-	"commit": false,
-	"projectName": "QDReadHook",
-	"projectOwner": "xihan123",
-	"repoType": "github",
-	"repoHost": "https://github.com",
-	"linkToUsage": true,
-	"skipCi": true,
-	"commitConvention": "angular",
-	"commitType": "docs",
-	"contributors": []
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "projectName": "QDReadHook",
+  "projectOwner": "xihan123",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "linkToUsage": true,
+  "skipCi": true,
+  "commitConvention": "angular",
+  "commitType": "docs",
+  "contributors": [
+    {
+      "login": "vvb2060",
+      "name": "南宫雪珊",
+      "avatar_url": "https://avatars.githubusercontent.com/u/26996262?v=4",
+      "profile": "https://github.com/vvb2060",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7
 }
