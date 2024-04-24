@@ -6,6 +6,24 @@
 
 * 贡献者列表 ([08f7b1d](https://github.com/xihan123/QDReadHook/commit/08f7b1d640947b4bf01ba7e333ae1caf50e301a9))
 
+
+### Docs
+
+* update .all-contributorsrc [skip ci] ([14eab33](https://github.com/xihan123/QDReadHook/commit/14eab33362e9df1e70593fdd3c5567e58f259a91))
+* update README.md [skip ci] ([fbfa6c3](https://github.com/xihan123/QDReadHook/commit/fbfa6c3e1d26c426019b92232e93f84a6dbf22dc))
+
+
+### Miscellaneous
+
+* **master:** release 3.1.4 ([1d2d047](https://github.com/xihan123/QDReadHook/commit/1d2d0475b868bb0d5f3d30073212efb305efcabe))
+
+## [3.1.4](https://github.com/xihan123/QDReadHook/compare/v3.1.4...v3.1.4) (2024-04-24)
+
+
+### Bug Fixes
+
+* 贡献者列表 ([08f7b1d](https://github.com/xihan123/QDReadHook/commit/08f7b1d640947b4bf01ba7e333ae1caf50e301a9))
+
 ## [3.1.4](https://github.com/xihan123/QDReadHook/compare/v3.1.3...v3.1.4) (2024-04-24)
 
 
