@@ -153,7 +153,6 @@ class HookEntry : IYukiHookXposedInit {
         if (optionEntity.readPageOption.enableReadTimeFactor) {
             readingTimeSpeedFactor(
                 versionCode = versionCode,
-                speedFactor = optionEntity.readPageOption.speedFactor,
                 bridge = bridge
             )
         }
@@ -728,23 +727,19 @@ fun PackageParam.customIMEI(versionCode: Int, bridge: DexKitBridge) {
                     searchPackages = listOf("com.tencent.nywbeacon.qimei")
                     matcher {
                         usingStrings = listOf(
-                            "QIMEI_DENGTA",
-                            "qimei_v2",
-                            "Q_V3",
-                            "local_qimei use qimei local: null"
+                            "QIMEI_DENGTA", "qimei_v2", "Q_V3", "local_qimei use qimei local: null"
                         )
                     }
                 }.firstNotNullOfOrNull { classData ->
                     classData.findMethod {
                         matcher {
                             returnType = "java.lang.String"
-                            usingStrings =
-                                listOf(
-                                    "QIMEI_DENGTA",
-                                    "qimei_v2",
-                                    "Q_V3",
-                                    "local_qimei use qimei local: null"
-                                )
+                            usingStrings = listOf(
+                                "QIMEI_DENGTA",
+                                "qimei_v2",
+                                "Q_V3",
+                                "local_qimei use qimei local: null"
+                            )
                         }
                     }.firstNotNullOfOrNull { methodData ->
                         methodData.className.toClass().method {
@@ -759,29 +754,23 @@ fun PackageParam.customIMEI(versionCode: Int, bridge: DexKitBridge) {
                 findClass {
                     matcher {
                         usingStrings = listOf(
-                            "HUAWEI_OAID",
-                            "0821CAAD409B8402",
-                            "BEACON_QIMEI",
-                            "BEACON_QIMEI_36"
+                            "HUAWEI_OAID", "0821CAAD409B8402", "BEACON_QIMEI", "BEACON_QIMEI_36"
                         )
                     }
                 }.firstNotNullOfOrNull { classData ->
                     classData.findMethod {
                         matcher {
                             returnType = "java.lang.String"
-                            usingStrings =
-                                listOf(
-                                    "BEACON_QIMEI",
-                                    "BEACON_QIMEI_36"
-                                )
+                            usingStrings = listOf(
+                                "BEACON_QIMEI", "BEACON_QIMEI_36"
+                            )
                         }
                     }.forEach { methodData ->
                         methodData.className.toClass().method {
                             name = methodData.methodName
                             emptyParam()
                             returnType = StringClass
-                        }.hook()
-                            .replaceTo(optionEntity.mainOption.qimei)
+                        }.hook().replaceTo(optionEntity.mainOption.qimei)
                     }
                 }
             }
@@ -852,12 +841,10 @@ fun PackageParam.debug(versionCode: Int, bridge: DexKitBridge) {
                     append(", UID: ${args[3].safeCast<String>()?.ifBlank { "空" }}")
                     append(", QIMEI: ${args[4].safeCast<String>()?.ifBlank { "空" }}")
                     append(", Type: ${args[6].safeCast<Int>()}")
-                    append(
-                        ", 返回值: ${
-                            result.safeCast<ByteArray>()
-                                ?.let { com.qidian.common.lib.util.c.search(it) }
-                        }"
-                    )
+                    append(", 返回值: ${
+                        result.safeCast<ByteArray>()
+                            ?.let { com.qidian.common.lib.util.c.search(it) }
+                    }")
                 }.toString().writeTextFile()
             }
         }
@@ -886,14 +873,11 @@ fun PackageParam.fixDouYinShare(versionCode: Int, bridge: DexKitBridge) {
                 classData.findMethod {
                     matcher {
                         paramTypes = listOf(
-                            "java.lang.String",
-                            "org.json.JSONObject",
-                            "android.app.Activity"
+                            "java.lang.String", "org.json.JSONObject", "android.app.Activity"
                         )
                         returnType = "void"
                         usingStrings = listOf(
-                            "hashTags",
-                            "openID"
+                            "hashTags", "openID"
                         )
                     }
                 }.firstNotNullOfOrNull { methodData ->
@@ -902,13 +886,11 @@ fun PackageParam.fixDouYinShare(versionCode: Int, bridge: DexKitBridge) {
                         paramCount(methodData.paramTypeNames.size)
                         returnType = UnitType
                     }.hook().before {
-                        val path =
-                            args.first().safeCast<String>()
-                                ?: run { "路径为空".loge();return@before }
+                        val path = args.first().safeCast<String>()
+                            ?: run { "路径为空".loge();return@before }
                         val file = File(path)
                         val newFile = File(
-                            file.parent,
-                            "video.mp4"
+                            file.parent, "video.mp4"
                         )
                         file.renameTo(newFile)
                         args(0).set(newFile.absolutePath)

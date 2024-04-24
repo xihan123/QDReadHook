@@ -693,7 +693,7 @@ data class OptionEntity(
      * @param enableShowReaderPageChapterSaveAudioDialog 启用显示阅读页章节保存音频对话框
      * @param enableCopyReaderPageChapterComment 启用复制阅读页章节评论
      * @param enableReadTimeFactor 启用阅读时间翻倍
-     * @param speedFactor 阅读时间倍速
+     * @param timeFactor 阅读时间比例
      */
     @Keep
     data class ReadPageOption(
@@ -705,7 +705,8 @@ data class OptionEntity(
         var enableCopyReaderPageChapterComment: Boolean = false,
         var enableCustomFont: Boolean = true,
         var enableReadTimeFactor: Boolean = false,
-        var speedFactor: Int = 5
+        var timeFactor: Int = 1,
+        var lastTime: Long = 0,
     )
 
     /**

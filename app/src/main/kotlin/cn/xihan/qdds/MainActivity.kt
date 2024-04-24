@@ -543,12 +543,13 @@ class MainActivity : ModuleAppCompatActivity() {
 
                 if (enableReadTimeFactor.value) {
                     val speedFactor =
-                        rememberMutableStateOf(value = optionEntity.readPageOption.speedFactor.toString())
+                        rememberMutableStateOf(value = optionEntity.readPageOption.timeFactor.toString())
 
-                    ItemWithEditText(title = "时间加倍系数", text = speedFactor, onTextChange = {
+                    ItemWithEditText(title = "时间比例", text = speedFactor, onTextChange = {
                         if (it.isNotBlank()) {
                             runAndCatch {
-                                optionEntity.readPageOption.speedFactor = it.toInt()
+                                val int = it.toInt()
+                                if (int in 1..80) optionEntity.readPageOption.timeFactor = int
                             }
                         }
                     })
