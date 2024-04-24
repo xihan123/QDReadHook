@@ -9,10 +9,10 @@ $dokka.location:cn.xihan.qdds//bookDetailHide/com.highcapable.yukihookapi.hook.p
 $dokka.location:cn.xihan.qdds//captureTheOfficialLaunchMapList/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/capture-the-official-launch-map-list.html
 $dokka.location:cn.xihan.qdds//cookie/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int#org.luckypray.dexkit.DexKitBridge/PointingToDeclaration/app/cn.xihan.qdds/cookie.html
 $dokka.location:cn.xihan.qdds//customBookShelfTopImage/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/custom-book-shelf-top-image.html
+$dokka.location:cn.xihan.qdds//customIMEI/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int#org.luckypray.dexkit.DexKitBridge/PointingToDeclaration/app/cn.xihan.qdds/custom-i-m-e-i.html
 $dokka.location:cn.xihan.qdds//customLocalStartImage/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/custom-local-start-image.html
 $dokka.location:cn.xihan.qdds//customStartImage/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/custom-start-image.html
 $dokka.location:cn.xihan.qdds//debug/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int#org.luckypray.dexkit.DexKitBridge/PointingToDeclaration/app/cn.xihan.qdds/debug.html
-$dokka.location:cn.xihan.qdds//defaultIMEI/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int#org.luckypray.dexkit.DexKitBridge/PointingToDeclaration/app/cn.xihan.qdds/default-i-m-e-i.html
 $dokka.location:cn.xihan.qdds//disableAccountCenterAd/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/disable-account-center-ad.html
 $dokka.location:cn.xihan.qdds//disableBookshelfActivityPopup/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/disable-bookshelf-activity-popup.html
 $dokka.location:cn.xihan.qdds//disableBookshelfFloatWindow/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/disable-bookshelf-float-window.html
@@ -26,6 +26,7 @@ $dokka.location:cn.xihan.qdds//disableReaderPageBottom/com.highcapable.yukihooka
 $dokka.location:cn.xihan.qdds//disableReaderPageFloatAd/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/disable-reader-page-float-ad.html
 $dokka.location:cn.xihan.qdds//disableSplashAd/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int#org.luckypray.dexkit.DexKitBridge/PointingToDeclaration/app/cn.xihan.qdds/disable-splash-ad.html
 $dokka.location:cn.xihan.qdds//exportEmoji/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/export-emoji.html
+$dokka.location:cn.xihan.qdds//fixDouYinShare/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int#org.luckypray.dexkit.DexKitBridge/PointingToDeclaration/app/cn.xihan.qdds/fix-dou-yin-share.html
 $dokka.location:cn.xihan.qdds//freeAdReward/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/free-ad-reward.html
 $dokka.location:cn.xihan.qdds//hideBookshelfDailyReading/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int#org.luckypray.dexkit.DexKitBridge/PointingToDeclaration/app/cn.xihan.qdds/hide-bookshelf-daily-reading.html
 $dokka.location:cn.xihan.qdds//hideMainTopBox/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/hide-main-top-box.html
@@ -49,7 +50,7 @@ $dokka.location:cn.xihan.qdds//oldDailyRead/com.highcapable.yukihookapi.hook.par
 $dokka.location:cn.xihan.qdds//postToShowImageUrl/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int#org.luckypray.dexkit.DexKitBridge/PointingToDeclaration/app/cn.xihan.qdds/post-to-show-image-url.html
 $dokka.location:cn.xihan.qdds//quickShield/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/quick-shield.html
 $dokka.location:cn.xihan.qdds//readBookLastPage/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean#kotlin.Boolean/PointingToDeclaration/app/cn.xihan.qdds/read-book-last-page.html
-$dokka.location:cn.xihan.qdds//readingTimeSpeedFactor/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int#kotlin.Int#org.luckypray.dexkit.DexKitBridge/PointingToDeclaration/app/cn.xihan.qdds/reading-time-speed-factor.html
+$dokka.location:cn.xihan.qdds//readingTimeSpeedFactor/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int#org.luckypray.dexkit.DexKitBridge/PointingToDeclaration/app/cn.xihan.qdds/reading-time-speed-factor.html
 $dokka.location:cn.xihan.qdds//receiveReadingCreditsAutomatically/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/receive-reading-credits-automatically.html
 $dokka.location:cn.xihan.qdds//receivedReadingPageEndHongBaoAutomatically/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int/PointingToDeclaration/app/cn.xihan.qdds/received-reading-page-end-hong-bao-automatically.html
 $dokka.location:cn.xihan.qdds//redirectReadingPageBackgroundPath/com.highcapable.yukihookapi.hook.param.PackageParam#kotlin.Int#org.luckypray.dexkit.DexKitBridge/PointingToDeclaration/app/cn.xihan.qdds/redirect-reading-page-background-path.html
