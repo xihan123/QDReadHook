@@ -1,4 +1,21 @@
 # Changelog
+## [3.1.4](https://github.com/xihan123/QDReadHook/compare/v3.1.3...v3.1.4) (2024-04-24)
+
+
+### Features
+
+* 添加贡献者列表 ([25eaae0](https://github.com/xihan123/QDReadHook/commit/25eaae0cf953dc52c43117d4a9b11d08fe008061))
+
+
+### Feature Improvements
+
+* **阅读页设置:** 重写阅读时间加倍 [@vvb2060](https://github.com/vvb2060) ([bf0bf7b](https://github.com/xihan123/QDReadHook/commit/bf0bf7b76eb65b56a2f946356daa8fe9a5e47f8a))
+
+
+### Miscellaneous
+
+* 更新依赖 ([7e3c593](https://github.com/xihan123/QDReadHook/commit/7e3c593f7bdfadd691c232d5fe5a176c33671bc8))
+
 ## [3.1.3](https://github.com/xihan123/QDReadHook/compare/v3.1.2...v3.1.3) (2024-04-18)
 
 ### Features
