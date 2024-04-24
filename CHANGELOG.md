@@ -1,4 +1,11 @@
 # Changelog
+## [3.1.4](https://github.com/xihan123/QDReadHook/compare/v3.1.4...v3.1.4) (2024-04-24)
+
+
+### Bug Fixes
+
+* 贡献者列表 ([08f7b1d](https://github.com/xihan123/QDReadHook/commit/08f7b1d640947b4bf01ba7e333ae1caf50e301a9))
+
 ## [3.1.4](https://github.com/xihan123/QDReadHook/compare/v3.1.3...v3.1.4) (2024-04-24)
 
 
