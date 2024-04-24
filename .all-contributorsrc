@@ -1,0 +1,16 @@
+{
+	"files": [
+		"CONTRIBUTING.md"
+	],
+	"imageSize": 100,
+	"commit": false,
+	"projectName": "QDReadHook",
+	"projectOwner": "xihan123",
+	"repoType": "github",
+	"repoHost": "https://github.com",
+	"linkToUsage": true,
+	"skipCi": true,
+	"commitConvention": "angular",
+	"commitType": "docs",
+	"contributors": []
+}
