@@ -319,8 +319,8 @@ fun PackageParam.readingTimeSpeedFactor(
                         total = total * option.timeFactor / 100
                         if (total <= totalTime) return@after
                         val max =
-                            LocalTime.now().getLong(ChronoField.MILLI_OF_DAY).takeIf { it > total }
-                                ?: total
+                            LocalTime.now().getLong(ChronoField.MILLI_OF_DAY)
+                        if (total >= max) total = max
 
                         fun cloneObject(obj: Any): Any {
                             val clone = obj.javaClass.declaredConstructors.first().newInstance(null)
@@ -332,7 +332,7 @@ fun PackageParam.readingTimeSpeedFactor(
                         }
 
                         val newList = LinkedList<Any>()
-                        var remainingTime = max
+                        var remainingTime = total
 
                         val maxTimePerCycle = 20 * 60 * 1000L
 
