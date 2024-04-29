@@ -490,6 +490,8 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int, bridge: DexKitBridge
                         jb?.optJSONObject("Data")?.apply {
                             put("BoolBatchSubscribe", true)
                             put("IsFreeLimit", -1)
+                            put("DownloadTips","")
+                            put("IsFreeLimitMsg", "")
                         }
                         args(1).set(jb)
                     }
