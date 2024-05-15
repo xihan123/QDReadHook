@@ -5,9 +5,7 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import cn.xihan.qdds.Option.audioPath
-import cn.xihan.qdds.Option.optionEntity
 import cn.xihan.qdds.Option.redirectThemePath
-import cn.xihan.qdds.Option.updateOptionEntity
 import com.alibaba.fastjson2.parseObject
 import com.alibaba.fastjson2.toJSONString
 import com.highcapable.yukihookapi.hook.factory.method
@@ -18,9 +16,6 @@ import com.highcapable.yukihookapi.hook.type.java.UnitType
 import org.luckypray.dexkit.DexKitBridge
 import java.io.File
 import java.lang.reflect.Modifier
-import java.time.LocalTime
-import java.time.temporal.ChronoField
-import java.util.LinkedList
 
 /**
  * # 重定向阅读页背景路径
@@ -276,12 +271,13 @@ private fun Context.audioExportDialog(networkUrl: String, filePath: String) {
 
 /**
  * 阅读时间加倍
- *  随缘生效,默认为1倍,建议倍速不要太大，开大了到时候号没了后果自负
+ * * 随缘生效,默认为5倍,建议倍速不要太大，开大了到时候号没了后果自负
  * @since 7.9.334-1196 ~ 1299
  * @param [versionCode] 版本代码
+ * @param [speedFactor] 速度系数
  */
 fun PackageParam.readingTimeSpeedFactor(
-    versionCode: Int, bridge: DexKitBridge
+    versionCode: Int, speedFactor: Int = 5, bridge: DexKitBridge
 ) {
     when (versionCode) {
         in 1196..1299 -> {
@@ -305,55 +301,21 @@ fun PackageParam.readingTimeSpeedFactor(
                         paramCount(methodData.paramTypeNames.size)
                         returnType = ListClass
                     }.hook().after {
-                        val list = result.safeCast<MutableList<*>>()?.takeIf { it.size == 1 }
-                            ?: return@after
-                        val item = list.first().takeIf { it != null } ?: return@after
-                        val option = optionEntity.readPageOption
-                        val endTime = item.getParam<Long>("endTime") ?: 0L
-                        val totalTime = item.getParam<Long>("totalTime") ?: 0L
-                        var total = endTime - option.lastTime
-                        if (total <= 0) return@after
-                        option.lastTime = endTime
-                        updateOptionEntity()
-                        if (total == endTime) return@after
-                        total = total * option.timeFactor / 100
-                        if (total <= totalTime) return@after
-                        val max =
-                            LocalTime.now().getLong(ChronoField.MILLI_OF_DAY)
-                        if (total >= max) total = max
-
-                        fun cloneObject(obj: Any): Any {
-                            val clone = obj.javaClass.declaredConstructors.first().newInstance(null)
-                            obj.javaClass.declaredFields.forEach { field ->
-                                field.isAccessible = true
-                                field[clone] = field[obj]
+                        val list = result.safeCast<MutableList<*>>()
+                        if (list.isNullOrEmpty()) return@after
+                        list.forEach { item ->
+                            item?.let {
+                                val totalTime = it.getParam<Long>("totalTime")
+                                val currentTime = System.currentTimeMillis()
+                                val startTime2 = currentTime - ((totalTime ?: 10000) * speedFactor)
+                                it.setParams(
+                                    "startTime" to startTime2,
+                                    "endTime" to currentTime,
+                                    "totalTime" to (currentTime - startTime2),
+                                    "chapterVIP" to 1
+                                )
                             }
-                            return clone
                         }
-
-                        val newList = LinkedList<Any>()
-                        var remainingTime = total
-
-                        val maxTimePerCycle = 20 * 60 * 1000L
-
-                        while (remainingTime > 0) {
-                            val cycleTime = remainingTime.coerceAtMost(maxTimePerCycle)
-                            val clone = cloneObject(item)
-
-                            val startTime = endTime - remainingTime
-
-                            clone.setParams(
-                                "startTime" to startTime,
-                                "endTime" to (startTime + cycleTime),
-                                "totalTime" to cycleTime,
-                                "chapterVIP" to 1
-                            )
-                            newList.addFirst(clone)
-                            remainingTime -= cycleTime + randomTime()
-                        }
-
-                        result = newList
-
                     }
                 }
             }

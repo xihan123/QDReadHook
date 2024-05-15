@@ -153,6 +153,7 @@ class HookEntry : IYukiHookXposedInit {
         if (optionEntity.readPageOption.enableReadTimeFactor) {
             readingTimeSpeedFactor(
                 versionCode = versionCode,
+                speedFactor = optionEntity.readPageOption.speedFactor,
                 bridge = bridge
             )
         }
@@ -490,7 +491,7 @@ fun PackageParam.ignoreFreeSubscribeLimit(versionCode: Int, bridge: DexKitBridge
                         jb?.optJSONObject("Data")?.apply {
                             put("BoolBatchSubscribe", true)
                             put("IsFreeLimit", -1)
-                            put("DownloadTips","")
+                            put("DownloadTips", "")
                             put("IsFreeLimitMsg", "")
                         }
                         args(1).set(jb)

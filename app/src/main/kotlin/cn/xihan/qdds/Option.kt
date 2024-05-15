@@ -705,8 +705,7 @@ data class OptionEntity(
         var enableCopyReaderPageChapterComment: Boolean = false,
         var enableCustomFont: Boolean = true,
         var enableReadTimeFactor: Boolean = false,
-        var timeFactor: Int = 1,
-        var lastTime: Long = 0,
+        var speedFactor: Int = 5
     )
 
     /**

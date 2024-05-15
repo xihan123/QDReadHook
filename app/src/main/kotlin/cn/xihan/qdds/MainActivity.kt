@@ -65,7 +65,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextDefaults
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -82,6 +81,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -543,13 +543,12 @@ class MainActivity : ModuleAppCompatActivity() {
 
                 if (enableReadTimeFactor.value) {
                     val speedFactor =
-                        rememberMutableStateOf(value = optionEntity.readPageOption.timeFactor.toString())
+                        rememberMutableStateOf(value = optionEntity.readPageOption.speedFactor.toString())
 
-                    ItemWithEditText(title = "时间比例", text = speedFactor, onTextChange = {
+                    ItemWithEditText(title = "时间加倍系数", text = speedFactor, onTextChange = {
                         if (it.isNotBlank()) {
                             runAndCatch {
-                                val int = it.toInt()
-                                if (int in 1..80) optionEntity.readPageOption.timeFactor = int
+                                optionEntity.readPageOption.speedFactor = it.toInt()
                             }
                         }
                     })
@@ -1211,7 +1210,7 @@ fun Disclaimers(
             appendLine("        4.开发者保留对该Xposed模块的更新、修改、暂停、终止等权利，使用者应该自行确认其使用版本的安全性和稳定性。\n\n")
             append("        本模块仅供学习交流，请在下载24小时内删除。在使用该Xposed模块之前认真审慎阅读、充分理解 ")
 
-            withLink(TextDefaults.Url("https://acts.qidian.com/pact/user_pact.html")) {
+            withLink(LinkAnnotation.Url("https://acts.qidian.com/pact/user_pact.html")) {
                 withStyle(
                     style = SpanStyle(
                         color = Color(0xFF0E9FF2), fontWeight = FontWeight.W900
@@ -1225,7 +1224,7 @@ fun Disclaimers(
 
             append("详细信息请到 ")
 
-            withLink(TextDefaults.Url("https://github.com/xihan123/QDReadHook#%E5%85%8D%E8%B4%A3%E5%A3%B0%E6%98%8E")) {
+            withLink(LinkAnnotation.Url("https://github.com/xihan123/QDReadHook#%E5%85%8D%E8%B4%A3%E5%A3%B0%E6%98%8E")) {
                 withStyle(
                     style = SpanStyle(
                         color = Color(0xFF0E9FF2), fontWeight = FontWeight.W900
@@ -1236,7 +1235,7 @@ fun Disclaimers(
             }
 
             append(" 或者 ")
-            withLink(TextDefaults.Url("https://gitee.com/xihan123/QDReadHook#%E5%85%8D%E8%B4%A3%E5%A3%B0%E6%98%8E")) {
+            withLink(LinkAnnotation.Url("https://gitee.com/xihan123/QDReadHook#%E5%85%8D%E8%B4%A3%E5%A3%B0%E6%98%8E")) {
                 withStyle(
                     style = SpanStyle(
                         color = Color(0xFF0E9FF2), fontWeight = FontWeight.W900
