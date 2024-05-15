@@ -1,4 +1,16 @@
 # Changelog
+## [3.1.6](https://github.com/xihan123/QDReadHook/compare/v3.1.5...v3.1.6) (2024-05-15)
+
+
+### Reverts
+
+* **阅读页设置:** 恢复旧版阅读时间加倍 ([657bcaf](https://github.com/xihan123/QDReadHook/commit/657bcaf42c4adb8596db2958fe92fe480b44df6a))
+
+
+### Miscellaneous
+
+* 更新依赖库 ([945d55e](https://github.com/xihan123/QDReadHook/commit/945d55ed1d51d5bdf0ecba3667da166180c1eace))
+
 ## [3.1.5](https://github.com/xihan123/QDReadHook/compare/v3.1.4...v3.1.5) (2024-04-29)
 
 
