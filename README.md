@@ -6,8 +6,6 @@
 ![downloads](https://img.shields.io/github/downloads/xihan123/QDReadHook/total)
 [![Blank](https://img.shields.io/github/downloads/Xposed-Modules-Repo/cn.xihan.qdds/total?label=LSPosed%20Repo&logo=Android&style=flat&labelColor=F48FB1&logoColor=ffffff)](https://github.com/Xposed-Modules-Repo/cn.xihan.qdds/releases)
 [![license](https://img.shields.io/github/license/xihan123/QDReadHook.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
-[![All Contributors](https://img.shields.io/github/all-contributors/xihan123/QDReadHook?color=ee8449&style=flat-square)](#contributors)
-
 
 ---
 
@@ -105,12 +103,13 @@
 
 * 部分功能之前好好的，突然失效，**1.2.9+ 配置文件模型改变，部分设定需要重新设置!!!** 开关以及配置都正常却失效日志也没有。可以理解为被热修复了，一般来说更新最新版即可或者提Issues
 
-* 激活模块或使用Lspatch版起点闪退,可按如下流程排查
+* 激活模块或使用Lspatch版起点闪退,可按如下流程排查.
 
       1.关闭免广告领取奖励
       2.关闭快速屏蔽弹框
       3.是否使用了lspatch修补的起点并且同时启用了模块
       4.关闭模块
+      ps: 保持试用模式可有效防止闪退
 
   如果上述流程走完还是无法解决闪退，可以把配置文件删除并重启起点，再不济重启手机
 
@@ -244,30 +243,3 @@
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=xihan123/QDReadHook&type=Date)](https://star-history.com/#xihan123/QDReadHook&Date)
-
-## Contributors
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tbody>
-    <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/vvb2060"><img src="https://avatars.githubusercontent.com/u/26996262?v=4?s=100" width="100px;" alt="南宫雪珊"/><br /><sub><b>南宫雪珊</b></sub></a><br /><a href="https://github.com/xihan123/QDReadHook/commits?author=vvb2060" title="Code">💻</a></td>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr>
-      <td align="center" size="13px" colspan="7">
-        <img src="https://raw.githubusercontent.com/all-contributors/all-contributors-cli/1b8533af435da9854653492b1327a23a4dbd0a10/assets/logo-small.svg">
-          <a href="https://all-contributors.js.org/docs/en/bot/usage">Add your contributions</a>
-        </img>
-      </td>
-    </tr>
-  </tfoot>
-</table>
-
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
