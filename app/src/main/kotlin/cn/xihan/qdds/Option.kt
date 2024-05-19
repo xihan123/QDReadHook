@@ -248,7 +248,7 @@ object Option {
                 val jb = iterator.next().toJSONString().parseObject()
                 val bookName =
                     jb.getStringWithFallback("bookName") ?: jb.getStringWithFallback("itemName")
-                val authorName = jb.getStringWithFallback("authorName")
+                val authorName = jb.getStringWithFallback("authorName") ?: jb.getStringWithFallback("author")
                 val categoryName = jb.getStringWithFallback("categoryName")
                 val subCategoryName = jb.getStringWithFallback("subCategoryName")
                     ?: jb.getStringWithFallback("itemSubName")
