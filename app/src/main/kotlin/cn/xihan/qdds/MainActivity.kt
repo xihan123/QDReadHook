@@ -76,11 +76,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -999,20 +1000,33 @@ class MainActivity : ModuleAppCompatActivity() {
                     }
                 })
 
+            var deleteAllDialog by rememberMutableStateOf(value = false)
+            if (deleteAllDialog) {
+                ConfirmationDialog("清除起点所有缓存", onConfirm = {
+                    deleteAll()
+                    toast("清除成功")
+                }, onDismiss = { deleteAllDialog = false })
+            }
+
             ItemWithNewPage(
                 "清除起点所有缓存",
                 modifier = itemModifier,
                 onClick = {
-                    deleteAll()
-                    toast("清除成功,即将重启应用")
-                    restartApplication()
+                    deleteAllDialog = true
                 }
             )
 
+            var resetOptionEntityDialog by rememberMutableStateOf(value = false)
+            if (resetOptionEntityDialog) {
+                ConfirmationDialog("重置模块配置文件", onConfirm = {
+                    resetOptionEntity()
+                    toast("重置成功,即将重启应用")
+                    restartApplication()
+                }, onDismiss = { resetOptionEntityDialog = false })
+            }
+
             ItemWithNewPage(text = "重置模块配置文件", modifier = itemModifier, onClick = {
-                resetOptionEntity()
-                toast("重置成功,即将重启应用")
-                restartApplication()
+                resetOptionEntityDialog = true
             })
 
             ItemWithNewPage(text = "打赏", modifier = itemModifier, onClick = {
@@ -1157,7 +1171,6 @@ class MainActivity : ModuleAppCompatActivity() {
  * @param [displayButton] 显示按钮
  * @suppress Generate Documentation
  */
-@OptIn(ExperimentalTextApi::class)
 @Composable
 fun Disclaimers(
     modifier: Modifier = Modifier,
@@ -1739,6 +1752,59 @@ private fun Insert(list: MutableState<String>) {
             list.value = list.value.plus(";")
         }) {
             Icon(imageVector = Icons.Default.Add, contentDescription = null)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ConfirmationDialog(
+    text: String,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    BasicAlertDialog(
+        onDismissRequest = onDismiss,
+        modifier = Modifier
+            .height(96.dp)
+            .clip(RoundedCornerShape(6.dp))
+            .background(MaterialTheme.colorScheme.background)
+            .padding(start = 20.dp, end = 20.dp, top = 15.dp, bottom = 12.dp)
+    ) {
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.End
+        ) {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = text,
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(30.dp)
+            ) {
+                Text(
+                    modifier = Modifier.clickable(
+                        interactionSource = rememberMutableInteractionSource(),
+                        indication = null,
+                        role = Role.Button,
+                        onClick = onDismiss
+                    ),
+                    text = "取消",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    modifier = Modifier.clickable(
+                        interactionSource = rememberMutableInteractionSource(),
+                        indication = null,
+                        role = Role.Button,
+                        onClick = onConfirm
+                    ),
+                    text = "确定",
+                    color = Color.Red,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
         }
     }
 }
