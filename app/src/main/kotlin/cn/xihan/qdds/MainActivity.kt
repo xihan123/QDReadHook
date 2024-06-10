@@ -149,7 +149,9 @@ class MainActivity : ModuleAppCompatActivity() {
         val context = LocalContext.current
         val permission = rememberMutableStateOf(
             value = XXPermissions.isGranted(
-                context, arrayOf(Permission.MANAGE_EXTERNAL_STORAGE)
+                context,
+                Permission.REQUEST_INSTALL_PACKAGES,
+                Permission.MANAGE_EXTERNAL_STORAGE
             )
         )
         val navController = rememberNavController()

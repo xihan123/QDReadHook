@@ -352,9 +352,9 @@ fun PackageParam.startCheckingPermissions(versionCode: Int) {
                     instance<Activity>().apply {
                         // 判断权限
                         val permission = XXPermissions.isGranted(
-                            this, arrayOf(
-                                Permission.MANAGE_EXTERNAL_STORAGE
-                            )
+                            this,
+                            Permission.REQUEST_INSTALL_PACKAGES,
+                            Permission.MANAGE_EXTERNAL_STORAGE
                         )
                         if (permission) {
                             hook.remove()
