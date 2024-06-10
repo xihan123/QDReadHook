@@ -530,6 +530,7 @@ data class OptionEntity(
     var readPageOption: ReadPageOption = ReadPageOption(),
     var interceptOption: List<SelectedModel> = listOf(
         SelectedModel("检测更新", true),
+        SelectedModel("部分环境检测", true),
         SelectedModel("隐私政策更新弹框", true),
         SelectedModel("同意隐私政策弹框", true),
         SelectedModel("WebSocket", true),
@@ -591,6 +592,7 @@ data class OptionEntity(
      * @param enableHideAppIcon 启用隐藏应用图标
      * @param enableExportEmoji 启用导出表情包
      * @param enableOldDailyRead 启用旧的每日阅读
+     * @param enableStartCheckingPermissions 启用检查权限
      * @param enableCustomIMEI 启用自定义IMEI
      * @param enableFixDouYinShare 启用修复抖音分享
      */

@@ -22,6 +22,7 @@ fun PackageParam.interceptOption(
     configurations.filter { it.selected }.takeIf { it.isNotEmpty() }?.forEach { selected ->
         when (selected.title) {
             "检测更新" -> interceptCheckUpdate(versionCode, bridge)
+            "部分环境检测" -> interceptCheckEnvironment(versionCode)
             "隐私政策更新弹框" -> interceptPrivacyPolicy(versionCode)
             "同意隐私政策弹框" -> interceptAgreePrivacyPolicy(versionCode, bridge)
             "WebSocket" -> interceptWebSocket(versionCode, bridge)
@@ -79,6 +80,38 @@ fun PackageParam.interceptCheckUpdate(versionCode: Int, bridge: DexKitBridge) {
         }
 
         else -> "拦截检测更新".printlnNotSupportVersion(versionCode)
+    }
+}
+
+
+/**
+ * 部分环境检测
+ * @since 7.9.352-1286 ~ 1299
+ * @param [versionCode] 版本代码
+ * 可拦截启动时签名校验、环境检测、上报设备信息
+ */
+fun PackageParam.interceptCheckEnvironment(versionCode: Int) {
+    when (versionCode) {
+        in 1286..1299 -> {
+            intercept(
+                "com.qidian.QDReader.QDApplication",
+                "t"
+            )
+
+            intercept(
+                "a.b",
+                "c",
+                1
+            )
+
+            intercept(
+                "com.qidian.QDReader.component.util.FockUtil",
+                "reportDeviceInfo",
+                2
+            )
+        }
+
+        else -> "部分环境检测".printlnNotSupportVersion(versionCode)
     }
 }
 
