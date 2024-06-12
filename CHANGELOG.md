@@ -1,4 +1,28 @@
 # Changelog
+## [3.1.7](https://github.com/xihan123/QDReadHook/compare/v3.1.6...v3.1.7) (2024-06-12)
+
+
+### Features
+
+* **拦截设置:** `1286+版本`新增 `部分环境检测` 选项 ([c66867d](https://github.com/xihan123/QDReadHook/commit/c66867d5a830caa0c369e88b184129c9909dd384))
+* 更新权限请求 ([3054359](https://github.com/xihan123/QDReadHook/commit/3054359db7eae8ebe763d0a64c17837535fd04d3))
+
+
+### Bug Fixes
+
+* **屏蔽设置:** 修复获取书籍作者名称逻辑，优化字段兼容性 ([0d93bde](https://github.com/xihan123/QDReadHook/commit/0d93bde85dd31c00f72944921c1a604286e6d114))
+
+
+### Miscellaneous
+
+* 更新项目版本并修改工作流 ([7d4a37a](https://github.com/xihan123/QDReadHook/commit/7d4a37ad168f3da5041b96f48e2f63bd4d55f986))
+
+
+### Performance Improvements
+
+* **关于:** 添加`重置配置文件`、`清除缓存`功能的确认对话框 ([503143a](https://github.com/xihan123/QDReadHook/commit/503143a8c06e2c784375f7efaa0bbb02ed72faf5))
+* 更新广告配置默认选项 ([3e110ec](https://github.com/xihan123/QDReadHook/commit/3e110ec859979aaa7ff5ef829305a48e8f02b185))
+
 ## [3.1.6](https://github.com/xihan123/QDReadHook/compare/v3.1.5...v3.1.6) (2024-05-15)
 
 
