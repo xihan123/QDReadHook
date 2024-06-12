@@ -54,6 +54,21 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
 
+      - name: Checkout xihan123/YukiHookAPI
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+          fetch-depth: 0
+          repository: xihan123/YukiHookAPI
+          path: xihan123/YukiHookAPI
+
+      - name: Build dependencies
+        working-directory: xihan123
+        run: |
+          cd YukiHookAPI
+          chmod +x gradlew
+          ./gradlew publishToMavenLocal
+
       - name: Build with Gradle
         run: |
           [ $(du -s ~/.gradle/wrapper | awk '{ print $1 }') -gt 250000 ] && rm -rf ~/.gradle/wrapper/* || true

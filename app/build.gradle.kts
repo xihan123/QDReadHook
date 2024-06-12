@@ -19,6 +19,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.jgit)
     alias(libs.plugins.dokka)
@@ -98,8 +99,6 @@ android {
         compose = true
         buildConfig = true
     }
-
-    composeOptions.kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
 
     packagingOptions.apply {
         resources.excludes += mutableSetOf(
