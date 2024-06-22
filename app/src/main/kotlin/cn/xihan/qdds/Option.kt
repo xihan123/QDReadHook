@@ -56,7 +56,7 @@ private fun provideLogFile(): File {
 
 /**
  * 提供期权实体
- * @since 7.9.334-1196
+ * @since 7.9.354-1296
  * @param [file] 文件
  * @return [OptionEntity]
  * @suppress Generate Documentation
@@ -515,7 +515,7 @@ data class OptionEntity(
         SelectedModel("阅读页-章末一刀切"),
         SelectedModel("阅读页-章末新人推书"),
         SelectedModel("阅读页-章末本章说"),
-        SelectedModel("阅读页-章末福利"),
+        SelectedModel("阅读页-互动区/章末福利/激励视频"),
         SelectedModel("阅读页-章末广告", true),
         SelectedModel("阅读页-章末求票"),
         SelectedModel("阅读页-章末底部月票打赏红包"),

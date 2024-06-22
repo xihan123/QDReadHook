@@ -1,5 +1,6 @@
 package cn.xihan.qdds
 
+
 import cn.xihan.qdds.Option.optionEntity
 import cn.xihan.qdds.Option.splashPath
 import cn.xihan.qdds.Option.updateOptionEntity
@@ -21,12 +22,12 @@ import com.highcapable.yukihookapi.hook.type.java.UnitType
  *
  *      ps2:使用英文的分号(引号内的符号)";"分隔
  *
- * @since 7.9.334-1196 ~ 1299
+ * @since 7.9.354-1296 ~ 1499
  * @param versionCode 版本号
  */
 fun PackageParam.customStartImage(versionCode: Int) {
     when (versionCode) {
-        in 1196..1299 -> {
+        in 1296..1499 -> {
             "com.qidian.QDReader.repository.entity.config.AppConfigBean".toClass().method {
                 name = "getBootWallPapers"
                 emptyParam()
@@ -96,12 +97,12 @@ fun PackageParam.customStartImage(versionCode: Int) {
  *      ps:如果没有记得检查存储权限并重启起点/模块后再看
  *
  *      ps2:如需查看所有官方图片地址可在配置文件中找到
- * @since 7.9.334-1196 ~ 1299
+ * @since 7.9.354-1296 ~ 1499
  * @param [versionCode] 版本代码
  */
 fun PackageParam.captureTheOfficialLaunchMapList(versionCode: Int) {
     when (versionCode) {
-        in 1196..1299 -> {
+        in 1296..1499 -> {
             "com.qidian.QDReader.ui.activity.splash_config.QDSplashConfigFragment".toClass()
                 .method {
                     name = "loadData"
@@ -149,12 +150,12 @@ fun PackageParam.captureTheOfficialLaunchMapList(versionCode: Int) {
 /**
  * # 自定义本地启动图
  * * 启用后放置于/storage/emulated/0/Download/QDReader/Splash
- * @since 7.9.334-1196 ~ 1099
+ * @since 7.9.354-1296 ~ 1099
  * @param [versionCode] 版本代码
  */
 fun PackageParam.customLocalStartImage(versionCode: Int) {
     when (versionCode) {
-        in 1196..1299 -> {
+        in 1296..1499 -> {
             val list = listOf(
                 "com.qidian.QDReader.ui.activity.SplashActivity\$a",
                 "com.qidian.QDReader.ui.activity.SplashActivity\$cihai"

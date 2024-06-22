@@ -15,7 +15,7 @@ import com.highcapable.yukihookapi.hook.type.java.UnitType
 
 /**
  * 自动化选项
- * @since 7.9.334-1196 ~ 1299
+ * @since 7.9.354-1296 ~ 1499
  * @param [versionCode] 版本代码
  * @param [configurations] 配置
  * @suppress Generate Documentation
@@ -37,14 +37,14 @@ fun PackageParam.automatizationOption(
 
 /**
  * 自动签到
- * @since 7.9.334-1196 ~ 1299
+ * @since 7.9.354-1296 ~ 1499
  * @param [versionCode] 版本代码
  */
 fun PackageParam.autoSignIn(
     versionCode: Int
 ) {
     when (versionCode) {
-        in 1196..1299 -> {
+        in 1296..1499 -> {
             /*
             DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
                 bridge.findClass {
@@ -112,12 +112,12 @@ fun PackageParam.autoSignIn(
 /**
  * 自动领取阅读积分
  * 需打开阅读时长页面，如果有积分则自动领取
- * @since 7.9.334-1196 ~ 1299
+ * @since 7.9.354-1296 ~ 1499
  * @param [versionCode] 版本代码
  */
 fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
     when (versionCode) {
-        in 1196..1299 -> {
+        in 1296..1499 -> {
             /**
              * 自动领取今日阅读时长积分
              */
@@ -212,12 +212,12 @@ fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
 /**
  * # 自动领取章末红包
  * * 需在阅读页面打开章末红包，如果有红包则自动领取
- * @since 7.9.334-1196 ~ 1299
+ * @since 7.9.354-1296 ~ 1499
  * @param [versionCode] 版本代码
  */
 fun PackageParam.receivedReadingPageEndHongBaoAutomatically(versionCode: Int) {
     when (versionCode) {
-        in 1196..1299 -> {
+        in 1296..1499 -> {
             "com.qidian.QDReader.ui.modules.interact.InteractHBContainerView".toClass().method {
                 name = "showContent"
                 emptyParam()
@@ -240,12 +240,12 @@ fun PackageParam.receivedReadingPageEndHongBaoAutomatically(versionCode: Int) {
 
 /**
  *  自动跳过启动页
- * @since 7.9.334-1196 ~ 1299
+ * @since 7.9.354-1296 ~ 1499
  * @param [versionCode] 版本代码
  */
 fun PackageParam.autoSkipSplash(versionCode: Int) {
     when (versionCode) {
-        in 1196..1299 -> {
+        in 1296..1499 -> {
             "com.qidian.QDReader.ui.activity.SplashActivity".toClass().method {
                 name = "onCreate"
                 param(BundleClass)

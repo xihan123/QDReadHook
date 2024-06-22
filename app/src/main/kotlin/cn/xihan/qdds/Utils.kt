@@ -70,7 +70,7 @@ fun <T> rememberSavableMutableStateOf(value: T): MutableState<T> =
 
 /**
  * 记住可变交互源
- * @since 7.9.334-1196
+ * @since 7.9.354-1296
  * @suppress Generate Documentation
  */
 @Composable
@@ -78,7 +78,7 @@ fun rememberMutableInteractionSource() = remember { MutableInteractionSource() }
 
 /**
  * 获取方位无线电
- * @since 7.9.334-1196
+ * @since 7.9.354-1296
  * @return [Float]
  * @suppress Generate Documentation
  */
@@ -92,7 +92,7 @@ fun getAspectRadio(): Float {
 
 /**
  * 是平板电脑
- * @since 7.9.334-1196
+ * @since 7.9.354-1296
  * @return [Boolean]
  * @suppress Generate Documentation
  */
@@ -858,7 +858,7 @@ fun View.getName() = toString().substringAfter("/").replace("}", "")
 
 /**
  * 随机位图
- * @since 7.9.334-1196
+ * @since 7.9.354-1296
  * @return [Bitmap?]
  * @suppress Generate Documentation
  */
@@ -882,7 +882,7 @@ fun randomBitmap(): Bitmap? {
  * * 将位于 "/sdcard/Download/QDReader/Font" 的字体文件替换到 "/data/user/0/com.qidian.QDReader/files/fulltype_fonts/"和"/data/user/0/com.qidian.QDReader/files/truetype_fonts/"
  * * 启用后阅读页设置字体选择 汉仪楷体
  * * ps: 无需改名并且仅一个生效
- * @since 7.9.334-1196
+ * @since 7.9.354-1296
  * @param [context] 上下文
  */
 fun moveToPrivateStorage(context: Context) = runBlocking(Dispatchers.IO) {
@@ -918,7 +918,7 @@ fun moveToPrivateStorage(context: Context) = runBlocking(Dispatchers.IO) {
 
 /**
  * 数据处理
- * @since 7.9.334-1196
+ * @since 7.9.354-1296
  * @param [value] 价值
  * @return [Int]
  * @suppress Generate Documentation
@@ -927,7 +927,7 @@ fun Context.dp(value: Int): Int = (value * resources.displayMetrics.density).toI
 
 /**
  * x
- * @since 7.9.334-1196
+ * @since 7.9.354-1296
  * @param [other] 另外
  * @return [ViewGroup.LayoutParams]
  * @suppress Generate Documentation
@@ -936,7 +936,7 @@ infix fun Int.x(other: Int): ViewGroup.LayoutParams = ViewGroup.LayoutParams(thi
 
 /**
  * return false
- * @since 7.9.334-1196
+ * @since 7.9.354-1296
  * @param [methodData] 方法数据
  * @suppress Generate Documentation
  */
@@ -954,7 +954,7 @@ fun PackageParam.returnFalse(className: String, methodName: String, paramCount: 
 
 /**
  * 拦截
- * @since 7.9.334-1196
+ * @since 7.9.354-1296
  * @param [className] 类名
  * @param [methodName] 方法名称
  * @param [paramCount] 参数计数

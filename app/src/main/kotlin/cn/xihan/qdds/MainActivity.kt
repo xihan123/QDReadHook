@@ -149,9 +149,7 @@ class MainActivity : ModuleAppCompatActivity() {
         val context = LocalContext.current
         val permission = rememberMutableStateOf(
             value = XXPermissions.isGranted(
-                context,
-                Permission.REQUEST_INSTALL_PACKAGES,
-                Permission.MANAGE_EXTERNAL_STORAGE
+                context, Permission.REQUEST_INSTALL_PACKAGES, Permission.MANAGE_EXTERNAL_STORAGE
             )
         )
         val navController = rememberNavController()
@@ -268,8 +266,7 @@ class MainActivity : ModuleAppCompatActivity() {
                         allowDisclaimers = true
                         currentDisclaimersVersionCode = latestDisclaimersVersionCode
                         optionEntity.allowDisclaimers = true
-                        optionEntity.currentDisclaimersVersionCode =
-                            latestDisclaimersVersionCode
+                        optionEntity.currentDisclaimersVersionCode = latestDisclaimersVersionCode
                         updateOptionEntity()
                     }, onDisagreeClick = {
                         finish()
@@ -309,7 +306,7 @@ class MainActivity : ModuleAppCompatActivity() {
 
     /**
      * 主屏幕
-     * @since 7.9.334-1196
+     * @since 7.9.354-1296
      * @param [versionCode] 版本代码
      * @param [context] 上下文
      * @suppress Generate Documentation
@@ -384,14 +381,12 @@ class MainActivity : ModuleAppCompatActivity() {
                         optionEntity.mainOption.enableOldDailyRead = it
                     })
 
-                ItemWithSwitch(
-                    text = "启用修复抖音分享",
+                ItemWithSwitch(text = "启用修复抖音分享",
                     modifier = itemModifier,
                     checked = rememberMutableStateOf(value = optionEntity.mainOption.enableFixDouYinShare),
                     onCheckedChange = {
                         optionEntity.mainOption.enableFixDouYinShare = it
-                    }
-                )
+                    })
 
                 val enableCustomIMEI =
                     rememberMutableStateOf(value = optionEntity.mainOption.enableCustomIMEI)
@@ -404,8 +399,7 @@ class MainActivity : ModuleAppCompatActivity() {
                     })
 
                 if (enableCustomIMEI.value) {
-                    val defaultQImei =
-                        rememberMutableStateOf(value = optionEntity.mainOption.qimei)
+                    val defaultQImei = rememberMutableStateOf(value = optionEntity.mainOption.qimei)
 
                     ItemWithEditText(title = "QIMEI", text = defaultQImei, onTextChange = {
                         if (it.isNotBlank()) {
@@ -424,8 +418,7 @@ class MainActivity : ModuleAppCompatActivity() {
                         optionEntity.cookieOption.enableCookie = it
                     })
 
-                ItemWithSwitch(
-                    text = "启用调试日志",
+                ItemWithSwitch(text = "启用调试日志",
                     modifier = itemModifier,
                     checked = rememberMutableStateOf(value = optionEntity.cookieOption.enableDebug),
                     onCheckedChange = {
@@ -433,8 +426,7 @@ class MainActivity : ModuleAppCompatActivity() {
                     },
                     onLongClick = {
                         cleanLog(context)
-                    }
-                )
+                    })
 
 
             }
@@ -472,8 +464,7 @@ class MainActivity : ModuleAppCompatActivity() {
 //                    modifier = itemModifier,
                         customBookShelfTopImageModel = optionEntity.bookshelfOption.lightModeCustomBookShelfTopImageModel,
                         onValueChange = {
-                            optionEntity.bookshelfOption.lightModeCustomBookShelfTopImageModel =
-                                it
+                            optionEntity.bookshelfOption.lightModeCustomBookShelfTopImageModel = it
                             updateOptionEntity()
                         })
 
@@ -499,16 +490,14 @@ class MainActivity : ModuleAppCompatActivity() {
                     modifier = itemModifier,
                     checked = rememberMutableStateOf(value = optionEntity.readPageOption.enableCustomFont),
                     onCheckedChange = {
-                        optionEntity.readPageOption.enableCustomFont =
-                            it
+                        optionEntity.readPageOption.enableCustomFont = it
                     })
 
                 ItemWithSwitch(text = "阅读页章评图片长按保存原图",
                     modifier = itemModifier,
                     checked = rememberMutableStateOf(value = optionEntity.readPageOption.enableShowReaderPageChapterSaveRawPicture),
                     onCheckedChange = {
-                        optionEntity.readPageOption.enableShowReaderPageChapterSaveRawPicture =
-                            it
+                        optionEntity.readPageOption.enableShowReaderPageChapterSaveRawPicture = it
                     })
 
                 ItemWithSwitch(text = "阅读页章评评论长按复制",
@@ -530,8 +519,7 @@ class MainActivity : ModuleAppCompatActivity() {
                     modifier = itemModifier,
                     checked = rememberMutableStateOf(value = optionEntity.readPageOption.enableShowReaderPageChapterSaveAudioDialog),
                     onCheckedChange = {
-                        optionEntity.readPageOption.enableShowReaderPageChapterSaveAudioDialog =
-                            it
+                        optionEntity.readPageOption.enableShowReaderPageChapterSaveAudioDialog = it
                     })
 
                 val enableReadTimeFactor =
@@ -563,8 +551,7 @@ class MainActivity : ModuleAppCompatActivity() {
                 ItemWithSwitch(text = "重定向阅读页主题路径",
                     checked = enableRedirectReadingPageBackgroundPath,
                     onCheckedChange = {
-                        optionEntity.readPageOption.enableRedirectReadingPageBackgroundPath =
-                            it
+                        optionEntity.readPageOption.enableRedirectReadingPageBackgroundPath = it
                     })
 
 
@@ -575,8 +562,7 @@ class MainActivity : ModuleAppCompatActivity() {
                 val enableCustomStartImage =
                     rememberMutableStateOf(value = optionEntity.startImageOption.enableCustomStartImage)
 
-                ItemWithSwitch(
-                    text = "启用自定义启动图",
+                ItemWithSwitch(text = "启用自定义启动图",
                     checked = enableCustomStartImage,
                     onCheckedChange = {
                         optionEntity.startImageOption.enableCustomStartImage = it
@@ -588,8 +574,7 @@ class MainActivity : ModuleAppCompatActivity() {
                     ItemWithSwitch(text = "启用抓取官方启动图",
                         checked = enableCaptureTheOfficialLaunchMapList,
                         onCheckedChange = {
-                            optionEntity.startImageOption.enableCaptureTheOfficialLaunchMapList =
-                                it
+                            optionEntity.startImageOption.enableCaptureTheOfficialLaunchMapList = it
                         })
 
                     ItemWithSwitch(text = "启用重定向本地启动图",
@@ -656,8 +641,7 @@ class MainActivity : ModuleAppCompatActivity() {
                                                 StartImageItem(
                                                     startImageModel = item,
                                                     modifier = Modifier
-                                                        .combinedClickable(
-                                                            onClick = {},
+                                                        .combinedClickable(onClick = {},
                                                             onLongClick = {
                                                                 context.apply {
                                                                     toast("已复制图片链接")
@@ -821,8 +805,7 @@ class MainActivity : ModuleAppCompatActivity() {
                     modifier = itemModifier,
                     checked = enableCaptureBottomNavigation,
                     onCheckedChange = {
-                        optionEntity.viewHideOption.homeOption.enableCaptureBottomNavigation =
-                            it
+                        optionEntity.viewHideOption.homeOption.enableCaptureBottomNavigation = it
                     })
 
                 if (enableCaptureBottomNavigation.value) {
@@ -852,8 +835,7 @@ class MainActivity : ModuleAppCompatActivity() {
                     ItemWithNewPage(text = "精选-隐藏控件列表", modifier = itemModifier, onClick = {
                         context.multiChoiceSelector(optionEntity.viewHideOption.selectedOption.configurations)
                     }, onLongClick = {
-                        optionEntity.viewHideOption.selectedOption.configurations =
-                            defaultEmptyList
+                        optionEntity.viewHideOption.selectedOption.configurations = defaultEmptyList
                         context.toast("已恢复默认")
                     })
                 }
@@ -865,13 +847,11 @@ class MainActivity : ModuleAppCompatActivity() {
                     modifier = itemModifier,
                     checked = enableSelectedTitleHide,
                     onCheckedChange = {
-                        optionEntity.viewHideOption.selectedOption.enableSelectedTitleHide =
-                            it
+                        optionEntity.viewHideOption.selectedOption.enableSelectedTitleHide = it
                     })
 
                 if (enableSelectedTitleHide.value) {
-                    ItemWithNewPage(
-                        text = "精选-标题隐藏控件列表",
+                    ItemWithNewPage(text = "精选-标题隐藏控件列表",
                         modifier = itemModifier,
                         onClick = {
                             context.multiChoiceSelector(optionEntity.viewHideOption.selectedOption.selectedTitleConfigurations)
@@ -898,8 +878,7 @@ class MainActivity : ModuleAppCompatActivity() {
                     ItemWithNewPage(text = "我-隐藏控件列表", modifier = itemModifier, onClick = {
                         context.multiChoiceSelector(optionEntity.viewHideOption.accountOption.configurations)
                     }, onLongClick = {
-                        optionEntity.viewHideOption.accountOption.configurations =
-                            defaultEmptyList
+                        optionEntity.viewHideOption.accountOption.configurations = defaultEmptyList
                         context.toast("已恢复默认")
                     })
                 }
@@ -916,8 +895,7 @@ class MainActivity : ModuleAppCompatActivity() {
                     })
 
                 if (enableCaptureBookReadPageView.value) {
-                    ItemWithNewPage(
-                        text = "阅读页-隐藏控件列表",
+                    ItemWithNewPage(text = "阅读页-隐藏控件列表",
                         modifier = itemModifier,
                         onClick = {
                             context.multiChoiceSelector(optionEntity.viewHideOption.readPageOptions.configurations)
@@ -1007,16 +985,13 @@ class MainActivity : ModuleAppCompatActivity() {
                 ConfirmationDialog("清除起点所有缓存", onConfirm = {
                     deleteAll()
                     toast("清除成功")
+                    restartApplication()
                 }, onDismiss = { deleteAllDialog = false })
             }
 
-            ItemWithNewPage(
-                "清除起点所有缓存",
-                modifier = itemModifier,
-                onClick = {
-                    deleteAllDialog = true
-                }
-            )
+            ItemWithNewPage("清除起点所有缓存", modifier = itemModifier, onClick = {
+                deleteAllDialog = true
+            })
 
             var resetOptionEntityDialog by rememberMutableStateOf(value = false)
             if (resetOptionEntityDialog) {
@@ -1106,48 +1081,42 @@ class MainActivity : ModuleAppCompatActivity() {
 
             if (cookieDialog) {
 
-                AlertDialog(
-                    onDismissRequest = {
-                        cookieDialog = false
-                    },
-                    title = {
+                AlertDialog(onDismissRequest = {
+                    cookieDialog = false
+                }, title = {
+                    TextButton(onClick = {
+                        context.copyToClipboard("${optionEntity.cookieOption.uid}")
+                        context.toast("已复制UID")
+                    }) {
+                        Text(text = "${optionEntity.cookieOption.uid}")
+                    }
+
+                }, text = {
+                    Column {
                         TextButton(onClick = {
-                            context.copyToClipboard("${optionEntity.cookieOption.uid}")
-                            context.toast("已复制UID")
+                            context.copyToClipboard("${optionEntity.cookieOption.ua}")
+                            context.toast("已复制UA")
                         }) {
-                            Text(text = "${optionEntity.cookieOption.uid}")
+                            Text(
+                                text = "ua: ${optionEntity.cookieOption.ua}", maxLines = 2
+                            )
                         }
 
-                    },
-                    text = {
-                        Column {
-                            TextButton(onClick = {
-                                context.copyToClipboard("${optionEntity.cookieOption.ua}")
-                                context.toast("已复制UA")
-                            }) {
-                                Text(
-                                    text = "ua: ${optionEntity.cookieOption.ua}",
-                                    maxLines = 2
-                                )
-                            }
-
-                            TextButton(onClick = {
-                                context.copyToClipboard("${optionEntity.cookieOption.cookie}")
-                                context.toast("已复制Cookie")
-                            }) {
-                                Text(
-                                    text = "cookie: ${optionEntity.cookieOption.cookie}",
-                                    maxLines = 2
-                                )
-                            }
+                        TextButton(onClick = {
+                            context.copyToClipboard("${optionEntity.cookieOption.cookie}")
+                            context.toast("已复制Cookie")
+                        }) {
+                            Text(
+                                text = "cookie: ${optionEntity.cookieOption.cookie}", maxLines = 2
+                            )
                         }
+                    }
 
-                    },
-                    confirmButton = {
-                        TextButton(onClick = { cookieDialog = false }) {
-                            Text("关闭")
-                        }
-                    })
+                }, confirmButton = {
+                    TextButton(onClick = { cookieDialog = false }) {
+                        Text("关闭")
+                    }
+                })
 
 
             }
@@ -1166,7 +1135,7 @@ class MainActivity : ModuleAppCompatActivity() {
 
 /**
  * 免责声明
- * @since 7.9.334-1196
+ * @since 7.9.354-1296
  * @param [modifier] 修饰符
  * @param [onAgreeClick] 点击同意
  * @param [onDisagreeClick] 点击不同意
@@ -1272,8 +1241,7 @@ fun Disclaimers(
         }
 
         Text(
-            text = text,
-            style = TextStyle(
+            text = text, style = TextStyle(
                 color = MaterialTheme.colorScheme.onSurface
             )
         )
@@ -1339,8 +1307,7 @@ private fun ItemWithSwitch(
                         onCheckedChange(checked.value)
                         updateOptionEntity()
                     }
-                },
-                onLongClick = onLongClick
+                }, onLongClick = onLongClick
             )
             .padding(horizontal = 15.dp),
         contentAlignment = Alignment.Center,
@@ -1676,7 +1643,7 @@ private fun CustomBookShelfTopImageOption(
 
 /**
  * 启动图像项目
- * @since 7.9.334-1196
+ * @since 7.9.354-1296
  * @param [startImageModel] 启动图像模型
  * @param [modifier] 修饰符
  * @suppress Generate Documentation
@@ -1743,7 +1710,7 @@ private fun StartImageItem(
 
 /**
  * 插入
- * @since 7.9.334-1196
+ * @since 7.9.354-1296
  * @param [list] 列表
  * @suppress Generate Documentation
  */
@@ -1774,8 +1741,7 @@ fun ConfirmationDialog(
             .padding(start = 20.dp, end = 20.dp, top = 15.dp, bottom = 12.dp)
     ) {
         Column(
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.End
+            verticalArrangement = Arrangement.SpaceBetween, horizontalAlignment = Alignment.End
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
@@ -1791,9 +1757,7 @@ fun ConfirmationDialog(
                         indication = null,
                         role = Role.Button,
                         onClick = onDismiss
-                    ),
-                    text = "取消",
-                    style = MaterialTheme.typography.bodyMedium
+                    ), text = "取消", style = MaterialTheme.typography.bodyMedium
                 )
                 Text(
                     modifier = Modifier.clickable(
@@ -1801,10 +1765,7 @@ fun ConfirmationDialog(
                         indication = null,
                         role = Role.Button,
                         onClick = onConfirm
-                    ),
-                    text = "确定",
-                    color = Color.Red,
-                    style = MaterialTheme.typography.bodyMedium
+                    ), text = "确定", color = Color.Red, style = MaterialTheme.typography.bodyMedium
                 )
             }
         }
