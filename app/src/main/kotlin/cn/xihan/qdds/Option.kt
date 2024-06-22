@@ -516,7 +516,6 @@ data class OptionEntity(
         SelectedModel("阅读页-章末新人推书"),
         SelectedModel("阅读页-章末本章说"),
         SelectedModel("阅读页-互动区/章末福利/激励视频"),
-        SelectedModel("阅读页-章末广告", true),
         SelectedModel("阅读页-章末求票"),
         SelectedModel("阅读页-章末底部月票打赏红包"),
         SelectedModel("阅读页-最后一页-中间广告", true),

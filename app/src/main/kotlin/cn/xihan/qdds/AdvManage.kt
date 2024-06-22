@@ -42,7 +42,6 @@ fun PackageParam.advOption(
         disableBookRecommend = configurations.isSelectedByTitle("阅读页-章末新人推书"),
         disableBookComment = configurations.isSelectedByTitle("阅读页-章末本章说"),
         disableChapterEndWelfare = configurations.isSelectedByTitle("阅读页-互动区/章末福利/激励视频"),
-        disableChapterEndRewardAd = configurations.isSelectedByTitle("阅读页-章末广告"),
         disableVoteTicketSpecialLine = configurations.isSelectedByTitle("阅读页-章末求票")
     )
 }
@@ -258,7 +257,6 @@ fun PackageParam.disableReadPageNewestPageWindowBannerAd(versionCode: Int) {
  * @param [disableBookRecommend] 禁用推荐书籍
  * @param [disableBookComment] 禁用本章说
  * @param [disableChapterEndWelfare] 禁用章末福利
- * @param [disableChapterEndRewardAd] 禁用章末广告
  * @param [disableVoteTicketSpecialLine] 禁用章末求票
  * @suppress Generate Documentation
  */
@@ -268,7 +266,6 @@ fun PackageParam.disableReadPageChapterEnd(
     disableBookRecommend: Boolean = false,
     disableBookComment: Boolean = false,
     disableChapterEndWelfare: Boolean = false,
-    disableChapterEndRewardAd: Boolean = false,
     disableVoteTicketSpecialLine: Boolean = false
 ) {
     when (versionCode) {
@@ -309,15 +306,6 @@ fun PackageParam.disableReadPageChapterEnd(
                     method {
                         name = "getChapterEndSpan"
                         paramCount(2)
-                    }.hook().intercept()
-                }
-                if (disableChapterEndRewardAd) {
-                    /**
-                     * 章末广告 insertRewardAd
-                     */
-                    method {
-                        name = "insertRewardAd"
-                        returnType = UnitType
                     }.hook().intercept()
                 }
                 if (disableVoteTicketSpecialLine) {
