@@ -116,30 +116,47 @@ android {
 }
 
 dependencies {
-
     implementation(fileTree("dir" to file("libs"), "include" to listOf("*.jar")))
-
-    implementation(libs.core.ktx)
-    implementation(libs.fast.json)
+    debugImplementation(libs.compose.ui.tooling)
+    implementation(kotlin("reflect"))
     implementation(libs.android.material)
-    implementation(libs.compose.coil)
     implementation(platform(libs.compose.bom))
-    implementation(libs.compose.ui)
-    implementation(libs.compose.foundation)
-    implementation(libs.compose.runtime)
-    implementation(libs.compose.material3)
     implementation(libs.compose.activity)
+    implementation(libs.compose.coil)
+    implementation(libs.compose.foundation)
     implementation(libs.compose.lottie)
+    implementation(libs.compose.material3)
     implementation(libs.compose.navigation)
-//    implementation(libs.kotlin.reflect)
+    implementation(libs.compose.runtime)
+    implementation(libs.compose.ui)
+    implementation(libs.core.ktx)
     implementation(libs.dexkit)
+    implementation(libs.fast.json)
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.core.coroutines)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.encoding)
+    implementation(libs.ktor.client.logging)
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.lifecycle.common.java8)
+    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.lifecycle.viewmodel.compose)
+    implementation(libs.lifecycle.viewmodel.ktx)
+    implementation(libs.sandwich)
+    implementation(libs.sandwich.ktor)
     implementation(libs.xxpermissions)
-
     implementation(libs.yukihook.api)
     ksp(libs.yukihook.ksp)
-
     compileOnly(libs.xposed.api)
 }
+
 
 tasks.dokkaHtml {
     outputDirectory.set(layout.buildDirectory.dir("documentation/html"))

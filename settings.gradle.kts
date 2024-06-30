@@ -27,11 +27,6 @@ dependencyResolutionManagement {
             }
         }
         maven("https://androidx.dev/storage/compose-compiler/repository/")
-        mavenLocal {
-            content {
-                includeGroupByRegex("com.highcapable.yukihookapi")
-            }
-        }
     }
 }
 

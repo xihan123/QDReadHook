@@ -1,36 +1,71 @@
 [versions]
-agp = "8.4.2"
-kotlin = "2.0.0"
-ksp = "2.0.0-1.0.22"
+activity-compose = "1.9.0"
+agp = "8.5.0"
+coil = "2.6.0"
+compose-bom = "2024.06.00-alpha01"
+core-ktx = "1.13.1"
+dexkit = "2.0.2"
+fastjson2 = "2.0.51"
+koin = "3.5.6"
+kotlin = "2.0.20-Beta1"
+kotlinx-coroutines-core = "1.9.0-RC"
+kotlinx-serialization-json = "1.7.1"
+ksp = "2.0.20-Beta1-1.0.22"
+ktor = "2.3.12"
+lifecycle = "2.8.2"
+lottie-compose = "6.4.1"
+material = "1.12.0"
+material3 = "1.2.1"
+navigation-compose = "2.7.7"
+permissions = "18.63"
+sandwich = "2.0.8"
 yuki = "1.2.1"
-compose-compiler = "1.5.14"
+
 [libraries]
-core-ktx = { module = "androidx.core:core-ktx", version = "1.13.1" }
-fast-json = { module = "com.alibaba.fastjson2:fastjson2-kotlin", version = "2.0.51" }
-android-material = { module = "com.google.android.material:material", version = "1.12.0" }
-compose-activity = { module = "androidx.activity:activity-compose", version = "1.9.0" }
-compose-bom = { module = "dev.chrisbanes.compose:compose-bom", version = "2024.05.00-alpha03" }
-compose-ui = { module = "androidx.compose.ui:ui" }
+android-material = { module = "com.google.android.material:material", version.ref = "material" }
+compose-activity = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
+compose-bom = { module = "dev.chrisbanes.compose:compose-bom", version.ref = "compose-bom" }
+compose-coil = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
+compose-lottie = { module = "com.airbnb.android:lottie-compose", version.ref = "lottie-compose" }
+compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
 compose-runtime = { module = "androidx.compose.runtime:runtime" }
-compose-material3 = { module = "androidx.compose.material3:material3", version = "1.2.1" }
-compose-coil = { module = "io.coil-kt:coil-compose", version = "2.6.0" }
-compose-navigation = { module = "androidx.navigation:navigation-compose", version = "2.7.7" }
-compose-lottie = { module = "com.airbnb.android:lottie-compose", version = "6.4.1" }
+compose-ui = { module = "androidx.compose.ui:ui" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
+dexkit = { module = "org.luckypray:dexkit", version.ref = "dexkit" }
+fast-json = { module = "com.alibaba.fastjson2:fastjson2-kotlin", version.ref = "fastjson2" }
+koin-android = { module = "io.insert-koin:koin-android" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose" }
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
+koin-core-coroutines = { module = "io.insert-koin:koin-core-coroutines" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines-core" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines-core" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-encoding = { module = "io.ktor:ktor-client-encoding", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+lifecycle-common-java8 = { module = "androidx.lifecycle:lifecycle-common-java8", version.ref = "lifecycle" }
+lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
+lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+sandwich = { module = "com.github.skydoves:sandwich", version.ref = "sandwich" }
+sandwich-ktor = { module = "com.github.skydoves:sandwich-ktor", version.ref = "sandwich" }
+xxpermissions = { module = "com.github.getActivity:XXPermissions", version.ref = "permissions" }
 xposed-api = { module = "de.robv.android.xposed:api", version = "82" }
-#https://github.com/HighCapable/YukiHookAPI
 yukihook-api = { module = "com.highcapable.yukihookapi:api", version.ref = "yuki" }
 yukihook-ksp = { module = "com.highcapable.yukihookapi:ksp-xposed", version.ref = "yuki" }
-#kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
-#https://github.com/LuckyPray/DexKit
-dexkit = { module = "org.luckypray:dexkit", version = "2.0.2" }
-xxpermissions = { module = "com.github.getActivity:XXPermissions", version = "18.63" }
+
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+dokka = { id = "org.jetbrains.dokka", version = "1.9.20" }
+jgit = { id = "org.lsposed.lsplugin.jgit", version = "1.1" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-jgit = { id = "org.lsposed.lsplugin.jgit", version = "1.1" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-dokka = { id = "org.jetbrains.dokka", version = "1.9.20" }
-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
