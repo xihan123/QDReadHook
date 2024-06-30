@@ -1,5 +1,9 @@
-package cn.xihan.qdds
+package cn.xihan.qdds.hook
 
+import cn.xihan.qdds.util.SelectedModel
+import cn.xihan.qdds.util.getParam
+import cn.xihan.qdds.util.intercept
+import cn.xihan.qdds.util.printlnNotSupportVersion
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.java.StringClass

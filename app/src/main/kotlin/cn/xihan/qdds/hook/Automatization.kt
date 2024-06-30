@@ -1,9 +1,17 @@
-package cn.xihan.qdds
+package cn.xihan.qdds.hook
 
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
+import cn.xihan.qdds.util.SelectedModel
+import cn.xihan.qdds.util.findViewsByType
+import cn.xihan.qdds.util.getParam
+import cn.xihan.qdds.util.getViews
+import cn.xihan.qdds.util.postRandomDelay
+import cn.xihan.qdds.util.printlnNotSupportVersion
+import cn.xihan.qdds.util.randomDelayPerformClick
+import cn.xihan.qdds.util.safeCast
 import com.highcapable.yukihookapi.hook.factory.current
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.param.PackageParam

@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package cn.xihan.qdds
+package cn.xihan.qdds.util
 
 import android.app.AlertDialog
 import android.app.Dialog

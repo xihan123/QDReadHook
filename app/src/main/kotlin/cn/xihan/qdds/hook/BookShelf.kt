@@ -1,6 +1,10 @@
-package cn.xihan.qdds
+package cn.xihan.qdds.hook
 
-import cn.xihan.qdds.Option.optionEntity
+import cn.xihan.qdds.util.Option.optionEntity
+import cn.xihan.qdds.util.OptionEntity
+import cn.xihan.qdds.util.getParam
+import cn.xihan.qdds.util.printlnNotSupportVersion
+import cn.xihan.qdds.util.setParams
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.param.PackageParam
 

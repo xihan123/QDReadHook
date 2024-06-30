@@ -1,4 +1,4 @@
-package cn.xihan.qdds
+package cn.xihan.qdds.util
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

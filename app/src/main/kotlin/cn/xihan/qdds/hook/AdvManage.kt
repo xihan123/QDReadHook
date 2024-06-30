@@ -1,6 +1,13 @@
-package cn.xihan.qdds
+package cn.xihan.qdds.hook
 
 import android.widget.LinearLayout
+import cn.xihan.qdds.util.SelectedModel
+import cn.xihan.qdds.util.getView
+import cn.xihan.qdds.util.intercept
+import cn.xihan.qdds.util.isSelectedByTitle
+import cn.xihan.qdds.util.printlnNotSupportVersion
+import cn.xihan.qdds.util.returnFalse
+import cn.xihan.qdds.util.setVisibilityIfNotEqual
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.java.UnitType
@@ -333,7 +340,6 @@ fun PackageParam.disableReadPageChapterEnd(
 fun PackageParam.disableSplashAd(versionCode: Int, bridge: DexKitBridge) {
     when (versionCode) {
         in 1296..1499 -> {
-
             bridge.apply {
                 findClass {
                     searchPackages = listOf("com.qidian.QDReader.bll.splash")

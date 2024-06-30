@@ -1,9 +1,13 @@
-package cn.xihan.qdds
+package cn.xihan.qdds.hook
 
 
-import cn.xihan.qdds.Option.optionEntity
-import cn.xihan.qdds.Option.splashPath
-import cn.xihan.qdds.Option.updateOptionEntity
+import cn.xihan.qdds.util.Option.optionEntity
+import cn.xihan.qdds.util.Option.splashPath
+import cn.xihan.qdds.util.Option.updateOptionEntity
+import cn.xihan.qdds.util.StartImageModel
+import cn.xihan.qdds.util.getParam
+import cn.xihan.qdds.util.printlnNotSupportVersion
+import cn.xihan.qdds.util.randomBitmap
 import com.highcapable.yukihookapi.hook.factory.constructor
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.param.PackageParam
