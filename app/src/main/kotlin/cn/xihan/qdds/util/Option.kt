@@ -1,11 +1,11 @@
-package cn.xihan.qdds
+package cn.xihan.qdds.util
 
 import android.content.Context
 import android.os.Environment
 import android.widget.Toast
 import androidx.annotation.Keep
-import cn.xihan.qdds.Option.logPath
-import cn.xihan.qdds.Option.optionPath
+import cn.xihan.qdds.util.Option.logPath
+import cn.xihan.qdds.util.Option.optionPath
 import com.alibaba.fastjson2.parseObject
 import com.alibaba.fastjson2.toJSONString
 import java.io.File
@@ -63,32 +63,45 @@ private fun provideLogFile(): File {
  */
 fun provideOptionEntity(file: File): OptionEntity = try {
     file.readText().parseObject<OptionEntity>().apply {
-        val newAdvOptionConfigurations = defaultOptionEntity.advOption
-        val newInterceptConfigurations = defaultOptionEntity.interceptOption
-        val newViewHideOptionConfigurations =
-            defaultOptionEntity.viewHideOption.homeOption.configurations
-        val newBookDetailOptionConfigurations = defaultOptionEntity.viewHideOption.bookDetailOptions
-        val newAutomaticReceiveOptionConfigurations = defaultOptionEntity.automatizationOption
-        val newSearchOption = defaultOptionEntity.viewHideOption.searchOption
-        advOption = advOption.merge(
-            newAdvOptionConfigurations
-        )
-        interceptOption = interceptOption.merge(
-            newInterceptConfigurations
-        )
+        if (currentOptionVersionCode < latestOptionVersionCode) {
+            currentOptionVersionCode = latestOptionVersionCode
+            val newAdvOptionConfigurations = defaultOptionEntity.advOption
+            val newInterceptConfigurations = defaultOptionEntity.interceptOption
+            val newViewHideOptionConfigurations =
+                defaultOptionEntity.viewHideOption.homeOption.configurations
+            val newBookDetailOptionConfigurations =
+                defaultOptionEntity.viewHideOption.bookDetailOptions
+            val newAutomaticReceiveOptionConfigurations = defaultOptionEntity.automatizationOption
+            val newSearchOption = defaultOptionEntity.viewHideOption.searchOption
+            val newDefaultRequestOption = defaultOptionEntity.taskOption.defaultConfiguration
+            val newTaskOption = defaultOptionEntity.taskOption.configurations
+            advOption = advOption.merge(
+                newAdvOptionConfigurations
+            )
+            interceptOption = interceptOption.merge(
+                newInterceptConfigurations
+            )
 
-        viewHideOption.homeOption.configurations = viewHideOption.homeOption.configurations.merge(
-            newViewHideOptionConfigurations
-        )
-        viewHideOption.bookDetailOptions = viewHideOption.bookDetailOptions.merge(
-            newBookDetailOptionConfigurations
-        )
-        automatizationOption = automatizationOption.merge(
-            newAutomaticReceiveOptionConfigurations
-        )
-        viewHideOption.searchOption = viewHideOption.searchOption.merge(
-            newSearchOption
-        )
+            viewHideOption.homeOption.configurations =
+                viewHideOption.homeOption.configurations.merge(
+                    newViewHideOptionConfigurations
+                )
+            viewHideOption.bookDetailOptions = viewHideOption.bookDetailOptions.merge(
+                newBookDetailOptionConfigurations
+            )
+            automatizationOption = automatizationOption.merge(
+                newAutomaticReceiveOptionConfigurations
+            )
+            viewHideOption.searchOption = viewHideOption.searchOption.merge(
+                newSearchOption
+            )
+            taskOption.defaultConfiguration = taskOption.defaultConfiguration.merge(
+                newDefaultRequestOption
+            )
+            taskOption.configurations = taskOption.configurations.merge(
+                newTaskOption
+            )
+        }
     }
 } catch (e: Throwable) {
     e.loge()
@@ -122,45 +135,45 @@ object Option {
      * 重定向主题路径
      * @suppress Generate Documentation
      */
-    val redirectThemePath = "${basePath}/ReaderTheme/"
+    val redirectThemePath = "$basePath/ReaderTheme/"
 
     /**
      * 选项路径
      * @suppress Generate Documentation
      */
-    val optionPath = "${basePath}/option.json"
+    val optionPath = "$basePath/option.json"
 
     /**
      * 日志路径
      * @suppress Generate Documentation
      */
-    val logPath = "${basePath}/log.txt"
+    val logPath = "$basePath/log.txt"
 
     /**
      * 闪屏图片路径
      * @suppress Generate Documentation
      */
-    val splashPath = "${basePath}/Splash/"
+    val splashPath = "$basePath/Splash/"
 
     /**
      * 图片路径
      * @suppress Generate Documentation
      */
-    val picturesPath = "${basePath}/Pictures"
+    val picturesPath = "$basePath/Pictures"
 
     /**
      * 音频路径
      * @suppress Generate Documentation
      */
-    val audioPath = "${basePath}/Audio/"
+    val audioPath = "$basePath/Audio/"
 
     /**
      * 字体路径
      */
-    val fontPath = "${basePath}/Font/"
+    val fontPath = "$basePath/Font/"
 
     fun initialize(context: Context) {
-        this.context = WeakReference(context)
+        Option.context = WeakReference(context)
         if (optionEntity.readPageOption.enableCustomFont) {
             moveToPrivateStorage(context)
         }
@@ -248,7 +261,8 @@ object Option {
                 val jb = iterator.next().toJSONString().parseObject()
                 val bookName =
                     jb.getStringWithFallback("bookName") ?: jb.getStringWithFallback("itemName")
-                val authorName = jb.getStringWithFallback("authorName") ?: jb.getStringWithFallback("author")
+                val authorName =
+                    jb.getStringWithFallback("authorName") ?: jb.getStringWithFallback("author")
                 val categoryName = jb.getStringWithFallback("categoryName")
                 val subCategoryName = jb.getStringWithFallback("subCategoryName")
                     ?: jb.getStringWithFallback("itemSubName")
@@ -501,6 +515,8 @@ data class OptionEntity(
     var allowDisclaimers: Boolean = false,
     var currentDisclaimersVersionCode: Int = 0,
     var latestDisclaimersVersionCode: Int = 3,
+    var currentOptionVersionCode: Int = 0,
+    var latestOptionVersionCode: Int = 1,
     var advOption: List<SelectedModel> = listOf(
         SelectedModel("闪屏广告", true),
         SelectedModel("GDT广告"),
@@ -511,7 +527,6 @@ data class OptionEntity(
         SelectedModel("主页-书架底部导航栏广告", true),
         SelectedModel("我-中间广告", true),
         SelectedModel("阅读页-浮窗广告"),
-//        SelectedModel("阅读页-打赏小剧场"),
         SelectedModel("阅读页-章末一刀切"),
         SelectedModel("阅读页-章末新人推书"),
         SelectedModel("阅读页-章末本章说"),
@@ -549,7 +564,7 @@ data class OptionEntity(
         SelectedModel(
             "异步子屏幕截图任务|com.qidian.QDReader.start.AsyncChildScreenShotTask", true
         ),
-        SelectedModel("异步主用户操作任务|com.qidian.QDReader.start.AsyncMainUserActionTask", true),
+        SelectedModel("异步主用户操作任务|com.qidian.QDReader.start.AsyncMainUserActionTask"),
         SelectedModel("异步有赞-SDK任务|com.qidian.QDReader.start.AsyncChildYouZanTask", true),
         SelectedModel("异步初始化KNOBS-SDK任务|com.qidian.QDReader.start.AsyncInitKnobsTask", true),
         SelectedModel(
@@ -576,9 +591,9 @@ data class OptionEntity(
     var automatizationOption: List<SelectedModel> = listOf(
         SelectedModel("自动签到"),
         SelectedModel("自动领取阅读积分"),
-        SelectedModel("自动领取章末红包"),
-//        SelectedModel("自动跳过启动页")
-    )
+        SelectedModel("自动领取章末红包")
+    ),
+    var taskOption: TaskOption = TaskOption()
 ) {
 
     /**
@@ -814,6 +829,59 @@ data class OptionEntity(
         data class BookReadPageOptions(
             var enableCaptureBookReadPageView: Boolean = false,
             var configurations: MutableList<SelectedModel> = mutableListOf()
+        )
+    }
+
+    /**
+     * 任务配置
+     * @param [baseUrl] 基础url
+     * @param [autoTaskStart] 自动任务开始
+     * @param [enableDefaultRequest] 启用默认请求
+     * @param [enableNotification] 启用通知
+     * @param [delayTime] 延迟时间
+     * @param [taskOption] 任务选项
+     * @param [accounts] 账号模型
+     */
+    @Keep
+    data class TaskOption(
+        var baseUrl: String = "",
+        var autoTaskStart: Boolean = false,
+        var enableDefaultRequest: Boolean = false,
+        var defaultConfiguration: List<SelectedModel> = listOf(
+            SelectedModel("检测风险"),
+            SelectedModel("签到"),
+            SelectedModel("周日兑换章节卡"),
+            SelectedModel("福利中心", true),
+        ),
+        var enableNotification: Boolean = false,
+        var delayTime: Int = 0,
+        var configurations: List<SelectedModel> = listOf(
+            SelectedModel("福利中心-宝箱", true),
+            SelectedModel("福利中心-激励视频", true),
+            SelectedModel("福利中心-额外看3次小视频", true),
+            SelectedModel("福利中心-额外看1次小视频", true),
+            SelectedModel("福利中心-游戏十分钟", false),
+            SelectedModel("签到-抽奖", true),
+            SelectedModel("签到-周日兑换章节卡", true),
+        ),
+        var accounts: List<AccountModel> = emptyList()
+    ) {
+        /**
+         * 账号模型
+         * 创建[AccountModel]
+         * @param [imei] imei
+         * @param [uid] uid
+         * @param [ua] ua
+         * @param [cookie] cookie
+         * @param [lastReceivedRewardTime] 上次收到奖励时间
+         */
+        @Keep
+        data class AccountModel(
+            var imei: String = "",
+            var uid: String = "",
+            var ua: String = "",
+            var cookie: String = "",
+            var lastReceivedRewardTime: Long = 0
         )
     }
 }

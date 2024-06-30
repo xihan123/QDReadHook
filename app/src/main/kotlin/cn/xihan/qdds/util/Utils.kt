@@ -1,4 +1,4 @@
-package cn.xihan.qdds
+package cn.xihan.qdds.util
 
 import android.app.Activity
 import android.content.ClipData
@@ -19,14 +19,17 @@ import android.widget.Toast
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.view.forEach
-import cn.xihan.qdds.Option.parseNeedShieldList
-import cn.xihan.qdds.Option.splashPath
-import cn.xihan.qdds.Option.updateOptionEntity
+import cn.xihan.qdds.BuildConfig
+import cn.xihan.qdds.ui.MainActivity
+import cn.xihan.qdds.util.Option.parseNeedShieldList
+import cn.xihan.qdds.util.Option.splashPath
+import cn.xihan.qdds.util.Option.updateOptionEntity
 import com.alibaba.fastjson2.toJSONString
 import com.highcapable.yukihookapi.hook.factory.MembersType
 import com.highcapable.yukihookapi.hook.factory.constructor
@@ -42,12 +45,70 @@ import com.hjq.permissions.XXPermissions
 import de.robv.android.xposed.XposedHelpers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FilenameFilter
 import java.io.Serializable
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 import java.util.Random
 import kotlin.system.exitProcess
+import kotlin.time.Duration.Companion.seconds
+
+val kJson = Json {
+    isLenient = true
+//    prettyPrint = true
+    encodeDefaults = true
+    ignoreUnknownKeys = true
+    coerceInputValues = true
+}
+
+object Path {
+    lateinit var MY_BASE_URL: String
+
+    lateinit var HEADERS: Map<String, String>
+
+    const val CHECK_RISK = "/argus/api/v1/common/risk/check"
+    const val WELFARE_CENTER = "/argus/api/v1/video/adv/mainPage"
+    const val WELFARE_REWARD = "/argus/api/v1/video/adv/finishWatch"
+    const val RECEIVE_WELFARE_REWARD = "/argus/api/v1/video/adv/receiveTaskReward"
+    const val CHECK_IN_DETAIL = "/argus/api/v2/checkin/detail"
+    const val AUTO_CHECK_IN = "/argus/api/v1/checkin/autocheckin"
+    const val NORMAL_CHECK_IN = "/argus/api/v2/checkin/checkin"
+    const val LOTTERY_CHANCE = "/argus/api/v2/video/callback"
+    const val LOTTERY = "/argus/api/v2/checkin/lottery"
+    const val EXCHANGE_CHAPTER_CARD = "/argus/api/v1/readtime/scoremall/checkinrewardpage"
+    const val BUY_CHAPTER_CARD = "/argus/api/v1/readtime/scoremall/buygood"
+    const val GAME_TIME = "/home/log/heartbeat"
+}
+
+/**
+ * 时间戳转为时间
+ */
+fun Long.toTime(): String = runCatching {
+    SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(this))
+}.getOrElse { "暂无时间" }
+
+/**
+ * 传入一个延迟秒数，等待指定时间，并执行指定操作
+ * @param time Int
+ * @param block suspend CoroutineScope.() -> Unit
+ * @return Unit
+ * @since 7.9.354-1296 ~ 1499
+ */
+suspend fun wait(time: Int, block: suspend () -> Unit) {
+    if (time != 0) {
+        kotlinx.coroutines.delay(time.seconds)
+    }
+    block()
+}
+
+/**
+ * 判断今天是不是周日
+ */
+fun isSunday(): Boolean = Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY
 
 /**
  * 记住可变状态
@@ -75,6 +136,24 @@ fun <T> rememberSavableMutableStateOf(value: T): MutableState<T> =
  */
 @Composable
 fun rememberMutableInteractionSource() = remember { MutableInteractionSource() }
+
+/**
+ * 记住可变状态列表
+ * @return [MutableList<T>]
+ * @suppress Generate Documentation
+ */
+@Composable
+fun <T> rememberMutableStateListOf() = remember { mutableStateListOf<T>() }
+
+/**
+ * 记住可变状态列表
+ * @param [value] 价值
+ * @return [MutableList<T>]
+ * @suppress Generate Documentation
+ */
+@Composable
+inline fun <reified T> rememberMutableStateListOf(value: Collection<T>) =
+    remember { mutableStateListOf(*value.toTypedArray()) }
 
 /**
  * 获取方位无线电

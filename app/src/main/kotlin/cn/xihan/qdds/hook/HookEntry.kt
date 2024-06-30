@@ -1,4 +1,4 @@
-package cn.xihan.qdds
+package cn.xihan.qdds.hook
 
 import android.app.Activity
 import android.content.Context
@@ -6,10 +6,32 @@ import android.content.Intent
 import android.view.View
 import android.widget.RelativeLayout
 import android.widget.TextView
-import cn.xihan.qdds.Option.optionEntity
-import cn.xihan.qdds.Option.picturesPath
-import cn.xihan.qdds.Option.updateOptionEntity
-import cn.xihan.qdds.Option.writeTextFile
+import cn.xihan.qdds.BuildConfig
+import cn.xihan.qdds.ui.MainActivity
+import cn.xihan.qdds.util.CustomEditText
+import cn.xihan.qdds.util.Option
+import cn.xihan.qdds.util.Option.optionEntity
+import cn.xihan.qdds.util.Option.picturesPath
+import cn.xihan.qdds.util.Option.updateOptionEntity
+import cn.xihan.qdds.util.Option.writeTextFile
+import cn.xihan.qdds.util.alertDialog
+import cn.xihan.qdds.util.appModule
+import cn.xihan.qdds.util.copyToClipboard
+import cn.xihan.qdds.util.getName
+import cn.xihan.qdds.util.getParam
+import cn.xihan.qdds.util.getParamList
+import cn.xihan.qdds.util.getSystemContext
+import cn.xihan.qdds.util.getVersionCode
+import cn.xihan.qdds.util.getView
+import cn.xihan.qdds.util.getViews
+import cn.xihan.qdds.util.isSelectedByTitle
+import cn.xihan.qdds.util.loge
+import cn.xihan.qdds.util.okButton
+import cn.xihan.qdds.util.printlnNotSupportVersion
+import cn.xihan.qdds.util.requestPermissionDialog
+import cn.xihan.qdds.util.safeCast
+import cn.xihan.qdds.util.setParams
+import cn.xihan.qdds.util.toast
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.factory.method
@@ -28,6 +50,11 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
 import org.json.JSONObject
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.component.KoinComponent
+import org.koin.core.context.startKoin
+import org.koin.core.lazyModules
 import org.luckypray.dexkit.DexKitBridge
 import java.io.File
 import java.lang.reflect.Modifier
@@ -41,7 +68,7 @@ import java.lang.reflect.Modifier
  * @suppress Generate Documentation
  */
 @InjectYukiHookWithXposed
-class HookEntry : IYukiHookXposedInit {
+class HookEntry : IYukiHookXposedInit, KoinComponent {
 
     init {
         if (optionEntity.allowDisclaimers) {
@@ -59,9 +86,13 @@ class HookEntry : IYukiHookXposedInit {
     override fun onHook() = YukiHookAPI.encase {
         if ("com.qidian.QDReader" !in packageName) return@encase
         loadApp(name = packageName) {
-
             onAppLifecycle {
                 onCreate {
+                    startKoin {
+                        androidLogger()
+                        androidContext(this@onCreate)
+                        lazyModules(appModule)
+                    }
                     Option.initialize(this)
                 }
             }

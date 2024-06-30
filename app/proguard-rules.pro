@@ -85,3 +85,4 @@ public *** getLocalOverscrollConfiguration(...);
 -dontwarn org.openjsse.javax.net.ssl.SSLSocket
 -dontwarn org.openjsse.net.ssl.OpenJSSE
 -dontwarn javax.lang.model.element.Modifier
+-dontwarn org.slf4j.impl.StaticLoggerBinder

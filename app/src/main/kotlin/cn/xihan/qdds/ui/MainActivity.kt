@@ -1,10 +1,12 @@
-package cn.xihan.qdds
+package cn.xihan.qdds.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -32,6 +34,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -57,10 +60,13 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -68,6 +74,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -76,12 +83,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -102,11 +108,42 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import cn.xihan.qdds.Option.cleanLog
-import cn.xihan.qdds.Option.deleteAll
-import cn.xihan.qdds.Option.optionEntity
-import cn.xihan.qdds.Option.resetOptionEntity
-import cn.xihan.qdds.Option.updateOptionEntity
+import cn.xihan.qdds.BuildConfig
+import cn.xihan.qdds.R
+import cn.xihan.qdds.hook.HookEntry
+import cn.xihan.qdds.util.CustomBookShelfTopImageModel
+import cn.xihan.qdds.util.NiaNavigationBar
+import cn.xihan.qdds.util.NiaNavigationBarItem
+import cn.xihan.qdds.util.Option.cleanLog
+import cn.xihan.qdds.util.Option.deleteAll
+import cn.xihan.qdds.util.Option.optionEntity
+import cn.xihan.qdds.util.Option.resetOptionEntity
+import cn.xihan.qdds.util.Option.updateOptionEntity
+import cn.xihan.qdds.util.OptionEntity
+import cn.xihan.qdds.util.QTheme
+import cn.xihan.qdds.util.StartImageModel
+import cn.xihan.qdds.util.alertDialog
+import cn.xihan.qdds.util.copyToClipboard
+import cn.xihan.qdds.util.defaultEmptyList
+import cn.xihan.qdds.util.defaultOptionEntity
+import cn.xihan.qdds.util.getVersionCode
+import cn.xihan.qdds.util.hideAppIcon
+import cn.xihan.qdds.util.isSunday
+import cn.xihan.qdds.util.isTablet
+import cn.xihan.qdds.util.joinQQGroup
+import cn.xihan.qdds.util.jumpToPermission
+import cn.xihan.qdds.util.multiChoiceSelector
+import cn.xihan.qdds.util.openUrl
+import cn.xihan.qdds.util.parseKeyWordOption
+import cn.xihan.qdds.util.rememberMutableStateListOf
+import cn.xihan.qdds.util.rememberMutableStateOf
+import cn.xihan.qdds.util.rememberSavableMutableStateOf
+import cn.xihan.qdds.util.requestPermissionDialog
+import cn.xihan.qdds.util.restartApplication
+import cn.xihan.qdds.util.runAndCatch
+import cn.xihan.qdds.util.showAppIcon
+import cn.xihan.qdds.util.toast
+import cn.xihan.qdds.util.wait
 import coil.compose.rememberAsyncImagePainter
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -114,8 +151,11 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppCompatActivity
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.koin.androidx.compose.koinViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -134,6 +174,9 @@ class MainActivity : ModuleAppCompatActivity() {
         com.google.android.material.R.style.Theme_Material3_DayNight_NoActionBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE
+        )
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContent {
@@ -317,6 +360,7 @@ class MainActivity : ModuleAppCompatActivity() {
 //    versionCode: Int,
         padding: PaddingValues,
         context: Context = LocalContext.current,
+        viewModel: MainViewModel = koinViewModel()
     ) {
         val isTablet = isTablet()
         val itemModifier = remember {
@@ -324,6 +368,7 @@ class MainActivity : ModuleAppCompatActivity() {
                 .fillMaxWidth()
                 .height(if (isTablet) 48.dp else 38.dp)
         }
+
         Column(
             modifier = Modifier
                 .padding(padding)
@@ -402,14 +447,9 @@ class MainActivity : ModuleAppCompatActivity() {
                     val defaultQImei = rememberMutableStateOf(value = optionEntity.mainOption.qimei)
 
                     ItemWithEditText(title = "QIMEI", text = defaultQImei, onTextChange = {
-                        if (it.isNotBlank()) {
-                            runAndCatch {
-                                optionEntity.mainOption.qimei = it
-                            }
-                        }
+                        optionEntity.mainOption.qimei = it
                     })
                 }
-
 
                 ItemWithSwitch(text = "启用抓取cookie",
                     modifier = itemModifier,
@@ -432,6 +472,445 @@ class MainActivity : ModuleAppCompatActivity() {
             }
 
             PrimaryCard("自动化设置") {
+
+                val coroutineScope = rememberCoroutineScope()
+                val baseUrl = rememberMutableStateOf(value = optionEntity.taskOption.baseUrl)
+                val delayTime =
+                    rememberMutableStateOf(value = optionEntity.taskOption.delayTime.toString())
+                val enableDefaultRequest =
+                    rememberMutableStateOf(optionEntity.taskOption.enableDefaultRequest)
+                val baseExpandState = rememberMutableStateOf(false)
+                val accounts = rememberMutableStateListOf(optionEntity.taskOption.accounts)
+                val accountExpandState = rememberMutableStateOf(false)
+                var selectedAccount by rememberMutableStateOf(accounts.firstOrNull())
+
+                LaunchedEffect(selectedAccount) {
+                    if (selectedAccount != null) {
+                        val map = mutableMapOf<String, String>()
+                        with(selectedAccount!!) {
+                            if (uid.isNotBlank()) {
+                                map["uid"] = uid
+                            }
+                            if (imei.isNotBlank()) {
+                                map["imei"] = imei
+                            }
+                            if (ua.isNotBlank()) {
+                                map["User-Agent"] = ua
+                            }
+                            if (cookie.isNotBlank()) {
+                                map["cookie"] = cookie
+                            }
+                        }
+                        viewModel.setHeaders(map)
+                        if (viewModel.initialState.value) {
+                            viewModel.defaultRequest()
+                        }
+                    }
+                }
+
+                ItemWithNewPage(
+                    "基础设置",
+                    itemModifier,
+                    onClick = { baseExpandState.value = true })
+
+                val baseExpandDismissRequest = {
+                    baseExpandState.value = false
+                }
+
+                if (baseExpandState.value) {
+                    MyAlertDialog(
+                        onDismissRequest = baseExpandDismissRequest
+                    ) {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(15.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            ItemWithEditText(
+                                title = "基础地址",
+                                text = baseUrl,
+                                onTextChange = viewModel::setBaseUrl
+                            )
+
+                            ItemWithEditText(title = "延迟时间", text = delayTime, onTextChange = {
+                                if (it.isNotBlank()) {
+                                    runAndCatch {
+                                        optionEntity.taskOption.delayTime = it.toInt()
+                                    }
+                                }
+                            })
+
+                            ItemWithSwitch(
+                                "启用默认请求",
+                                modifier = itemModifier,
+                                checked = enableDefaultRequest,
+                                onCheckedChange = {
+                                    optionEntity.taskOption.enableDefaultRequest = it
+                                })
+
+                            if (enableDefaultRequest.value) {
+                                ItemWithNewPage(
+                                    "默认请求列表",
+                                    itemModifier,
+                                    onClick = {
+                                        context.multiChoiceSelector(optionEntity.taskOption.defaultConfiguration)
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+
+                ItemWithNewPage(
+                    "账号设置",
+                    itemModifier,
+                    onClick = { accountExpandState.value = true })
+
+                if (accountExpandState.value) {
+                    MyAlertDialog(onDismissRequest = {
+                        accountExpandState.value = false
+                    }) {
+                        LazyColumn {
+                            item("settings") {
+                                Row(
+                                    modifier = itemModifier,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    TextButton(onClick = {
+                                        accounts += OptionEntity.TaskOption.AccountModel()
+                                    }) {
+                                        Text(
+                                            text = "添加一个",
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                    }
+
+                                    TextButton(onClick = {
+                                        optionEntity.taskOption.accounts = accounts.toList()
+                                        updateOptionEntity()
+                                    }) {
+                                        Text(
+                                            text = "保存全部",
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                    }
+
+                                    TextButton(onClick = {
+                                        accounts.clear()
+                                        optionEntity.taskOption.accounts = emptyList()
+                                        updateOptionEntity()
+                                    }) {
+                                        Text(
+                                            text = "删除全部",
+                                            color = Color.Red,
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                    }
+
+                                }
+                            }
+                            items(accounts) { account ->
+                                AccountItem(account = account, onDelete = {
+                                    accounts.remove(account)
+                                })
+                            }
+                        }
+                    }
+                }
+
+                var accountDropdownExpanded by rememberMutableStateOf(false)
+
+                Box(
+                    modifier = Modifier
+                        .wrapContentSize(Alignment.TopCenter)
+                        .fillMaxWidth()
+                        .padding(horizontal = 15.dp)
+                ) {
+                    OutlinedTextField(
+                        readOnly = true,
+                        value = selectedAccount?.uid ?: "",
+                        onValueChange = {},
+                        label = { Text("选中账号UID") },
+                        trailingIcon = {
+                            IconButton(onClick = {
+                                accountDropdownExpanded = true
+                            }) {
+                                Icon(Icons.Filled.KeyboardArrowDown, contentDescription = null)
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    DropdownMenu(expanded = accountDropdownExpanded, onDismissRequest = {
+                        accountDropdownExpanded = false
+                    }) {
+                        accounts.forEach { account ->
+                            DropdownMenuItem(
+                                // 最近领取时间: ${account.lastReceivedRewardTime.toTime()}
+                                text = { Text("UID: ${account.uid}") },
+                                onClick = {
+                                    selectedAccount = account
+                                    accountDropdownExpanded = false
+                                },
+                            )
+                        }
+                    }
+                }
+
+                if (baseUrl.value.isNotBlank() && accounts.isNotEmpty() && selectedAccount != null) {
+
+                    ItemWithNewPage(
+                        text = "是否高风险: ${viewModel.checkRiskState.value ?: "[点击检查]"}",
+                        modifier = itemModifier,
+                        onClick = viewModel::checkRisk
+                    )
+
+                    ItemWithNewPage(
+                        text = "获取签到信息",
+                        modifier = itemModifier,
+                        onClick = viewModel::checkInDetail
+                    )
+
+                    if (viewModel.checkInDetailState.value != null) {
+                        TasksCard("签到信息") {
+                            with(viewModel.checkInDetailState.value!!) {
+                                val checkInState = checkInStatus == 1 || hasCheckIn == 1
+                                ItemWithNewPage(text = "是否签到: ${if (checkInState) "已签到" else "未签到 [点击签到]"}",
+                                    modifier = itemModifier,
+                                    onClick = {
+                                        if (!checkInState) {
+                                            viewModel.checkIn(isMember == 1)
+                                        }
+                                    })
+
+                                if (lotteryInfo.hasVideoUrge != 0) {
+                                    TasksItem(
+                                        total = lotteryInfo.hasVideoUrge,
+                                        done = if (lotteryInfo.videoUrgeText.isNotBlank()) 1 else 0,
+                                        title = "抽奖机会",
+                                        singleExecution = viewModel::lotteryChance
+                                    )
+                                }
+
+                                if (lotteryInfo.lotteryCount > 0) {
+                                    TasksItem(
+                                        total = lotteryInfo.lotteryCount,
+                                        done = 0,
+                                        title = "抽奖次数",
+                                        singleExecution = viewModel::lottery,
+                                        allExecution = {
+                                            coroutineScope.launch(Dispatchers.Default) {
+                                                val remaining = lotteryInfo.lotteryCount
+                                                for (i in 1..remaining) {
+                                                    wait(delayTime.value.toInt()) {
+                                                        viewModel.lottery()
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    if (isSunday()) {
+                        TasksCard("兑换章节卡") {
+                            ItemWithNewPage(
+                                text = "[点我查询章节卡碎片]",
+                                modifier = itemModifier,
+                                onClick = viewModel::exchangeChapterCard
+                            )
+
+                            if (viewModel.exchangeChapterCardState.value != null) {
+                                with(viewModel.exchangeChapterCardState.value!!) {
+                                    val coin = balance.toInt()
+                                    if (coin == 0 || coin < 15) {
+                                        ItemWithNewPage(
+                                            text = "没有足够的章节卡碎片", modifier = itemModifier
+                                        )
+                                    } else {
+                                        goods.minByOrNull { model -> kotlin.math.abs(coin - model.goodScore.toInt()) }
+                                            ?.let { goodModel ->
+                                                ItemWithNewPage(text = "目前碎片: $coin, 兑换章节卡: ${goodModel.chapterCardCount} ${goodModel.goodName}",
+                                                    modifier = itemModifier,
+                                                    onClick = {
+                                                        viewModel.buyChapterCard(
+                                                            goodModel.goodId,
+                                                            "${goodModel.chapterCardCount} ${goodModel.goodName}"
+                                                        )
+                                                    })
+                                            }
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+
+                    ItemWithNewPage(
+                        text = "获取福利中心",
+                        modifier = itemModifier,
+                        onClick = viewModel::getWelfareCenter
+                    )
+
+                    if (viewModel.welfareCenterModel.value != null) {
+                        TasksCard("福利中心") {
+                            with(viewModel.welfareCenterModel.value!!) {
+                                // 宝箱奖励
+                                TasksItem(total = 1,
+                                    done = if (treasureBox.intervalTime.toLong() > 0L) 1 else 0,
+                                    title = treasureBox.desc,
+                                    singleExecution = {
+                                        viewModel.getWelfareReward(
+                                            treasureBox.desc, treasureBox.taskId
+                                        )
+                                    })
+
+                                val videoRemaining =
+                                    videoBenefitModule.taskList.size - videoBenefitModule.process
+                                // 激励视频任务
+                                val videoBenefitModuleExecution: () -> Unit = {
+                                    val taskId = videoBenefitModule.taskList.first().taskId
+                                    coroutineScope.launch(Dispatchers.Default) {
+                                        for (i in 1..videoRemaining) {
+                                            wait(delayTime.value.toInt()) {
+                                                viewModel.getWelfareReward(
+                                                    videoBenefitModule.title, taskId
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                                TasksItem(
+                                    total = videoBenefitModule.taskList.size,
+                                    done = videoBenefitModule.process,
+                                    title = videoBenefitModule.title,
+                                    singleExecution = {
+                                        viewModel.getWelfareReward(
+                                            videoBenefitModule.title,
+                                            videoBenefitModule.taskList.first().taskId
+                                        )
+                                    },
+                                    allExecution = if (videoRemaining > 0) videoBenefitModuleExecution else null
+                                )
+
+                                val countdownBenefitModuleTaskList = countdownBenefitModule.taskList
+                                // 额外看3次小视频得奖励
+                                countdownBenefitModuleTaskList.firstOrNull { it.title == "额外看3次小视频得奖励" }
+                                    ?.let {
+                                        val remaining = it.total - it.process
+                                        val allExecution: () -> Unit = {
+                                            val taskId = it.taskId
+                                            coroutineScope.launch(Dispatchers.Default) {
+                                                for (i in 1..remaining) {
+
+                                                    wait(delayTime.value.toInt()) {
+                                                        viewModel.getWelfareReward(
+                                                            it.title, taskId
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        TasksItem(
+                                            total = it.total,
+                                            done = it.process,
+                                            title = it.title,
+                                            singleExecution = {
+                                                viewModel.getWelfareReward(
+                                                    it.title, it.taskId
+                                                )
+                                            },
+                                            allExecution = if (remaining > 0) allExecution else null
+                                        )
+                                    }
+                                // 额外看1次小视频得激励碎片
+                                countdownBenefitModuleTaskList.firstOrNull { it.title == "额外看1次小视频得奖励" }
+                                    ?.let {
+                                        TasksItem(total = it.total,
+                                            done = it.process,
+                                            title = it.title,
+                                            singleExecution = {
+                                                viewModel.getWelfareReward(
+                                                    it.title, it.taskId
+                                                )
+                                            })
+
+                                    }
+                                // 当日听书1分钟
+                                countdownBenefitModuleTaskList.firstOrNull { it.title == "当日听书1分钟" }
+                                    ?.let {
+                                        val receive: () -> Unit = {
+                                            viewModel.receiveWelfareReward(
+                                                it.title,
+                                                it.taskId
+                                            )
+                                        }
+                                        TasksItem(
+                                            total = it.total,
+                                            done = it.process,
+                                            title = it.title,
+                                            receive = if (it.isReceived == 0) receive else null
+                                        )
+                                    }
+                                // 当日玩游戏10分钟
+                                countdownBenefitModuleTaskList.firstOrNull { it.title == "当日玩游戏10分钟" }
+                                    ?.let {
+                                        val gameRemaining = (it.total - it.process) * 2 + 1
+                                        val allExecution: () -> Unit = {
+                                            coroutineScope.launch(Dispatchers.IO) {
+                                                withContext(Dispatchers.Main) {
+                                                    context.toast("开始游戏时间,预计${it.total - it.process + 1}分钟")
+                                                }
+                                                for (i in 1..gameRemaining) {
+                                                    wait(30) {
+                                                        viewModel.gameTime()
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        val receive: () -> Unit = {
+                                            viewModel.receiveWelfareReward(
+                                                it.title,
+                                                it.taskId
+                                            )
+                                        }
+                                        TasksItem(
+                                            total = it.total,
+                                            done = it.process,
+                                            title = it.title,
+                                            singleExecution = viewModel::gameTime,
+                                            allExecution = if (gameRemaining > 0) allExecution else null,
+                                            receive = if (it.isReceived == 0) receive else null
+                                        )
+                                    }
+
+                            }
+                        }
+                    }
+
+                    if (viewModel.welfareCenterReward.isNotEmpty()) {
+                        Text(
+                            text = viewModel.welfareCenterReward.entries.joinToString { "${it.key}: ${it.value}\n" },
+                            modifier = Modifier.padding(horizontal = 15.dp),
+                            // 始终显示全部
+                            overflow = TextOverflow.Visible
+                        )
+                    }
+
+                    if (viewModel.errorState.value.isNotBlank()) {
+                        ItemWithEditText(title = "错误信息",
+                            text = viewModel.errorState,
+                            onTextChange = {})
+                    }
+                }
+
+                // 待实现
+//                ItemWithNewPage(text = "自动化选项列表", onClick = {
+//                    context.multiChoiceSelector(optionEntity.taskOption.configurations)
+//                })
+
                 ItemWithNewPage(text = "自动化设置列表", modifier = itemModifier, onClick = {
                     context.multiChoiceSelector(optionEntity.automatizationOption)
                 })
@@ -1010,18 +1489,18 @@ class MainActivity : ModuleAppCompatActivity() {
                 context.openUrl("https://github.com/xihan123/QDReadHook#%E6%89%93%E8%B5%8F")
             })
 
-            ItemWithNewPage(text = "QD模块交流群", modifier = itemModifier, onClick = {
-                context.joinQQGroup("JdqL9prgQ3epIUed3weaEkJwtNgNQaWa")
+            ItemWithNewPage(text = "新QD模块交流群", modifier = itemModifier, onClick = {
+                context.joinQQGroup("ekDZd0CDaBKVg5HxQJE9-avi0uWPVK8a")
             })
 
-            ItemWithNewPage(text = "QD模块(赞助/内测)群", modifier = itemModifier, onClick = {
+            ItemWithNewPage(text = "新QD模块(赞助/内测)群", modifier = itemModifier, onClick = {
                 context.alertDialog {
                     title = "作者的话"
                     message =
-                        "因为开发QD模块占用日常时间过长，无法保证能够及时适配，希望大家能够理解。\n" + "QD模块的新版本更新将会在赞助群抢先体验。\n" + "开发不易，有能力的人可以进行赞助，交流群的相册有付款码。\n" + "赞助多少无要求，各凭心意。赞助群门槛暂定二十元，后续群费会随时向上调整，就不再另行通知。\n" + "大家量力而行，非常感谢各位的支持。愿大家都有一个良好的追书体验~"
+                        "因为开发QD模块占用日常时间过长，无法保证能够及时适配，希望大家能够理解。\n" + "QD模块的新版本更新将会在赞助群抢先体验。\n" + "开发不易，有能力的人可以进行赞助，交流群的相册有付款码。\n" + "赞助多少无要求，各凭心意。赞助群门槛暂定四十元，后续群费会随时向上调整，就不再另行通知。\n" + "大家量力而行，非常感谢各位的支持。愿大家都有一个良好的追书体验~"
 
                     positiveButton("确定") {
-                        context.joinQQGroup("3BZmGVQtRFFyTqz_Lhw7QpB_aV-WZ-Lj")
+                        context.joinQQGroup("srF3lQITSezYciRF43-Ih9cyJp82mmaS")
                     }
                     negativeButton("取消") {
                         it.dismiss()
@@ -1073,6 +1552,9 @@ class MainActivity : ModuleAppCompatActivity() {
             }
 
             var cookieDialog by rememberMutableStateOf(value = false)
+            val cookieDialogDismissRequest = {
+                cookieDialog = false
+            }
 
             ItemWithNewPage(
                 text = "查看Cookie",
@@ -1081,18 +1563,15 @@ class MainActivity : ModuleAppCompatActivity() {
 
             if (cookieDialog) {
 
-                AlertDialog(onDismissRequest = {
-                    cookieDialog = false
-                }, title = {
-                    TextButton(onClick = {
-                        context.copyToClipboard("${optionEntity.cookieOption.uid}")
-                        context.toast("已复制UID")
-                    }) {
-                        Text(text = "${optionEntity.cookieOption.uid}")
-                    }
-
-                }, text = {
+                MyAlertDialog(onDismissRequest = cookieDialogDismissRequest, text = {
                     Column {
+                        TextButton(onClick = {
+                            context.copyToClipboard("${optionEntity.cookieOption.uid}")
+                            context.toast("已复制UID")
+                        }) {
+                            Text(text = "UID: ${optionEntity.cookieOption.uid}")
+                        }
+
                         TextButton(onClick = {
                             context.copyToClipboard("${optionEntity.cookieOption.ua}")
                             context.toast("已复制UA")
@@ -1107,23 +1586,48 @@ class MainActivity : ModuleAppCompatActivity() {
                             context.toast("已复制Cookie")
                         }) {
                             Text(
-                                text = "cookie: ${optionEntity.cookieOption.cookie}", maxLines = 2
+                                text = "cookie: ${optionEntity.cookieOption.cookie}",
+                                maxLines = 2
                             )
                         }
                     }
-
                 }, confirmButton = {
-                    TextButton(onClick = { cookieDialog = false }) {
+                    TextButton(onClick = {
+                        runAndCatch {
+                            optionEntity.taskOption.accounts.filter { it.uid.isNotEmpty() }
+                                .firstOrNull { it.uid.toInt() == optionEntity.cookieOption.uid }
+                                ?.let {
+                                    it.cookie = optionEntity.cookieOption.cookie
+                                    it.ua = optionEntity.cookieOption.ua
+                                } ?: run {
+                                optionEntity.taskOption.accounts =
+                                    optionEntity.taskOption.accounts.plus(
+                                        OptionEntity.TaskOption.AccountModel(
+                                            uid = optionEntity.cookieOption.uid.toString(),
+                                            cookie = optionEntity.cookieOption.cookie,
+                                            ua = optionEntity.cookieOption.ua
+                                        )
+                                    )
+                            }
+                            updateOptionEntity()
+                            cookieDialogDismissRequest()
+                            context.toast("已添加/更新Cookie")
+                        }
+                    }) {
+                        Text("一键添加/更新")
+                    }
+                }, dismissButton = {
+                    TextButton(onClick = cookieDialogDismissRequest) {
                         Text("关闭")
                     }
                 })
-
-
             }
 
-            ItemWithNewPage(
-                text = "起点内部版本号: $versionCode\n模块版本: ${BuildConfig.VERSION_NAME}-${BuildConfig.VERSION_CODE}",
-                modifier = itemModifier
+            ItemWithAction(
+                text = "起点内部版本号: $versionCode\n模块版本: ${BuildConfig.VERSION_NAME}-${BuildConfig.VERSION_CODE}\n目前支持版本号范围: 7.9.354-1296 至 7.9.xxx-1499",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
             )
 
 
@@ -1263,6 +1767,124 @@ fun Disclaimers(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun ItemWithNewPage(
+    text: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+    onLongClick: () -> Unit = {},
+) {
+    Box(
+        modifier = modifier
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .combinedClickable(
+                onClick = onClick, onLongClick = onLongClick
+            )
+            .padding(horizontal = 15.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = text,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = "more",
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun ItemWithAction(
+    text: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+    onLongClick: () -> Unit = {},
+) {
+    Box(
+        modifier = modifier
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .combinedClickable(
+                onClick = onClick, onLongClick = onLongClick
+            )
+            .padding(horizontal = 15.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Text(
+                text = text, style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    }
+}
+
+@Composable
+fun ItemWithEditText(
+    title: String,
+    text: MutableState<String>,
+    right: @Composable () -> Unit = {},
+    onTextChange: ((String) -> Unit) = {},
+) {
+    TextField(modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 15.dp),
+        value = text.value,
+        label = { Text(text = title) },
+        onValueChange = {
+            text.value = it
+            onTextChange(it)
+            updateOptionEntity()
+        },
+        trailingIcon = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                right()
+                if (text.value.isNotBlank()) {
+                    IconButton(onClick = {
+                        text.value = ""
+                        onTextChange("")
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Close, contentDescription = null
+                        )
+                    }
+                }
+            }
+        })
+}
+
+/**
+ * 插入
+ * @since 7.9.354-1296
+ * @param [list] 列表
+ * @suppress Generate Documentation
+ */
+@Composable
+fun Insert(list: MutableState<String>) {
+    if (list.value.isNotBlank()) {
+        IconButton(onClick = {
+            list.value = list.value.plus(";")
+        }) {
+            Icon(imageVector = Icons.Default.Add, contentDescription = null)
+        }
+    }
+}
+
 @Composable
 private fun PrimaryCard(
     title: String = "", modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit
@@ -1282,6 +1904,41 @@ private fun PrimaryCard(
                         .padding(horizontal = 15.dp)
                         .fillMaxWidth()
                 )
+            }
+            content()
+        })
+}
+
+@Composable
+private fun TasksCard(
+    title: String = "",
+    modifier: Modifier = Modifier,
+    allExecution: (() -> Unit)? = null,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Card(modifier = modifier
+        .fillMaxWidth()
+        .padding(8.dp),
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(4.dp),
+        content = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = title,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    modifier = Modifier
+                        .padding(horizontal = 15.dp)
+                        .fillMaxWidth()
+                )
+                if (allExecution != null) {
+                    Button(onClick = allExecution) {
+                        Text(text = "一键执行")
+                    }
+                }
             }
             content()
         })
@@ -1355,104 +2012,6 @@ private fun AnimatedSwitchButton(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun ItemWithNewPage(
-    text: String,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit = {},
-    onLongClick: () -> Unit = {},
-) {
-    Box(
-        modifier = modifier
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .combinedClickable(
-                onClick = onClick, onLongClick = onLongClick
-            )
-            .padding(horizontal = 15.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = text,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = "more",
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun ItemWithAction(
-    text: String,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit = {},
-    onLongClick: () -> Unit = {},
-) {
-    Box(
-        modifier = modifier
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .combinedClickable(
-                onClick = onClick, onLongClick = onLongClick
-            )
-            .padding(horizontal = 15.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            contentAlignment = Alignment.CenterStart
-        ) {
-            Text(
-                text = text, style = MaterialTheme.typography.bodyMedium
-            )
-        }
-    }
-}
-
-@Composable
-private fun ItemWithEditText(
-    title: String,
-    text: MutableState<String>,
-    right: @Composable () -> Unit = {},
-    onTextChange: ((String) -> Unit) = {},
-) {
-    TextField(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 15.dp),
-        value = text.value,
-        label = { Text(text = title) },
-        onValueChange = {
-            text.value = it
-            onTextChange(it)
-            updateOptionEntity()
-        },
-        trailingIcon = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                right()
-                if (text.value.isNotBlank()) {
-                    IconButton(onClick = {
-                        text.value = ""
-                        onTextChange("")
-                    }) {
-                        Icon(imageVector = Icons.Default.Close, contentDescription = null)
-                    }
-                }
-            }
-        })
-}
 
 @Composable
 private fun CustomBookShelfTopImageOption(
@@ -1533,7 +2092,9 @@ private fun CustomBookShelfTopImageOption(
                 IconButton(onClick = {
                     fontHLight.value = ""
                 }) {
-                    Icon(imageVector = Icons.Default.Close, contentDescription = null)
+                    Icon(
+                        imageVector = Icons.Default.Close, contentDescription = null
+                    )
                 }
             }
         })
@@ -1558,7 +2119,9 @@ private fun CustomBookShelfTopImageOption(
         })
 
         TextField(modifier = Modifier.fillMaxWidth(), value = fontOnSurface.value, label = {
-            Text(text = "字体在表面上的颜色", style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = "字体在表面上的颜色", style = MaterialTheme.typography.bodySmall
+            )
         }, onValueChange = {
             fontOnSurface.value = it
             onValueChange(
@@ -1571,7 +2134,9 @@ private fun CustomBookShelfTopImageOption(
                 IconButton(onClick = {
                     fontOnSurface.value = ""
                 }) {
-                    Icon(imageVector = Icons.Default.Close, contentDescription = null)
+                    Icon(
+                        imageVector = Icons.Default.Close, contentDescription = null
+                    )
                 }
             }
         })
@@ -1609,7 +2174,9 @@ private fun CustomBookShelfTopImageOption(
                 IconButton(onClick = {
                     surfaceIcon.value = ""
                 }) {
-                    Icon(imageVector = Icons.Default.Close, contentDescription = null)
+                    Icon(
+                        imageVector = Icons.Default.Close, contentDescription = null
+                    )
                 }
             }
         })
@@ -1688,7 +2255,9 @@ private fun StartImageItem(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 TextButton(shape = RoundedCornerShape(50), colors = ButtonDefaults.textButtonColors(
-                    containerColor = if (isUsed.value) Color.DarkGray else Color(255, 230, 231),
+                    containerColor = if (isUsed.value) Color.DarkGray else Color(
+                        255, 230, 231
+                    ),
                     contentColor = Color.Red,
                 ), onClick = {
                     isUsed.value = !isUsed.value
@@ -1708,68 +2277,188 @@ private fun StartImageItem(
     }
 }
 
-/**
- * 插入
- * @since 7.9.354-1296
- * @param [list] 列表
- * @suppress Generate Documentation
- */
-@Composable
-private fun Insert(list: MutableState<String>) {
-    if (list.value.isNotBlank()) {
-        IconButton(onClick = {
-            list.value = list.value.plus(";")
-        }) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = null)
-        }
-    }
-}
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConfirmationDialog(
     text: String,
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
-) {
-    BasicAlertDialog(
-        onDismissRequest = onDismiss,
-        modifier = Modifier
-            .height(96.dp)
-            .clip(RoundedCornerShape(6.dp))
-            .background(MaterialTheme.colorScheme.background)
-            .padding(start = 20.dp, end = 20.dp, top = 15.dp, bottom = 12.dp)
-    ) {
-        Column(
-            verticalArrangement = Arrangement.SpaceBetween, horizontalAlignment = Alignment.End
-        ) {
+    onShowCloseButton: Boolean = false,
+    onConfirm: (() -> Unit)? = null,
+    onDismiss: () -> Unit = {},
+) = AlertDialog(title = {
+    Text(text = "提示", style = MaterialTheme.typography.bodyLarge)
+}, text = {
+    Text(text = text, style = MaterialTheme.typography.bodyMedium)
+}, confirmButton = {
+    onConfirm?.let {
+        TextButton(onClick = {
+            it.invoke()
+            onDismiss.invoke()
+        }) {
             Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = text,
-                style = MaterialTheme.typography.bodyLarge
+                text = stringResource(android.R.string.ok),
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Red
             )
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(30.dp)
-            ) {
+        }
+    }
+}, dismissButton = {
+    if (onShowCloseButton) {
+        TextButton(onDismiss) {
+            Text(
+                text = stringResource(android.R.string.cancel),
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    }
+}, onDismissRequest = onDismiss
+)
+
+
+@Composable
+fun MyAlertDialog(
+    modifier: Modifier = Modifier,
+    onDismissRequest: () -> Unit = {},
+    dismissButton: @Composable (() -> Unit)? = null,
+    confirmButton: @Composable () -> Unit = {},
+    title: String = "",
+    text: @Composable () -> Unit
+) = AlertDialog(
+    onDismissRequest = onDismissRequest,
+    modifier = modifier,
+    confirmButton = confirmButton,
+    dismissButton = dismissButton,
+    title = {
+        if (title.isNotBlank()) {
+            Text(
+                text = title, style = MaterialTheme.typography.bodyLarge
+            )
+        }
+    },
+    text = text
+)
+
+/**
+ * 任务项目
+ * @suppress Generate Documentation
+ */
+@Composable
+fun TasksItem(
+    total: Int,
+    done: Int,
+    title: String,
+    modifier: Modifier = Modifier,
+    singleExecution: (() -> Unit)? = null,
+    allExecution: (() -> Unit)? = null,
+    receive: (() -> Unit)? = null,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(15.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = title,
+            style = MaterialTheme.typography.bodyMedium,
+            maxLines = 1,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            modifier = Modifier.weight(1f),
+            text = "$done/$total",
+            style = MaterialTheme.typography.bodyMedium,
+            maxLines = 1,
+        )
+        singleExecution?.let {
+            TextButton(it, enabled = done <= total) {
                 Text(
-                    modifier = Modifier.clickable(
-                        interactionSource = rememberMutableInteractionSource(),
-                        indication = null,
-                        role = Role.Button,
-                        onClick = onDismiss
-                    ), text = "取消", style = MaterialTheme.typography.bodyMedium
+                    text = "+1", style = MaterialTheme.typography.bodySmall, maxLines = 1
                 )
+            }
+        }
+
+        allExecution?.let {
+            TextButton(it, enabled = done <= total) {
                 Text(
-                    modifier = Modifier.clickable(
-                        interactionSource = rememberMutableInteractionSource(),
-                        indication = null,
-                        role = Role.Button,
-                        onClick = onConfirm
-                    ), text = "确定", color = Color.Red, style = MaterialTheme.typography.bodyMedium
+                    text = "+${total - done}",
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 1
+                )
+            }
+        }
+
+        receive?.let {
+            TextButton(it, enabled = done == total) {
+                Text(
+                    text = "领取", style = MaterialTheme.typography.bodySmall, maxLines = 1
+                )
+            }
+        }
+
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun AccountItem(
+    modifier: Modifier = Modifier,
+    account: OptionEntity.TaskOption.AccountModel,
+    onDelete: () -> Unit = {}
+) {
+    val state = rememberMutableStateOf(value = false)
+    val imei = rememberMutableStateOf(value = account.imei)
+    val uid = rememberMutableStateOf(value = account.uid)
+    val ua = rememberMutableStateOf(value = account.ua)
+    val cookie = rememberMutableStateOf(value = account.cookie)
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(15.dp)
+            .combinedClickable(
+                onClick = {
+
+                }, onLongClick = onDelete
+            ),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text("UID: ${account.uid}", modifier = Modifier.weight(1f))
+
+        IconButton(onClick = {
+            state.value = !state.value
+        }) {
+            if (state.value) {
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowUp, contentDescription = null
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowDown, contentDescription = null
                 )
             }
         }
     }
+
+    AnimatedVisibility(visible = state.value) {
+        Column {
+            ItemWithEditText(title = "QIMEI", text = imei, onTextChange = {
+                account.imei = it
+            })
+            ItemWithEditText(title = "UID", text = uid, onTextChange = {
+                account.uid = it
+            })
+            ItemWithEditText(title = "User-Agent", text = ua, onTextChange = {
+                account.ua = it
+            })
+            ItemWithEditText(title = "Cookie", text = cookie, onTextChange = {
+                account.cookie = it
+            })
+        }
+    }
+
 }
 
 /**
