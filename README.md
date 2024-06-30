@@ -17,7 +17,7 @@
 
 * 设置页面在:起点->我的->左上角设置->阅读设置/模块设置(长按)(1.1.2+)
 
-* 目前支持起点版本 ~~758~768、772、776、780、784、788、792、796、800、804、808、812、827、834、842、843、850、854、858、860、868、872、878、884、890、896、900、906、916、924、932、938、944、950、958、970、980、994、1005、1020、1030 ~ 1105、1106 ~ 1146~~ 1196 ~ 1299 版本
+* 目前支持起点版本 ~~758~768、772、776、780、784、788、792、796、800、804、808、812、827、834、842、843、850、854、858、860、868、872、878、884、890、896、900、906、916、924、932、938、944、950、958、970、980、994、1005、1020、1030 ~ 1105、1106 ~ 1146、1196 ~ 1299~~ 1296 ~ 1499 版本
 
 * 暂时提高版本号范围以支持一些不容易改变的类
 
@@ -39,9 +39,23 @@
 
     * [蓝奏云](https://xihan.lanzouj.com/b042w7oqb) 密码:9ikq
 
-* QD模块交流群: [727983520](https://qm.qq.com/cgi-bin/qm/qr?k=JT0K0sZEJHm4CnsRjRTKxY3uL-xoO6CG&jump_from=webapi&authKey=yGg3h07NWBGGF4TmxtRNykIQ4HLM4t/uxrAtqHx15zgRmIR4sC14HxKYOq376ekt) <a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=JT0K0sZEJHm4CnsRjRTKxY3uL-xoO6CG&jump_from=webapi&authKey=yGg3h07NWBGGF4TmxtRNykIQ4HLM4t/uxrAtqHx15zgRmIR4sC14HxKYOq376ekt"><img border="0" src="https://pub.idqqimg.com/wpa/images/group.png" alt="QD模块交流群" title="QD模块交流群"></a>
+* QD模块交流群: [963079548](https://qm.qq.com/cgi-bin/qm/qr?k=wlD8adp7c17yXvnrJWrq_bNkjSpos6ot&jump_from=webapi&authKey=vkNN3oR/ZwsHJjzLRakReCG5Yf4wv6Kcyn3K/MydwaX8kMoqBj6Qen3DfZJCfxB8) <a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=wlD8adp7c17yXvnrJWrq_bNkjSpos6ot&jump_from=webapi&authKey=vkNN3oR/ZwsHJjzLRakReCG5Yf4wv6Kcyn3K/MydwaX8kMoqBj6Qen3DfZJCfxB8"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="QD模块交流群" title="QD模块交流群"></a>
 
 * 由于 [极狐Gitlab](https://jihulab.com/) 突然封禁导致 [极狐Gitlab-QDReadHook](https://jihulab.com/xihan123/QDReadHook) 我已无权限更改，该仓库内容已过时
+
+### 声明
+
+    各位用户
+
+    我们必须立即停止在任何公共平台上宣传 QDReadHook 项目，以及在非 QD 模块的群组内讨论相关内容
+    
+    这是为了保护整个项目和作者不受潜在风险的必要措施
+    
+    请明白，如果我们发现项目继续被公开讨论和传播，我们将不得不采取行动，包括但不限于关闭仓库，甚至项目和作者都可能会从网络上消失。这将是我们不愿意看到的最后手段
+    
+    因此，我们强烈要求您立即遵守这一指示，以避免任何不利的后果
+
+    感谢大家的支持与配合！
 
 ### [大部分功能和介绍列表](https://xihan123.github.io/QDReadHook/app/cn.xihan.qdds/index.html)
 
