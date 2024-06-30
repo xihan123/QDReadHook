@@ -1,4 +1,28 @@
 # Changelog
+## [3.1.8](https://github.com/xihan123/QDReadHook/compare/v3.1.7...v3.1.8) (2024-06-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* `1296`+ 已无`章末广告`选项所以被移除
+* 提高最低支持版本为 7.9.354-1296,低于此版本的勿更新！！！
+
+### Features
+
+* `1296`+ 已无`章末广告`选项所以被移除 ([b0dce7a](https://github.com/xihan123/QDReadHook/commit/b0dce7ac67cfa04ac30741a47893e772b420a8ce))
+* 提高最低支持版本为 7.9.354-1296,低于此版本的勿更新！！！ ([98db62c](https://github.com/xihan123/QDReadHook/commit/98db62c560e05b0b5af7142a6401bce83da2654c))
+* 新增`自动化配置` ([070e780](https://github.com/xihan123/QDReadHook/commit/070e780194427bc16c7c98367767e676d64a8e9b))
+
+
+### Miscellaneous
+
+* 更新依赖库 ([cea8109](https://github.com/xihan123/QDReadHook/commit/cea8109b87a78545a395e7b668f2cb30fd1e5290))
+
+
+### Refactoring
+
+* 重命名和移动文件以优化结构 ([72a30b0](https://github.com/xihan123/QDReadHook/commit/72a30b04035d1cf313f5f7fa2c4259f405aa8d07))
+
 ## [3.1.7](https://github.com/xihan123/QDReadHook/compare/v3.1.6...v3.1.7) (2024-06-12)
 
 
