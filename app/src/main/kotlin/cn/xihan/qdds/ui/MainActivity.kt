@@ -2390,7 +2390,7 @@ fun TasksItem(
         }
 
         receive?.let {
-            TextButton(it, enabled = done == total) {
+            TextButton(it, enabled = done >= total) {
                 Text(
                     text = "领取", style = MaterialTheme.typography.bodySmall, maxLines = 1
                 )
