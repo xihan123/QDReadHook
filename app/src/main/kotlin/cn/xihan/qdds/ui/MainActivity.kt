@@ -508,8 +508,7 @@ class MainActivity : ModuleAppCompatActivity() {
                     }
                 }
 
-                ItemWithNewPage(
-                    "基础设置",
+                ItemWithNewPage("基础设置",
                     itemModifier,
                     onClick = { baseExpandState.value = true })
 
@@ -539,8 +538,7 @@ class MainActivity : ModuleAppCompatActivity() {
                                 }
                             })
 
-                            ItemWithSwitch(
-                                "启用默认请求",
+                            ItemWithSwitch("启用默认请求",
                                 modifier = itemModifier,
                                 checked = enableDefaultRequest,
                                 onCheckedChange = {
@@ -548,20 +546,15 @@ class MainActivity : ModuleAppCompatActivity() {
                                 })
 
                             if (enableDefaultRequest.value) {
-                                ItemWithNewPage(
-                                    "默认请求列表",
-                                    itemModifier,
-                                    onClick = {
-                                        context.multiChoiceSelector(optionEntity.taskOption.defaultConfiguration)
-                                    }
-                                )
+                                ItemWithNewPage("默认请求列表", itemModifier, onClick = {
+                                    context.multiChoiceSelector(optionEntity.taskOption.defaultConfiguration)
+                                })
                             }
                         }
                     }
                 }
 
-                ItemWithNewPage(
-                    "账号设置",
+                ItemWithNewPage("账号设置",
                     itemModifier,
                     onClick = { accountExpandState.value = true })
 
@@ -626,8 +619,7 @@ class MainActivity : ModuleAppCompatActivity() {
                         .fillMaxWidth()
                         .padding(horizontal = 15.dp)
                 ) {
-                    OutlinedTextField(
-                        readOnly = true,
+                    OutlinedTextField(readOnly = true,
                         value = selectedAccount?.uid ?: "",
                         onValueChange = {},
                         label = { Text("选中账号UID") },
@@ -693,8 +685,7 @@ class MainActivity : ModuleAppCompatActivity() {
                                 }
 
                                 if (lotteryInfo.lotteryCount > 0) {
-                                    TasksItem(
-                                        total = lotteryInfo.lotteryCount,
+                                    TasksItem(total = lotteryInfo.lotteryCount,
                                         done = 0,
                                         title = "抽奖次数",
                                         singleExecution = viewModel::lottery,
@@ -707,8 +698,7 @@ class MainActivity : ModuleAppCompatActivity() {
                                                     }
                                                 }
                                             }
-                                        }
-                                    )
+                                        })
                                 }
                             }
                         }
@@ -843,8 +833,7 @@ class MainActivity : ModuleAppCompatActivity() {
                                     ?.let {
                                         val receive: () -> Unit = {
                                             viewModel.receiveWelfareReward(
-                                                it.title,
-                                                it.taskId
+                                                it.title, it.taskId
                                             )
                                         }
                                         TasksItem(
@@ -872,8 +861,7 @@ class MainActivity : ModuleAppCompatActivity() {
                                         }
                                         val receive: () -> Unit = {
                                             viewModel.receiveWelfareReward(
-                                                it.title,
-                                                it.taskId
+                                                it.title, it.taskId
                                             )
                                         }
                                         TasksItem(
@@ -900,7 +888,8 @@ class MainActivity : ModuleAppCompatActivity() {
                     }
 
                     if (viewModel.errorState.value.isNotBlank()) {
-                        ItemWithEditText(title = "错误信息",
+                        ItemWithEditText(
+                            title = "错误信息",
                             text = viewModel.errorState,
                             onTextChange = {})
                     }
@@ -1041,7 +1030,8 @@ class MainActivity : ModuleAppCompatActivity() {
                 val enableCustomStartImage =
                     rememberMutableStateOf(value = optionEntity.startImageOption.enableCustomStartImage)
 
-                ItemWithSwitch(text = "启用自定义启动图",
+                ItemWithSwitch(
+                    text = "启用自定义启动图",
                     checked = enableCustomStartImage,
                     onCheckedChange = {
                         optionEntity.startImageOption.enableCustomStartImage = it
@@ -1117,8 +1107,7 @@ class MainActivity : ModuleAppCompatActivity() {
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
                                             sublist.forEach { item ->
-                                                StartImageItem(
-                                                    startImageModel = item,
+                                                StartImageItem(startImageModel = item,
                                                     modifier = Modifier
                                                         .combinedClickable(onClick = {},
                                                             onLongClick = {
@@ -1397,8 +1386,7 @@ class MainActivity : ModuleAppCompatActivity() {
                     })
 
                 if (hideDetail.value) {
-                    ItemWithNewPage(
-                        text = "书籍详情-隐藏控件列表",
+                    ItemWithNewPage(text = "书籍详情-隐藏控件列表",
                         modifier = itemModifier,
                         onClick = {
                             context.multiChoiceSelector(optionEntity.viewHideOption.bookDetailOptions)
@@ -1416,7 +1404,8 @@ class MainActivity : ModuleAppCompatActivity() {
                     })
 
                 if (enableHideLastPage.value) {
-                    ItemWithNewPage(text = "阅读页-最后一页-隐藏控件列表",
+                    ItemWithNewPage(
+                        text = "阅读页-最后一页-隐藏控件列表",
                         modifier = itemModifier,
                         onClick = {
                             context.multiChoiceSelector(optionEntity.viewHideOption.bookLastPageOptions)
@@ -1443,7 +1432,11 @@ class MainActivity : ModuleAppCompatActivity() {
                 .fillMaxWidth()
                 .height(if (isTablet) 58.dp else 38.dp)
         }
-        PrimaryCard(modifier = Modifier.padding(padding)) {
+        PrimaryCard(
+            modifier = Modifier
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
+        ) {
 
             ItemWithSwitch(text = "隐藏桌面图标",
                 modifier = itemModifier,
@@ -1536,8 +1529,7 @@ class MainActivity : ModuleAppCompatActivity() {
 
             var openDialog by rememberMutableStateOf(value = false)
 
-            ItemWithNewPage(
-                text = "免责声明",
+            ItemWithNewPage(text = "免责声明",
                 modifier = itemModifier,
                 onClick = { openDialog = true })
 
@@ -1556,8 +1548,7 @@ class MainActivity : ModuleAppCompatActivity() {
                 cookieDialog = false
             }
 
-            ItemWithNewPage(
-                text = "查看Cookie",
+            ItemWithNewPage(text = "查看Cookie",
                 modifier = itemModifier,
                 onClick = { cookieDialog = true })
 
@@ -1586,8 +1577,7 @@ class MainActivity : ModuleAppCompatActivity() {
                             context.toast("已复制Cookie")
                         }) {
                             Text(
-                                text = "cookie: ${optionEntity.cookieOption.cookie}",
-                                maxLines = 2
+                                text = "cookie: ${optionEntity.cookieOption.cookie}", maxLines = 2
                             )
                         }
                     }
@@ -2006,7 +1996,8 @@ private fun AnimatedSwitchButton(
             label = ""
         )
 
-        LottieAnimation(modifier = modifier,
+        LottieAnimation(
+            modifier = modifier,
             composition = switchButton,
             progress = { animationProgress })
     }
