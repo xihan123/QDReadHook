@@ -1,4 +1,32 @@
 # Changelog
+## [3.1.9](https://github.com/xihan123/QDReadHook/compare/v3.1.8...v3.1.9) (2024-07-05)
+
+
+### Features
+
+* 添加HTTP非200响应验证器,如果有错误会显示错误信息 ([3a9077f](https://github.com/xihan123/QDReadHook/commit/3a9077f94d8670bbc3004882539d1a8f992fa160))
+
+
+### Bug Fixes
+
+* 修复`领取`按钮灰色逻辑 ([abe4ac6](https://github.com/xihan123/QDReadHook/commit/abe4ac6aecb76ce274c0a2b9ad276e683ecf5521))
+* 修复多开环境权限异常[258]([#258](https://github.com/xihan123/QDReadHook/issues/258)) ([4f6e5d3](https://github.com/xihan123/QDReadHook/commit/4f6e5d39af489c7599058a49c7bd2ab681f610f7))
+
+
+### CI
+
+* 更新构建流程 ([78532ce](https://github.com/xihan123/QDReadHook/commit/78532cebded3fd12897ce057df271a55cf434ad1))
+
+
+### Miscellaneous
+
+* 更新依赖库 ([2dbb70d](https://github.com/xihan123/QDReadHook/commit/2dbb70d503e8a6b0a71523a8062832b85a9444c2))
+
+
+### Performance Improvements
+
+* **About:** 关于页面元素显示不全可滑动 ([3980992](https://github.com/xihan123/QDReadHook/commit/398099289c5b55d551ade122006816c5f4c18367))
+
 ## [3.1.8](https://github.com/xihan123/QDReadHook/compare/v3.1.7...v3.1.8) (2024-06-30)
 
 
