@@ -63,8 +63,8 @@ private fun provideLogFile(): File {
  */
 fun provideOptionEntity(file: File): OptionEntity = try {
     file.readText().parseObject<OptionEntity>().apply {
-        if (currentOptionVersionCode < latestOptionVersionCode) {
-            currentOptionVersionCode = latestOptionVersionCode
+        if (currentOptionVersionCode < defaultOptionEntity.latestOptionVersionCode) {
+            currentOptionVersionCode = defaultOptionEntity.latestOptionVersionCode
             val newAdvOptionConfigurations = defaultOptionEntity.advOption
             val newInterceptConfigurations = defaultOptionEntity.interceptOption
             val newViewHideOptionConfigurations =
