@@ -531,7 +531,7 @@ data class OptionEntity(
     var currentDisclaimersVersionCode: Int = 0,
     var latestDisclaimersVersionCode: Int = 3,
     var currentOptionVersionCode: Int = 0,
-    var latestOptionVersionCode: Int = 1,
+    var latestOptionVersionCode: Int = 2,
     var advOption: List<SelectedModel> = listOf(
         SelectedModel("闪屏广告", true),
         SelectedModel("GDT广告"),
@@ -867,6 +867,7 @@ data class OptionEntity(
             SelectedModel("检测风险"),
             SelectedModel("签到"),
             SelectedModel("周日兑换章节卡"),
+            SelectedModel("卡牌召唤"),
             SelectedModel("福利中心", true),
         ),
         var enableNotification: Boolean = false,

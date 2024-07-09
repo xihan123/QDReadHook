@@ -35,6 +35,9 @@ interface MyService {
 
     suspend fun gameTime(): ApiResponse<BaseModel<BaseDataModel>>
 
+    suspend fun getCardCallPage(): ApiResponse<BaseModel<BaseDataModel>>
+
+    suspend fun getCardCall(): ApiResponse<BaseModel<BaseDataModel>>
 
 }
 
@@ -99,6 +102,14 @@ class MyServiceImpl(
 
     override suspend fun gameTime() = httpClient.customRequest<BaseModel<BaseDataModel>>(
         url = Path.MY_BASE_URL + Path.GAME_TIME, headers = HEADERS
+    )
+
+    override suspend fun getCardCallPage() = httpClient.customRequest<BaseModel<BaseDataModel>>(
+        url = Path.MY_BASE_URL + Path.CARD_CALL_PAGE, headers = HEADERS
+    )
+
+    override suspend fun getCardCall() = httpClient.customRequest<BaseModel<BaseDataModel>>(
+        url = Path.MY_BASE_URL + Path.CARD_CALL, headers = HEADERS
     )
 
 }

@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cn.xihan.qdds.model.CardCallPageModel
 import cn.xihan.qdds.model.CheckInDetailModel
 import cn.xihan.qdds.model.ExchangeChapterCardModel
 import cn.xihan.qdds.model.WelfareCenterModel
@@ -59,6 +60,9 @@ class MainViewModel(
 
     private val _welfareCenterModel: MutableState<WelfareCenterModel?> = mutableStateOf(null)
     val welfareCenterModel: State<WelfareCenterModel?> get() = _welfareCenterModel
+
+    private val _cardCallPageModel: MutableState<CardCallPageModel?> = mutableStateOf(null)
+    val cardCallPageModel: State<CardCallPageModel?> get() = _cardCallPageModel
 
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, exception ->
@@ -175,6 +179,22 @@ class MainViewModel(
         }.collect()
     }
 
+    fun getCardCallPage() = defaultLaunch {
+        remoteRepository.getCardCallPage().catch().onEach {
+            _cardCallPageModel.value = it
+        }.collect()
+    }
+
+    fun getCardCall() = defaultLaunch {
+        remoteRepository.getCardCall().catch().onEach { rewardModel ->
+            rewardModel.items.joinToString(",") { "${it.title}, 来自 《${it.bookName}》 的 《${it.cardName}》" }
+                .let { reward ->
+                    addReward("卡牌召唤", reward)
+                    getCardCallPage()
+                }
+        }.collect()
+    }
+
     fun setBaseUrl(baseUrl: String) {
         optionEntity.taskOption.baseUrl = baseUrl
         Path.MY_BASE_URL = baseUrl
@@ -228,6 +248,7 @@ class MainViewModel(
                         "检测风险" -> checkRisk()
                         "签到" -> checkInDetail()
                         "周日兑换章节卡" -> exchangeChapterCard()
+                        "卡牌召唤" -> getCardCallPage()
                         "福利中心" -> getWelfareCenter()
                     }
                 }

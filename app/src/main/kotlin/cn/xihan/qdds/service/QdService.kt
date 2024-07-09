@@ -3,6 +3,8 @@ package cn.xihan.qdds.service
 import cn.xihan.qdds.model.BaseDataModel
 import cn.xihan.qdds.model.BaseModel
 import cn.xihan.qdds.model.BaseRewardModel
+import cn.xihan.qdds.model.CardCallModel
+import cn.xihan.qdds.model.CardCallPageModel
 import cn.xihan.qdds.model.CheckInDetailModel
 import cn.xihan.qdds.model.ExchangeChapterCardModel
 import cn.xihan.qdds.model.LotteryModel
@@ -38,6 +40,10 @@ interface QdService {
     suspend fun buyChapterCard(model: BaseModel<BaseDataModel>): ApiResponse<String>
 
     suspend fun gameTime(model: BaseModel<BaseDataModel>): ApiResponse<String>
+
+    suspend fun getCardCallPage(model: BaseModel<BaseDataModel>): ApiResponse<BaseModel<CardCallPageModel>>
+
+    suspend fun getCardCall(model: BaseModel<BaseDataModel>): ApiResponse<BaseModel<CardCallModel>>
 
 }
 
@@ -81,6 +87,12 @@ class QdServiceImpl(
         model.data?.customModelRequest(httpClient) ?: throw Exception(model.message)
 
     override suspend fun gameTime(model: BaseModel<BaseDataModel>): ApiResponse<String> =
+        model.data?.customModelRequest(httpClient) ?: throw Exception(model.message)
+
+    override suspend fun getCardCallPage(model: BaseModel<BaseDataModel>): ApiResponse<BaseModel<CardCallPageModel>> =
+        model.data?.customModelRequest(httpClient) ?: throw Exception(model.message)
+
+    override suspend fun getCardCall(model: BaseModel<BaseDataModel>): ApiResponse<BaseModel<CardCallModel>> =
         model.data?.customModelRequest(httpClient) ?: throw Exception(model.message)
 
 }

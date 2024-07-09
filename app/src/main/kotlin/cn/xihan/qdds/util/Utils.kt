@@ -82,6 +82,8 @@ object Path {
     const val EXCHANGE_CHAPTER_CARD = "/argus/api/v1/readtime/scoremall/checkinrewardpage"
     const val BUY_CHAPTER_CARD = "/argus/api/v1/readtime/scoremall/buygood"
     const val GAME_TIME = "/home/log/heartbeat"
+    const val CARD_CALL_PAGE = "/argus/api/v2/bookrole/card/callpage"
+    const val CARD_CALL = "/argus/api/v2/bookrole/card/call"
 }
 
 /**

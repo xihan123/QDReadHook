@@ -142,6 +142,7 @@ import cn.xihan.qdds.util.requestPermissionDialog
 import cn.xihan.qdds.util.restartApplication
 import cn.xihan.qdds.util.runAndCatch
 import cn.xihan.qdds.util.showAppIcon
+import cn.xihan.qdds.util.toTime
 import cn.xihan.qdds.util.toast
 import cn.xihan.qdds.util.wait
 import coil.compose.rememberAsyncImagePainter
@@ -733,6 +734,34 @@ class MainActivity : ModuleAppCompatActivity() {
                                                     })
                                             }
                                     }
+                                }
+                            }
+
+                        }
+                    }
+
+                    ItemWithNewPage(
+                        text = "获取卡牌召唤信息",
+                        modifier = itemModifier,
+                        onClick = viewModel::getCardCallPage
+                    )
+
+                    if (viewModel.cardCallPageModel.value != null) {
+                        TasksCard("卡牌召唤") {
+                            with(viewModel.cardCallPageModel.value!!) {
+                                if (freeNum != 0 && nextFreeTime < System.currentTimeMillis()) {
+                                    TasksItem(
+                                        total = freeNum,
+                                        done = 0,
+                                        title = "免费召唤",
+                                        singleExecution = viewModel::getCardCall
+                                    )
+                                } else {
+                                    ItemWithNewPage(
+                                        text = "还未到免费领卡时间,下一次免费召唤时间: ${nextFreeTime.toTime()}",
+                                        modifier = itemModifier,
+                                        onClick = {}
+                                    )
                                 }
                             }
 

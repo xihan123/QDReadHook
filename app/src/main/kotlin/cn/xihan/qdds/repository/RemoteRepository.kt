@@ -157,6 +157,22 @@ class RemoteRepository(
         }
     }.flowOn(Dispatchers.Default)
 
+    fun getCardCallPage() = flow {
+        myService.getCardCallPage().suspendThen(qdService::getCardCallPage).suspendOnSuccess {
+            data.data?.let { cardCallPageModel ->
+                emit(cardCallPageModel)
+            } ?: throw Throwable(data.message.ifBlank { "未知错误" })
+        }
+    }.flowOn(Dispatchers.Default)
+
+    fun getCardCall() = flow {
+        myService.getCardCall().suspendThen(qdService::getCardCall).suspendOnSuccess {
+            data.data?.let { cardCallModel ->
+                emit(cardCallModel)
+            } ?: throw Throwable(data.message.ifBlank { "未知错误" })
+        }
+    }.flowOn(Dispatchers.Default)
+
     suspend fun autoGameTime() = myService.gameTime().suspendThen(qdService::gameTime)
 
     /**
@@ -231,8 +247,8 @@ class RemoteRepository(
 
     suspend fun autoGetWelfareReward(taskId: String) = withContext(Dispatchers.Default) {
         myService.getWelfareReward(taskId).suspendThen(qdService::getWelfareReward).suspendOnError {
-                toast("错误信息: ${message()}")
-            }
+            toast("错误信息: ${message()}")
+        }
     }
 
     suspend fun autoReceiveWelfareReward(taskId: String) = withContext(Dispatchers.Default) {
