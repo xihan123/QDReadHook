@@ -619,7 +619,8 @@ class MainActivity : ModuleAppCompatActivity() {
                         .fillMaxWidth()
                         .padding(horizontal = 15.dp)
                 ) {
-                    OutlinedTextField(readOnly = true,
+                    OutlinedTextField(
+                        readOnly = true,
                         value = selectedAccount?.uid ?: "",
                         onValueChange = {},
                         label = { Text("选中账号UID") },
@@ -1107,7 +1108,8 @@ class MainActivity : ModuleAppCompatActivity() {
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
                                             sublist.forEach { item ->
-                                                StartImageItem(startImageModel = item,
+                                                StartImageItem(
+                                                    startImageModel = item,
                                                     modifier = Modifier
                                                         .combinedClickable(onClick = {},
                                                             onLongClick = {
@@ -1241,6 +1243,18 @@ class MainActivity : ModuleAppCompatActivity() {
                     optionEntity.shieldOption.bookTypeList = parseKeyWordOption(it)
                 })
 
+                val bookWordsCount = rememberMutableStateOf(
+                    value = optionEntity.shieldOption.bookWordsCount.toString()
+                )
+
+                ItemWithEditText(
+                    title = "填入需要屏蔽的书字数,-1为不限制",
+                    text = bookWordsCount,
+                    onTextChange = {
+                        runAndCatch {
+                            optionEntity.shieldOption.bookWordsCount = it.toLong()
+                        }
+                    })
             }
 
             PrimaryCard("隐藏控件设置") {

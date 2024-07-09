@@ -201,20 +201,27 @@ object Option {
     }
 
     /**
+     * 需要屏蔽的书字数
+     */
+    private val bookWordsCount by lazy {
+        optionEntity.shieldOption.bookWordsCount
+    }
+
+    /**
      * 判断是否需要屏蔽
      * @param bookName 书名-可空
      * @param authorName 作者名-可空
      * @param bookType 书类型-可空
      */
     fun isNeedShield(
-        bookName: String? = null, authorName: String? = null, bookType: Set<String>? = null
+        bookName: String? = null,
+        authorName: String? = null,
+        bookType: Set<String>? = null,
+        wordsCount: Long? = null
     ): Boolean {/*
-            if (BuildConfig.DEBUG) {
-                "bookName: $bookName\nauthorName:$authorName\nbookType:$bookType".loge()
-            }
-
-             */
-
+        if (BuildConfig.DEBUG) {
+            "bookName: $bookName\nauthorName:$authorName\nbookType:$bookType\nwordsCount:$wordsCount\n----".loge()
+        }*/
         bookNameList.takeIf { it.isNotEmpty() }?.let { bookNameList ->
             bookName.takeUnless { it.isNullOrBlank() }?.let { bookName ->
                 if (bookNameList.any { it in bookName }) {
@@ -248,6 +255,13 @@ object Option {
             }
         }
 
+        bookWordsCount.takeIf { it != -1L }?.let {
+            wordsCount?.let { wordsCount ->
+                if (wordsCount < it) {
+                    return true
+                }
+            }
+        }
         return false
     }
 
@@ -271,6 +285,7 @@ object Option {
                     jb.getJSONArrayWithFallback("AuthorTags") ?: jb.getJSONArrayWithFallback("tags")
                     ?: jb.getJSONArrayWithFallback("tagList")
                 val tip = jb.getStringWithFallback("tip")
+                val wordsCount = jb.getStringWithFallback("wordsCount")?.toLongOrNull()
                 val bookTypeArray = mutableSetOf<String>()
                 if (categoryName != null) {
                     bookTypeArray += categoryName
@@ -298,7 +313,7 @@ object Option {
                         }
                     }
                 }
-                if (isNeedShield(bookName, authorName, bookTypeArray)) {
+                if (isNeedShield(bookName, authorName, bookTypeArray, wordsCount)) {
                     iterator.remove()
                 }
             }
@@ -650,6 +665,7 @@ data class OptionEntity(
         var authorList: MutableSet<String> = mutableSetOf(),
         var bookNameList: MutableSet<String> = mutableSetOf(),
         var bookTypeList: Set<String> = setOf(),
+        var bookWordsCount: Long = -1L,
         var configurations: List<SelectedModel> = listOf(
             SelectedModel("精选-主页面", true),
             SelectedModel("精选-分类", true),
