@@ -636,7 +636,7 @@ data class OptionEntity(
         var enableExportEmoji: Boolean = false,
         var enableOldDailyRead: Boolean = false,
         var enableStartCheckingPermissions: Boolean = true,
-        var enableCustomIMEI: Boolean = true,
+        var enableCustomIMEI: Boolean = false,
         var qimei: String = "",
         var enableFixDouYinShare: Boolean = false
     )
