@@ -51,8 +51,9 @@ data class WelfareCenterModel(
 
     @Serializable
     data class MonthBenefitModuleModel(
-        @SerialName("CurrentTime") var currentTime: Int = 0,
-        @SerialName("TaskList") var taskList: List<TaskModel> = listOf()
+        @SerialName("CurrentTime") var currentTime: Long = 0,
+        @SerialName("TaskList") var taskList: List<TaskModel> = listOf(),
+        @SerialName("Title") var title: String = ""
     )
 
 
