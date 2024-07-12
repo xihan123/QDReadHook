@@ -1,4 +1,28 @@
 # Changelog
+## [3.2.0](https://github.com/xihan123/QDReadHook/compare/v3.1.9...v3.2.0) (2024-07-12)
+
+
+### Features
+
+* **屏蔽设置:** 新增'屏蔽的书字数'功能,目前只测了旧每日导读可用 ([04520f7](https://github.com/xihan123/QDReadHook/commit/04520f72d1d3e6d11e68522ea1c0985c88855c5f))
+* **自动化设置:** 新增`卡牌召唤` ([3883505](https://github.com/xihan123/QDReadHook/commit/388350598132be57bf89af20f358e710679325f4))
+
+
+### Bug Fixes
+
+* WelfareCenterModel类型错误 ([d725db9](https://github.com/xihan123/QDReadHook/commit/d725db987bda3d6ff1eabce32f1b8d1c099ba094))
+* 修复配置文件更新的条件判断 ([1eb3358](https://github.com/xihan123/QDReadHook/commit/1eb33581fabb053173eb7ca70435f47d16415246))
+
+
+### Miscellaneous
+
+* 更新依赖库 ([effc494](https://github.com/xihan123/QDReadHook/commit/effc494a3c6b52329560c421078dcebc44f338b6))
+
+
+### Performance Improvements
+
+* **主设置:** 默认关闭自定义IMEI ([28933a7](https://github.com/xihan123/QDReadHook/commit/28933a7c6fff5f96205f60a9dc7aed703b13a8a9))
+
 ## [3.1.9](https://github.com/xihan123/QDReadHook/compare/v3.1.8...v3.1.9) (2024-07-05)
 
 
