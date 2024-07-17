@@ -621,6 +621,7 @@ data class OptionEntity(
      * @param enableHideAppIcon 启用隐藏应用图标
      * @param enableExportEmoji 启用导出表情包
      * @param enableOldDailyRead 启用旧的每日阅读
+     * @param enableNewFeedDiscovery 启用新的发现
      * @param enableStartCheckingPermissions 启用检查权限
      * @param enableCustomIMEI 启用自定义IMEI
      * @param enableFixDouYinShare 启用修复抖音分享
@@ -635,6 +636,7 @@ data class OptionEntity(
         var enableHideAppIcon: Boolean = false,
         var enableExportEmoji: Boolean = false,
         var enableOldDailyRead: Boolean = false,
+        var enableNewFeedDiscovery: Boolean = false,
         var enableStartCheckingPermissions: Boolean = true,
         var enableCustomIMEI: Boolean = false,
         var qimei: String = "",

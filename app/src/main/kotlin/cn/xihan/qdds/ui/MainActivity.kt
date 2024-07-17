@@ -427,6 +427,13 @@ class MainActivity : ModuleAppCompatActivity() {
                         optionEntity.mainOption.enableOldDailyRead = it
                     })
 
+                ItemWithSwitch(text = "启用新发现页",
+                    modifier = itemModifier,
+                    checked = rememberMutableStateOf(value = optionEntity.mainOption.enableNewFeedDiscovery),
+                    onCheckedChange = {
+                        optionEntity.mainOption.enableNewFeedDiscovery = it
+                    })
+
                 ItemWithSwitch(text = "启用修复抖音分享",
                     modifier = itemModifier,
                     checked = rememberMutableStateOf(value = optionEntity.mainOption.enableFixDouYinShare),
