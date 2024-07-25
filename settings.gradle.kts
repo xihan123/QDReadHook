@@ -26,7 +26,6 @@ dependencyResolutionManagement {
                 includeGroup("de.robv.android.xposed")
             }
         }
-        maven("https://androidx.dev/storage/compose-compiler/repository/")
     }
 }
 

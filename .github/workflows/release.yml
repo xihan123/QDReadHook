@@ -23,6 +23,6 @@ jobs:
           token: ${{ secrets.RELEASE_TOKEN }}
           release-type: node
           package-name: release-please-action
-          release-as: 3.2.0
+          release-as: 3.2.1
           signoff: "xihan123 <srxqzxs@vip.qq.com>"
           changelog-types: '[{"type":"types","section":"Types","hidden":false},{"type":"revert","section":"Reverts","hidden":false},{"type":"feat","section":"Features","hidden":false},{"type":"fix","section":"Bug Fixes","hidden":false},{"type":"improvement","section":"Feature Improvements","hidden":false},{"type":"docs","section":"Docs","hidden":false},{"type":"ci","section":"CI","hidden":false},{"type":"chore","section":"Miscellaneous","hidden":false},{"type":"style","section":"Style","hidden":false},{"type":"refactor","section":"Refactoring","hidden":false},{"type":"perf","section":"Performance Improvements","hidden":false},{"type":"test","section":"Tests","hidden":false},{"type":"build","section":"Build","hidden":false}]'
