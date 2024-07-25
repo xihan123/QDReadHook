@@ -1,4 +1,17 @@
 # Changelog
+## [3.2.1](https://github.com/xihan123/QDReadHook/compare/v3.2.0...v3.2.1) (2024-07-25)
+
+
+### Features
+
+* **util:** 在Utils中添加classLoader参数 ([c69aff5](https://github.com/xihan123/QDReadHook/commit/c69aff5023c20823de5a8fff2d9ba0e985617a69))
+* **主设置:** 新增`启用新版发现页` ([39e4655](https://github.com/xihan123/QDReadHook/commit/39e4655ac9e732ea5ac03c720b89983d0abaa3ae))
+
+
+### Miscellaneous
+
+* 更新依赖库 ([530f899](https://github.com/xihan123/QDReadHook/commit/530f899728a85fb56e2718e581ba6dd8317dc43d))
+
 ## [3.2.0](https://github.com/xihan123/QDReadHook/compare/v3.1.9...v3.2.0) (2024-07-12)
 
 
