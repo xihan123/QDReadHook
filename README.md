@@ -27,7 +27,7 @@
 
 * 起点下载地址
 
-    * [支持的版本合集蓝奏云](https://xihan.lanzouv.com/b0413c6he) 密码:xihan
+    * ~~[支持的版本合集蓝奏云](https://xihan.lanzouv.com/b0413c6he) 密码:xihan~~不再提供内置版，如有需要自行制作
 
     * [酷安](https://www.coolapk.com/apk/5066/)
 
@@ -57,7 +57,7 @@
 
     感谢大家的支持与配合！
 
-### [大部分功能和介绍列表](https://xihan123.github.io/QDReadHook/app/cn.xihan.qdds/index.html)
+### [大部分功能和介绍列表](https://xihan123.github.io/QDReadHook/docs/app/cn.xihan.qdds.hook/index.html)
 
 ## 常见问题
 

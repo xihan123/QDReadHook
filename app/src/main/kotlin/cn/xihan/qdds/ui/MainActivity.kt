@@ -1566,7 +1566,7 @@ class MainActivity : ModuleAppCompatActivity() {
             })
 
             ItemWithNewPage(text = "功能列表", modifier = itemModifier, onClick = {
-                context.openUrl("https://xihan123.github.io/QDReadHook/app/cn.xihan.qdds/index.html")
+                context.openUrl("https://xihan123.github.io/QDReadHook/docs/app/cn.xihan.qdds.hook/index.html")
             })
 
             ItemWithNewPage(
