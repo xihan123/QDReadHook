@@ -258,6 +258,12 @@ class HookEntry : IYukiHookXposedInit, KoinComponent {
                 isNeedHideYpjz = optionEntity.viewHideOption.bookDetailOptions.isSelectedByTitle(
                     "月票金主"
                 ),
+                isNeedHideActivityBanner = optionEntity.viewHideOption.bookDetailOptions.isSelectedByTitle(
+                    "页面轮播广告"
+                ),
+                isNeedHideTopBanner = optionEntity.viewHideOption.bookDetailOptions.isSelectedByTitle(
+                    "顶部轮播广告1|2"
+                ),
                 isNeedHideCenterAd = optionEntity.viewHideOption.bookDetailOptions.isSelectedByTitle(
                     "本书看点|中心广告"
                 ),

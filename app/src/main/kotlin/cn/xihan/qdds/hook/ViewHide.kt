@@ -19,6 +19,7 @@ import cn.xihan.qdds.util.intercept
 import cn.xihan.qdds.util.printlnNotSupportVersion
 import cn.xihan.qdds.util.returnFalse
 import cn.xihan.qdds.util.safeCast
+import cn.xihan.qdds.util.setParam
 import cn.xihan.qdds.util.setVisibilityIfNotEqual
 import cn.xihan.qdds.util.setVisibilityWithChildren
 import com.alibaba.fastjson2.parseObject
@@ -635,6 +636,8 @@ fun PackageParam.accountRightTopRedDot(versionCode: Int) {
  * @param isNeedHideSyq 是否需要隐藏书友圈
  * @param isNeedHideSyb 是否需要隐藏书友榜
  * @param isNeedHideYpjz 是否需要隐藏月票金主
+ * @param isNeedHideActivityBanner 是否需要隐藏活动banner
+ * @param isNeedHideTopBanner 是否需要隐藏顶部banner
  * @param isNeedHideCenterAd 是否需要隐藏本书看点|中心广告
  * @param isNeedHideFloatAd 是否需要隐藏浮窗广告
  * @param isNeedHideBookRecommend 是否需要隐藏同类作品推荐
@@ -648,6 +651,8 @@ fun PackageParam.bookDetailHide(
     isNeedHideSyq: Boolean = false,
     isNeedHideSyb: Boolean = false,
     isNeedHideYpjz: Boolean = false,
+    isNeedHideActivityBanner: Boolean = false,
+    isNeedHideTopBanner: Boolean = false,
     isNeedHideCenterAd: Boolean = false,
     isNeedHideFloatAd: Boolean = false,
     isNeedHideBookRecommend: Boolean = false,
@@ -684,6 +689,30 @@ fun PackageParam.bookDetailHide(
                                 monthTopUser?.clear()
                             }
 
+                        }
+
+                        /**
+                         * 页面轮播
+                         */
+                        if (isNeedHideActivityBanner) {
+                            val activityBanner = it.getParam<Any>("activityBanner")
+                            if (activityBanner != null) {
+                                it.setParam("activityBanner", null)
+                            }
+                        }
+
+                        /**
+                         * 顶部广告
+                         */
+                        if (isNeedHideTopBanner) {
+                            val topBanner = it.getParam<Any>("topBanner")
+                            if (topBanner != null) {
+                                it.setParam("topBanner", null)
+                            }
+                            val topBannerV2 = it.getParam<Any>("topBannerV2")
+                            if (topBannerV2 != null) {
+                                it.setParam("topBannerV2", null)
+                            }
                         }
 
                         /**
