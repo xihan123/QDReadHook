@@ -745,23 +745,26 @@ fun Context.getApplicationApkPath(packageName: String): String {
  * @suppress Generate Documentation
  */
 fun PackageParam.findMethodAndPrint(
-    className: String, printCallStack: Boolean = false, printType: MembersType = MembersType.METHOD
+    className: String,
+    printCallStack: Boolean = false,
+    printType: MembersType = MembersType.METHOD,
+    classLoader: ClassLoader? = appClassLoader
 ) {
     when (printType) {
         MembersType.METHOD -> {
-            className.toClass().method().hookAll().after {
+            className.toClass(classLoader).method().hookAll().after {
                 print(printCallStack)
             }
         }
 
         MembersType.CONSTRUCTOR -> {
-            className.toClass().constructor().hookAll().after {
+            className.toClass(classLoader).constructor().hookAll().after {
                 print(printCallStack)
             }
         }
 
         else -> {
-            with(className.toClass()) {
+            with(className.toClass(classLoader)) {
                 (method().giveAll() + constructor().giveAll()).hookAll {
                     after {
                         print(printCallStack)
