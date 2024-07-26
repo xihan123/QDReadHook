@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import cn.xihan.qdds.model.CardCallPageModel
 import cn.xihan.qdds.model.CheckInDetailModel
 import cn.xihan.qdds.model.ExchangeChapterCardModel
+import cn.xihan.qdds.model.MascotTaskModel
 import cn.xihan.qdds.model.WelfareCenterModel
 import cn.xihan.qdds.repository.RemoteRepository
 import cn.xihan.qdds.util.Option.optionEntity
@@ -64,6 +65,8 @@ class MainViewModel(
     private val _cardCallPageModel: MutableState<CardCallPageModel?> = mutableStateOf(null)
     val cardCallPageModel: State<CardCallPageModel?> get() = _cardCallPageModel
 
+    private val _mascotTaskModel: MutableState<MascotTaskModel?> = mutableStateOf(null)
+    val mascotTaskModel: State<MascotTaskModel?> get() = _mascotTaskModel
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, exception ->
         exception.message?.loge()
@@ -192,6 +195,28 @@ class MainViewModel(
                     addReward("卡牌召唤", reward)
                     getCardCallPage()
                 }
+        }.collect()
+    }
+
+    fun getMascotTaskList() = defaultLaunch {
+        remoteRepository.getMascotTaskList().catch().onEach {
+            _mascotTaskModel.value = it
+        }.collect()
+    }
+
+    fun getMascotClockIn() = defaultLaunch {
+        remoteRepository.getMascotClockIn().catch().onEach {
+            if (it) {
+                getMascotTaskList()
+            }
+        }.collect()
+    }
+
+    fun getMascotReward(type: Int) = defaultLaunch {
+        remoteRepository.getMascotReward(type).catch().onEach {
+            if (it) {
+                getMascotTaskList()
+            }
         }.collect()
     }
 

@@ -173,6 +173,33 @@ class RemoteRepository(
         }
     }.flowOn(Dispatchers.Default)
 
+    fun getMascotTaskList() = flow {
+        myService.getMascotTaskList().suspendThen(qdService::getMascotTaskList).suspendOnSuccess {
+            data.data?.let { mascotTaskModel ->
+                emit(mascotTaskModel)
+            } ?: throw Throwable(data.message.ifBlank { "未知错误" })
+        }
+    }.flowOn(Dispatchers.Default)
+
+    fun getMascotClockIn() = flow {
+        myService.getMascotClockIn().suspendThen(qdService::getMascotClockIn).suspendOnSuccess {
+            data.message.takeIf { it.isNotBlank() }?.let { message ->
+                throw Throwable(message)
+            } ?: emit(true)
+        }
+    }.flowOn(Dispatchers.Default)
+
+    fun getMascotReward(type: Int) = flow {
+        myService.getMascotReward(type).suspendThen(qdService::getMascotReward).suspendOnSuccess {
+            data.data?.let {
+                throw Throwable("需要验证,自行手动领取")
+            }
+            data.message.takeIf { it.isNotBlank() }?.let { message ->
+                throw Throwable(message)
+            } ?: emit(true)
+        }
+    }.flowOn(Dispatchers.Default)
+
     suspend fun autoGameTime() = myService.gameTime().suspendThen(qdService::gameTime)
 
     /**

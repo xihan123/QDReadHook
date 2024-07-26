@@ -776,6 +776,37 @@ class MainActivity : ModuleAppCompatActivity() {
                     }
 
                     ItemWithNewPage(
+                        text = "获取奇妙世界信息",
+                        modifier = itemModifier,
+                        onClick = viewModel::getMascotTaskList
+                    )
+
+                    if (viewModel.mascotTaskModel.value != null) {
+                        TasksCard("奇妙世界") {
+                            with(viewModel.mascotTaskModel.value!!) {
+                                taskList.forEach { task ->
+                                    val receive = {
+                                        if (task.name == "打卡" && task.isFinish == 0) {
+                                            viewModel.getMascotClockIn()
+                                        } else if (task.isFinish == 1) {
+                                            viewModel.getMascotReward(task.type)
+                                        }
+                                    }
+                                    TasksItem(
+                                        total = 1,
+                                        done = if (task.isFinish == 2) 1 else 0,
+                                        title = task.name,
+                                        singleExecution = if (task.isFinish == 2) null else receive,
+                                    )
+
+                                }
+                            }
+
+                        }
+                    }
+
+
+                    ItemWithNewPage(
                         text = "获取福利中心",
                         modifier = itemModifier,
                         onClick = viewModel::getWelfareCenter

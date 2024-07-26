@@ -8,6 +8,8 @@ import cn.xihan.qdds.model.CardCallPageModel
 import cn.xihan.qdds.model.CheckInDetailModel
 import cn.xihan.qdds.model.ExchangeChapterCardModel
 import cn.xihan.qdds.model.LotteryModel
+import cn.xihan.qdds.model.MascotTaskModel
+import cn.xihan.qdds.model.RiskConfModel
 import cn.xihan.qdds.model.WelfareCenterModel
 import cn.xihan.qdds.util.customModelRequest
 import com.skydoves.sandwich.ApiResponse
@@ -44,6 +46,12 @@ interface QdService {
     suspend fun getCardCallPage(model: BaseModel<BaseDataModel>): ApiResponse<BaseModel<CardCallPageModel>>
 
     suspend fun getCardCall(model: BaseModel<BaseDataModel>): ApiResponse<BaseModel<CardCallModel>>
+
+    suspend fun getMascotTaskList(model: BaseModel<BaseDataModel>): ApiResponse<BaseModel<MascotTaskModel>>
+
+    suspend fun getMascotClockIn(model: BaseModel<BaseDataModel>): ApiResponse<BaseModel<RiskConfModel>>
+
+    suspend fun getMascotReward(model: BaseModel<BaseDataModel>): ApiResponse<BaseModel<RiskConfModel>>
 
 }
 
@@ -93,6 +101,15 @@ class QdServiceImpl(
         model.data?.customModelRequest(httpClient) ?: throw Exception(model.message)
 
     override suspend fun getCardCall(model: BaseModel<BaseDataModel>): ApiResponse<BaseModel<CardCallModel>> =
+        model.data?.customModelRequest(httpClient) ?: throw Exception(model.message)
+
+    override suspend fun getMascotTaskList(model: BaseModel<BaseDataModel>): ApiResponse<BaseModel<MascotTaskModel>> =
+        model.data?.customModelRequest(httpClient) ?: throw Exception(model.message)
+
+    override suspend fun getMascotClockIn(model: BaseModel<BaseDataModel>): ApiResponse<BaseModel<RiskConfModel>> =
+        model.data?.customModelRequest(httpClient) ?: throw Exception(model.message)
+
+    override suspend fun getMascotReward(model: BaseModel<BaseDataModel>): ApiResponse<BaseModel<RiskConfModel>> =
         model.data?.customModelRequest(httpClient) ?: throw Exception(model.message)
 
 }

@@ -39,6 +39,12 @@ interface MyService {
 
     suspend fun getCardCall(): ApiResponse<BaseModel<BaseDataModel>>
 
+    suspend fun getMascotTaskList(): ApiResponse<BaseModel<BaseDataModel>>
+
+    suspend fun getMascotClockIn(): ApiResponse<BaseModel<BaseDataModel>>
+
+    suspend fun getMascotReward(type: Int): ApiResponse<BaseModel<BaseDataModel>>
+
 }
 
 class MyServiceImpl(
@@ -111,6 +117,20 @@ class MyServiceImpl(
     override suspend fun getCardCall() = httpClient.customRequest<BaseModel<BaseDataModel>>(
         url = Path.MY_BASE_URL + Path.CARD_CALL, headers = HEADERS
     )
+
+    override suspend fun getMascotTaskList() = httpClient.customRequest<BaseModel<BaseDataModel>>(
+        url = Path.MY_BASE_URL + Path.MASCOT_TASK_LIST, headers = HEADERS
+    )
+
+    override suspend fun getMascotClockIn() = httpClient.customRequest<BaseModel<BaseDataModel>>(
+        url = Path.MY_BASE_URL + Path.MASCOT_CLOCK_IN, headers = HEADERS
+    )
+
+    override suspend fun getMascotReward(type: Int) =
+        httpClient.customRequest<BaseModel<BaseDataModel>>(
+            url = Path.MY_BASE_URL + Path.MASCOT_TASK_REWARD + "?reward_type=$type",
+            headers = HEADERS
+        )
 
 }
 
