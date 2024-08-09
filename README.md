@@ -11,37 +11,57 @@
 
 ## 起点阅读 Xp模块
 
-使用 [YukiHookAPI](https://github.com/fankes/YukiHookAPI)
+### 注意事项
 
 * 使用前注意给予起点存储权限
 
 * 设置页面在:起点->我的->左上角设置->阅读设置/模块设置(长按)(1.1.2+)
 
-* 目前支持起点版本 ~~758~768、772、776、780、784、788、792、796、800、804、808、812、827、834、842、843、850、854、858、860、868、872、878、884、890、896、900、906、916、924、932、938、944、950、958、970、980、994、1005、1020、1030 ~ 1105、1106 ~ 1146、1196 ~ 1299~~ 1296 ~ 1499 版本
+* 由于 [极狐Gitlab](https://jihulab.com/) 封禁导致 [极狐Gitlab-QDReadHook](https://jihulab.com/xihan123/QDReadHook) 我已无权限更改，该仓库内容已过时
 
-* 暂时提高版本号范围以支持一些不容易改变的类
+### 支持版本范围
+
+暂时提高版本号范围以支持一些不容易改变的类
+
+* ~~758~768、772、776、780、784、788、792、796~~
+
+* ~~800、804、808、812、827、834、842、843、850、854、858、860、868、872、878、884、890、896~~
+
+* ~~900、906、916、924、932、938、944、950、958、970、980、994~~
+
+* ~~1005、1020、1030 ~ 1105、1106 ~ 1146、1196 ~ 1299~~ 
+
+* 1296 ~ 1499
+
+### 配置文件路径
 
 * 1.2.7+ 配置文件路径为 "/sdcard/Download/QDReader",会自行移动原配置文件并删除原配置文件目录,注意原配置文件目录不要有重要文件
 
+### 共存包名设定
+
 * 共存包名设定需要在原始包名后面增改(直接共存内置版即可)
 
-* 起点下载地址
+### 起点下载地址
 
-    * ~~[支持的版本合集蓝奏云](https://xihan.lanzouv.com/b0413c6he) 密码:xihan~~不再提供内置版，如有需要自行制作
+* ~~[支持的版本合集蓝奏云](https://xihan.lanzouv.com/b0413c6he) 密码:xihan~~
 
-    * [酷安](https://www.coolapk.com/apk/5066/)
+        不再提供内置版，如有需要自行制作
 
-    * [官方网站](https://www.yuewen.com/app.html#appqd)
+* [酷安](https://www.coolapk.com/apk/5066/)
 
-* 模块下载地址:
+* [官方网站](https://www.yuewen.com/app.html#appqd)
 
-    * [releases](https://github.com/xihan123/QDReadHook/releases)
+### 模块下载地址:
 
-    * [蓝奏云](https://xihan.lanzouj.com/b042w7oqb) 密码:9ikq
+* [releases](https://github.com/xihan123/QDReadHook/releases)
+
+* [蓝奏云](https://xihan.lanzouj.com/b042w7oqb) 密码:9ikq
+
+### 交流群
+
+* [TG防失联交流群](https://t.me/+tHAFB7FQKHdiYjU9)
 
 * QD模块交流群: [963079548](https://qm.qq.com/cgi-bin/qm/qr?k=wlD8adp7c17yXvnrJWrq_bNkjSpos6ot&jump_from=webapi&authKey=vkNN3oR/ZwsHJjzLRakReCG5Yf4wv6Kcyn3K/MydwaX8kMoqBj6Qen3DfZJCfxB8) <a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=wlD8adp7c17yXvnrJWrq_bNkjSpos6ot&jump_from=webapi&authKey=vkNN3oR/ZwsHJjzLRakReCG5Yf4wv6Kcyn3K/MydwaX8kMoqBj6Qen3DfZJCfxB8"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="QD模块交流群" title="QD模块交流群"></a>
-
-* 由于 [极狐Gitlab](https://jihulab.com/) 突然封禁导致 [极狐Gitlab-QDReadHook](https://jihulab.com/xihan123/QDReadHook) 我已无权限更改，该仓库内容已过时
 
 ### 声明
 
