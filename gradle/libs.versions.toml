@@ -2,7 +2,7 @@
 activity-compose = "1.9.1"
 agp = "8.5.2"
 coil = "2.7.0"
-compose-bom = "2024.08.00-alpha01"
+compose-bom = "2024.08.00-alpha02"
 core-ktx = "1.13.1"
 dexkit = "2.0.2"
 fastjson2 = "2.0.52"
