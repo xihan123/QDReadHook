@@ -49,6 +49,7 @@ import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FilenameFilter
 import java.io.Serializable
+import java.lang.reflect.Field
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -271,17 +272,25 @@ inline fun <reified T : View> Any.getViews(isSuperClass: Boolean = false) =
  */
 @Throws(NoSuchFieldException::class, IllegalAccessException::class)
 fun Any.getViews(type: Class<*>, isSuperClass: Boolean = false): ArrayList<Any> {
-    val results = arrayListOf<Any>()
-    val classes =
-        if (isSuperClass) generateSequence(javaClass) { it.superclass }.toList() else listOf(
-            javaClass
-        )
+    // 使用缓存来存储已经反射过的类信息
+    val classCache = mutableMapOf<Class<*>, List<Field>>()
+
+    fun getDeclaredFields(clazz: Class<*>): List<Field> {
+        return classCache.getOrPut(clazz) { clazz.declaredFields.toList() }
+    }
+
+    val results = ArrayList<Any>()
+    val classes = if (isSuperClass) generateSequence(javaClass) { it.superclass }.toList() else listOf(javaClass)
+
     for (clazz in classes) {
-        clazz.declaredFields.filter { type.isAssignableFrom(it.type) }.forEach { field ->
-            field.isAccessible = true
-            val value = field.get(this)
-            if (type.isInstance(value)) {
-                results += value as Any
+        val fields = getDeclaredFields(clazz)
+        for (field in fields) {
+            // 如果类型匹配，则添加到结果列表
+            if (type.isAssignableFrom(field.type)) {
+                field.isAccessible = true
+                val value = field.get(this)
+                // 直接使用add方法，避免创建新的ArrayList
+                value?.let { results.add(it) }
             }
         }
     }
