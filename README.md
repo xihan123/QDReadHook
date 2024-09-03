@@ -79,6 +79,67 @@
 
 ### [大部分功能和介绍列表](https://xihan123.github.io/QDReadHook/docs/app/cn.xihan.qdds.hook/index.html)
 
+### 收集服务特别声明
+
+* 收集书籍信息、阅读时长、书架的书ID，开发统计和推荐模型。该功能完全自愿开启，基于cloudflare，部分地区可能速度不理想，可以的话优选一下ip,域名是https://collect.qidian.lat/
+
+* 收集服务仅供统计和训练模型使用，不提供任何其他形式的服务，也不参与任何商业行为
+
+* 目前初步成果: 阅读时长排行榜，共有日、周、月、季、年、总榜，在Q交流群可召唤机器人显示。推荐模型暂时使用的基于用户书架的协同过滤算法进行相似度推荐，数据量较少效果不是很好，后续会加入更多的推荐算法
+
+* 以下榜单非官方榜单，仅是使用模块收集服务的数据，不代表起点官方数据，仅供参考!!!
+
+    <style>
+    .dashboard {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        grid-gap: 10px;
+        width: 100%;
+        margin-top: 20px;
+    }
+    .dashboard-item {
+        border: 1px solid #ddd;
+        padding: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border-radius: 4px;
+    }
+    .dashboard-item img {
+        width: 100%;
+        height: auto;
+        border-radius: 4px;
+    }
+    .dashboard-item h2 {
+        margin-top: 0;
+    }
+    </style>
+
+    <div class="dashboard">
+    <div class="dashboard-item">
+        <h2>日榜</h2>
+        <img src="https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=daily" alt="日榜图表">
+    </div>
+    <div class="dashboard-item">
+        <h2>周榜</h2>
+        <img src="https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=weekly" alt="周榜图表">
+    </div>
+    <div class="dashboard-item">
+        <h2>月榜</h2>
+        <img src="https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=monthly" alt="月榜图表">
+    </div>
+    <div class="dashboard-item">
+        <h2>季榜</h2>
+        <img src="https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=quarterly" alt="季榜图表">
+    </div>
+    <!-- <div class="dashboard-item">
+        <h2>年榜</h2>
+        <img src="https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=yearly" alt="年榜图表">
+    </div> -->
+    <div class="dashboard-item">
+        <h2>总榜</h2>
+        <img src="https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=total" alt="总榜图表">
+    </div>
+    </div>
+
 ## 常见问题
 
 * 如提示 "**Manifest文件中Activity/Service/Permission的声明有问题或者Permission权限未授予**"、"**初始化错误**"、"**初始化失败**"
