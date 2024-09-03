@@ -1,4 +1,32 @@
 # Changelog
+## [3.2.3](https://github.com/xihan123/QDReadHook/compare/v3.2.2...v3.2.3) (2024-09-03)
+
+
+### Features
+
+* **主设置:** 添加收集服务功能 ([29cf6ef](https://github.com/xihan123/QDReadHook/commit/29cf6efe7b10a3dc426cc9c712828668739413a0))
+
+
+### Bug Fixes
+
+* 移除对特定版本代码的拦截 ([870efb4](https://github.com/xihan123/QDReadHook/commit/870efb4985311f97caf04526090ea29738924e9c))
+* **阅读页设置:** 修复`章评音频导出` ([9d828ce](https://github.com/xihan123/QDReadHook/commit/9d828ce447e15f549c01a4717be58fe35e15d462))
+
+
+### Docs
+
+* 更新 README.md,添加收集服务说明和阅读时长排行榜 ([f6b90ba](https://github.com/xihan123/QDReadHook/commit/f6b90baea9169374eaf24e0409702c6781fa9d8b))
+
+
+### Miscellaneous
+
+* 更新依赖 ([49ef709](https://github.com/xihan123/QDReadHook/commit/49ef70948da8dde612dd54dc20c473a2549dd0c1))
+
+
+### Performance Improvements
+
+* 使用缓存优化反射字段获取 ([20e5c17](https://github.com/xihan123/QDReadHook/commit/20e5c17300196d7a8527286de29b1fb26a77eff9))
+
 ## [3.2.2](https://github.com/xihan123/QDReadHook/compare/v3.2.1...v3.2.2) (2024-08-09)
 
 
