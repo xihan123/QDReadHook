@@ -87,17 +87,7 @@
 
 * 目前初步成果: 阅读时长排行榜，共有日、周、月、季、年、总榜，在Q交流群可召唤机器人显示。推荐模型暂时使用的基于用户书架的协同过滤算法进行相似度推荐，数据量较少效果不是很好，后续会加入更多的推荐算法
 
-* 以下榜单非官方榜单，仅是使用模块收集服务的数据，不代表起点官方数据，仅供参考!!!
-
-    | 榜单类型 | 图表展示 |
-    | --- | --- |
-    | 日榜 | ![日榜](https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=daily) |
-    | 周榜 | ![周榜](https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=weekly) |
-    | 月榜 | ![月榜](https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=monthly) |
-    | 季榜 | ![季榜](https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=quarterly) |
-    | 总榜 | ![总榜](https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=total) |
-
-    <!-- | 年榜 | ![年榜](https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=yearly) | -->
+* [阅读时长排行榜(非官方)](https://rank.qidian.lat/)，仅是使用模块收集服务的数据，不代表起点官方数据，仅供参考!!!
 
 ---
 
