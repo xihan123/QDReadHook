@@ -2,6 +2,7 @@ package cn.xihan.qdds.hook
 
 import android.content.Context
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import cn.xihan.qdds.service.Collect
@@ -18,6 +19,7 @@ import cn.xihan.qdds.util.getParam
 import cn.xihan.qdds.util.getParamList
 import cn.xihan.qdds.util.getViews
 import cn.xihan.qdds.util.intercept
+import cn.xihan.qdds.util.loge
 import cn.xihan.qdds.util.printlnNotSupportVersion
 import cn.xihan.qdds.util.safeCast
 import cn.xihan.qdds.util.setParam
@@ -212,9 +214,9 @@ fun PackageParam.readingPageChapterCorrelation(
                             returnType = UnitType
                         }.hook().after {
                             val relativeLayouts = instance.getViews(
-                                "com.qd.ui.component.widget.roundwidget.QDUIRoundRelativeLayout".toClass(),
+                                "com.qd.ui.component.widget.roundwidget.QDUIRoundLinearLayout".toClass(),
                                 true
-                            ).filterIsInstance<RelativeLayout>()
+                            ).filterIsInstance<LinearLayout>()
                             val strings = instance.getParamList<String>().filter { it.isNotBlank() }
                             relativeLayouts.forEach { relativeLayout ->
                                 relativeLayout.setOnLongClickListener { view ->
