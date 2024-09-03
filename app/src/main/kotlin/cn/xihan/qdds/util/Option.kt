@@ -625,6 +625,7 @@ data class OptionEntity(
      * @param enableStartCheckingPermissions 启用检查权限
      * @param enableCustomIMEI 启用自定义IMEI
      * @param enableFixDouYinShare 启用修复抖音分享
+     * @param enableCollectService 启用收集服务
      */
     @Keep
     data class MainOption(
@@ -640,7 +641,9 @@ data class OptionEntity(
         var enableStartCheckingPermissions: Boolean = true,
         var enableCustomIMEI: Boolean = false,
         var qimei: String = "",
-        var enableFixDouYinShare: Boolean = false
+        var enableFixDouYinShare: Boolean = false,
+        var enableCollectService: Boolean = false,
+        var enableCollectToast: Boolean = false
     )
 
     @Keep

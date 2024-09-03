@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.RelativeLayout
 import android.widget.TextView
 import cn.xihan.qdds.BuildConfig
+import cn.xihan.qdds.service.Collect
 import cn.xihan.qdds.ui.MainActivity
 import cn.xihan.qdds.util.CustomEditText
 import cn.xihan.qdds.util.Option
@@ -40,6 +41,7 @@ import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.android.BundleClass
 import com.highcapable.yukihookapi.hook.type.android.ContextClass
+import com.highcapable.yukihookapi.hook.type.java.BooleanType
 import com.highcapable.yukihookapi.hook.type.java.IntType
 import com.highcapable.yukihookapi.hook.type.java.ListClass
 import com.highcapable.yukihookapi.hook.type.java.LongType
@@ -178,11 +180,15 @@ class HookEntry : IYukiHookXposedInit, KoinComponent {
             fixDouYinShare(versionCode, bridge)
         }
 
+        if (optionEntity.mainOption.enableCollectService) {
+            collect(versionCode = versionCode)
+        }
+
         if (optionEntity.cookieOption.enableCookie) {
             cookie(versionCode, bridge)
         }
 
-        if (optionEntity.cookieOption.enableDebug) {
+        if (optionEntity.cookieOption.enableDebug || (optionEntity.mainOption.enableCollectService && Collect.userId == 0L)) {
             debug(versionCode, bridge)
         }
 
@@ -902,6 +908,13 @@ fun PackageParam.debug(versionCode: Int, bridge: DexKitBridge) {
                 name = "signParams"
                 paramCount(8)
             }.hook().after {
+                val uid = args[3].safeCast<String>() ?: "空"
+                if (optionEntity.mainOption.enableCollectService) {
+                    if (uid.toLongOrNull() != null && Collect.userId == 0L) {
+//                        "uid: $uid".loge()
+                        Collect.userId = uid.toLong()
+                    }
+                }
                 StringBuilder().apply {
                     append("参数: ${args[1].safeCast<String>()?.ifBlank { "空" }}")
                     append(", 时间戳: ${args[2].safeCast<String>()?.ifBlank { "空" }}")
@@ -964,6 +977,58 @@ fun PackageParam.fixDouYinShare(versionCode: Int, bridge: DexKitBridge) {
                     }
                 }
 
+            }
+        }
+    }
+}
+
+fun PackageParam.collect(versionCode: Int) {
+    when (versionCode) {
+        in 1296..1499 -> {
+            "com.qidian.QDReader.ui.activity.QDBookDetailActivity".toClass().method {
+                param(
+                    "com.qidian.QDReader.ui.activity.QDBookDetailActivity".toClass(),
+                    BooleanType,
+                    "com.qidian.QDReader.repository.entity.BookDetail".toClass()
+                )
+                returnType = UnitType
+            }.hook().after {
+                args[2]?.let {
+                    val author = it.getParam<Any>("authorInfo")?.getParam<String>("author")
+                    val bookInfo = it.getParam<Any>("baseBookInfo") ?: return@after
+                    val bookId = bookInfo.getParam<Long>("bookId") ?: return@after
+                    val bookName = bookInfo.getParam<String>("bookName") ?: return@after
+                    val bookStatus = bookInfo.getParam<String>("bookStatus") ?: return@after
+                    val bookDesc = bookInfo.getParam<String>("description") ?: return@after
+                    val bookWordCount = bookInfo.getParam<Long>("wordsCnt") ?: return@after
+                    val bookCategory = bookInfo.getParam<String>("categoryName") ?: return@after
+                    val bookSubCategory =
+                        bookInfo.getParam<String>("subCategoryName") ?: return@after
+                    if (author != null && bookId > 0L) {
+                        Collect.sendBook(
+                            bookId = bookId,
+                            bookName = bookName,
+                            bookStatus = bookStatus,
+                            bookDesc = bookDesc,
+                            bookWordCount = bookWordCount,
+                            bookCategory = bookCategory,
+                            bookSubCategory = bookSubCategory,
+                            bookAuthor = author
+                        )
+                    }
+                }
+            }
+
+            "com.qidian.QDReader.ui.modules.bookshelf.BookShelfViewModel".toClass().method {
+                name = "getBookShelfInfoFlow"
+                paramCount(2)
+                returnType = "java.lang.Object".toClass()
+            }.hook().after {
+                val bookIdString = args[0].safeCast<String>() ?: return@after
+                val bookIds = bookIdString.split(",").mapNotNull { it.toLongOrNull() }
+                if (bookIds.isNotEmpty()) {
+                    Collect.sendBookShelf(bookIds)
+                }
             }
         }
     }

@@ -476,6 +476,23 @@ class MainActivity : ModuleAppCompatActivity() {
                         cleanLog(context)
                     })
 
+                val enableCollectService = rememberMutableStateOf(value = optionEntity.mainOption.enableCollectService)
+
+                ItemWithSwitch(text = "启用收集服务",
+                    modifier = itemModifier,
+                    checked = enableCollectService,
+                    onCheckedChange = {
+                        optionEntity.mainOption.enableCollectService = it
+                    })
+
+                if(enableCollectService.value){
+                    ItemWithSwitch(text = "收集服务上传提示",
+                        modifier = itemModifier,
+                        checked =  rememberMutableStateOf(value = optionEntity.mainOption.enableCollectToast),
+                        onCheckedChange = {
+                            optionEntity.mainOption.enableCollectToast = it
+                        })
+                }
 
             }
 

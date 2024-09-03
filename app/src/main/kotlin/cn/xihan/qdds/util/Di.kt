@@ -3,11 +3,14 @@
 package cn.xihan.qdds.util
 
 import cn.xihan.qdds.repository.RemoteRepository
+import cn.xihan.qdds.service.CollectService
 import cn.xihan.qdds.service.MyService
 import cn.xihan.qdds.service.MyServiceImpl
 import cn.xihan.qdds.service.QdService
 import cn.xihan.qdds.service.QdServiceImpl
+import cn.xihan.qdds.service.createCollectService
 import cn.xihan.qdds.ui.MainViewModel
+import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpResponseValidator
@@ -32,8 +35,10 @@ import org.koin.dsl.lazyModule
  */
 val appModule = lazyModule {
     singleOf(::provideHttpClient)
+    singleOf(::provideKtorfit)
     singleOf(::MyServiceImpl) bind MyService::class
     singleOf(::QdServiceImpl) bind QdService::class
+    singleOf(::provideCollectService)
     singleOf(::RemoteRepository)
     viewModelOf(::MainViewModel)
 }
@@ -55,22 +60,26 @@ private fun provideHttpClient(): HttpClient = HttpClient(OkHttp) {
     }
 
     install(HttpTimeout) {
-        requestTimeoutMillis = 10000
-        connectTimeoutMillis = 10000
-        socketTimeoutMillis = 10000
+        requestTimeoutMillis = 5000
+        connectTimeoutMillis = 5000
+        socketTimeoutMillis = 5000
     }
 
-    install(Logging) {
-        logger = object : Logger {
-            override fun log(message: String) {
-                message.loge()
-            }
-        }
-        level = LogLevel.ALL
-    }
+//    install(Logging) {
+//        logger = object : Logger {
+//            override fun log(message: String) {
+//                message.loge()
+//            }
+//        }
+//        level = LogLevel.ALL
+//    }
 }
 
+private fun provideKtorfit(httpClient: HttpClient) = Ktorfit.Builder()
+    .httpClient(httpClient)
+    .baseUrl(Path.COLLECT_URL)
+    .build()
 
-
+private fun provideCollectService(ktorfit: Ktorfit): CollectService = ktorfit.createCollectService()
 
 

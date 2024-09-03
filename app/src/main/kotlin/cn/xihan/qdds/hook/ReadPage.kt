@@ -4,11 +4,13 @@ import android.content.Context
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
+import cn.xihan.qdds.service.Collect
 import cn.xihan.qdds.util.CustomEditText
 import cn.xihan.qdds.util.CustomLinearLayout
 import cn.xihan.qdds.util.CustomTextView
 import cn.xihan.qdds.util.Option
 import cn.xihan.qdds.util.Option.audioPath
+import cn.xihan.qdds.util.Option.optionEntity
 import cn.xihan.qdds.util.Option.redirectThemePath
 import cn.xihan.qdds.util.alertDialog
 import cn.xihan.qdds.util.copyToClipboard
@@ -321,6 +323,19 @@ fun PackageParam.readingTimeSpeedFactor(
                         list.forEach { item ->
                             item?.let {
                                 val totalTime = it.getParam<Long>("totalTime")
+                                if (optionEntity.mainOption.enableCollectService) {
+                                    val bookId = it.getParam<Long>("bookId")
+                                    val startTime = it.getParam<Long>("startTime")
+                                    val endTime = it.getParam<Long>("endTime")
+                                    if (bookId != null && startTime != null && endTime != null && totalTime != null) {
+                                        Collect.sendReadingRecord(
+                                            bookId = bookId,
+                                            startTime = startTime,
+                                            endTime = endTime,
+                                            duration = totalTime
+                                        )
+                                    }
+                                }
                                 val currentTime = System.currentTimeMillis()
                                 val startTime2 = currentTime - ((totalTime ?: 10000) * speedFactor)
                                 it.setParams(
