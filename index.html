@@ -3,10 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KotlinTaskProject</title>
-    <link type="text/css" rel="stylesheet" href="styles.css">
-    <script type="application/javascript" src="composeApp.js"></script>
+    <style>
+        .dashboard {
+            width: 100%;
+            margin-top: 20px;
+        }
+        .dashboard-item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 4px;
+            width: 100%;
+            margin-bottom: 10px; /* Add margin to separate items */
+        }
+        .dashboard-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+        .dashboard-item h2 {
+            margin-top: 0;
+        }
+    </style>
+    <title>阅读时长排行榜(非官方)</title>
 </head>
 <body>
+    <div class="dashboard">
+        <div class="dashboard-item">
+            <h2>日榜</h2>
+            <img src="https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=daily" alt="日榜图表">
+        </div>
+        <div class="dashboard-item">
+            <h2>周榜</h2>
+            <img src="https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=weekly" alt="周榜图表">
+        </div>
+        <div class="dashboard-item">
+            <h2>月榜</h2>
+            <img src="https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=monthly" alt="月榜图表">
+        </div>
+        <div class="dashboard-item">
+            <h2>季榜</h2>
+            <img src="https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=quarterly" alt="季榜图表">
+        </div>
+        <!-- <div class="dashboard-item">
+            <h2>年榜</h2>
+            <img src="https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=yearly" alt="年榜图表">
+        </div> -->
+        <div class="dashboard-item">
+            <h2>总榜</h2>
+            <img src="https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=total" alt="总榜图表">
+        </div>
+    </div>
 </body>
 </html>
