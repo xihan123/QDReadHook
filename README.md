@@ -89,56 +89,17 @@
 
 * 以下榜单非官方榜单，仅是使用模块收集服务的数据，不代表起点官方数据，仅供参考!!!
 
-    <style>
-    .dashboard {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        grid-gap: 10px;
-        width: 100%;
-        margin-top: 20px;
-    }
-    .dashboard-item {
-        border: 1px solid #ddd;
-        padding: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        border-radius: 4px;
-    }
-    .dashboard-item img {
-        width: 100%;
-        height: auto;
-        border-radius: 4px;
-    }
-    .dashboard-item h2 {
-        margin-top: 0;
-    }
-    </style>
+    | 榜单类型 | 图表展示 |
+    | --- | --- |
+    | 日榜 | ![日榜](https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=daily) |
+    | 周榜 | ![周榜](https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=weekly) |
+    | 月榜 | ![月榜](https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=monthly) |
+    | 季榜 | ![季榜](https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=quarterly) |
+    | 总榜 | ![总榜](https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=total) |
 
-    <div class="dashboard">
-    <div class="dashboard-item">
-        <h2>日榜</h2>
-        <img src="https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=daily" alt="日榜图表">
-    </div>
-    <div class="dashboard-item">
-        <h2>周榜</h2>
-        <img src="https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=weekly" alt="周榜图表">
-    </div>
-    <div class="dashboard-item">
-        <h2>月榜</h2>
-        <img src="https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=monthly" alt="月榜图表">
-    </div>
-    <div class="dashboard-item">
-        <h2>季榜</h2>
-        <img src="https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=quarterly" alt="季榜图表">
-    </div>
-    <!-- <div class="dashboard-item">
-        <h2>年榜</h2>
-        <img src="https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=yearly" alt="年榜图表">
-    </div> -->
-    <div class="dashboard-item">
-        <h2>总榜</h2>
-        <img src="https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=total" alt="总榜图表">
-    </div>
-    </div>
+    <!-- | 年榜 | ![年榜](https://collect.qidian.lat/api/v1/reading/duration-chart?rank_type=yearly) | -->
+
+---
 
 ## 常见问题
 
