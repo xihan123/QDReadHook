@@ -17,12 +17,13 @@ import java.util.Properties
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.androidApplication)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.jgit)
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.kotlinSerialization)
-    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.jgit)
-    alias(libs.plugins.dokka)
+    alias(libs.plugins.ktorfit)
 }
 
 val keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -33,8 +34,8 @@ val repo = jgit.repo()
 val commitCount = (repo?.commitCount("refs/remotes/origin/master") ?: 1) + 24
 val latestTag = repo?.latestTag?.removePrefix("v") ?: "3.x.x-SNAPSHOT"
 
-val verCode by extra(commitCount)
-val verName by extra(latestTag)
+val verCode by extra(560)
+val verName by extra("3.2.3")
 val androidTargetSdkVersion by extra(35)
 val androidMinSdkVersion by extra(26)
 
@@ -145,6 +146,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.ktorfit.lib)
     implementation(libs.lifecycle.common.java8)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.lifecycle.viewmodel.compose)
