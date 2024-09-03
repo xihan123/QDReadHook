@@ -1,4 +1,11 @@
 # Changelog
+## [3.2.3](https://github.com/xihan123/QDReadHook/compare/v3.2.3...v3.2.3) (2024-09-03)
+
+
+### Docs
+
+* 更新榜单展示方式 ([d250ecf](https://github.com/xihan123/QDReadHook/commit/d250ecfc6e37d7f6a3eb5148204400d736d50b17))
+
 ## [3.2.3](https://github.com/xihan123/QDReadHook/compare/v3.2.2...v3.2.3) (2024-09-03)
 
 
