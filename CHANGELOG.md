@@ -5,6 +5,19 @@
 ### Docs
 
 * 更新榜单展示方式 ([d250ecf](https://github.com/xihan123/QDReadHook/commit/d250ecfc6e37d7f6a3eb5148204400d736d50b17))
+* 更新阅读时长排行榜链接 ([005e93b](https://github.com/xihan123/QDReadHook/commit/005e93b8fdd9ab9feb7f0b48f212eb9f2b47868c))
+
+
+### Miscellaneous
+
+* **master:** release 3.2.3 ([a3ad5d4](https://github.com/xihan123/QDReadHook/commit/a3ad5d4370fbe7b8100f2324fb79031d4a31d21f))
+
+## [3.2.3](https://github.com/xihan123/QDReadHook/compare/v3.2.3...v3.2.3) (2024-09-03)
+
+
+### Docs
+
+* 更新榜单展示方式 ([d250ecf](https://github.com/xihan123/QDReadHook/commit/d250ecfc6e37d7f6a3eb5148204400d736d50b17))
 
 ## [3.2.3](https://github.com/xihan123/QDReadHook/compare/v3.2.2...v3.2.3) (2024-09-03)
 
