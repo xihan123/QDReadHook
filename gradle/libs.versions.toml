@@ -19,7 +19,7 @@ material = "1.12.0"
 material3 = "1.2.1"
 navigation-compose = "2.7.7"
 permissions = "20.0"
-sandwich = "2.0.8"
+sandwich = "2.0.9"
 yuki = "1.2.1"
 
 [libraries]
