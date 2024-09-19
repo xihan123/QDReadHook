@@ -199,10 +199,6 @@ class HookEntry : IYukiHookXposedInit, KoinComponent {
             redirectReadingPageBackgroundPath(versionCode, bridge)
         }
 
-        if (optionEntity.startImageOption.enableRedirectLocalStartImage) {
-            customLocalStartImage(versionCode)
-        }
-
         advOption(versionCode, optionEntity.advOption, bridge)
 
         interceptOption(versionCode, optionEntity.interceptOption, bridge)

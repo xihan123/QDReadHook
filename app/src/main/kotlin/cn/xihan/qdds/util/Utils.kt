@@ -30,7 +30,6 @@ import androidx.core.view.forEach
 import cn.xihan.qdds.BuildConfig
 import cn.xihan.qdds.ui.MainActivity
 import cn.xihan.qdds.util.Option.parseNeedShieldList
-import cn.xihan.qdds.util.Option.splashPath
 import cn.xihan.qdds.util.Option.updateOptionEntity
 import com.alibaba.fastjson2.toJSONString
 import com.highcapable.yukihookapi.hook.factory.MembersType
@@ -53,8 +52,10 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.io.BufferedReader
 import java.io.File
 import java.io.FilenameFilter
+import java.io.InputStreamReader
 import java.io.OutputStream
 import java.io.Serializable
 import java.lang.reflect.Field
@@ -112,7 +113,7 @@ fun Long.toTime(): String = runCatching {
  * @param time Int
  * @param block suspend CoroutineScope.() -> Unit
  * @return Unit
- * @since 7.9.354-1296 ~ 1499
+ * @since 7.9.354-1336 ~ 1499
  */
 suspend fun wait(time: Int, block: suspend () -> Unit) {
     if (time != 0) {
@@ -147,7 +148,7 @@ fun <T> rememberSavableMutableStateOf(value: T): MutableState<T> =
 
 /**
  * 记住可变交互源
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @suppress Generate Documentation
  */
 @Composable
@@ -173,7 +174,7 @@ inline fun <reified T> rememberMutableStateListOf(value: Collection<T>) =
 
 /**
  * 获取方位无线电
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @return [Float]
  * @suppress Generate Documentation
  */
@@ -187,7 +188,7 @@ fun getAspectRadio(): Float {
 
 /**
  * 是平板电脑
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @return [Boolean]
  * @suppress Generate Documentation
  */
@@ -963,30 +964,8 @@ fun com.alibaba.fastjson2.JSONObject.getJSONArrayWithFallback(key: String): com.
 fun View.getName() = toString().substringAfter("/").replace("}", "")
 
 /**
- * 随机位图
- * @since 7.9.354-1296
- * @return [Bitmap?]
- * @suppress Generate Documentation
- */
-fun randomBitmap(): Bitmap? {
-    val filter = FilenameFilter { _, name ->
-        name.endsWith(".jpg", true) || name.endsWith(".png", true)
-    }
-    val files = File(splashPath).apply { if (!exists()) mkdirs() }
-    val list = files.listFiles(filter) ?: return null
-    val index = (list.indices).random()
-    return try {
-        BitmapFactory.decodeFile(list[index].absolutePath)
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
-    }
-}
-
-
-/**
  * 数据处理
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [value] 价值
  * @return [Int]
  * @suppress Generate Documentation
@@ -995,7 +974,7 @@ fun Context.dp(value: Int): Int = (value * resources.displayMetrics.density).toI
 
 /**
  * x
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [other] 另外
  * @return [ViewGroup.LayoutParams]
  * @suppress Generate Documentation
@@ -1004,7 +983,7 @@ infix fun Int.x(other: Int): ViewGroup.LayoutParams = ViewGroup.LayoutParams(thi
 
 /**
  * return false
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [methodData] 方法数据
  * @suppress Generate Documentation
  */
@@ -1022,7 +1001,7 @@ fun PackageParam.returnFalse(className: String, methodName: String, paramCount: 
 
 /**
  * 拦截
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [className] 类名
  * @param [methodName] 方法名称
  * @param [paramCount] 参数计数
@@ -1077,6 +1056,18 @@ fun PackageParam.shieldUnit(
         }
     }
 }
+
+fun Context.readTextFromUri(uri: Uri): String {
+    val inputStream = contentResolver.openInputStream(uri)
+    val reader = BufferedReader(InputStreamReader(inputStream))
+    val stringBuilder = StringBuilder()
+    reader.forEachLine { line ->
+        stringBuilder.append(line)
+    }
+    reader.close()
+    return stringBuilder.toString()
+}
+
 
 object Utils : KoinComponent {
 

@@ -1124,11 +1124,6 @@ class MainActivity : ModuleAppCompatActivity() {
                             optionEntity.startImageOption.enableCaptureTheOfficialLaunchMapList = it
                         })
 
-                    ItemWithSwitch(text = "启用重定向本地启动图",
-                        checked = rememberMutableStateOf(value = optionEntity.startImageOption.enableRedirectLocalStartImage),
-                        onCheckedChange = {
-                            optionEntity.startImageOption.enableRedirectLocalStartImage = it
-                        })
 
                     if (optionEntity.startImageOption.officialLaunchMapList.isNotEmpty()) {
                         val enableCaptureTheOfficialLaunchMapListExpand =
