@@ -12,7 +12,6 @@ import cn.xihan.qdds.service.Collect
 import cn.xihan.qdds.ui.MainActivity
 import cn.xihan.qdds.util.CustomEditText
 import cn.xihan.qdds.util.Option.initOption
-import cn.xihan.qdds.util.Option.initialize
 import cn.xihan.qdds.util.Option.optionEntity
 import cn.xihan.qdds.util.Option.updateOptionEntity
 import cn.xihan.qdds.util.Option.writeTextFile
@@ -95,7 +94,6 @@ class HookEntry : IYukiHookXposedInit, KoinComponent {
                         androidContext(this@onCreate)
                         lazyModules(appModule)
                     }
-                    initialize(this)
                 }
             }
 

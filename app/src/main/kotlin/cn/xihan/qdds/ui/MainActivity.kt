@@ -129,7 +129,6 @@ import cn.xihan.qdds.util.copyToClipboard
 import cn.xihan.qdds.util.defaultEmptyList
 import cn.xihan.qdds.util.defaultOptionEntity
 import cn.xihan.qdds.util.getVersionCode
-import cn.xihan.qdds.util.hideAppIcon
 import cn.xihan.qdds.util.isSunday
 import cn.xihan.qdds.util.isTablet
 import cn.xihan.qdds.util.joinQQGroup
@@ -142,7 +141,6 @@ import cn.xihan.qdds.util.rememberMutableStateOf
 import cn.xihan.qdds.util.rememberSavableMutableStateOf
 import cn.xihan.qdds.util.restartApplication
 import cn.xihan.qdds.util.runAndCatch
-import cn.xihan.qdds.util.showAppIcon
 import cn.xihan.qdds.util.toTime
 import cn.xihan.qdds.util.toast
 import cn.xihan.qdds.util.wait
@@ -1491,20 +1489,6 @@ class MainActivity : ModuleAppCompatActivity() {
                 .verticalScroll(rememberScrollState())
         ) {
 
-            ItemWithSwitch(text = "隐藏桌面图标",
-                modifier = itemModifier,
-                checked = rememberMutableStateOf(value = optionEntity.mainOption.enableHideAppIcon),
-                onCheckedChange = {
-                    optionEntity.mainOption.enableHideAppIcon = it
-                    runAndCatch {
-                        if (it) {
-                            context.hideAppIcon()
-                        } else {
-                            context.showAppIcon()
-                        }
-                    }
-                })
-
             var deleteAllDialog by rememberMutableStateOf(value = false)
             if (deleteAllDialog) {
                 ConfirmationDialog("清除起点所有缓存", onConfirm = {
@@ -2481,7 +2465,6 @@ fun TasksItem(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AccountItem(
     modifier: Modifier = Modifier,

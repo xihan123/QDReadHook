@@ -7,6 +7,8 @@ import androidx.annotation.Keep
 import com.alibaba.fastjson2.parseObject
 import com.alibaba.fastjson2.toJSONString
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.io.File
 import java.lang.ref.WeakReference
 
@@ -25,9 +27,9 @@ val defaultOptionEntity by lazy {
 val defaultEmptyList by lazy { mutableListOf<SelectedModel>() }
 
 
-object Option {
+object Option: KoinComponent {
 
-    lateinit var context: WeakReference<Context>
+    val context by inject<Context>()
 
     lateinit var basePath: String
 
@@ -56,7 +58,7 @@ object Option {
         basePath =
             "/storage/emulated/${(android.system.Os.getuid() / 100000)}/Android/data/$packageName/files/QDReadHook"
         redirectThemePath = "$basePath/RedirectTheme/"
-        logPath = "$basePath/Log/"
+        logPath = "$basePath/Log/log.txt"
         optionFile = File("$basePath/option.json").apply {
             parentFile?.mkdirs()
             if (!exists()) {
@@ -126,10 +128,6 @@ object Option {
     } catch (e: Throwable) {
         e.loge()
         defaultOptionEntity
-    }
-
-    fun initialize(context: Context) {
-        Option.context = WeakReference(context)
     }
 
     /**
@@ -394,11 +392,11 @@ object Option {
     /**
      * 删除起点目录下所有文件
      */
-    fun deleteAll() = context.get()?.apply {
+    fun deleteAll() = context.apply {
         filesDir.parentFile?.listFiles()?.filterNot { it.isDirectory && it.name == "databases" }
             ?.removeAll()
         getExternalFilesDirs(null).firstNotNullOfOrNull {
-            it.listFiles()?.filterNot { it -> it.isDirectory && it.name == "QDReadHook" }
+            it.listFiles()?.filterNot { it.isDirectory && it.name == "QDReadHook" }
                 ?.removeAll()
         }
     }
@@ -422,7 +420,7 @@ object Option {
      */
     fun String.writeTextFile(fileName: String = "test") {
         // 使用File类的构造函数，创建一个File对象
-        val file = context.get()?.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) ?: return
+        val file = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) ?: return
         // 使用generateSequence函数，创建一个序列，每次在文件名后面加上"-数字"
         generateSequence(0) { it + 1 }
             // 使用takeWhile函数，筛选出不存在的文件
@@ -478,7 +476,7 @@ object Option {
  * @param [readPageOption] 阅读页面选项
  * @param [interceptOption] 拦截选项
  * @param [viewHideOption] 视图隐藏选项
- * @param [autonomizationOption] 自动化选项
+ * @param [automatizationOption] 自动化选项
  * @suppress Generate Documentation
  */
 @Keep
@@ -587,7 +585,6 @@ data class OptionEntity(
         var enableFreeAdReward: Boolean = false,
         var enableIgnoreFreeSubscribeLimit: Boolean = false,
         var enableUnlockMemberBackground: Boolean = false,
-        var enableHideAppIcon: Boolean = false,
         var enableExportEmoji: Boolean = false,
         var enableOldDailyRead: Boolean = false,
         var enableNewFeedDiscovery: Boolean = false,
