@@ -1697,6 +1697,15 @@ class MainActivity : ModuleAppCompatActivity() {
                                 text = "cookie: ${optionEntity.cookieOption.cookie}", maxLines = 2
                             )
                         }
+
+                        TextButton(onClick = {
+                            context.copyToClipboard("${optionEntity.cookieOption.qimei}")
+                            context.toast("已复制QIMEI")
+                        }) {
+                            Text(
+                                text = "qimei: ${optionEntity.cookieOption.qimei}", maxLines = 2
+                            )
+                        }
                     }
                 }, confirmButton = {
                     TextButton(onClick = {
@@ -1706,13 +1715,15 @@ class MainActivity : ModuleAppCompatActivity() {
                                 ?.let {
                                     it.cookie = optionEntity.cookieOption.cookie
                                     it.ua = optionEntity.cookieOption.ua
+                                    it.imei = optionEntity.cookieOption.qimei
                                 } ?: run {
                                 optionEntity.taskOption.accounts =
                                     optionEntity.taskOption.accounts.plus(
                                         OptionEntity.TaskOption.AccountModel(
                                             uid = optionEntity.cookieOption.uid.toString(),
                                             cookie = optionEntity.cookieOption.cookie,
-                                            ua = optionEntity.cookieOption.ua
+                                            ua = optionEntity.cookieOption.ua,
+                                            imei = optionEntity.cookieOption.qimei
                                         )
                                     )
                             }
