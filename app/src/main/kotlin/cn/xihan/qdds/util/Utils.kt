@@ -96,7 +96,7 @@ object Path {
     const val MASCOT_CLOCK_IN = "/argus/api/v1/mascot/clockin"
     const val MASCOT_TASK_REWARD = "/argus/api/v1/mascot/getreward"
 
-    const val COLLECT_URL = "https://collect.qidian.lat/"
+    const val COLLECT_URL = "https://rank.xihan.website/"
 }
 
 /**
