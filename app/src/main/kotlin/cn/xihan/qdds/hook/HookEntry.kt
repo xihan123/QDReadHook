@@ -183,9 +183,8 @@ class HookEntry : IYukiHookXposedInit, KoinComponent {
             cookie(versionCode, bridge)
         }
 
-        if (optionEntity.cookieOption.enableDebug || (optionEntity.mainOption.enableCollectService && Collect.userId == 0L)) {
-            debug(versionCode, bridge)
-        }
+        debug(versionCode)
+
 
         if (optionEntity.readPageOption.enableReadTimeFactor) {
             readingTimeSpeedFactor(
@@ -826,17 +825,19 @@ fun PackageParam.cookie(versionCode: Int, bridge: DexKitBridge) {
     }
 }
 
-fun PackageParam.debug(versionCode: Int, bridge: DexKitBridge) {
+fun PackageParam.debug(versionCode: Int) {
     when (versionCode) {
         in 1296..1499 -> {
-            "com.yuewen.fock.Fock".toClass().method {
-                name = "sign"
-                paramCount(1)
-                returnType = StringClass
-            }.hook().after {
-                "参数: ${
-                    args.first().safeCast<String>()
-                }, 返回值: ${result.safeCast<String>()}".writeTextFile()
+            if (optionEntity.cookieOption.enableDebug) {
+                "com.yuewen.fock.Fock".toClass().method {
+                    name = "sign"
+                    paramCount(1)
+                    returnType = StringClass
+                }.hook().after {
+                    "参数: ${
+                        args.first().safeCast<String>()
+                    }, 返回值: ${result.safeCast<String>()}".writeTextFile()
+                }
             }
 
             "a.c".toClass().method {
@@ -844,23 +845,30 @@ fun PackageParam.debug(versionCode: Int, bridge: DexKitBridge) {
                 paramCount(8)
             }.hook().after {
                 val uid = args[3].safeCast<String>() ?: "空"
+                val qimei = args[4].safeCast<String>()?.ifBlank { "空" }
                 if (optionEntity.mainOption.enableCollectService) {
                     if (uid.toLongOrNull() != null && Collect.userId == 0L) {
 //                        "uid: $uid".loge()
                         Collect.userId = uid.toLong()
                     }
                 }
-                StringBuilder().apply {
-                    append("参数: ${args[1].safeCast<String>()?.ifBlank { "空" }}")
-                    append(", 时间戳: ${args[2].safeCast<String>()?.ifBlank { "空" }}")
-                    append(", UID: ${args[3].safeCast<String>()?.ifBlank { "空" }}")
-                    append(", QIMEI: ${args[4].safeCast<String>()?.ifBlank { "空" }}")
-                    append(", Type: ${args[6].safeCast<Int>()}")
-                    append(", 返回值: ${
-                        result.safeCast<ByteArray>()
-                            ?.let { com.qidian.common.lib.util.c.search(it) }
-                    }")
-                }.toString().writeTextFile()
+                if (optionEntity.cookieOption.enableCookie) {
+                    optionEntity.cookieOption.qimei = qimei ?: ""
+                    updateOptionEntity()
+                }
+                if (optionEntity.cookieOption.enableDebug) {
+                    StringBuilder().apply {
+                        append("参数: ${args[1].safeCast<String>()?.ifBlank { "空" }}")
+                        append(", 时间戳: ${args[2].safeCast<String>()?.ifBlank { "空" }}")
+                        append(", UID: $uid")
+                        append(", QIMEI: $qimei")
+                        append(", Type: ${args[6].safeCast<Int>()}")
+                        append(", 返回值: ${
+                            result.safeCast<ByteArray>()
+                                ?.let { com.qidian.common.lib.util.c.search(it) }
+                        }")
+                    }.toString().writeTextFile()
+                }
             }
         }
     }
