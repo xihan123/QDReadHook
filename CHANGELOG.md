@@ -1,4 +1,43 @@
 # Changelog
+## [3.2.4](https://github.com/xihan123/QDReadHook/compare/v3.2.3...v3.2.4) (2024-09-19)
+
+
+### Features
+
+* **关于:** 添加导入模块配置文件功能 ([1d7a584](https://github.com/xihan123/QDReadHook/commit/1d7a5841adc14be2a1b72d9b1c8d76b3c517c9d0))
+* **关于:** 添加导出模块配置文件功能 ([dd10033](https://github.com/xihan123/QDReadHook/commit/dd10033c75155d05d4c765ffa976861f28145367))
+* **关于:** 添加查看和复制QIMEI功能 ([52a90d0](https://github.com/xihan123/QDReadHook/commit/52a90d01db13b1f7e4aadd883c7c06bc99d56afc))
+* **阅读页设置:** 增强音频文件导出 ([cf16726](https://github.com/xihan123/QDReadHook/commit/cf167267bc5194d0e5867a86d6de1ae1b8ad189f))
+
+
+### Bug Fixes
+
+* **主设置:** 按钮文本没有改变 ([0d61c5e](https://github.com/xihan123/QDReadHook/commit/0d61c5e5dd5dfcb20806e87c913799620822bc84))
+* 修复并增强导出表情包，包括图片和文字 ([d0b110b](https://github.com/xihan123/QDReadHook/commit/d0b110b2cdda6ca2ff0e5d50c7a07dc76097ffac))
+
+
+### Docs
+
+* 更新文档 ([230aa96](https://github.com/xihan123/QDReadHook/commit/230aa96e3b1a29159b6dec67b64f7668a3d2143c))
+* 更新榜单展示方式 ([d250ecf](https://github.com/xihan123/QDReadHook/commit/d250ecfc6e37d7f6a3eb5148204400d736d50b17))
+* 更新阅读时长排行榜链接 ([005e93b](https://github.com/xihan123/QDReadHook/commit/005e93b8fdd9ab9feb7f0b48f212eb9f2b47868c))
+
+
+### Miscellaneous
+
+* **master:** release 3.2.3 ([55def63](https://github.com/xihan123/QDReadHook/commit/55def63811d94e86e2d71f0a7bc0321bb2989556))
+* **master:** release 3.2.3 ([a3ad5d4](https://github.com/xihan123/QDReadHook/commit/a3ad5d4370fbe7b8100f2324fb79031d4a31d21f))
+* 新增线程工具类 ([d54ad58](https://github.com/xihan123/QDReadHook/commit/d54ad5809abebcdb984d35aca81907962f0cf573))
+* 更新依赖库 ([ad936fa](https://github.com/xihan123/QDReadHook/commit/ad936faced13927b227889bc4a2838ca52934f8d))
+* 杂项修改 ([da62024](https://github.com/xihan123/QDReadHook/commit/da620247b14132c10d511e499f87e678e36d1019))
+
+
+### Refactoring
+
+* 优化调试日志、收集、Cookie ([cb08747](https://github.com/xihan123/QDReadHook/commit/cb0874761a88017ce33787c6cf63f61d5da367c5))
+* 配置文件 ([06cd734](https://github.com/xihan123/QDReadHook/commit/06cd734717cce0ee07e77959cd82a13d8c5240e8))
+* 重构工具类 ([4195672](https://github.com/xihan123/QDReadHook/commit/4195672adf73653eecadebeef021713597752bc3))
+
 ## [3.2.3](https://github.com/xihan123/QDReadHook/compare/v3.2.3...v3.2.3) (2024-09-03)
 
 
