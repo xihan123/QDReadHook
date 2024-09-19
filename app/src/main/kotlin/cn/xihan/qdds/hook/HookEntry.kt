@@ -363,7 +363,7 @@ fun PackageParam.unlockMemberBackground(versionCode: Int) {
                 name = "updateViews"
                 param(ListClass)
                 returnType = UnitType
-            }.hook().after {
+            }.hook().before {
                 val list = args[0].safeCast<MutableList<*>>()
                 list?.forEach {
                     it?.let {
