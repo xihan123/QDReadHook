@@ -133,7 +133,6 @@ import cn.xihan.qdds.util.hideAppIcon
 import cn.xihan.qdds.util.isSunday
 import cn.xihan.qdds.util.isTablet
 import cn.xihan.qdds.util.joinQQGroup
-import cn.xihan.qdds.util.jumpToPermission
 import cn.xihan.qdds.util.multiChoiceSelector
 import cn.xihan.qdds.util.openUrl
 import cn.xihan.qdds.util.parseKeyWordOption
@@ -141,7 +140,6 @@ import cn.xihan.qdds.util.readTextFromUri
 import cn.xihan.qdds.util.rememberMutableStateListOf
 import cn.xihan.qdds.util.rememberMutableStateOf
 import cn.xihan.qdds.util.rememberSavableMutableStateOf
-import cn.xihan.qdds.util.requestPermissionDialog
 import cn.xihan.qdds.util.restartApplication
 import cn.xihan.qdds.util.runAndCatch
 import cn.xihan.qdds.util.showAppIcon
@@ -154,8 +152,6 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.alibaba.fastjson2.parseObject
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppCompatActivity
-import com.hjq.permissions.Permission
-import com.hjq.permissions.XXPermissions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -195,11 +191,6 @@ class MainActivity : ModuleAppCompatActivity() {
     @Composable
     fun ComposeContent() {
         val context = LocalContext.current
-        val permission = rememberMutableStateOf(
-            value = XXPermissions.isGranted(
-                context, Permission.REQUEST_INSTALL_PACKAGES, Permission.MANAGE_EXTERNAL_STORAGE
-            )
-        )
         val navController = rememberNavController()
         var allowDisclaimers by rememberMutableStateOf(value = optionEntity.allowDisclaimers && optionEntity.currentDisclaimersVersionCode >= defaultOptionEntity.latestDisclaimersVersionCode)
         var currentDisclaimersVersionCode by rememberMutableStateOf(value = optionEntity.currentDisclaimersVersionCode)
@@ -237,8 +228,6 @@ class MainActivity : ModuleAppCompatActivity() {
                     .windowInsetsPadding(WindowInsets.navigationBars)
                     .padding(top = paddingValues.calculateTopPadding()),
                 startDestination = when {
-                    permission.value.not() && allowDisclaimers.not() -> "route_permission_request"
-                    permission.value.not() -> "route_permission_request"
                     allowDisclaimers.not() -> "route_disclaimers"
                     else -> "top_level_route"
                 },
@@ -319,33 +308,6 @@ class MainActivity : ModuleAppCompatActivity() {
                     }, onDisagreeClick = {
                         finish()
                     })
-                }
-
-                composable("route_permission_request") {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-
-                        Text(
-                            "起点和模块都需要存储权限\nps:用来管理位于外部存储的配置文件",
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold
-                        )
-
-                        Button(onClick = {
-                            requestPermissionDialog(onGranted = {
-                                permission.value = true
-                                restartApplication()
-                            }, onDenied = {
-                                permission.value = false
-                                jumpToPermission()
-                            })
-                        }) {
-                            Text("点我请求权限")
-                        }
-                    }
-
                 }
 
             }
