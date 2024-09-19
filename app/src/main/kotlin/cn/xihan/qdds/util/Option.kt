@@ -43,24 +43,6 @@ object Option {
      */
     lateinit var logPath: String
 
-    /**
-     * 闪屏图片路径
-     * @suppress Generate Documentation
-     */
-    lateinit var splashPath: String
-
-    /**
-     * 图片路径
-     * @suppress Generate Documentation
-     */
-    lateinit var picturesPath: String
-
-    /**
-     * 音频路径
-     * @suppress Generate Documentation
-     */
-    lateinit var audioPath: String
-
     lateinit var optionEntity: OptionEntity
 
     lateinit var optionFile: File
@@ -74,10 +56,7 @@ object Option {
         basePath =
             "/storage/emulated/${(android.system.Os.getuid() / 100000)}/Android/data/$packageName/files/QDReadHook"
         redirectThemePath = "$basePath/RedirectTheme/"
-        splashPath = "$basePath/Splash/"
-        picturesPath = "$basePath/Pictures/"
         logPath = "$basePath/Log/"
-        audioPath = "$basePath/Audio/"
         optionFile = File("$basePath/option.json").apply {
             parentFile?.mkdirs()
             if (!exists()) {
@@ -508,7 +487,7 @@ data class OptionEntity(
     var currentDisclaimersVersionCode: Int = 0,
     var latestDisclaimersVersionCode: Int = 3,
     var currentOptionVersionCode: Int = 0,
-    var latestOptionVersionCode: Int = 3,
+    var latestOptionVersionCode: Int = 4,
     var advOption: List<SelectedModel> = listOf(
         SelectedModel("闪屏广告", true),
         SelectedModel("GDT广告"),
