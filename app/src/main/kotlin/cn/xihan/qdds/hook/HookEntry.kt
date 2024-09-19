@@ -3,6 +3,7 @@ package cn.xihan.qdds.hook
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Environment
 import android.view.View
 import android.widget.RelativeLayout
 import android.widget.TextView
@@ -13,9 +14,9 @@ import cn.xihan.qdds.util.CustomEditText
 import cn.xihan.qdds.util.Option.initOption
 import cn.xihan.qdds.util.Option.initialize
 import cn.xihan.qdds.util.Option.optionEntity
-import cn.xihan.qdds.util.Option.picturesPath
 import cn.xihan.qdds.util.Option.updateOptionEntity
 import cn.xihan.qdds.util.Option.writeTextFile
+import cn.xihan.qdds.util.Utils.saveImageFromUrl
 import cn.xihan.qdds.util.alertDialog
 import cn.xihan.qdds.util.appModule
 import cn.xihan.qdds.util.copyToClipboard
@@ -503,18 +504,20 @@ fun PackageParam.exportEmoji(versionCode: Int) {
             }.hook().after {
                 val stickersBean = args[1] ?: return@after
                 val viewMap = args[0]?.getParam<Map<*, View>>("_\$_findViewCache") ?: return@after
+                val mName = stickersBean.getParam<String>("mName")
                 val faceList = stickersBean.getParam<MutableList<*>>("mFaceList")
-                val yWImageLoader = "com.yuewen.component.imageloader.YWImageLoader".toClassOrNull()
                 val context = args[0] ?: return@after
-                if (faceList.isNullOrEmpty() || yWImageLoader == null) {
+                if (mName.isNullOrBlank() || faceList.isNullOrEmpty()) {
                     return@after
                 }
-                val imageList = mutableListOf<String>()
+                val imageMap = mutableMapOf<String, String>()
                 val iterator = faceList.iterator()
                 while (iterator.hasNext()) {
-                    val image = iterator.next()?.getParam<String>("mImage")
-                    if (!image.isNullOrBlank()) {
-                        imageList += image
+                    val item = iterator.next() ?: continue
+                    val url = item.getParam<String>("mImage")
+                    val text = item.getParam<String>("mText")
+                    if (!url.isNullOrBlank() && !text.isNullOrBlank()) {
+                        imageMap[text] = url
                     }
                 }
                 val topBar = viewMap.values.firstOrNull { "topBar" == it.getName() }
@@ -532,18 +535,17 @@ fun PackageParam.exportEmoji(versionCode: Int) {
                         text = "导出"
                         setOnClickListener {
                             topBar.context.exportEmojiDialog(
-                                context = context,
-                                imageList = imageList,
-                                yWImageLoader = yWImageLoader
+                                context = topBar.context,
+                                imageTitle = mName,
+                                imageList = imageMap,
                             )
                         }
                     }
                     textView.layoutParams = layoutParams
                     topBar.addView(textView)
                 } else {
-                    "一键导出表情包".printlnNotSupportVersion(versionCode)
+                    context.safeCast<Context>()?.toast("未找到topBar控件")
                 }
-
             }
         }
 
@@ -560,22 +562,15 @@ fun PackageParam.exportEmoji(versionCode: Int) {
  * @suppress Generate Documentation
  */
 private fun Context.exportEmojiDialog(
-    context: Any, yWImageLoader: Class<*>, imageList: List<String>
+    context: Context, imageTitle: String, imageList: Map<String, String>
 ) {
     alertDialog {
         title = "一键导出表情包"
-        message = "导出表情包 ${imageList.size} 张"
+        message = "导出 《${imageTitle}》 表情包 ${imageList.size} 张\n导出至: ${
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).path
+        }/QDReader/$imageTitle"
         okButton {
-            imageList.forEach { imageUrl ->
-                yWImageLoader.method {
-                    name = "saveBitmap"
-                    paramCount(6)
-                    returnType = UnitType
-                }.get(yWImageLoader).call(
-                    context, imageUrl, picturesPath, "", true, null
-                )
-            }
-            toast("导出成功")
+            saveImageFromUrl(context, imageTitle, imageList)
             it.dismiss()
         }
         negativeButton("取消") {

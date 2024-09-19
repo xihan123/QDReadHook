@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.ComponentName
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -13,6 +14,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Parcelable
+import android.provider.MediaStore
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -43,11 +45,17 @@ import com.highcapable.yukihookapi.hook.type.java.UnitType
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
 import de.robv.android.xposed.XposedHelpers
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.get
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.io.File
 import java.io.FilenameFilter
+import java.io.OutputStream
 import java.io.Serializable
 import java.lang.reflect.Field
 import java.text.SimpleDateFormat
@@ -975,44 +983,6 @@ fun randomBitmap(): Bitmap? {
     }
 }
 
-/**
- * # 移动到私有存储
- * * 将位于 "/sdcard/Download/QDReader/Font" 的字体文件替换到 "/data/user/0/com.qidian.QDReader/files/fulltype_fonts/"和"/data/user/0/com.qidian.QDReader/files/truetype_fonts/"
- * * 启用后阅读页设置字体选择 汉仪楷体
- * * ps: 无需改名并且仅一个生效
- * @since 7.9.354-1296
- * @param [context] 上下文
- */
-fun moveToPrivateStorage(context: Context) = runBlocking(Dispatchers.IO) {
-    runAndCatch {
-        val fontFile = File(Option.fontPath).apply {
-            parentFile?.mkdirs()
-            if (!exists()) {
-                mkdir()
-            }
-        }
-        val internalFontFile =
-            File("${context.filesDir}/fulltype_fonts", "HYKaiT18030F.ttf").apply {
-                parentFile?.mkdirs()
-                if (!exists()) {
-                    createNewFile()
-                }
-            }
-        val internalFontFile2 =
-            File("${context.filesDir}/truetype_fonts", "HYKaiT18030F.ttf_new.ttf").apply {
-                parentFile?.mkdirs()
-                if (!exists()) {
-                    createNewFile()
-                }
-            }
-        fontFile.listFiles()?.takeIf { it.isNotEmpty() }?.let {
-            it.firstOrNull()?.apply {
-                copyTo(internalFontFile, overwrite = true)
-                copyTo(internalFontFile2, overwrite = true)
-            }
-        }
-    }
-}
 
 /**
  * 数据处理
@@ -1106,4 +1076,55 @@ fun PackageParam.shieldUnit(
             args(index).set(parseNeedShieldList(it))
         }
     }
+}
+
+object Utils : KoinComponent {
+
+    val httpClient: HttpClient by inject()
+
+    fun saveImageFromUrl(context: Context, imageTitle: String, imageList: Map<String, String>) =
+        thread {
+            imageList.forEach { (displayName, imageUrl) ->
+                try {
+                    val bytes = httpClient.get(imageUrl).body<ByteArray>()
+
+                    val fileExtension = imageUrl.substring(imageUrl.lastIndexOf('.') + 1)
+                    val mimeType = when (fileExtension.lowercase()) {
+                        "jpg", "jpeg" -> "image/jpeg"
+                        "png" -> "image/png"
+                        "gif" -> "image/gif"
+                        else -> "image/*"
+                    }
+                    // 保存图片到Pictures目录
+                    val contentValues = ContentValues().apply {
+                        put(MediaStore.Images.Media.DISPLAY_NAME, "$displayName.$fileExtension")
+                        put(MediaStore.Images.Media.MIME_TYPE, mimeType)
+                        put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/QDReader/${imageTitle}/")
+                    }
+
+                    val uri = context.contentResolver.insert(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        contentValues
+                    )
+
+                    uri?.let {
+                        val outputStream: OutputStream? = context.contentResolver.openOutputStream(it)
+                        outputStream?.use { stream ->
+                            if (fileExtension.lowercase() == "gif") {
+                                stream.write(bytes)
+                            } else {
+                                val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                            }
+                        } ?: "写入图片失败".loge()
+                    } ?: "插入图片失败".loge()
+                }catch (e: Exception) {
+                    "下载图片失败: ${e.message}".loge()
+                }
+            }
+            withContext(Dispatchers.Main.immediate) {
+                context.toast("导出成功")
+            }
+        }
+
 }
