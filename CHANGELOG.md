@@ -1,4 +1,47 @@
 # Changelog
+## [3.2.4](https://github.com/xihan123/QDReadHook/compare/v3.2.4...v3.2.4) (2024-09-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* 移除所有权限和模块单独配置页面
+* 提高最低支持版本为`7.9.366-1336`
+* 移除了自定义本地启动图功能
+* 移除了阅读页字体自动替换选项
+* 移除自动领取章末红包和自动跳过跳过启动页功能
+* 移除禁用底部导航中心广告
+
+### Features
+
+* **关于:** 添加导入模块配置文件功能 ([c640afc](https://github.com/xihan123/QDReadHook/commit/c640afc576abd6eb70a2a953d60750671cfd53ea))
+* **关于:** 添加导出模块配置文件功能 ([e2891c0](https://github.com/xihan123/QDReadHook/commit/e2891c01c9399716be74cec42c3adc8d63a6863c))
+* **关于:** 添加查看和复制QIMEI功能 ([995d729](https://github.com/xihan123/QDReadHook/commit/995d7291591b6ce3168eb163c8bf568aad628a8d))
+* 提高最低支持版本为`7.9.366-1336` ([a1a689f](https://github.com/xihan123/QDReadHook/commit/a1a689f9d7f801a433f4f8d691a328b2a23ac607))
+* 移除了自定义本地启动图功能 ([16f4877](https://github.com/xihan123/QDReadHook/commit/16f487716b037b919677dc2445d1677febe15db3))
+* 移除了阅读页字体自动替换选项 ([c853ab7](https://github.com/xihan123/QDReadHook/commit/c853ab7abdff012aaf8665fd2bc3dec5f84e34e8))
+* 移除所有权限和模块单独配置页面 ([2f9bdb1](https://github.com/xihan123/QDReadHook/commit/2f9bdb1c13439139e15654fc3ad25921685a297d))
+* 移除禁用底部导航中心广告 ([1219849](https://github.com/xihan123/QDReadHook/commit/1219849522a9e877d0044c60b0cf2fa303ed8887))
+* 移除自动领取章末红包和自动跳过跳过启动页功能 ([f761e52](https://github.com/xihan123/QDReadHook/commit/f761e527c5e8e4e4ddbe35d5a7d3bd3ef5c7d907))
+* **阅读页设置:** 增强音频文件导出 ([3c6c653](https://github.com/xihan123/QDReadHook/commit/3c6c6537d0e92d6eb7755eef3e37252b4f297899))
+
+
+### Docs
+
+* 更新文档 ([eced926](https://github.com/xihan123/QDReadHook/commit/eced926ea55cf4c857edb9dad7bb624fb6c8d5a7))
+
+
+### Miscellaneous
+
+* **master:** release 3.2.4 ([0fe5d08](https://github.com/xihan123/QDReadHook/commit/0fe5d08dfef3998bb0b0b6ca3c49e102b3d52780))
+* 新增线程工具类 ([7fa2c54](https://github.com/xihan123/QDReadHook/commit/7fa2c54d599eee1b36d73c09fa8dea8fc80d9117))
+* 更新依赖库 ([0215689](https://github.com/xihan123/QDReadHook/commit/021568905e142965ee4c00cd5bffc667961c3712))
+* 杂项修改 ([f5198a4](https://github.com/xihan123/QDReadHook/commit/f5198a4532a793b8733dd06799d28264babc19a2))
+
+
+### Refactoring
+
+* 重构工具类 ([9652cde](https://github.com/xihan123/QDReadHook/commit/9652cde179399255100eb2b76e186cb67ed6f4bf))
+
 ## [3.2.4](https://github.com/xihan123/QDReadHook/compare/v3.2.3...v3.2.4) (2024-09-19)
 
 
