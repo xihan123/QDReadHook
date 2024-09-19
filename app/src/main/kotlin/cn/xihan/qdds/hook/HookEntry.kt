@@ -10,7 +10,8 @@ import cn.xihan.qdds.BuildConfig
 import cn.xihan.qdds.service.Collect
 import cn.xihan.qdds.ui.MainActivity
 import cn.xihan.qdds.util.CustomEditText
-import cn.xihan.qdds.util.Option
+import cn.xihan.qdds.util.Option.initOption
+import cn.xihan.qdds.util.Option.initialize
 import cn.xihan.qdds.util.Option.optionEntity
 import cn.xihan.qdds.util.Option.picturesPath
 import cn.xihan.qdds.util.Option.updateOptionEntity
@@ -29,7 +30,6 @@ import cn.xihan.qdds.util.isSelectedByTitle
 import cn.xihan.qdds.util.loge
 import cn.xihan.qdds.util.okButton
 import cn.xihan.qdds.util.printlnNotSupportVersion
-import cn.xihan.qdds.util.requestPermissionDialog
 import cn.xihan.qdds.util.safeCast
 import cn.xihan.qdds.util.setParams
 import cn.xihan.qdds.util.toast
@@ -49,8 +49,6 @@ import com.highcapable.yukihookapi.hook.type.java.MapClass
 import com.highcapable.yukihookapi.hook.type.java.StringClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
-import com.hjq.permissions.Permission
-import com.hjq.permissions.XXPermissions
 import org.json.JSONObject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -73,9 +71,7 @@ import java.lang.reflect.Modifier
 class HookEntry : IYukiHookXposedInit, KoinComponent {
 
     init {
-        if (optionEntity.allowDisclaimers) {
-            System.loadLibrary("dexkit")
-        }
+        System.loadLibrary("dexkit")
     }
 
     override fun onInit() = YukiHookAPI.configs {
@@ -86,8 +82,11 @@ class HookEntry : IYukiHookXposedInit, KoinComponent {
     }
 
     override fun onHook() = YukiHookAPI.encase {
-        if ("com.qidian.QDReader" !in packageName) return@encase
+        if (QD_PACKAGE_NAME !in packageName) return@encase
         loadApp(name = packageName) {
+            val versionCode by lazy { getSystemContext().getVersionCode(packageName) }
+            initOption()
+
             onAppLifecycle {
                 onCreate {
                     startKoin {
@@ -95,7 +94,7 @@ class HookEntry : IYukiHookXposedInit, KoinComponent {
                         androidContext(this@onCreate)
                         lazyModules(appModule)
                     }
-                    Option.initialize(this)
+                    initialize(this)
                 }
             }
 
@@ -103,10 +102,6 @@ class HookEntry : IYukiHookXposedInit, KoinComponent {
                 DexKitBridge.create(appInfo.sourceDir).use { bridge ->
                     mainFunction(versionCode = versionCode, bridge = bridge)
                 }
-            }
-
-            if (optionEntity.mainOption.enableStartCheckingPermissions) {
-                startCheckingPermissions(versionCode)
             }
 
             "com.qidian.QDReader.ui.activity.MoreActivity".toClass().apply {
@@ -352,69 +347,9 @@ class HookEntry : IYukiHookXposedInit, KoinComponent {
     }
 
     companion object {
-        val QD_PACKAGE_NAME by lazy {
-            optionEntity.mainOption.packageName.ifBlank { "com.qidian.QDReader" }
-        }
-
-        val versionCode by lazy { getSystemContext().getVersionCode(QD_PACKAGE_NAME) }
-
+        const val QD_PACKAGE_NAME = "com.qidian.QDReader"
     }
 
-}
-
-/**
- * 开始检查权限
- * @since 7.9.354-1296
- * @param [versionCode] 版本代码
- * @suppress Generate Documentation
- */
-fun PackageParam.startCheckingPermissions(versionCode: Int) {
-    when (versionCode) {
-        in 1296..1499 -> {
-            "com.qidian.QDReader.ui.activity.SplashActivity".toClass().apply {
-                val hook = method {
-                    name = "go2Where"
-                    emptyParam()
-                    returnType = UnitType
-                }.hook {
-                    replaceUnit {
-                        instance<Activity>().requestPermissionDialog()
-                    }
-                }
-
-                val hook2 = method {
-                    name = "go2Main"
-                    paramCount(1)
-                    returnType = UnitType
-                }.hook {
-                    replaceUnit {
-                        instance<Activity>().requestPermissionDialog()
-                    }
-                }
-
-                method {
-                    name = "onCreate"
-                    param(BundleClass)
-                    returnType = UnitType
-                }.hook().after {
-                    instance<Activity>().apply {
-                        // 判断权限
-                        val permission = XXPermissions.isGranted(
-                            this,
-                            Permission.REQUEST_INSTALL_PACKAGES,
-                            Permission.MANAGE_EXTERNAL_STORAGE
-                        )
-                        if (permission) {
-                            hook.remove()
-                            hook2.remove()
-                        }
-                    }
-                }
-            }
-        }
-
-        else -> "startCheckingPermissions".printlnNotSupportVersion(versionCode)
-    }
 }
 
 /**
