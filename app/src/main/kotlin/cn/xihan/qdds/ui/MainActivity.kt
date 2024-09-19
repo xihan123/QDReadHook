@@ -144,11 +144,13 @@ import cn.xihan.qdds.util.runAndCatch
 import cn.xihan.qdds.util.toTime
 import cn.xihan.qdds.util.toast
 import cn.xihan.qdds.util.wait
+import cn.xihan.qdds.util.writeTextToUri
 import coil.compose.rememberAsyncImagePainter
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.alibaba.fastjson2.parseObject
+import com.alibaba.fastjson2.toJSONString
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppCompatActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -1538,6 +1540,22 @@ class MainActivity : ModuleAppCompatActivity() {
 
             ItemWithNewPage(text = "导入模块配置文件", modifier = itemModifier, onClick = {
                 importOption.launch(arrayOf("application/json"))
+            })
+
+            val exportOption =
+                rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
+                    uri?.let {
+                        try {
+                            writeTextToUri(it, optionEntity.toJSONString())
+                            toast("导出成功")
+                        } catch (e: Exception) {
+                            toast("导出失败: ${e.message}")
+                        }
+                    }
+                }
+
+            ItemWithNewPage(text = "导出模块配置文件", modifier = itemModifier, onClick = {
+                exportOption.launch("option.json")
             })
 
 
