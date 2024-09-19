@@ -36,8 +36,6 @@ fun PackageParam.automatizationOption(
         when (selected.title) {
             "自动签到" -> autoSignIn(versionCode)
             "自动领取阅读积分" -> receiveReadingCreditsAutomatically(versionCode)
-            "自动领取章末红包" -> receivedReadingPageEndHongBaoAutomatically(versionCode)
-//            "自动跳过启动页" -> autoSkipSplash(versionCode)
         }
     }
 }
@@ -53,50 +51,6 @@ fun PackageParam.autoSignIn(
 ) {
     when (versionCode) {
         in 1296..1499 -> {
-            /*
-            DexKitBridge.create(appInfo.sourceDir)?.use { bridge ->
-                bridge.findClass {
-                    searchPackages = listOf("com.qidian.QDReader.ui.view.bookshelfview")
-                    matcher {
-                        className =
-                            "com.qidian.QDReader.ui.view.bookshelfview.CheckInReadingTimeViewNew"
-                        methods {
-                            add {
-                                modifiers = Modifier.PROTECTED
-                                returnType = "void"
-                                paramCount = 2
-                            }
-                        }
-                        usingStrings = listOf("BookShelfCheckIn", "btnCheckIn", "newCheckin")
-                    }
-                }.firstNotNullOfOrNull { classData ->
-                    classData.findMethod {
-                        matcher {
-                            modifiers = Modifier.PROTECTED
-                            returnType = "void"
-                            paramTypes = listOf(
-                                "com.qidian.QDReader.repository.entity.checkin.CheckInData",
-                                "boolean"
-                            )
-                        }
-                    }.firstNotNullOfOrNull { methodData ->
-                            methodData.className.toClass().method {
-                                name = methodData.methodName
-                                paramCount(2)
-                                returnType = UnitType
-                            }.hook().after {
-                                val qDUIButtons =
-                                    instance.getViews("com.qd.ui.component.widget.QDUIButton".toClass())
-                                qDUIButtons.filter { button ->
-                                    button.getViews<TextView>()
-                                        .any { textView -> textView.text == "签到" }
-                                }.filterIsInstance<View>().performClick()
-                            }
-                        }
-                }
-            }
-
-             */
 
             "com.qidian.QDReader.ui.modules.bookshelf.view.BookShelfCheckInView".toClass().method {
                 name = "updateCheckIn"
@@ -213,68 +167,5 @@ fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
         }
 
         else -> "自动领取阅读积分".printlnNotSupportVersion(versionCode)
-    }
-
-}
-
-/**
- * # 自动领取章末红包
- * * 需在阅读页面打开章末红包，如果有红包则自动领取
- * @since 7.9.354-1296 ~ 1499
- * @param [versionCode] 版本代码
- */
-fun PackageParam.receivedReadingPageEndHongBaoAutomatically(versionCode: Int) {
-    when (versionCode) {
-        in 1296..1499 -> {
-            "com.qidian.QDReader.ui.modules.interact.InteractHBContainerView".toClass().method {
-                name = "showContent"
-                emptyParam()
-                returnType = UnitType
-            }.hook().after {
-                val data = instance.getParam<Any>("mHongBaoData")?.getParam<Any>("hongBaoData")
-                    ?.getParam<MutableList<*>>("data") ?: return@after
-                if (data.isEmpty()) return@after
-                instanceClass?.method {
-                    name = "showRewardVideo"
-                    emptyParam()
-                    returnType = UnitType
-                }?.get(instance)?.call()
-            }
-        }
-
-        else -> "自动领取章末红包".printlnNotSupportVersion(versionCode)
-    }
-}
-
-/**
- *  自动跳过启动页
- * @since 7.9.354-1296 ~ 1499
- * @param [versionCode] 版本代码
- */
-fun PackageParam.autoSkipSplash(versionCode: Int) {
-    when (versionCode) {
-        in 1296..1499 -> {
-            "com.qidian.QDReader.ui.activity.SplashActivity".toClass().method {
-                name = "onCreate"
-                param(BundleClass)
-                returnType = UnitType
-            }.hook().after {
-                instance.current {
-                    method {
-                        name = "go2Main"
-                        paramCount(1)
-                        returnType = UnitType
-                    }.call(false)
-
-                    method {
-                        name = "finish"
-                        emptyParam()
-                        returnType = UnitType
-                    }.call()
-                }
-            }
-        }
-
-        else -> "自动跳过启动页".printlnNotSupportVersion(versionCode)
     }
 }
