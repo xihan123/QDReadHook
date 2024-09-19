@@ -350,7 +350,7 @@ class MainActivity : ModuleAppCompatActivity() {
 
     /**
      * 主屏幕
-     * @since 7.9.354-1296
+     * @since 7.9.354-1336
      * @param [versionCode] 版本代码
      * @param [context] 上下文
      * @suppress Generate Documentation
@@ -1700,7 +1700,7 @@ class MainActivity : ModuleAppCompatActivity() {
             }
 
             ItemWithAction(
-                text = "起点内部版本号: $versionCode\n模块版本: ${BuildConfig.VERSION_NAME}-${BuildConfig.VERSION_CODE}\n目前支持版本号范围: 7.9.354-1296 至 7.9.xxx-1499",
+                text = "起点内部版本号: $versionCode\n模块版本: ${BuildConfig.VERSION_NAME}-${BuildConfig.VERSION_CODE}\n目前支持版本号范围: 7.9.354-1336 至 7.9.xxx-1499",
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight(),
@@ -1715,7 +1715,7 @@ class MainActivity : ModuleAppCompatActivity() {
 
 /**
  * 免责声明
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [modifier] 修饰符
  * @param [onAgreeClick] 点击同意
  * @param [onDisagreeClick] 点击不同意
@@ -1946,7 +1946,7 @@ fun ItemWithEditText(
 
 /**
  * 插入
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [list] 列表
  * @suppress Generate Documentation
  */
@@ -2287,7 +2287,7 @@ private fun CustomBookShelfTopImageOption(
 
 /**
  * 启动图像项目
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [startImageModel] 启动图像模型
  * @param [modifier] 修饰符
  * @suppress Generate Documentation

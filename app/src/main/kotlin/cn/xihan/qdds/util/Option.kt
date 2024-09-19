@@ -4,10 +4,9 @@ import android.content.Context
 import android.os.Environment
 import android.widget.Toast
 import androidx.annotation.Keep
-import cn.xihan.qdds.util.Option.logPath
-import cn.xihan.qdds.util.Option.optionPath
 import com.alibaba.fastjson2.parseObject
 import com.alibaba.fastjson2.toJSONString
+import com.highcapable.yukihookapi.hook.param.PackageParam
 import java.io.File
 import java.lang.ref.WeakReference
 
@@ -25,158 +24,133 @@ val defaultOptionEntity by lazy {
  */
 val defaultEmptyList by lazy { mutableListOf<SelectedModel>() }
 
-/**
- * 读取选项
- * @return [File?]
- * @suppress Generate Documentation
- */
-private fun provideOptionFile(): File {
-    return File(optionPath).apply {
-        parentFile?.mkdirs()
-        if (!exists()) {
-            createNewFile()
-            writeText(defaultOptionEntity.toJSONString())
-        }
-    }
-}
-
-/**
- * 读取日志
- * @return File
- * @suppress Generate Documentation
- */
-private fun provideLogFile(): File {
-    return File(logPath).apply {
-        parentFile?.mkdirs()
-        if (!exists()) {
-            createNewFile()
-        }
-    }
-}
-
-/**
- * 提供期权实体
- * @since 7.9.354-1296
- * @param [file] 文件
- * @return [OptionEntity]
- * @suppress Generate Documentation
- */
-fun provideOptionEntity(file: File): OptionEntity = try {
-    file.readText().parseObject<OptionEntity>().apply {
-        if (currentOptionVersionCode < defaultOptionEntity.latestOptionVersionCode) {
-            currentOptionVersionCode = defaultOptionEntity.latestOptionVersionCode
-            val newAdvOptionConfigurations = defaultOptionEntity.advOption
-            val newInterceptConfigurations = defaultOptionEntity.interceptOption
-            val newViewHideOptionConfigurations =
-                defaultOptionEntity.viewHideOption.homeOption.configurations
-            val newBookDetailOptionConfigurations =
-                defaultOptionEntity.viewHideOption.bookDetailOptions
-            val newAutomaticReceiveOptionConfigurations = defaultOptionEntity.automatizationOption
-            val newSearchOption = defaultOptionEntity.viewHideOption.searchOption
-            val newDefaultRequestOption = defaultOptionEntity.taskOption.defaultConfiguration
-            val newTaskOption = defaultOptionEntity.taskOption.configurations
-            advOption = advOption.merge(
-                newAdvOptionConfigurations
-            )
-            interceptOption = interceptOption.merge(
-                newInterceptConfigurations
-            )
-
-            viewHideOption.homeOption.configurations =
-                viewHideOption.homeOption.configurations.merge(
-                    newViewHideOptionConfigurations
-                )
-            viewHideOption.bookDetailOptions = viewHideOption.bookDetailOptions.merge(
-                newBookDetailOptionConfigurations
-            )
-            automatizationOption = automatizationOption.merge(
-                newAutomaticReceiveOptionConfigurations
-            )
-            viewHideOption.searchOption = viewHideOption.searchOption.merge(
-                newSearchOption
-            )
-            taskOption.defaultConfiguration = taskOption.defaultConfiguration.merge(
-                newDefaultRequestOption
-            )
-            taskOption.configurations = taskOption.configurations.merge(
-                newTaskOption
-            )
-        }
-    }
-} catch (e: Throwable) {
-    e.loge()
-    defaultOptionEntity
-}
 
 object Option {
 
     lateinit var context: WeakReference<Context>
 
-    val optionFile by lazy {
-        provideOptionFile()
-    }
-
-    val logFile by lazy {
-        provideLogFile()
-    }
-
-    val optionEntity by lazy {
-        provideOptionEntity(optionFile)
-    }
-
-    /**
-     * 基本路径
-     * @suppress Generate Documentation
-     */
-    val basePath =
-        "/storage/emulated/${(android.system.Os.getuid() / 100000)}/Download/QDReader"
+    lateinit var basePath: String
 
     /**
      * 重定向主题路径
      * @suppress Generate Documentation
      */
-    val redirectThemePath = "$basePath/ReaderTheme/"
-
-    /**
-     * 选项路径
-     * @suppress Generate Documentation
-     */
-    val optionPath = "$basePath/option.json"
+    lateinit var redirectThemePath: String
 
     /**
      * 日志路径
      * @suppress Generate Documentation
      */
-    val logPath = "$basePath/log.txt"
+    lateinit var logPath: String
 
     /**
      * 闪屏图片路径
      * @suppress Generate Documentation
      */
-    val splashPath = "$basePath/Splash/"
+    lateinit var splashPath: String
 
     /**
      * 图片路径
      * @suppress Generate Documentation
      */
-    val picturesPath = "$basePath/Pictures"
+    lateinit var picturesPath: String
 
     /**
      * 音频路径
      * @suppress Generate Documentation
      */
-    val audioPath = "$basePath/Audio/"
+    lateinit var audioPath: String
+
+    lateinit var optionEntity: OptionEntity
+
+    lateinit var optionFile: File
+
+    lateinit var logFile: File
+
+    private val lock = Any()
+
+
+    fun PackageParam.initOption() {
+        basePath =
+            "/storage/emulated/${(android.system.Os.getuid() / 100000)}/Android/data/$packageName/files/QDReadHook"
+        redirectThemePath = "$basePath/RedirectTheme/"
+        splashPath = "$basePath/Splash/"
+        picturesPath = "$basePath/Pictures/"
+        logPath = "$basePath/Log/"
+        audioPath = "$basePath/Audio/"
+        optionFile = File("$basePath/option.json").apply {
+            parentFile?.mkdirs()
+            if (!exists()) {
+                createNewFile()
+                writeText(defaultOptionEntity.toJSONString())
+            }
+        }
+        optionEntity = provideOptionEntity(optionFile)
+        logFile = File(logPath).apply {
+            parentFile?.mkdirs()
+            if (!exists()) {
+                createNewFile()
+            }
+        }
+    }
 
     /**
-     * 字体路径
+     * 提供期权实体
+     * @since 7.9.354-1336
+     * @param [file] 文件
+     * @return [OptionEntity]
+     * @suppress Generate Documentation
      */
-    val fontPath = "$basePath/Font/"
+    private fun provideOptionEntity(file: File): OptionEntity = try {
+        file.readText().parseObject<OptionEntity>().apply {
+            if (currentOptionVersionCode < defaultOptionEntity.latestOptionVersionCode) {
+                currentOptionVersionCode = defaultOptionEntity.latestOptionVersionCode
+                val newAdvOptionConfigurations = defaultOptionEntity.advOption
+                val newInterceptConfigurations = defaultOptionEntity.interceptOption
+                val newViewHideOptionConfigurations =
+                    defaultOptionEntity.viewHideOption.homeOption.configurations
+                val newBookDetailOptionConfigurations =
+                    defaultOptionEntity.viewHideOption.bookDetailOptions
+                val newAutomaticReceiveOptionConfigurations =
+                    defaultOptionEntity.automatizationOption
+                val newSearchOption = defaultOptionEntity.viewHideOption.searchOption
+                val newDefaultRequestOption = defaultOptionEntity.taskOption.defaultConfiguration
+                val newTaskOption = defaultOptionEntity.taskOption.configurations
+                advOption = advOption.merge(
+                    newAdvOptionConfigurations
+                )
+                interceptOption = interceptOption.merge(
+                    newInterceptConfigurations
+                )
+
+                viewHideOption.homeOption.configurations =
+                    viewHideOption.homeOption.configurations.merge(
+                        newViewHideOptionConfigurations
+                    )
+                viewHideOption.bookDetailOptions = viewHideOption.bookDetailOptions.merge(
+                    newBookDetailOptionConfigurations
+                )
+                automatizationOption = automatizationOption.merge(
+                    newAutomaticReceiveOptionConfigurations
+                )
+                viewHideOption.searchOption = viewHideOption.searchOption.merge(
+                    newSearchOption
+                )
+                taskOption.defaultConfiguration = taskOption.defaultConfiguration.merge(
+                    newDefaultRequestOption
+                )
+                taskOption.configurations = taskOption.configurations.merge(
+                    newTaskOption
+                )
+            }
+        }
+    } catch (e: Throwable) {
+        e.loge()
+        defaultOptionEntity
+    }
 
     fun initialize(context: Context) {
         Option.context = WeakReference(context)
-        if (optionEntity.readPageOption.enableCustomFont) {
-            moveToPrivateStorage(context)
-        }
     }
 
     /**
@@ -415,12 +389,14 @@ object Option {
      * @return [Boolean]
      * @suppress Generate Documentation
      */
-    fun updateOptionEntity(): Boolean = try {
-        optionFile.writeText(optionEntity.toJSONString())
-        true
-    } catch (e: Throwable) {
-        e.loge()
-        false
+    fun updateOptionEntity(): Boolean = synchronized(lock){
+        try {
+            optionFile.writeText(optionEntity.toJSONString())
+            true
+        } catch (e: Throwable) {
+            e.loge()
+            false
+        }
     }
 
     /**
@@ -443,7 +419,8 @@ object Option {
         filesDir.parentFile?.listFiles()?.filterNot { it.isDirectory && it.name == "databases" }
             ?.removeAll()
         getExternalFilesDirs(null).firstNotNullOfOrNull {
-            it.listFiles()?.removeAll()
+            it.listFiles()?.filterNot { it -> it.isDirectory && it.name == "QDReadHook" }
+                ?.removeAll()
         }
     }
 
@@ -522,7 +499,7 @@ object Option {
  * @param [readPageOption] 阅读页面选项
  * @param [interceptOption] 拦截选项
  * @param [viewHideOption] 视图隐藏选项
- * @param [automatizationOption] 自动化选项
+ * @param [autonomizationOption] 自动化选项
  * @suppress Generate Documentation
  */
 @Keep
@@ -539,7 +516,6 @@ data class OptionEntity(
         SelectedModel("主页-书架顶部广告", true),
         SelectedModel("主页-书架活动弹框", true),
         SelectedModel("主页-书架浮窗活动", true),
-        SelectedModel("主页-书架底部导航栏广告", true),
         SelectedModel("我-中间广告", true),
         SelectedModel("阅读页-浮窗广告"),
         SelectedModel("阅读页-章末一刀切"),
@@ -605,8 +581,7 @@ data class OptionEntity(
     var viewHideOption: ViewHideOption = ViewHideOption(),
     var automatizationOption: List<SelectedModel> = listOf(
         SelectedModel("自动签到"),
-        SelectedModel("自动领取阅读积分"),
-        SelectedModel("自动领取章末红包")
+        SelectedModel("自动领取阅读积分")
     ),
     var taskOption: TaskOption = TaskOption()
 ) {
@@ -629,7 +604,6 @@ data class OptionEntity(
      */
     @Keep
     data class MainOption(
-        var packageName: String = "com.qidian.QDReader",
         var enablePostToShowImageUrl: Boolean = false,
         var enableFreeAdReward: Boolean = false,
         var enableIgnoreFreeSubscribeLimit: Boolean = false,
@@ -652,7 +626,8 @@ data class OptionEntity(
         var enableDebug: Boolean = false,
         var uid: Int = 0,
         var ua: String = "",
-        var cookie: String = ""
+        var cookie: String = "",
+        var qimei: String = ""
     )
 
     /**
@@ -700,7 +675,6 @@ data class OptionEntity(
     @Keep
     data class StartImageOption(
         var enableCustomStartImage: Boolean = false,
-        var enableRedirectLocalStartImage: Boolean = false,
         var enableCaptureTheOfficialLaunchMapList: Boolean = false,
         var customStartImageUrlList: Set<String> = emptySet(),
         var officialLaunchMapList: List<StartImageModel> = emptyList(),
@@ -740,7 +714,6 @@ data class OptionEntity(
         var enableShowReaderPageChapterSavePictureDialog: Boolean = false,
         var enableShowReaderPageChapterSaveAudioDialog: Boolean = false,
         var enableCopyReaderPageChapterComment: Boolean = false,
-        var enableCustomFont: Boolean = true,
         var enableReadTimeFactor: Boolean = false,
         var speedFactor: Int = 5
     )
@@ -780,10 +753,10 @@ data class OptionEntity(
             SelectedModel(title = "书友圈"),
             SelectedModel(title = "书友榜"),
             SelectedModel(title = "月票金主"),
-            SelectedModel(title = "页面轮播广告"),
-            SelectedModel(title = "顶部轮播广告1|2"),
-            SelectedModel(title = "本书看点|中心广告"),
-            SelectedModel(title = "浮窗广告"),
+            SelectedModel(title = "页面轮播广告", true),
+            SelectedModel(title = "顶部轮播广告1|2", true),
+            SelectedModel(title = "本书看点|中心广告", true),
+            SelectedModel(title = "浮窗广告", true),
             SelectedModel(title = "同类作品推荐"),
             SelectedModel(title = "看过此书的人还看过")
         ),
@@ -807,7 +780,7 @@ data class OptionEntity(
             var enableCaptureBottomNavigation: Boolean = false,
             var configurations: List<SelectedModel> = listOf(
                 SelectedModel("主页顶部宝箱提示", true),
-                SelectedModel("书架每日导读", true),
+                SelectedModel("书架每日导读"),
                 SelectedModel("书架顶部标题", true)
             ),
             var bottomNavigationConfigurations: MutableList<SelectedModel> = mutableListOf()
