@@ -4,8 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.WindowManager
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
@@ -135,6 +137,7 @@ import cn.xihan.qdds.util.jumpToPermission
 import cn.xihan.qdds.util.multiChoiceSelector
 import cn.xihan.qdds.util.openUrl
 import cn.xihan.qdds.util.parseKeyWordOption
+import cn.xihan.qdds.util.readTextFromUri
 import cn.xihan.qdds.util.rememberMutableStateListOf
 import cn.xihan.qdds.util.rememberMutableStateOf
 import cn.xihan.qdds.util.rememberSavableMutableStateOf
@@ -149,6 +152,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.alibaba.fastjson2.parseObject
 import com.highcapable.yukihookapi.hook.xposed.parasitic.activity.base.ModuleAppCompatActivity
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
@@ -476,7 +480,8 @@ class MainActivity : ModuleAppCompatActivity() {
                         cleanLog(context)
                     })
 
-                val enableCollectService = rememberMutableStateOf(value = optionEntity.mainOption.enableCollectService)
+                val enableCollectService =
+                    rememberMutableStateOf(value = optionEntity.mainOption.enableCollectService)
 
                 ItemWithSwitch(text = "启用收集服务",
                     modifier = itemModifier,
@@ -485,10 +490,10 @@ class MainActivity : ModuleAppCompatActivity() {
                         optionEntity.mainOption.enableCollectService = it
                     })
 
-                if(enableCollectService.value){
+                if (enableCollectService.value) {
                     ItemWithSwitch(text = "收集服务上传提示",
                         modifier = itemModifier,
-                        checked =  rememberMutableStateOf(value = optionEntity.mainOption.enableCollectToast),
+                        checked = rememberMutableStateOf(value = optionEntity.mainOption.enableCollectToast),
                         onCheckedChange = {
                             optionEntity.mainOption.enableCollectToast = it
                         })
@@ -1563,6 +1568,32 @@ class MainActivity : ModuleAppCompatActivity() {
             ItemWithNewPage(text = "重置模块配置文件", modifier = itemModifier, onClick = {
                 resetOptionEntityDialog = true
             })
+
+            // 选择文件
+            val importOption =
+                rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+                    uri?.let {
+                        try {
+                            val text = readTextFromUri(it)
+                            if (text.isNotBlank()) {
+                                optionEntity = text.parseObject<OptionEntity>()
+                                updateOptionEntity()
+                                deleteAll()
+                                toast("导入成功,即将重启应用")
+                                restartApplication()
+                            } else {
+                                toast("导入失败")
+                            }
+                        } catch (e: Exception) {
+                            toast("导入失败: ${e.message}")
+                        }
+                    }
+                }
+
+            ItemWithNewPage(text = "导入模块配置文件", modifier = itemModifier, onClick = {
+                importOption.launch(arrayOf("application/json"))
+            })
+
 
             ItemWithNewPage(text = "打赏", modifier = itemModifier, onClick = {
                 context.openUrl("https://github.com/xihan123/QDReadHook#%E6%89%93%E8%B5%8F")
