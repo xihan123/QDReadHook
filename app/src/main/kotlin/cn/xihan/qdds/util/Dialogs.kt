@@ -34,7 +34,7 @@ val AppCompat: AlertBuilderFactory<DialogInterface> = { context ->
 
 /**
  * 警觉
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [message] 消息
  * @param [title] 标题
  * @param [block] 块
@@ -48,7 +48,7 @@ fun Context.alert(
 
 /**
  * 警觉
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [factory] 工厂
  * @param [message] 消息
  * @param [title] 标题
@@ -68,7 +68,7 @@ inline fun <D : DialogInterface> Context.alert(
 
 /**
  * 警报对话框
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [block] 块
  * @suppress Generate Documentation
  */
@@ -76,7 +76,7 @@ fun Context.alertDialog(block: AlertBuilder<*>.() -> Unit) = alertDialog(AppComp
 
 /**
  * 警报对话框
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [factory] 工厂
  * @param [block] 块
  * @suppress Generate Documentation
@@ -88,7 +88,7 @@ inline fun <D : DialogInterface> Context.alertDialog(
 
 /**
  * 多选选择器
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [items] 项目
  * @param [checkItems] 检查项目
  * @param [title] 标题
@@ -104,7 +104,7 @@ fun Context.multiChoiceSelector(
 
 /**
  * 单选选择器
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [items] 项目
  * @param [checkIndex] 检查索引
  * @param [title] 标题
@@ -120,7 +120,7 @@ fun <T> Context.singleChoiceSelector(
 
 /**
  * 多选选择器
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [factory] 工厂
  * @param [items] 项目
  * @param [checkItems] 检查项目
@@ -141,7 +141,7 @@ inline fun <D : DialogInterface> Context.multiChoiceSelector(
 
 /**
  * 单选选择器
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [factory] 工厂
  * @param [items] 项目
  * @param [checkIndex] 检查索引
@@ -162,7 +162,7 @@ inline fun <D : DialogInterface, T> Context.singleChoiceSelector(
 
 /**
  * ok按钮
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [onClicked] 单击时
  * @suppress Generate Documentation
  */
@@ -171,7 +171,7 @@ fun AlertBuilder<*>.okButton(onClicked: (dialog: DialogInterface) -> Unit) =
 
 /**
  * 取消按钮
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [onClicked] 单击时
  * @suppress Generate Documentation
  */
@@ -180,7 +180,7 @@ fun AlertBuilder<*>.cancelButton(onClicked: (dialog: DialogInterface) -> Unit = 
 
 /**
  * 单选项目
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [items] 项目
  * @param [checkIndex] 检查索引
  * @param [onItemSelected] 在所选项目上
@@ -194,7 +194,7 @@ inline fun <T> AlertBuilder<*>.singleChoiceItems(
 
 /**
  * 单选项目
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [items] 项目
  * @param [checkItem] 检查项目
  * @param [onItemSelected] 在所选项目上
@@ -211,7 +211,7 @@ inline fun AlertBuilder<*>.singleChoiceItems(
 
 /**
  * 单选项目
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [items] 项目
  * @param [checkItem] 检查项目
  * @param [onItemSelected] 在所选项目上
@@ -226,7 +226,7 @@ inline fun <T> AlertBuilder<*>.singleChoiceItems(
 
 /**
  * 多选项目
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [items] 项目
  * @param [checkItems] 检查项目
  * @param [onItemSelected] 在所选项目上
@@ -242,7 +242,7 @@ inline fun <T> AlertBuilder<*>.multiChoiceItems(
 
 /**
  * 取消时执行
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [block] 块
  * @suppress Generate Documentation
  */
@@ -252,7 +252,7 @@ fun Dialog.doOnCancel(block: (DialogInterface) -> Unit) = apply {
 
 /**
  * 解雇时执行
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [block] 块
  * @suppress Generate Documentation
  */
@@ -262,7 +262,7 @@ fun Dialog.doOnDismiss(block: (DialogInterface) -> Unit) = apply {
 
 /**
  * 表演中表演
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [block] 块
  * @suppress Generate Documentation
  */
@@ -272,7 +272,7 @@ fun Dialog.doOnShow(block: (DialogInterface) -> Unit) = apply {
 
 /**
  * 取消时执行
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [block] 块
  * @suppress Generate Documentation
  */
@@ -283,7 +283,7 @@ fun DialogInterface.doOnCancel(block: (DialogInterface) -> Unit) = apply {
 
 /**
  * 解雇时执行
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [block] 块
  * @suppress Generate Documentation
  */
@@ -294,7 +294,7 @@ fun DialogInterface.doOnDismiss(block: (DialogInterface) -> Unit) = apply {
 
 /**
  * 表演中表演
- * @since 7.9.354-1296
+ * @since 7.9.354-1336
  * @param [block] 块
  * @suppress Generate Documentation
  */

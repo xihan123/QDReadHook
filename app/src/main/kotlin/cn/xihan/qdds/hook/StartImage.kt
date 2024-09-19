@@ -23,12 +23,12 @@ import com.highcapable.yukihookapi.hook.type.java.UnitType
  *
  *      ps2:使用英文的分号(引号内的符号)";"分隔
  *
- * @since 7.9.354-1296 ~ 1499
+ * @since 7.9.354-1336 ~ 1499
  * @param versionCode 版本号
  */
 fun PackageParam.customStartImage(versionCode: Int) {
     when (versionCode) {
-        in 1296..1499 -> {
+        in 1336..1499 -> {
             "com.qidian.QDReader.repository.entity.config.AppConfigBean".toClass().method {
                 name = "getBootWallPapers"
                 emptyParam()
@@ -98,12 +98,12 @@ fun PackageParam.customStartImage(versionCode: Int) {
  *      ps:如果没有记得检查存储权限并重启起点/模块后再看
  *
  *      ps2:如需查看所有官方图片地址可在配置文件中找到
- * @since 7.9.354-1296 ~ 1499
+ * @since 7.9.354-1336 ~ 1499
  * @param [versionCode] 版本代码
  */
 fun PackageParam.captureTheOfficialLaunchMapList(versionCode: Int) {
     when (versionCode) {
-        in 1296..1499 -> {
+        in 1336..1499 -> {
             "com.qidian.QDReader.ui.activity.splash_config.QDSplashConfigFragment".toClass()
                 .method {
                     name = "loadData"

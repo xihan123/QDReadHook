@@ -23,7 +23,7 @@ import com.highcapable.yukihookapi.hook.type.java.UnitType
 
 /**
  * 自动化选项
- * @since 7.9.354-1296 ~ 1499
+ * @since 7.9.354-1336 ~ 1499
  * @param [versionCode] 版本代码
  * @param [configurations] 配置
  * @suppress Generate Documentation
@@ -43,14 +43,14 @@ fun PackageParam.automatizationOption(
 
 /**
  * 自动签到
- * @since 7.9.354-1296 ~ 1499
+ * @since 7.9.354-1336 ~ 1499
  * @param [versionCode] 版本代码
  */
 fun PackageParam.autoSignIn(
     versionCode: Int
 ) {
     when (versionCode) {
-        in 1296..1499 -> {
+        in 1336..1499 -> {
 
             "com.qidian.QDReader.ui.modules.bookshelf.view.BookShelfCheckInView".toClass().method {
                 name = "updateCheckIn"
@@ -74,12 +74,12 @@ fun PackageParam.autoSignIn(
 /**
  * 自动领取阅读积分
  * 需打开阅读时长页面，如果有积分则自动领取
- * @since 7.9.354-1296 ~ 1499
+ * @since 7.9.354-1336 ~ 1499
  * @param [versionCode] 版本代码
  */
 fun PackageParam.receiveReadingCreditsAutomatically(versionCode: Int) {
     when (versionCode) {
-        in 1296..1499 -> {
+        in 1336..1499 -> {
             /**
              * 自动领取今日阅读时长积分
              */
