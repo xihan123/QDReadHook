@@ -52,8 +52,10 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.io.BufferedReader
 import java.io.File
 import java.io.FilenameFilter
+import java.io.InputStreamReader
 import java.io.OutputStream
 import java.io.Serializable
 import java.lang.reflect.Field
@@ -1054,6 +1056,18 @@ fun PackageParam.shieldUnit(
         }
     }
 }
+
+fun Context.readTextFromUri(uri: Uri): String {
+    val inputStream = contentResolver.openInputStream(uri)
+    val reader = BufferedReader(InputStreamReader(inputStream))
+    val stringBuilder = StringBuilder()
+    reader.forEachLine { line ->
+        stringBuilder.append(line)
+    }
+    reader.close()
+    return stringBuilder.toString()
+}
+
 
 object Utils : KoinComponent {
 
