@@ -34,7 +34,6 @@ fun PackageParam.advOption(
             "主页-书架活动弹框" -> disableBookshelfActivityPopup(versionCode)
             "主页-书架顶部广告" -> disableBookshelfTopAd(versionCode)
             "主页-书架浮窗活动" -> disableBookshelfFloatWindow(versionCode)
-            "主页-书架底部导航栏广告" -> disableBottomNavigationCenterAd(versionCode)
             "我-中间广告" -> disableAccountCenterAd(versionCode)
             "阅读页-浮窗广告" -> disableReaderPageFloatAd(versionCode)
             "阅读页-打赏小剧场" -> disableReadPageRewardTheater(versionCode)
@@ -106,25 +105,6 @@ fun PackageParam.disableBookshelfTopAd(versionCode: Int) {
         }
 
         else -> "禁用书架顶部广告".printlnNotSupportVersion(versionCode)
-    }
-}
-
-/**
- * 禁用底部导航中心广告
- * @since 7.9.354-1296 ~ 1499
- * @param [versionCode] 版本代码
- */
-fun PackageParam.disableBottomNavigationCenterAd(versionCode: Int) {
-    when (versionCode) {
-        in 1296..1499 -> {
-            "com.qidian.QDReader.ui.activity.MainGroupActivity".toClass().method {
-                name = "checkAdTab"
-                emptyParam()
-                returnType = UnitType
-            }.hook().intercept()
-        }
-
-        else -> "禁用底部导航栏中心广告".printlnNotSupportVersion(versionCode)
     }
 }
 
