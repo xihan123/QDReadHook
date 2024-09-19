@@ -1099,7 +1099,10 @@ object Utils : KoinComponent {
                     val contentValues = ContentValues().apply {
                         put(MediaStore.Images.Media.DISPLAY_NAME, "$displayName.$fileExtension")
                         put(MediaStore.Images.Media.MIME_TYPE, mimeType)
-                        put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/QDReader/${imageTitle}/")
+                        put(
+                            MediaStore.Images.Media.RELATIVE_PATH,
+                            "Pictures/QDReader/${imageTitle}/"
+                        )
                     }
 
                     val uri = context.contentResolver.insert(
@@ -1108,7 +1111,8 @@ object Utils : KoinComponent {
                     )
 
                     uri?.let {
-                        val outputStream: OutputStream? = context.contentResolver.openOutputStream(it)
+                        val outputStream: OutputStream? =
+                            context.contentResolver.openOutputStream(it)
                         outputStream?.use { stream ->
                             if (fileExtension.lowercase() == "gif") {
                                 stream.write(bytes)
@@ -1118,7 +1122,7 @@ object Utils : KoinComponent {
                             }
                         } ?: "写入图片失败".loge()
                     } ?: "插入图片失败".loge()
-                }catch (e: Exception) {
+                } catch (e: Exception) {
                     "下载图片失败: ${e.message}".loge()
                 }
             }
@@ -1126,5 +1130,32 @@ object Utils : KoinComponent {
                 context.toast("导出成功")
             }
         }
+
+    fun saveAudioFromFile(context: Context, audioTitle: String, audioFile: File) = thread {
+
+        val contentValues = ContentValues().apply {
+            put(MediaStore.Audio.Media.DISPLAY_NAME, audioTitle)
+            put(MediaStore.Audio.Media.MIME_TYPE, "audio/mp4")
+            put(MediaStore.Audio.Media.RELATIVE_PATH, "Music/QDReader/")
+        }
+
+        val uri = context.contentResolver.insert(
+            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+            contentValues
+        )
+
+        uri?.let {
+            val outputStream: OutputStream? = context.contentResolver.openOutputStream(it)
+            outputStream?.use { stream ->
+                audioFile.inputStream().use { inputStream ->
+                    inputStream.copyTo(stream)
+                }
+                withContext(Dispatchers.Main.immediate) {
+                    context.toast("导出成功")
+                }
+            } ?: "写入音频失败".loge()
+        } ?: "插入音频失败".loge()
+
+    }
 
 }
