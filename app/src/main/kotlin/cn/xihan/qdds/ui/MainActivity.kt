@@ -1039,13 +1039,6 @@ class MainActivity : ModuleAppCompatActivity() {
 
             PrimaryCard("阅读页设置") {
 
-                ItemWithSwitch(text = "阅读页字体自动替换",
-                    modifier = itemModifier,
-                    checked = rememberMutableStateOf(value = optionEntity.readPageOption.enableCustomFont),
-                    onCheckedChange = {
-                        optionEntity.readPageOption.enableCustomFont = it
-                    })
-
                 ItemWithSwitch(text = "阅读页章评图片长按保存原图",
                     modifier = itemModifier,
                     checked = rememberMutableStateOf(value = optionEntity.readPageOption.enableShowReaderPageChapterSaveRawPicture),
