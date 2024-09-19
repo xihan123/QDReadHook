@@ -1,25 +1,24 @@
 package cn.xihan.qdds.hook
 
 import android.content.Context
+import android.os.Environment
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import android.widget.TextView
 import cn.xihan.qdds.service.Collect
 import cn.xihan.qdds.util.CustomEditText
 import cn.xihan.qdds.util.CustomLinearLayout
 import cn.xihan.qdds.util.CustomTextView
 import cn.xihan.qdds.util.Option
-import cn.xihan.qdds.util.Option.audioPath
 import cn.xihan.qdds.util.Option.optionEntity
 import cn.xihan.qdds.util.Option.redirectThemePath
+import cn.xihan.qdds.util.Utils
 import cn.xihan.qdds.util.alertDialog
 import cn.xihan.qdds.util.copyToClipboard
 import cn.xihan.qdds.util.getParam
 import cn.xihan.qdds.util.getParamList
 import cn.xihan.qdds.util.getViews
 import cn.xihan.qdds.util.intercept
-import cn.xihan.qdds.util.loge
 import cn.xihan.qdds.util.printlnNotSupportVersion
 import cn.xihan.qdds.util.safeCast
 import cn.xihan.qdds.util.setParam
@@ -246,7 +245,9 @@ private fun Context.audioExportDialog(networkUrl: String, filePath: String) {
     val linearLayout = CustomLinearLayout(context = this)
     val textView = CustomTextView(
         context = this,
-        text = "音频文件网络地址: $networkUrl\n音频文件本地地址: $filePath",
+        text = "音频文件网络地址: $networkUrl\n音频文件本地地址: $filePath\n本地导出至:${
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).path
+        }/QDReader/${ file.name}",
     )
     val editText = CustomEditText(
         context = this,
@@ -266,17 +267,7 @@ private fun Context.audioExportDialog(networkUrl: String, filePath: String) {
                 toast("文件名不能为空")
                 return@positiveButton
             }
-            val saveFile = File(
-                audioPath, fileName
-            ).apply {
-                parentFile?.mkdirs()
-            }
-            if (saveFile.exists()) {
-                toast("文件已存在")
-                return@positiveButton
-            }
-            file.copyTo(saveFile)
-            toast("导出成功")
+            Utils.saveAudioFromFile(this@audioExportDialog, fileName, file)
             it.dismiss()
         }
         negativeButton("复制网络地址") {
