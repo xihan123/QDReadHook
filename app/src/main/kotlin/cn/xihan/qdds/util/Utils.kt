@@ -41,8 +41,6 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
 import com.highcapable.yukihookapi.hook.type.java.ListClass
 import com.highcapable.yukihookapi.hook.type.java.UnitType
-import com.hjq.permissions.Permission
-import com.hjq.permissions.XXPermissions
 import de.robv.android.xposed.XposedHelpers
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -564,59 +562,6 @@ fun Context.showAppIcon() {
             PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
             PackageManager.DONT_KILL_APP
         )
-    }
-}
-
-/**
- * 请求权限
- * @suppress Generate Documentation
- */
-fun Activity.requestPermissionDialog(
-    onGranted: () -> Unit = { restartApplication() },
-    onDenied: () -> Unit = { jumpToPermission() },
-) {
-    val permission = XXPermissions.isGranted(
-        this, Permission.REQUEST_INSTALL_PACKAGES, Permission.MANAGE_EXTERNAL_STORAGE
-    )
-    if (permission) {
-        return
-    }
-    alertDialog {
-        title = "温馨提示"
-        message =
-            "请授予以下权限,否则无法正常使用\n安装未知应用权限: Android 14 强制需要\n存储权限:用来管理位于外部存储的配置文件"
-        positiveButton("授予") {
-            XXPermissions.with(this@requestPermissionDialog).permission(
-                Permission.MANAGE_EXTERNAL_STORAGE, Permission.REQUEST_INSTALL_PACKAGES
-            ).request { _, allGranted ->
-                if (allGranted) {
-                    onGranted()
-                } else {
-                    onDenied()
-                }
-            }
-        }
-        negativeButton("拒绝并退出") {
-            onDenied()
-        }
-        build()
-        show()
-    }
-}
-
-/**
- * 跳转到权限
- * @suppress Generate Documentation
- */
-fun Context.jumpToPermission() {
-    if (this.applicationInfo.targetSdkVersion > 30) {
-        XXPermissions.startPermissionActivity(
-            this,
-            Permission.REQUEST_INSTALL_PACKAGES,
-            Permission.MANAGE_EXTERNAL_STORAGE
-        )
-    } else {
-        XXPermissions.startPermissionActivity(this, Permission.Group.STORAGE)
     }
 }
 
