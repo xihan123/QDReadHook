@@ -51,10 +51,12 @@ import kotlinx.serialization.json.Json
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.io.BufferedReader
+import java.io.BufferedWriter
 import java.io.File
 import java.io.FilenameFilter
 import java.io.InputStreamReader
 import java.io.OutputStream
+import java.io.OutputStreamWriter
 import java.io.Serializable
 import java.lang.reflect.Field
 import java.text.SimpleDateFormat
@@ -1013,6 +1015,13 @@ fun Context.readTextFromUri(uri: Uri): String {
     return stringBuilder.toString()
 }
 
+fun Context.writeTextToUri(uri: Uri, text: String) {
+    contentResolver.openOutputStream(uri)?.use { outputStream ->
+        BufferedWriter(OutputStreamWriter(outputStream)).use { writer ->
+            writer.write(text)
+        }
+    }
+}
 
 object Utils : KoinComponent {
 
